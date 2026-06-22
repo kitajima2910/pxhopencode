@@ -1,91 +1,30 @@
-# 🚀 Workflow Phát hành — Build Pipeline
+# Workflow Phát hành — Build Pipeline
 
-Workflow này thực hiện build pipeline (đường ống xây dựng): lint → typecheck → test → build. Bạn tự deploy sau khi build xong.
+Pipeline: lint → typecheck → test → build. Bạn tự deploy sau build.
 
-## 🚀 QUY TRÌNH PHÁT HÀNH
-
-### Kiểm tra cổng (Điều kiện tiên quyết)
-
-Tầng 2 (Orchestration) kiểm tra Result contracts từ các phase trước:
-
+## Điều kiện (Gate Check)
 ```
-☐ QA passed — Result{test, status: pass} từ @pxh-qa
-☐ Code reviewed — Result{review, approved: true} từ @pxh-review-code
-☐ Git status clean (git status)
+☐ QA passed — @pxh-qa Result{status: pass}
+☐ Code reviewed — @pxh-review-code Result{approved: true}
+☐ Git status clean
 ```
+Không thỏa → **TỪ CHỐI**, Event{reject} → T4 + báo user.
 
-Nếu bất kỳ điều kiện nào không thỏa → **TỪ CHỐI PHÁT HÀNH**, Orchestration gửi Event{type: reject} đến Tầng 4 + báo user.
+## Steps
+1. **Lint + TypeCheck**: scripts trong `_shared/build-scripts.ps1`
+2. **Test Suite**: scripts trong `_shared/build-scripts.ps1`
+3. **Build**: scripts trong `_shared/build-scripts.ps1`
+4. **Báo user**: `✅ Build thành công! 📁 Output: dist/ (hoặc .next/) 👉 Bạn deploy tuỳ ý.`
 
----
+Sau build → Event{phase: release, status: success, data: {version, size, date}} → @pxh-save-history.
 
-### Step 1: Lint + TypeCheck
-
-Chạy scripts trong `_shared/build-scripts.ps1` (Lint + TypeCheck section).
-
-### Step 2: Test Suite
-
-Chạy scripts trong `_shared/build-scripts.ps1` (Test Suite section).
-
-### Step 3: Build
-
-Chạy scripts trong `_shared/build-scripts.ps1` (Build section).
-
-### Step 4: Bạn tự deploy
-
-Build xong, báo user:
-```
-✅ Build thành công!
-📁 Output: dist/ (hoặc .next/)
-👉 Bạn chạy live server hoặc deploy lên hosting tuỳ ý.
-```
-
-Sau khi build xong, Orchestration gửi Event{type: build_complete} đến `@pxh-save-history`:
-- `Event{phase: release, status: success, data: {version, size, date}}`
-- Tầng 4 lưu + cập nhật .opencode/STATUS.md ✅
-
----
-
-## 📋 MẪU BÁO CÁO PHÁT HÀNH
-
-```markdown
-## 🚀 BUILD REPORT — v[version]
-
-### 📊 Tổng quan
-| Stage | Status | Detail |
-|-------|--------|--------|
-| Gate Check | ✅ Pass | QA + Review ok |
-| Lint | ✅ Pass | 0 warnings |
-| TypeCheck | ✅ Pass | 0 errors |
-| Test | ✅ Pass | 15/15 passed |
-| Build | ✅ Pass | 12.5MB |
-```
-
-## 🚨 XỬ LÝ SỰ CỐ
-
+## XỬ LÝ SỰ CỐ
 | Vấn đề | Hành động |
 |--------|----------|
-| Lint lỗi | Fix → commit lại → chạy lại pipeline |
+| Lint lỗi | Fix → commit → chạy lại pipeline |
 | Test fail | Báo QA, không release |
 | Build fail | Kiểm tra log, fix dependency |
 
-## Luồng Runtime (Các tầng)
-```
-Tầng 3 (Worker / Builder): pxh-devops chạy build pipeline
-Tầng 3 (Worker / Validator): pxh-qa gate check (đã pass trước đó)
-Tầng 3 (Worker / Reviewer): pxh-review-code gate check (đã pass trước đó)
-Tầng 4 (Infrastructure): pxh-save-history ghi lại build version
-Tầng 2 (Orchestration): pxh-pm đánh giá build result → báo user
-Tầng 1 (Interface): Kết quả build → user
-```
-
-## Liên kết
-- Runtime: `runtime/README.md`, `runtime/layers/03-worker.md`
-- Contracts: `runtime/contracts/README.md` — Task, Result, Event
-- Policies: `runtime/policies/retry.md`, `runtime/policies/recovery.md`
-- Agents: `@pxh-devops` (Tầng 3 Builder), `@pxh-qa` (Tầng 3 Validator), `@pxh-review-code` (Tầng 3 Reviewer), `@pxh-pm` (Tầng 2), `@pxh-save-history` (Tầng 4)
-- Skill: `skills/webs-deployment/SKILL.md` — Deployment guide
-
 ## NGUYÊN TẮC
-
-1. **Fail fast**: Nếu bước nào lỗi → dừng ngay, không tiếp tục
-2. **Mỗi bước phải pass**: Không skip bước nào
+1. **Fail fast**: lỗi → dừng ngay
+2. Mỗi bước phải pass — không skip
