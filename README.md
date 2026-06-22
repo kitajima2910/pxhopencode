@@ -37,6 +37,9 @@ Chính sách: Thử lại (exp backoff, max 3), Phục hồi (checkpoint), Phả
 
 ## 🎯 Tính năng
 - `.opencode/STATUS.md` real-time dashboard
+- **Context Budget**: tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên
+- **Skill Quick Reference**: 1 read thay 25 SKILL.md, chỉ load template khi cần code
+- **Conversation Budget**: max rounds/task, chặn infinite loop tốn token
 - `.gitignore` tự động (`.opencode`, `.playwright-mcp`, `.gitignore`)
 - Playwright MCP debug UI browser
 - Favicon SVG tự động
@@ -48,24 +51,31 @@ Chính sách: Thử lại (exp backoff, max 3), Phục hồi (checkpoint), Phả
 ## Cài đặt & Cấu trúc
 
 ```bash
+# macOS / Linux
 cp -r ../pxhopencode .opencode
+
+# Windows (PowerShell)
+Copy-Item -Recurse ../pxhopencode .opencode
 ```
 
 ```
 .opencode/
 ├── opencode.json   # Config
 ├── README.md       # File này
+├── STATUS.md       # Dashboard real-time
+├── LICENSE         # MIT
+├── .gitignore      # Tự động
 ├── agents/         # 9 agents
 ├── runtime/        # 4 tầng, contracts, policies
 ├── workflows/      # 7 workflow templates
-├── skills/         # 4 lĩnh vực, 25 skills
-└── _shared/        # Dùng chung: templates, agent-listing, scripts
+├── skills/         # 4 lĩnh vực, 25 skills + templates/
+└── _shared/        # Dùng chung: context-budget, skill-quickref, templates, scripts
 ```
 
 ## Cách dùng
 - **Prompt trực tiếp**: pxh-pm tự động phân tích → meeting → code → release
 - **Lệnh `/`**: `/vibe`, `/web`, `/game`, `/ai`, `/debug`, `/release`, `/meeting`
-- **Gọi `@agent`**: `@pxh-expert`, `@pxh-architect`, etc.
+- **Gọi `@agent`** (kèm Task contract): `@pxh-expert` với task rõ ràng, `@pxh-architect`, etc.
 
 ---
 
