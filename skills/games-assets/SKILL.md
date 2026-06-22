@@ -14,9 +14,9 @@ Nguồn chính: **Kenney** (CC0, sprites/audio/3D), **OpenGameArt** (CC0), **Pol
 
 ## Script Tự động Tải xuống
 ```
-# 2D: .\_shared\scripts\download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
-# 3D: .\_shared\scripts\download-games-assets.ps1 -AssetType "3d"
-# 2.5D: .\_shared\scripts\download-games-assets.ps1 -AssetType "2.5d"
+# 2D: _shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
+# 3D: _shared/scripts/download-games-assets.ps1 -AssetType "3d"
+# 2.5D: _shared/scripts/download-games-assets.ps1 -AssetType "2.5d"
 ```
 Fallback: procedural generation — vẽ shape bằng code, Web Audio API sinh âm thanh.
 

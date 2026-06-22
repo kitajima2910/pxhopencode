@@ -180,4 +180,4 @@ Xem: `templates/screen-shake.ts`
 
 ### Tham khảo
 - Implementation: `game-h5-2d.md`
-- Main game skill: `games/SKILL.md`
+- Main game skill: `skills/games-core/SKILL.md`

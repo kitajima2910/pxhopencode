@@ -122,4 +122,4 @@ Xem: `templates/PositionalAudio3D.ts`
 
 ### Tham khảo
 - Implementation: `game-h5-3d.md`
-- Main game skill: `games/SKILL.md`
+- Main game skill: `skills/games-core/SKILL.md`

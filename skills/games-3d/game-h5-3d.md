@@ -65,4 +65,4 @@ Xem: `templates/build.sh`
 ## Tham khảo
 - Assets: `skills/games-assets/SKILL.md`
 - Design: `game-design-h5-3d.md`
-- Main game skill: `games/SKILL.md`
+- Main game skill: `skills/games-core/SKILL.md`

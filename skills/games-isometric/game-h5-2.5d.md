@@ -53,4 +53,4 @@ Xem: `templates/build.sh`
 
 ### Tham khảo
 - Design: `game-design-h5-2.5d.md`
-- Main game skill: `games/SKILL.md`
+- Main game skill: `skills/games-core/SKILL.md`

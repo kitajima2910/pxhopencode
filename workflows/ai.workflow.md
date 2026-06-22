@@ -1,91 +1,31 @@
-# 🤖 Workflow AI — Phát triển ứng dụng AI
+# Workflow AI — Phát triển ứng dụng AI
 
-Dùng workflow này khi bạn làm: chatbot, RAG system, LLM integration, AI agent, ML inference API, NLP processing, computer vision, automation AI.
+> **LUẬT NGÔN NGỮ**: UI text trong AI app (chat message, label, thông báo) = **tiếng Việt**.
 
-> **🌏 LUẬT NGÔN NGỮ**: UI text trong AI app (chat message, label, thông báo, hướng dẫn) phải là **tiếng Việt**.
+## Bước 1: Stack
+**Backend**: FastAPI + LangChain (mặc định), FastAPI + LlamaIndex, Django + Celery
+**LLM**: OpenAI GPT-4o (mặc định), Claude 3.5, Gemini, Local (Ollama)
+**DB/Vector**: PostgreSQL + pgvector (mặc định), ChromaDB, Pinecone, Redis
 
-## 🚀 Quy trình vibe code AI
-
-### Bước 1: Chọn stack
-
-#### Backend (Python - mặc định)
-| Stack | Khi nào dùng |
-|-------|-------------|
-| FastAPI + LangChain | **Mặc định** — RAG, chatbot, agent |
-| FastAPI + LlamaIndex | Document-heavy RAG, data pipeline |
-| FastAPI + direct OpenAI/Claude API | Đơn giản, gọi LLM trực tiếp |
-| Django + Celery | Production, task queue, heavy processing |
-
-#### LLM Provider
-| Provider | Khi nào dùng |
-|----------|-------------|
-| OpenAI GPT-4o | **Mặc định** — mạnh, dễ dùng |
-| Claude 3.5 Sonnet | Code generation, reasoning |
-| Gemini | Free tier, multimodal |
-| Local (Ollama) | Offline, privacy, không internet |
-
-#### Database & Vector Store
-| Tool | Khi nào dùng |
-|------|-------------|
-| PostgreSQL + pgvector | **Mặc định** — lưu cả data + vector |
-| ChromaDB | Prototype, local dev |
-| Pinecone / Weaviate | Production-scale vector search |
-| Redis | Cache, session, rate limiting |
-
-### Bước 2: Setup
-
+## Bước 2: Setup
 ```bash
-# Python + FastAPI (mặc định)
-mkdir app
-cd app
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\Activate.ps1
-pip install fastapi uvicorn langchain openai pydantic
-
-# PostgreSQL + pgvector
+python -m venv .venv && pip install fastapi uvicorn langchain openai pydantic
 pip install psycopg2-binary sqlalchemy pgvector
 ```
+`.gitignore`: `.opencode`, `.playwright-mcp`, `.gitignore`, `__pycache__/`, `*.pyc`, `.venv/`, `.env`
 
-### Bước 2.1: Setup `.gitignore`
-
-Sau khi setup, đảm bảo `.gitignore` đúng chuẩn Python/AI:
-- Luôn có `.opencode`, `.playwright-mcp`, `.gitignore`, `__pycache__/`, `*.pyc`, `.venv/`, `.env`, `*.egg-info/`, `dist/`
-- Nếu đã có `.gitignore` → chỉ cần ensure `.opencode`, `.playwright-mcp`, `.gitignore` được thêm vào
-
-### Bước 3: Cấu trúc thư mục AI chuẩn
+## Bước 3: Cấu trúc
 `api/` → `core/` → `models/` → `services/` (llm, rag, embedding, agent) → `vector_store/` → `prompts/` → `utils/`
 
-### Bước 4: Flow code AI
+## Bước 4: Flow code
+`Setup LLM → API → RAG Pipeline → Agent/Tools → Frontend Chat → Deploy`
 
-```
-Setup LLM → API → RAG Pipeline → Agent/Tools → Frontend Chat → Deploy
-```
+Chi tiết: LLM Setup → API Routes (streaming) → RAG (Load→Chunk→Embed→Store→Retrieve→Generate) → Agent/Tools (function calling, multi-step) → Frontend Chat → Deploy
 
-Chi tiết:
-1. **LLM Setup**: Kết nối provider, system prompt, temperature, max tokens
-2. **API Routes**: Chat endpoint (streaming), upload file, query history
-3. **RAG Pipeline**: Load → Chunk → Embed → Store → Retrieve → Generate
-4. **Agent/Tools**: Function calling, tool definitions, multi-step reasoning
-5. **Frontend Chat**: UI chat box (Streamlit / React), markdown rendering
-6. **Deploy**: Docker + Cloud Run / Railway / tự host
+## Bước 5: Patterns
+Chat đơn giản / RAG với PDF / AI Agent / Multi-modal / Streaming SSE / Function Calling
 
-### Bước 5: Các mẫu AI phổ biến
+## Bước 6: Security
+Rate limiting, input sanitization (prompt injection defense), auth, token limits + cost monitoring, logging LLM calls
 
-| Pattern | Cài đặt |
-|---------|---------|
-| Chat đơn giản | `openai.ChatCompletion` → stream response |
-| RAG với PDF | Load PDF → chunk → embed → pgvector → retrieve → LLM |
-| AI Agent | Tool definitions → LLM chọn tool → execute → loop |
-| Multi-modal | Upload image → LLM vision → phân tích |
-| Streaming | SSE / WebSocket → response từng token |
-| Function Calling | LLM trả về JSON action → execute → return result |
-
-### Bước 6: Security
-
-- ✅ Rate limiting trên chat endpoint
-- ✅ Input sanitization (prompt injection defense)
-- ✅ User authentication (nếu multi-user)
-- ✅ Token limits & cost monitoring
-- ✅ Logging tất cả LLM calls (audit)
-
-## Post-code: route đến agents theo company workflow pattern (test → fix → review → build → persist). Xem `workflows/company.workflow.md`.
+## Post-code: route đến agents theo company workflow pattern. Xem `workflows/company.workflow.md`.
