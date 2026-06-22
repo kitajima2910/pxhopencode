@@ -14,18 +14,19 @@ Nguồn chính: **Kenney** (CC0, sprites/audio/3D), **OpenGameArt** (CC0), **Pol
 
 ## Script Tự động Tải xuống
 ```
-
+# Luôn dùng -ExecutionPolicy Bypass để tránh lỗi policy Windows
+#
 # 2D — mặc định platformer
-_shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
+powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-assets.ps1" -AssetType "2d" -GameStyle "platformer"
 
 # Các style khác: rpg, shooter, racing, puzzle, horror, shmup, strategy, adventure
-_shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "horror"
+powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-assets.ps1" -AssetType "2d" -GameStyle "horror"
 
 # 3D: platformer-kit, fps-kit, racing-kit, fantasy-kit, horror-kit
-_shared/scripts/download-games-assets.ps1 -AssetType "3d" -GameStyle "shooter"
+powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-assets.ps1" -AssetType "3d" -GameStyle "shooter"
 
 # 2.5D: isometric (strategy, rpg, shooter)
-_shared/scripts/download-games-assets.ps1 -AssetType "2.5d" -GameStyle "rpg"
+powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-assets.ps1" -AssetType "2.5d" -GameStyle "rpg"
 ```
 Priority: **Kenney** (primary) → **OpenGameArt** (fallback) → **procedural** (last resort).
 Script tự động thử primary → fallback packs → OpenGameArt URL → báo manual nếu all fail.

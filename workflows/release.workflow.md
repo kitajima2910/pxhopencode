@@ -11,9 +11,9 @@ Pipeline: lint → typecheck → test → build. Bạn tự deploy sau build.
 Không thỏa → **TỪ CHỐI**, Event{reject} → T4 + báo user.
 
 ## Steps
-1. **Lint + TypeCheck**: scripts trong `_shared/build-scripts.ps1`
-2. **Test Suite**: scripts trong `_shared/build-scripts.ps1`
-3. **Build**: scripts trong `_shared/build-scripts.ps1`
+1. **Lint + TypeCheck**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/build-scripts.ps1" -Step lint`
+2. **Test Suite**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/build-scripts.ps1" -Step test`
+3. **Build**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/build-scripts.ps1" -Step build`
 4. **Báo user**: `✅ Build thành công! 📁 Output: dist/ (hoặc .next/) 👉 Bạn deploy tuỳ ý.`
 
 Sau build → Event{phase: release, status: success, data: {version, size, date}} → @pxh-save-history.

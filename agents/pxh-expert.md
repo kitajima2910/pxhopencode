@@ -27,7 +27,7 @@ Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files
 
 ## VIBE CODE PROTOCOL
 1. Đọc project structure + skill SKILL.md + templates (batch read)
-2. Nếu workflow có download assets → chạy script ngay (`.ps1` Windows / hướng dẫn manual cho non-Windows)
+2. Nếu workflow có download assets → chạy script ngay: `powershell.exe -ExecutionPolicy Bypass -File "..."`
 3. Code ngay — 1 file chạy được trước
 4. `npm run dev` / `python app.py` ngay — lỗi → sửa → chạy lại
 5. 1 feature/lần. MVP trước, polish sau

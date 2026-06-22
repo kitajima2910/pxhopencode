@@ -3,10 +3,10 @@
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
 
 ## Bước 0: Download assets (AUTO — agent tự chạy)
-Trước khi code, agent PHẢI chạy script download assets. Chỉ bỏ qua nếu procedural fallback.
+Trước khi code, agent PHẢI chạy script download assets. Dùng `-ExecutionPolicy Bypass` để tránh lỗi policy Windows.
 ```powershell
-# Windows
-_shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
+# Windows — luôn dùng -ExecutionPolicy Bypass
+powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-assets.ps1" -AssetType "2d" -GameStyle "platformer"
 # GameStyle: platformer, rpg, shooter, racing, puzzle, horror, shmup, strategy, adventure
 ```
 ```bash
