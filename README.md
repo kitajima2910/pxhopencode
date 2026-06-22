@@ -20,12 +20,63 @@ Hệ thống AI agents tự động vibe code như một AI Company. Copy vào `
 
 ## 🏛 Enterprise AI Runtime (4 Tầng)
 
-```
-T1 (Giao diện) → xác thực → T2 (Điều phối) → route → T3 (Nhân công) → execute → T4 (Hạ tầng) → persist
+```mermaid
+flowchart LR
+    T1[🧑 T1 — Giao diện<br/>pxh-help] -->|Request contract| T2
+    T2[👔 T2 — Điều phối<br/>pxh-pm] -->|Task contract| T3
+    T3[🔧 T3 — Nhân công<br/>6 agents] -->|Result contract| T2
+    T3 -->|Event| T4
+    T2 -->|Event| T4
+    T4[💾 T4 — Hạ tầng<br/>pxh-save-history] -->|State contract| T2
+    T2 -->|Response contract| T1
 ```
 
-Giao tiếp qua 6 contract: Request, Task, Result, Response, Event, State.
-Chính sách: Thử lại (exp backoff, max 3), Phục hồi (checkpoint), Phản ánh (4 mức).
+Luồng thực thi:
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant T1 as T1 — Interface<br/>pxh-help
+    participant T2 as T2 — Orchestration<br/>pxh-pm
+    participant T3 as T3 — Workers<br/>6 agents
+    participant T4 as T4 — Infrastructure<br/>pxh-save-history
+
+    User->>T1: Prompt
+    T1->>T1: Validate + classify
+    T1->>T2: Request{workflow, skills}
+    T2->>T4: Event{phase_start}
+    T2->>T3: Task{phase, target, policies}
+    T3->>T3: Execute (code/test/fix/...)
+    T3->>T2: Result{status, artifacts}
+    T2->>T4: Event{phase_end, reflection}
+    T2->>T1: Response{summary, artifacts}
+    T1->>User: Formatted output
+```
+
+Giao tiếp qua 6 contract: `Request` | `Task` | `Result` | `Response` | `Event` | `State`.
+Chính sách: `Thử lại` (exp backoff, max 3) | `Phục hồi` (checkpoint) | `Phản ánh` (4 mức).
+
+## 🔄 Feedback Loop
+
+```mermaid
+flowchart TB
+    EXP[🧑‍💻 Expert code] -->|Result| PM[👔 PM]
+    PM -->|Task verify| QA[🧪 QA test]
+    QA -->|Bug found| PM
+    PM -->|Task fix| BUG[🐛 Fix-Bugs]
+    BUG -->|Result fixed| PM
+    PM -->|Task verify fix| QA
+    QA -->|Pass ✅| PM
+    PM -->|Task review| REVIEW[🔍 Review-Code]
+    REVIEW -->|Issues| PM
+    PM -->|Task fix review| EXP
+    REVIEW -->|Pass ✅| PM
+    PM -->|Task build| DEVOPS[⚙️ DevOps]
+    DEVOPS -->|Build OK 📦| PM
+    PM -->|Event persist| SAVE[💾 Save-History]
+```
+
+Vòng lặp: **Code → Test → Fix** (max 3). **Review → Fix → Test** (max 3). **Build fail → Fix** (max 3). Quá → báo user.
 
 ## 🌐 8 Workflow
 
