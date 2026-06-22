@@ -26,4 +26,4 @@ Xem `_shared/context-budget.md`. Chỉ đọc diff + file changed. Báo critical
 Tôn trọng tác giả. Giải thích tại sao. Phân loại rõ. Security luôn critical. `edit: deny`.
 
 ## Liên kết
-Worker: `runtime/layers/03-worker.md` | Orchestration: `02-orchestration.md` | Context: `_shared/context-budget.md`
+Worker: `runtime/layers/03-worker.md` | Orchestration: `runtime/layers/02-orchestration.md` | Context: `_shared/context-budget.md`

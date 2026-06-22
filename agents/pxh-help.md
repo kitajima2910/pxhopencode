@@ -30,8 +30,8 @@ Phân tích prompt keywords → tự chọn workflow + skill. Dùng `_shared/ski
 | game 3D, Three.js, FPS | `/game` | `games-3d` |
 | game isometric, 2.5D, tactical | `/game` | `games-isometric` |
 | AI, chatbot, LLM, RAG, agent | `/ai` | `ais-*` |
-| CLI, tool, automation, script | `/ai` | `tools-*` |
-| VS Code extension | `/ai` | `tools-extensions` |
+| CLI, tool, automation, script | `/tool` | `tools-*` |
+| VS Code extension | `/tool` | `tools-extensions` |
 | debug, fix, bug, crash, lỗi | `/debug` | — |
 
 Multi-domain: chọn workflow chính + skill phụ. Không rõ → hỏi 1 câu.

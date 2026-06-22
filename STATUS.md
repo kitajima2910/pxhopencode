@@ -7,7 +7,7 @@
 | Giai đoạn | PHÁT HÀNH ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
 | Agents | 9 chuyên biệt (Tầng 1-4) |
-| Workflows | 7 theo lĩnh vực |
+| Workflows | 8 theo lĩnh vực |
 | Skills | 25 skills (4 lĩnh vực) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
@@ -31,7 +31,7 @@
 ├── README.md / STATUS.md   # Tổng quan + Dashboard
 ├── agents/                 # 9 agents (Tầng 1-4)
 ├── runtime/                # 4 tầng, contracts, policies
-├── workflows/              # 7 workflow templates
+├── workflows/              # 8 workflow templates
 ├── skills/                 # 4 lĩnh vực, 25 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
@@ -46,34 +46,23 @@
 | Workflow trim + shared includes | -400 dòng |
 | runtime/README.md, README.md trim | -179 dòng |
 | **V2.0: Agent slim (9 files)** | **-227 dòng (-39%)** |
+
 | **V2.0: Contracts schema concise** | **-29 dòng** |
 | **V2.0: Skill quickref → 25 SKILL.md reads avoided** | **-728 dòng (-96%)** |
 | **V2.0: Context budget + tiered loading** | **~-50% token/phiên** |
 | **Total** | **~6.300 + 984 = ~7.284 dòng khỏi prompt context** |
 
-## 🚀 V2.0 Changelog
-
-| Thay đổi | Tác động |
-|----------|---------|
-| Thêm `_shared/context-budget.md` | Tiered loading, batch calls, fail fast → ~50% token/phiên |
-| Thêm `_shared/skill-quickref.md` | 1 read thay 25 SKILL.md → -728 dòng/skill selection |
-| Agent slim (9 files, 586→359 dòng) | -227 dòng (-39%) mỗi agent invocation |
-| Contract concise (bỏ JSON mẫu dài) | -29 dòng |
-| Tier 0/1/2/3 context strategy | Chỉ load đúng tier cần thiết |
-| Conversation budget (max rounds) | Không vòng lặp vô hạn |
-| Quota-saving behaviors | Batch, cache, fail fast, lazy template |
-
-## 🛠 Changelog
+## 🚀 Changelog
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-06-23 | v2.0 | **Critical fix**: Prompt auto-classification, permission inconsistency, skill integration, QA→Fix-Bugs contract, feedback loop |
+| 2026-06-23 | v2.0 | Context budget, skill quickref, agent slim (-39%), contracts concise, tiered loading, build script thật, tool workflow, favicon cho 8 workflow, fix cross-refs |
 
 ## ✅ Điều kiện hoàn thành
 
 - [x] 9 agents với thẻ layer + tham chiếu chéo
 - [x] Runtime 4 layer, 6 contracts, 3 policies
-- [x] 7 workflows theo lĩnh vực
+- [x] 8 workflows theo lĩnh vực
 - [x] 25 skills với templates/ riêng
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
 - [x] MCP Playwright tích hợp

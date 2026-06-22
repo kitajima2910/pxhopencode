@@ -86,6 +86,10 @@
     "ai": {
       "description": "Phát triển ứng dụng AI: chatbot, RAG, agent",
       "template": "workflows/ai.workflow.md"
+    },
+    "tool": {
+      "description": "Phát triển CLI, automation, extension, package",
+      "template": "workflows/tool.workflow.md"
     }
   }
 }

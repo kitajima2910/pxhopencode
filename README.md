@@ -27,9 +27,9 @@ T1 (Giao diện) → xác thực → T2 (Điều phối) → route → T3 (Nhân
 Giao tiếp qua 6 contract: Request, Task, Result, Response, Event, State.
 Chính sách: Thử lại (exp backoff, max 3), Phục hồi (checkpoint), Phản ánh (4 mức).
 
-## 🌐 7 Workflow
+## 🌐 8 Workflow
 
-`/vibe` (full company) | `/web` | `/game` (2D/2.5D/3D) | `/ai` | `/debug` | `/meeting` | `/release`
+`vibe` (full company) | `web` | `game` (2D/2.5D/3D) | `ai` | `tool` (CLI/extension/package) | `debug` | `meeting` | `release`
 
 ## 🛠 25 Skills
 
@@ -40,7 +40,7 @@ Chính sách: Thử lại (exp backoff, max 3), Phục hồi (checkpoint), Phả
 - **Context Budget**: tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên
 - **Skill Quick Reference**: 1 read thay 25 SKILL.md, chỉ load template khi cần code
 - **Conversation Budget**: max rounds/task, chặn infinite loop tốn token
-- `.gitignore` tự động (`.opencode`, `.playwright-mcp`, `.gitignore`)
+- `.gitignore` tự động
 - Playwright MCP debug UI browser
 - Favicon SVG tự động
 - UI text = tiếng Việt, code = tiếng Anh
@@ -67,14 +67,14 @@ Copy-Item -Recurse ../pxhopencode .opencode
 ├── .gitignore      # Tự động
 ├── agents/         # 9 agents
 ├── runtime/        # 4 tầng, contracts, policies
-├── workflows/      # 7 workflow templates
+├── workflows/      # 8 workflow templates
 ├── skills/         # 4 lĩnh vực, 25 skills + templates/
 └── _shared/        # Dùng chung: context-budget, skill-quickref, templates, scripts
 ```
 
 ## Cách dùng
 - **Prompt trực tiếp**: pxh-pm tự động phân tích → meeting → code → release
-- **Lệnh `/`**: `/vibe`, `/web`, `/game`, `/ai`, `/debug`, `/release`, `/meeting`
+- **Lệnh `/`**: `vibe`, `web`, `game`, `ai`, `tool`, `debug`, `release`, `meeting`
 - **Gọi `@agent`** (kèm Task contract): `@pxh-expert` với task rõ ràng, `@pxh-architect`, etc.
 
 ---
