@@ -14,11 +14,21 @@ Nguồn chính: **Kenney** (CC0, sprites/audio/3D), **OpenGameArt** (CC0), **Pol
 
 ## Script Tự động Tải xuống
 ```
-# 2D: _shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
-# 3D: _shared/scripts/download-games-assets.ps1 -AssetType "3d"
-# 2.5D: _shared/scripts/download-games-assets.ps1 -AssetType "2.5d"
+
+# 2D — mặc định platformer
+_shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
+
+# Các style khác: rpg, shooter, racing, puzzle, horror, shmup, strategy, adventure
+_shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "horror"
+
+# 3D: platformer-kit, fps-kit, racing-kit, fantasy-kit, horror-kit
+_shared/scripts/download-games-assets.ps1 -AssetType "3d" -GameStyle "shooter"
+
+# 2.5D: isometric (strategy, rpg, shooter)
+_shared/scripts/download-games-assets.ps1 -AssetType "2.5d" -GameStyle "rpg"
 ```
-Fallback: procedural generation — vẽ shape bằng code, Web Audio API sinh âm thanh.
+Priority: **Kenney** (primary) → **OpenGameArt** (fallback) → **procedural** (last resort).
+Script tự động thử primary → fallback packs → OpenGameArt URL → báo manual nếu all fail.
 
 ## Animation States
 Mọi entity: `idle`, `run`, `jump`, `attack`, `hurt`, `die`.
@@ -42,7 +52,7 @@ Xem: `templates/animation-config.ts`, `templates/entity-fsm.ts`
 Xem: `templates/animation-controller.ts`
 
 ## Templates
-- `templates/sound-manager.ts` — SoundManager load + fallback
+- `templates/sound-manager.ts` — SoundManager load + fallback procedural
 - `templates/sound-integration.ts` — Gắn vào game loop
-- `templates/sfx-map.ts` — Audio mapping theo state
+- `templates/entity-fsm.ts` — FSM + SFX auto-play theo state transition
 - `templates/placeholders.ts` — Procedural fallback khi không có assets

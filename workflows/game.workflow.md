@@ -4,6 +4,11 @@
 
 ## Bước 0: Download assets
 Chạy script assets trước khi code: xem `skills/games-assets/SKILL.md`
+```powershell
+# Chọn AssetType (2d/3d/2.5d) + GameStyle phù hợp:
+_shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
+# GameStyle: platformer, rpg, shooter, racing, puzzle, horror, shmup, strategy, adventure
+```
 
 ## Bước 1: Chọn loại game & engine
 

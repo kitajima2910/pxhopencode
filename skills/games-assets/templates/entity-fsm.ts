@@ -1,6 +1,14 @@
 // Finite State Machine cho mọi entity
 type EntityState = "idle" | "run" | "jump" | "attack" | "hurt" | "die";
 
+// SFX auto-map theo state transition
+const SFX_MAP: Record<string, string> = {
+  jump:   "jump",
+  attack: "shoot",
+  hurt:   "hurt",
+  die:    "die",
+};
+
 interface StateConfig {
   animation: string;
   speed?: number;
@@ -25,10 +33,12 @@ class EntityFSM {
   private stateTimer = 0;
   private config: StateConfig;
   private onStateChange?: (from: EntityState, to: EntityState) => void;
+  private playSound?: (key: string) => void;
 
-  constructor(onChange?: (from: EntityState, to: EntityState) => void) {
+  constructor(onChange?: (from: EntityState, to: EntityState) => void, sound?: (key: string) => void) {
     this.config = STATE_MAP.idle;
     this.onStateChange = onChange;
+    this.playSound = sound;
   }
 
   setState(newState: EntityState) {
@@ -42,6 +52,10 @@ class EntityFSM {
     this.stateTimer = 0;
     this.config.onEnter?.();
     this.onStateChange?.(prev, newState);
+    // Auto-play SFX on state transition
+    if (this.playSound && SFX_MAP[newState]) {
+      this.playSound(SFX_MAP[newState]);
+    }
   }
 
   update(dt: number): EntityState {
