@@ -30,39 +30,10 @@ Khi được gọi với chủ đề, workflow sẽ:
 ```
 
 ### Step 2: Trình bày (từng agent)
-Mỗi agent trình bày theo format:
-
-```markdown
-### Agent: pxh-architect
-
-#### Đề xuất
-[giải pháp được đề xuất]
-
-#### Lý do
-1. [Lý do chính]
-2. [Lý do phụ]
-
-#### Ưu điểm
-- [Ưu điểm 1]
-- [Ưu điểm 2]
-
-#### Nhược điểm / Rủi ro
-- [Rủi ro 1]
-- [Rủi ro 2]
-
-#### Giải pháp thay thế
-[Option khác nếu có]
-```
+Mỗi agent trình bày: Đề xuất → Lý do → Ưu điểm → Nhược điểm → Giải pháp thay thế.
 
 ### Step 3: Phản biện (cross-discussion)
-Các agents phản biện lẫn nhau:
-
-```
-Architect: "Tôi đề xuất Next.js + PostgreSQL"
-Expert: "Tôi đồng ý, nhưng nếu MVP nhanh thì SQLite đủ"
-QA: "Next.js giúp dễ test E2E với Playwright"
-DevOps: "Vercel deploy Next.js rất dễ, không cần DevOps phức tạp"
-```
+Agents phản biện lẫn nhau. Mỗi agent: ý kiến + evidence.
 
 ### Step 4: Tổng hợp & Quyết định
 
@@ -126,17 +97,4 @@ Khi có nhiều lựa chọn, dùng ma trận:
 | User có ý kiến riêng | User là sếp → làm theo user |
 | Vấn đề quá phức tạp | Tạm dừng, yêu cầu user cung cấp thêm thông tin |
 
-## Ngữ cảnh Runtime (Các tầng)
-```
-Tầng 2 (Orchestration): pxh-pm triệu tập meeting
-Tầng 3 (Worker / Planner): pxh-architect phản biện architecture
-Tầng 3 (Worker / Executor): pxh-expert đánh giá khả thi
-Tầng 3 (Worker / Validator): pxh-qa đề xuất test strategy
-Tầng 3 (Worker / Builder): pxh-devops đánh giá infra cost
-Tầng 4 (Infrastructure): pxh-save-history ghi biên bản + quyết định
-```
-
-## Liên kết
-- Runtime: `runtime/layers/02-orchestration.md`, `runtime/layers/03-worker.md`, `runtime/layers/04-infrastructure.md`
-- Contracts: `runtime/contracts/README.md` — Event{decision}
-- Agents: Tất cả 9 agents tham gia tuỳ chủ đề
+Xem `_shared/architecture-overview.md` cho runtime flow. Xem `_shared/agent-listing.md` cho danh sách agents.

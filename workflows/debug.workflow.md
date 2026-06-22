@@ -67,19 +67,7 @@ Khi bug liên quan đến frontend (UI sai, network lỗi, JavaScript runtime), 
 | 7 | `browser_evaluate(function)` | Inject JavaScript để inspect state, variables, store |
 | 8 | `browser_click` / `browser_fill_form` | Tái hiện chính xác thao tác user — kiểm tra behavior |
 
-Khi dùng Playwright để debug, luôn theo trình tự:
-
-```markdown
-1. **Snapshot**: `browser_snapshot` → xem cấu trúc DOM có đúng không
-2. **Console**: `browser_console_messages(error)` → có lỗi JS gì không
-3. **Network**: `browser_network_requests` → request nào fail
-4. **Inspect**: `browser_evaluate` → check state/component
-5. **Tái hiện**: `browser_click` / `browser_fill_form` → reproduce bug step-by-step
-```
-
-> Nếu bug là UI rendering sai → ưu tiên snapshot + screenshot trước.
-> Nếu bug là API/network → ưu tiên console messages + network requests.
-> Nếu bug là logic tương tác → ưu tiên click + fill form + evaluate.
+> Trình tự: Snapshot → Console(error) → Network → Evaluate → Tái hiện
 
 ### Bước 4: Tìm root cause
 
@@ -120,32 +108,4 @@ Kỹ thuật tìm nguyên nhân:
 - Dùng websearch tra error message (Stack Overflow, GitHub Issues)
 - Nếu 15 phút không tìm ra → dừng, hỏi user thêm context
 
-## Chất lượng & Phát hành — Tầng 2 (Điều phối) route Task contracts
-
-Sau khi fix xong, Orchestration tạo Task contracts và route đến Workers:
-
-| Phase | Task contract | Route đến | Result mong đợi |
-|-------|--------------|-----------|-----------------|
-| test | `Task{target: fix code, type: verify bug fixed}` | `@pxh-qa` | `Result{bug_fixed?, new_bugs[]}` |
-| fix | `Task{target: bugs QA tìm thêm, type: fix}` | `@pxh-fix-bugs` | `Result{fixed[], status}` |
-| review | `Task{target: fix code, type: review, focus: clean code}` | `@pxh-review-code` | `Result{approved?, issues[]}` |
-| build | `Task{target: project, type: hotfix build}` | `@pxh-devops` | `Result{build_status}` |
-| persist | `Event{type: bug_report, data: root_cause + fix}` | `@pxh-save-history` | `Confirmed{status: saved}` |
-
-### Luồng Runtime (Các tầng)
-```
-Tầng 1 (Interface): User bug report → Request
-Tầng 2 (Orchestration): pxh-pm phân tích, route debug workflow
-Tầng 3 (Worker / Fixer): pxh-fix-bugs diagnose + fix (dùng Playwright nếu frontend)
-Tầng 3 (Worker / Validator): pxh-qa verify fix
-Tầng 3 (Worker / Reviewer): pxh-review-code review fix
-Tầng 3 (Worker / Builder): pxh-devops build hotfix
-Tầng 4 (Infrastructure): pxh-save-history persist root cause + fix
-```
-
-### Liên kết
-- Workflow cha: `@vibe`
-- Runtime: `runtime/README.md`, `runtime/layers/03-worker.md`
-- Contracts: `runtime/contracts/README.md` — Task, Result, Event (bug report)
-- Policies: `runtime/policies/recovery.md`, `runtime/policies/reflection.md`
-- Agents: `@pxh-pm` (Tầng 2), `@pxh-fix-bugs` (Tầng 3 Fixer), `@pxh-qa` (Tầng 3 Validator), `@pxh-review-code` (Tầng 3 Reviewer), `@pxh-devops` (Tầng 3 Builder)
+## Post-fix: route đến agents theo company workflow pattern (test → fix → review → build → persist). Xem `workflows/company.workflow.md`.
