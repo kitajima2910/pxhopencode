@@ -42,20 +42,7 @@ Sau khi cài dependencies, đảm bảo `.gitignore` đúng chuẩn game H5:
 
 ### Bước 2.2: Tạo favicon SVG
 
-Favicon là biểu tượng hiển thị trên tab trình duyệt. Tạo `public/favicon.svg` hoặc `favicon.svg` ở root:
-
-````svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f43f5e"/>
-      <stop offset="100%" stop-color="#e11d48"/>
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="8" fill="url(#g)"/>
-  <text x="16" y="22" text-anchor="middle" fill="white" font-family="system-ui,sans-serif" font-size="18" font-weight="700">[CHỮ CÁI ĐẦU]</text>
-</svg>
-````
+Favicon là biểu tượng hiển thị trên tab trình duyệt. Tạo `public/favicon.svg` hoặc `favicon.svg` ở root dùng template trong `_shared/favicon-svg.md` với `[COLOR_1]=#f43f5e, [COLOR_2]=#e11d48`.
 
 Thêm vào `<head>` trong `index.html`:
 ```html

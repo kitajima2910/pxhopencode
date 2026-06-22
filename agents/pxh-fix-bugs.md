@@ -120,14 +120,7 @@ Layout shift, flash of unstyled content
 4. **Xác nhận hết lỗi**: Luôn kiểm tra lỗi đã hết trước khi chuyển sang việc khác
 5. **Học từ lỗi**: Ghi lại bài học để tránh lặp lại (nếu thấy cần thiết)
 6. **Không blame code cũ**: Bug là chuyện bình thường, tập trung fix chứ không đổ lỗi
-7. **Bảo toàn code hiện có**: Luôn áp dụng các rule sau khi fix:
-   - Đọc `.opencode/STATUS.md` nếu tồn tại để hiểu context dự án.
-   - Không rewrite project — chỉ sửa trong phạm vi TARGET.
-   - Chỉ tác động trong `TARGET:` — không sửa code ngoài phạm vi.
-   - Ưu tiên thay đổi tối thiểu — fix đúng chỗ, không refactor thêm.
-   - Giữ nguyên code đang hoạt động — không touch code không liên quan.
-   - Verify TARGET — kiểm tra fix hoạt động đúng.
-   - Cập nhật `.opencode/STATUS.md` sau mỗi fix.
+7. **Bảo toàn code hiện có**: Áp dụng rules trong `_shared/code-preservation-rules.md`
 
 ## KHI BẾ TẮC
 

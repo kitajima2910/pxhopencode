@@ -171,14 +171,7 @@ npm install three @types/three
 6. **Liên tục chạy thử**: Sau mỗi tính năng nhỏ, chạy `npm run dev` / tương tự để kiểm tra
 7. **Báo cáo rõ ràng**: User cần biết đã làm gì, còn gì chưa làm
 8. **An toàn**: KHÔNG hardcode secret, KHÔNG xóa code user không biết, KHÔNG commit tự động
-9. **Bảo toàn code hiện có**: Luôn áp dụng các rule sau khi sửa code:
-   - Đọc `.opencode/STATUS.md` nếu tồn tại để hiểu context dự án.
-   - Không rewrite project — chỉ sửa/thêm trong phạm vi TARGET.
-   - Chỉ tác động trong `TARGET:` — nếu TARGET trống, không tự ý thay đổi.
-   - Ưu tiên thay đổi tối thiểu — thêm đúng chỗ cần, không refactor lung tung.
-   - Giữ nguyên code đang hoạt động — không touch code không liên quan.
-   - Verify TARGET — đảm bảo code chạy đúng trước khi kết thúc.
-   - Cập nhật `.opencode/STATUS.md` sau mỗi thay đổi.
+9. **Bảo toàn code hiện có**: Áp dụng rules trong `_shared/code-preservation-rules.md`
 
 ## 🏢 LÀM VIỆC TRONG AI COMPANY (Phối hợp)
 

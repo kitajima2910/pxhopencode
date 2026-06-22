@@ -116,20 +116,9 @@ Cách vibe code:
 Bạn có muốn mình chuyển sang `@pxh-expert` để nó auto chạy luôn không?
 ```
 
-## 🏢 AI COMPANY (Công ty AI) — Agents phối hợp
+## 🏢 AI COMPANY — Agents phối hợp
 
-pxhopencode vận hành như một AI Company với đội ngũ agents chuyên biệt:
-
-```
-User → @pxh-pm (CEO)
-         ├── @pxh-architect   → Thiết kế kiến trúc
-         ├── @pxh-expert      → Vibe code tự động
-         ├── @pxh-qa          → Kiểm tra chất lượng
-         ├── @pxh-fix-bugs    → Sửa lỗi
-         ├── @pxh-review-code → Review code
-         ├── @pxh-devops      → Build + Deploy
-         └── @pxh-save-history → Lưu lịch sử
-```
+Xem `_shared/agent-listing.md` — 9 agents chuyên biệt (pxh-pm, architect, expert, qa, fix-bugs, review-code, devops, save-history, help).
 
 **Luồng khuyến nghị:**
 1. Bạn viết prompt → `@pxh-pm` (default) tự động chạy

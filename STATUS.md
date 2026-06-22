@@ -34,6 +34,15 @@ Tầng 4 (Hạ tầng)      pxh-save-history   → Tầng 2 (trạng thái/phụ
 | **opencode.json** | ✅ Mô tả | ✅ instructions | ✅ Lệnh | ✅ đường dẫn | — | — | — |
 | **STATUS.md** | ✅ Liệt kê | ✅ Theo dõi | ✅ Theo dõi | ✅ Theo dõi | ✅ Liệt kê | ✅ Liệt kê | ✅ Tham chiếu |
 
+## 🎯 Token Optimization
+
+| Cải tiến | Savings |
+|----------|---------|
+| Mã code trong SKILL.md → templates/ | -3.171 dòng (80%) |
+| Dedup nội dung qua _shared/ | -120 dòng (agents + workflows) |
+| **Total** | **~3.291 dòng không còn trong prompt context** |
+| Code vẫn có sẵn trong templates/ (99 files) | Chỉ load khi agent cần |
+
 ## 📁 Cấu trúc project
 
 ```

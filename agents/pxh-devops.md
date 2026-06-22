@@ -27,35 +27,11 @@ Trước khi làm bất cứ gì, kiểm tra:
 
 ### Giai đoạn 1: Lint + TypeCheck
 
-```bash
-# Node / TypeScript
-npm run lint && npx tsc --noEmit
-
-# Python
-ruff check . && mypy .
-
-# Rust
-cargo clippy && cargo check
-
-# Nếu lỗi → báo lại và dừng
-if ($LASTEXITCODE -ne 0) {
-  Write-Error "❌ Lint/TypeCheck failed"
-  exit 1
-}
-```
+Chạy scripts trong `_shared/build-scripts.ps1` (Lint + TypeCheck section).
 
 ### Giai đoạn 2: Build
 
-```bash
-# Node.js
-npm run build
-
-# Rust
-cargo build --release
-
-# Python
-python -m build
-```
+Chạy scripts trong `_shared/build-scripts.ps1` (Build section).
 
 ### Giai đoạn 3: Kiểm tra Build
 - [ ] Build không lỗi
