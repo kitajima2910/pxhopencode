@@ -45,7 +45,29 @@
 | Agent normalization (9 files) | -837 dòng |
 | Workflow trim + shared includes | -400 dòng |
 | runtime/README.md, README.md trim | -179 dòng |
-| **Total** | **~6.300 dòng khỏi prompt context** |
+| **V2.0: Agent slim (9 files)** | **-227 dòng (-39%)** |
+| **V2.0: Contracts schema concise** | **-29 dòng** |
+| **V2.0: Skill quickref → 25 SKILL.md reads avoided** | **-728 dòng (-96%)** |
+| **V2.0: Context budget + tiered loading** | **~-50% token/phiên** |
+| **Total** | **~6.300 + 984 = ~7.284 dòng khỏi prompt context** |
+
+## 🚀 V2.0 Changelog
+
+| Thay đổi | Tác động |
+|----------|---------|
+| Thêm `_shared/context-budget.md` | Tiered loading, batch calls, fail fast → ~50% token/phiên |
+| Thêm `_shared/skill-quickref.md` | 1 read thay 25 SKILL.md → -728 dòng/skill selection |
+| Agent slim (9 files, 586→359 dòng) | -227 dòng (-39%) mỗi agent invocation |
+| Contract concise (bỏ JSON mẫu dài) | -29 dòng |
+| Tier 0/1/2/3 context strategy | Chỉ load đúng tier cần thiết |
+| Conversation budget (max rounds) | Không vòng lặp vô hạn |
+| Quota-saving behaviors | Batch, cache, fail fast, lazy template |
+
+## 🛠 Changelog
+
+| Ngày | Phiên bản | Thay đổi |
+|------|-----------|----------|
+| 2026-06-23 | v2.0 | **Critical fix**: Prompt auto-classification, permission inconsistency, skill integration, QA→Fix-Bugs contract, feedback loop |
 
 ## ✅ Điều kiện hoàn thành
 
@@ -56,3 +78,8 @@
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
 - [x] MCP Playwright tích hợp
 - [x] README hướng dẫn copy vào `.opencode/`
+- [x] **Prompt auto-classification** — T1/T2/T3 tự động phân tích prompt → workflow+skill
+- [x] **Permission đúng** — Architect/DevOps `edit: deny`
+- [x] **Skill integration** — Worker bắt buộc đọc SKILL.md + templates trước khi code
+- [x] **Contract-only communication** — QA→Fix-Bugs dùng Task contract, không @mention trần
+- [x] **Feedback loop** — Worker→T2→Worker qua Result/Task contract

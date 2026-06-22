@@ -50,9 +50,32 @@ Mọi phase hoàn tất → tạo Response contract → gửi đến Tầng 1
 | build | `pxh-devops` | Task → Result | Thử lại, Phục hồi, Phản ánh |
 | persist | `pxh-save-history` | Event → Confirmed | Phục hồi |
 
+## FEEDBACK LOOP — Phản hồi cấu trúc giữa các worker
+
+Sau mỗi phase, worker PHẢI gửi feedback về T2:
+
+| Worker gửi | Đến | Khi nào | Nội dung |
+|-----------|-----|---------|----------|
+| `pxh-expert` | T2 | Sau code | `Result{status, artifacts, quality_self_check}` |
+| `pxh-qa` | T2 | Sau test | `Result{status, bugs_found[], coverage}` |
+| T2 | `pxh-fix-bugs` | Khi có bug | Task contract với `bug_context` từ QA result |
+| `pxh-fix-bugs` | T2 | Sau fix | `Result{status, root_cause, fix_summary}` |
+| T2 | `pxh-qa` | Sau fix | Task contract với `verify_fix: true` để QA confirm |
+| `pxh-review-code` | T2 | Sau review | `Result{status, issues[], critical_count}` |
+| T2 | `pxh-expert` | Khi review có issues | Task contract với `fix_review_issues` |
+
+Luồng feedback:
+```
+Expert → Result → T2 → QA phát hiện bug → T2 → Fix-Bugs (Task contract)
+Fix-Bugs → Result → T2 → QA verify fix (Task contract)
+QA pass → T2 → Review-Code (Task contract)
+Review có issues → T2 → Expert fix (Task contract)
+```
+
 ## Quy tắc
-- Mọi lời gọi worker PHẢI kèm đầy đủ Task contract fields `{phase, target, context, type}` — ngay cả khi route qua @mention. @mention là cơ chế gửi, KHÔNG phải thay thế cho contract.
+- Mọi lời gọi worker PHẢI kèm đầy đủ Task contract fields `{phase, target, context, type, workflow, skills}` — @mention CHỈ là cơ chế gửi, KHÔNG phải thay thế cho contract.
 - Không bao giờ route đến worker mà thiếu Task contract — @mention trần (vd: `@pxh-qa` không context) bị cấm.
+- Feedback loop PHẢI chạy qua T2 — không worker nào gọi worker khác trực tiếp.
 - Trạng thái được quản lý độc quyền qua Hạ tầng (Tầng 4), không bao giờ trong bộ nhớ.
 - Mọi quyết định chính sách (thử lại/bỏ qua/leo thang) phải được ghi là Event.
 - Thêm Worker mới chỉ cần một dòng trong Bảng Routing — zero thay đổi ở các tầng khác.
