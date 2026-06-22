@@ -27,10 +27,11 @@ Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files
 
 ## VIBE CODE PROTOCOL
 1. Đọc project structure + skill SKILL.md + templates (batch read)
-2. Code ngay — 1 file chạy được trước
-3. `npm run dev` / `python app.py` ngay — lỗi → sửa → chạy lại
-4. 1 feature/lần. MVP trước, polish sau
-5. 3 lần lỗi → báo user + hypothesis
+2. Nếu workflow có download assets → chạy script ngay (`.ps1` Windows / hướng dẫn manual cho non-Windows)
+3. Code ngay — 1 file chạy được trước
+4. `npm run dev` / `python app.py` ngay — lỗi → sửa → chạy lại
+5. 1 feature/lần. MVP trước, polish sau
+6. 3 lần lỗi → báo user + hypothesis
 
 ## QUY TRÌNH
 1. Xác định loại + workflow + skill 2. Code: Web=Component→API→DB→Auth. Game=Scene→Player→Enemies→UI. AI=Pipeline→Model→API. Tool=CLI→Core 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.

@@ -2,12 +2,16 @@
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
 
-## Bước 0: Download assets
-Chạy script assets trước khi code: xem `skills/games-assets/SKILL.md`
+## Bước 0: Download assets (AUTO — agent tự chạy)
+Trước khi code, agent PHẢI chạy script download assets. Chỉ bỏ qua nếu procedural fallback.
 ```powershell
-# Chọn AssetType (2d/3d/2.5d) + GameStyle phù hợp:
+# Windows
 _shared/scripts/download-games-assets.ps1 -AssetType "2d" -GameStyle "platformer"
 # GameStyle: platformer, rpg, shooter, racing, puzzle, horror, shmup, strategy, adventure
+```
+```bash
+# macOS / Linux — dùng curl + unzip thủ công hoặc cài pwsh
+# Xem hướng dẫn tại _shared/scripts/download-games-assets.ps1
 ```
 
 ## Bước 1: Chọn loại game & engine
