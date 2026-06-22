@@ -1,4 +1,4 @@
-# 🎨 Game Design 2.5D H5 (Isometric)
+# Game Design 2.5D H5 (Isometric)
 
 ## Tổng quan
 Skill design cho game 2.5D isometric HTML5. Phù hợp cho: RPG, strategy, city builder, simulation, tactical games.
@@ -51,82 +51,12 @@ Tablet:     TILE_WIDTH=64,  TILE_HEIGHT=32   (2:1 ratio)
 ## 4. Camera & Viewport
 
 ### Isometric camera constraints
-```typescript
-// Giới hạn camera để không show "outside map"
-const cameraBounds = {
-  minX: -TILE_WIDTH * mapWidth / 2,
-  maxX: TILE_WIDTH * mapWidth / 2,
-  minY: -TILE_HEIGHT * mapHeight / 2,
-  maxY: TILE_HEIGHT * mapHeight + TILE_HEIGHT * mapHeight / 2,
-};
 
-// Zoom limits
-const MIN_ZOOM = 0.5;
-const MAX_ZOOM = 2.0;
-```
-
-### Edge scrolling
-```typescript
-function edgeScroll(camera: Phaser.Cameras.Scene2D.Camera, speed = 5) {
-  const margin = 30;
-  const mx = this.input.x;
-  const my = this.input.y;
-
-  if (mx < margin) camera.scrollX -= speed;
-  else if (mx > window.innerWidth - margin) camera.scrollX += speed;
-  if (my < margin) camera.scrollY -= speed;
-  else if (my > window.innerHeight - margin) camera.scrollY += speed;
-}
-```
+Xem: `templates/iso-camera.ts`
 
 ## 5. Fog of War (cho strategy)
 
-```typescript
-class FogOfWar {
-  private fog: number[][]; // 0=hidden, 1=fog, 2=visible, 3=explored
-  private visionRadius = 3;
-
-  constructor(cols: number, rows: number) {
-    this.fog = Array.from({ length: rows }, () =>
-      Array.from({ length: cols }, () => 0)
-    );
-  }
-
-  update(playerX: number, playerY: number) {
-    // Reveal around player
-    for (let y = -this.visionRadius; y <= this.visionRadius; y++) {
-      for (let x = -this.visionRadius; x <= this.visionRadius; x++) {
-        const dist = Math.sqrt(x * x + y * y);
-        if (dist > this.visionRadius) continue;
-
-        const tx = playerX + x;
-        const ty = playerY + y;
-        if (ty >= 0 && ty < this.fog.length &&
-            tx >= 0 && tx < this.fog[0].length) {
-          this.fog[ty][tx] = 2; // visible
-        }
-      }
-    }
-
-    // Fade explored to fog
-    for (let y = 0; y < this.fog.length; y++) {
-      for (let x = 0; x < this.fog[0].length; x++) {
-        if (this.fog[y][x] === 2) {
-          this.fog[y][x] = 3; // explored but not visible
-        }
-      }
-    }
-  }
-
-  isVisible(x: number, y: number): boolean {
-    return this.fog[y]?.[x] === 2;
-  }
-
-  isExplored(x: number, y: number): boolean {
-    return (this.fog[y]?.[x] ?? 0) >= 2;
-  }
-}
-```
+Xem: `templates/FogOfWar.ts`
 
 ## 6. UX Considerations
 
@@ -136,81 +66,12 @@ class FogOfWar {
 - Nếu tile quá nhỏ → dùng magnifier / snap-to-grid
 
 ### Selection feedback
-```typescript
-function showSelectionIndicator(tileX: number, tileY: number) {
-  // Highlight tile với border sáng
-  const pos = cartToIso(tileX, tileY);
-  // Vẽ hình thoi border vàng + glow
-}
 
-function showMovementRange(tiles: { x: number; y: number }[]) {
-  tiles.forEach(t => {
-    // Vẽ tile màu xanh nhạt + opacity
-  });
-}
-
-function showAttackRange(tiles: { x: number; y: number }[]) {
-  tiles.forEach(t => {
-    // Vẽ tile màu đỏ nhạt + opacity
-  });
-}
-```
+Xem: `templates/iso-selection.ts`
 
 ## 7. Pathfinding (A* trên grid isometric)
 
-```typescript
-function findPath(start: { x: number; y: number }, end: { x: number; y: number }, map: number[][]) {
-  const openSet = [start];
-  const cameFrom = new Map<string, { x: number; y: number }>();
-  const gScore = new Map<string, number>();
-  const fScore = new Map<string, number>();
-
-  const key = (p: { x: number; y: number }) => `${p.x},${p.y}`;
-  gScore.set(key(start), 0);
-  fScore.set(key(start), heuristic(start, end));
-
-  while (openSet.length > 0) {
-    const current = openSet.reduce((a, b) =>
-      (fScore.get(key(a)) ?? Infinity) < (fScore.get(key(b)) ?? Infinity) ? a : b
-    );
-
-    if (current.x === end.x && current.y === end.y) {
-      return reconstructPath(cameFrom, current);
-    }
-
-    openSet.splice(openSet.indexOf(current), 1);
-
-    for (const neighbor of getNeighbors(current, map)) {
-      const tentativeG = (gScore.get(key(current)) ?? Infinity) + 1;
-      if (tentativeG < (gScore.get(key(neighbor)) ?? Infinity)) {
-        cameFrom.set(key(neighbor), current);
-        gScore.set(key(neighbor), tentativeG);
-        fScore.set(key(neighbor), tentativeG + heuristic(neighbor, end));
-        if (!openSet.find(o => o.x === neighbor.x && o.y === neighbor.y)) {
-          openSet.push(neighbor);
-        }
-      }
-    }
-  }
-
-  return []; // No path found
-}
-
-function heuristic(a: { x: number; y: number }, b: { x: number; y: number }) {
-  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); // Manhattan distance
-}
-
-function getNeighbors(p: { x: number; y: number }, map: number[][]) {
-  const dirs = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
-  return dirs
-    .map(d => ({ x: p.x + d.x, y: p.y + d.y }))
-    .filter(n =>
-      n.y >= 0 && n.y < map.length &&
-      n.x >= 0 && n.x < map[0].length &&
-      map[n.y][n.x] === 0 // Walkable
-    );
-}
-```
+Xem: `templates/pathfinding.ts`
 
 ## 8. Testing Checklist
 

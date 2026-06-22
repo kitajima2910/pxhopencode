@@ -1,4 +1,4 @@
-# 🎨 Game Design 2D H5
+# Game Design 2D H5
 
 ## Tổng quan
 Skill design cho game 2D HTML5. Cung cấp guideline về gameplay, level design, UI/UX, visual style, và player experience.
@@ -77,34 +77,8 @@ Intensity
 ## 3. Visual Style
 
 ### Color Palette (gợi ý)
-```typescript
-// Vibrant (platformer, action)
-const VIBRANT = {
-  primary: "#FF6B35",   // Cam
-  secondary: "#004E89", // Xanh dương
-  accent: "#FFC857",    // Vàng
-  bg: "#1A1A2E",        // Tối
-  text: "#FFFFFF",
-};
 
-// Pastel (puzzle, casual)
-const PASTEL = {
-  primary: "#B8E6C8",
-  secondary: "#FFD6E0",
-  accent: "#FFD93D",
-  bg: "#F5F5F5",
-  text: "#2D2D2D",
-};
-
-// Dark (horror, atmospheric)
-const DARK = {
-  primary: "#8B0000",
-  secondary: "#2F2F2F",
-  accent: "#FF4500",
-  bg: "#0A0A0A",
-  text: "#CCCCCC",
-};
-```
+Xem: `templates/color-palettes.ts`
 
 ### Resolution guidelines
 | Thiết bị | Resolution | Aspect |
@@ -184,11 +158,8 @@ Menu chính
 | BGM | Loop vui cho menu, căng cho combat |
 
 ### Screen Shake
-```typescript
-function screenShake(scene: Phaser.Scene, intensity = 5, duration = 100) {
-  scene.cameras.main.shake(duration, intensity / 1000);
-}
-```
+
+Xem: `templates/screen-shake.ts`
 
 ## 6. Monetization (nếu cần)
 
