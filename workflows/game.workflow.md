@@ -1,7 +1,7 @@
 # Workflow Game — Phát triển game HTML5 Pro
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
-> Chrome DevTools MCP đã connected — dùng `chrome-devtools_*` tools để preview + debug game real-time.
+> Chrome DevTools MCP đã connected (config: `--autoConnect`). Nếu chưa dùng được: mở Brave/Chrome → vào `chrome://inspect/#remote-debugging` → bật "Enable remote debugging". Dùng `chrome-devtools_*` tools để preview + debug game real-time.
 
 ## Bước 0: Download assets (AUTO)
 ```powershell

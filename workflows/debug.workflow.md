@@ -19,6 +19,8 @@
 ### Bước 3: Khoanh vùng
 `Error → File & line → Call stack → Input → Logic`
 
+> Cần bật remote debugging trước: vào `chrome://inspect/#remote-debugging` → bật "Enable remote debugging".
+
 Chrome DevTools cho frontend:
 | Bước | Tool | Mục đích |
 |------|------|----------|

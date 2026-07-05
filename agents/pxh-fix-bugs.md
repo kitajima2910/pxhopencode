@@ -24,7 +24,7 @@ Xem `_shared/context-budget.md`. Đọc stack trace + file lỗi. KHÔNG đọc 
 Xác định domain bug → đọc skill tương ứng (`_shared/skill-quickref.md`) → dùng templates nếu cần.
 
 ## BUG HUNT PROTOCOL
-1. **Reproduce**: Chrome DevTools snapshot + console cho frontend. `chrome-devtools_list_console_messages(types:error)` + `chrome-devtools_list_network_requests`
+1. **Reproduce**: Chrome DevTools snapshot + console cho frontend. `chrome-devtools_list_console_messages(types:error)` + `chrome-devtools_list_network_requests`. Nếu lỗi kết nối: bảo user vào `chrome://inspect/#remote-debugging` bật remote debugging.
 2. **Isolate**: Minimal reproduction. Loại bỏ code không liên quan
 3. **Read trace**: Stack trace từ dưới lên → dòng lỗi → call stack → input → logic
 4. **Git blame**: `git log --oneline -20` — thay đổi gần nhất?
