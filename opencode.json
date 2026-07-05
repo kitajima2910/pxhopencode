@@ -4,13 +4,15 @@
   "instructions": ["README.md", "runtime/README.md"],
 
   "mcp": {
-    "playwright": {
+    "chrome-devtools": {
       "type": "local",
       "enabled": true,
       "command": [
         "npx.cmd",
         "-y",
-        "@playwright/mcp@latest"
+        "chrome-devtools-mcp@latest",
+        "--browserExecutablePath",
+        "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe"
       ]
     }
   },

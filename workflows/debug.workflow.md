@@ -19,14 +19,14 @@
 ### Bước 3: Khoanh vùng
 `Error → File & line → Call stack → Input → Logic`
 
-Playwright cho frontend:
+Chrome DevTools cho frontend:
 | Bước | Tool | Mục đích |
 |------|------|----------|
-| 1 | `browser_snapshot` | Cấu trúc DOM đúng? |
-| 2 | `browser_console_messages(error)` | Lỗi JS ẩn |
-| 3 | `browser_network_requests` | API fail, 4xx, 5xx |
-| 4 | `browser_evaluate` | Inspect state/variables |
-| 5 | `browser_click/fill_form` | Tái hiện behavior |
+| 1 | `chrome-devtools_take_snapshot` | Cấu trúc DOM đúng? |
+| 2 | `chrome-devtools_list_console_messages(types:error)` | Lỗi JS ẩn |
+| 3 | `chrome-devtools_list_network_requests` | API fail, 4xx, 5xx |
+| 4 | `chrome-devtools_evaluate_script` | Inspect state/variables |
+| 5 | `chrome-devtools_click/fill_form` | Tái hiện behavior |
 
 ### Bước 4: Root cause — Rubber duck / Binary search / Hypothesis testing
 

@@ -20,7 +20,7 @@
 npm create vite@latest ./ -- --template react-ts
 npm install -D tailwindcss @tailwindcss/vite
 ```
-`.gitignore`: `.opencode`, `.playwright-mcp`, `.gitignore`, `node_modules/`, `.env`, `dist/`, `*.log`. Nếu Next.js: thêm `.next/`, `out/`.
+`.gitignore`: `.opencode`, `.gitignore`, `node_modules/`, `.env`, `dist/`, `*.log`. Nếu Next.js: thêm `.next/`, `out/`.
 Favicon: `_shared/favicon-svg.md` — `[COLOR_1]=#6366f1, [COLOR_2]=#8b5cf6`
 
 ## Bước 3: Cấu trúc

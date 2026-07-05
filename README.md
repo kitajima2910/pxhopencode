@@ -92,7 +92,7 @@ Vòng lặp: **Code → Test → Fix** (max 3). **Review → Fix → Test** (max
 - **Skill Quick Reference**: 1 read thay 25 SKILL.md, chỉ load template khi cần code
 - **Conversation Budget**: max rounds/task, chặn infinite loop tốn token
 - `.gitignore` tự động
-- Playwright MCP debug UI browser
+- Chrome DevTools MCP debug UI browser
 - Favicon SVG tự động
 - UI text = tiếng Việt, code = tiếng Anh
 - Bảo toàn code: chỉ tác động trong TARGET

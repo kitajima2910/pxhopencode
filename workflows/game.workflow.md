@@ -29,7 +29,7 @@ npm install three @types/three -D vite
 # 2D
 npm install phaser
 ```
-`.gitignore`: `.opencode`, `.playwright-mcp`, `.gitignore`, `node_modules/`, `dist/`, `*.log`, `.env`
+`.gitignore`: `.opencode`, `.gitignore`, `node_modules/`, `dist/`, `*.log`, `.env`
 Favicon: `_shared/favicon-svg.md` — `[COLOR_1]=#f43f5e, [COLOR_2]=#e11d48`
 
 ## Bước 3: Cấu trúc

@@ -12,7 +12,7 @@
 python -m venv .venv && pip install fastapi uvicorn langchain openai pydantic
 pip install psycopg2-binary sqlalchemy pgvector
 ```
-`.gitignore`: `.opencode`, `.playwright-mcp`, `.gitignore`, `__pycache__/`, `*.pyc`, `.venv/`, `.env`
+`.gitignore`: `.opencode`, `.gitignore`, `__pycache__/`, `*.pyc`, `.venv/`, `.env`
 
 ## Bước 3: Cấu trúc
 `api/` → `core/` → `models/` → `services/` (llm, rag, embedding, agent) → `vector_store/` → `prompts/` → `utils/`
