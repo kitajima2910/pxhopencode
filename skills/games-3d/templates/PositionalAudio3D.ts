@@ -1,10 +1,24 @@
 class PositionalAudio3D {
   private ctx: AudioContext;
   private listener: AudioListener;
+  private bufferCache = new Map<string, AudioBuffer>();
 
   constructor() {
     this.ctx = new AudioContext();
     this.listener = this.ctx.listener;
+  }
+
+  async loadBuffer(url: string): Promise<AudioBuffer> {
+    if (this.bufferCache.has(url)) return this.bufferCache.get(url)!;
+    const res = await fetch(url);
+    const arrayBuf = await res.arrayBuffer();
+    const audioBuf = await this.ctx.decodeAudioData(arrayBuf);
+    this.bufferCache.set(url, audioBuf);
+    return audioBuf;
+  }
+
+  resume() {
+    if (this.ctx.state === "suspended") this.ctx.resume();
   }
 
   updateListener(camera: THREE.PerspectiveCamera) {
@@ -18,7 +32,9 @@ class PositionalAudio3D {
     this.listener.forwardZ.value = dir.z;
   }
 
-  playAt(url: string, position: THREE.Vector3, volume: number = 1) {
+  async playAt(url: string, position: THREE.Vector3, volume = 1) {
+    this.resume();
+    const buffer = await this.loadBuffer(url);
     const panner = this.ctx.createPanner();
     panner.positionX.value = position.x;
     panner.positionY.value = position.y;
@@ -30,9 +46,11 @@ class PositionalAudio3D {
     panner.maxDistance = 100;
 
     const source = this.ctx.createBufferSource();
+    source.buffer = buffer;
     const gain = this.ctx.createGain();
     gain.gain.value = volume;
 
     source.connect(panner).connect(gain).connect(this.ctx.destination);
+    source.start(0);
   }
 }

@@ -78,8 +78,8 @@ Sau khi game chạy, chạy polish pipeline:
 - [ ] Memory check — `chrome-devtools_take_heapsnapshot` nếu cần
 
 ## Bước 5: Quality Gate
-Dùng chrome-devtools để kiểm tra chất lượng trước release:
 
+### Runtime Checks (Chrome DevTools)
 ```javascript
 // Inject FPS counter
 const fpsEl = document.createElement('div');
@@ -101,16 +101,87 @@ Quality passes khi:
 - ✅ Network: assets load 200, không 404
 - ✅ Screenshot: UI hiển thị đúng, không overlap
 
-## Bước 6: Build & Deploy
+### Automation Tests
 ```bash
-npx vite build     # dist/
+npx vitest run              # Unit tests
+npx vitest --coverage       # Coverage ≥ 80%
 ```
+
+Test coverage yêu cầu:
+- [ ] FSM state transitions
+- [ ] Collision AABB edge cases
+- [ ] Object pool acquire/release
+- [ ] Scoring: 0, max, overflow
+- [ ] Player health: damage, heal, death, invincibility
+- [ ] Enemy spawn timing
+- [ ] Audio: play/stop/restart không throw
+- [ ] Scene lifecycle: create → update → destroy
+
+Xem: `skills/games-testing/SKILL.md`
+
+### Game-Specific Review Checklist
+- [ ] **Draw calls** (3D): `renderer.info.render.calls < 200`
+- [ ] **Texture memory**: texture atlas, không texture rời
+- [ ] **Shadow map**: 1024² mobile, 2048² desktop
+- [ ] **Audio**: format fallback mp3/ogg/wav, không load fail
+- [ ] **Loading time**: < 3s trên 3G (Chrome DevTools emulate Slow 3G)
+- [ ] **Memory leak**: heap snapshot trước/sau 5 phút chơi, diff < 500KB
+- [ ] **LOD** (3D): 3 levels ở 20 và 50 units
+- [ ] **Frustum culling**: `renderer.frustumCulling = true`
+- [ ] **Touch**: buttons ≥ 44px, gap ≥ 8px
+- [ ] **Security**: không eval, không inline script trong production
+
+## Bước 6: PWA (Progressive Web App)
 ```bash
-# GitHub Pages deploy
-git add -A && git commit -m "game release"
-git push
+# Copy PWA templates
+cp skills/games-pwa/templates/* ./
+npm install -D workbox-webpack-plugin
 ```
-Hoặc copy `dist/` lên Vercel / Netlify.
+
+- [ ] `manifest.json` — `display: fullscreen`, icons 192+512
+- [ ] `service-worker.ts` — cache-first cho assets
+- [ ] `registerSW()` — trong main.ts
+- [ ] `setupInstallPrompt()` — nút "Cài đặt game"
+- [ ] Kiểm tra Lighthouse PWA ≥ 90
+
+Xem: `skills/games-pwa/SKILL.md`
+
+## Bước 7: Build & Deploy (thủ công — kiểm soát hoàn toàn)
+
+```bash
+# Build production
+npm run build               # dist/
+```
+
+### Deploy targets (chọn 1)
+
+| Target | Cách deploy thủ công | Yêu cầu |
+|--------|----------------------|---------|
+| **GitHub Pages** | `Settings → Pages → Source: GitHub Actions` → Vào Actions tab → chọn workflow `Deploy Game` → Run workflow → Chọn branch → Run | GitHub repo |
+| **Itch.io** | Vào Actions tab → workflow `Deploy to Itch.io` → Run workflow → Branch → Run. Cần setup Secrets trước. | Secrets: `BUTLER_API_KEY`, `ITCH_USER`, `ITCH_GAME` |
+| **Vercel** | `npx vercel --prod` | Vercel account |
+| **Netlify** | `npx netlify deploy --prod` | Netlify account |
+| **Copy thủ công** | Copy `dist/` lên bất kỳ web server nào | — |
+
+### Setup GitHub Actions (optional — chỉ khi muốn dùng CI/CD)
+```bash
+mkdir -p .github/workflows
+cp skills/games-deploy/templates/.github/workflows/deploy-pages.yml .github/workflows/
+```
+
+> **Lưu ý**: Mặc định trigger là `workflow_dispatch` (bấm tay trên GitHub). Không auto-deploy khi push.
+
+### Pre-deploy checklist
+- [ ] `npm run build` success
+- [ ] `dist/` < 10MB
+- [ ] Source maps tắt (vite build tự động tắt)
+- [ ] Lighthouse PWA ≥ 90
+- [ ] FPS ≥ 55 desktop, ≥ 30 mobile
+- [ ] Không memory leak
+- [ ] Touch controls hoạt động
+- [ ] Responsive: 800×600, 375×667, 1024×768
+
+Xem: `skills/games-deploy/SKILL.md`
 
 ## Game Design & References
 - 2D design: `skills/games-2d/game-design-h5-2d.md`
@@ -118,6 +189,6 @@ Hoặc copy `dist/` lên Vercel / Netlify.
 - 2.5D design: `skills/games-isometric/game-design-h5-2.5d.md`
 - Assets: `skills/games-assets/SKILL.md`
 - Performance: `skills/games-optimization/SKILL.md`
-
-## Post-code: route đến agents theo `workflows/company.workflow.md`
-Sau code → test → fix → review → build → persist.
+- Testing: `skills/games-testing/SKILL.md`
+- PWA: `skills/games-pwa/SKILL.md`
+- Deploy: `skills/games-deploy/SKILL.md`

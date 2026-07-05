@@ -4,6 +4,7 @@ class FirstPersonController {
   private speed = 8;
   private sensitivity = 0.002;
   private isLocked = false;
+  private keys = new Set<string>();
 
   constructor(
     private camera: THREE.PerspectiveCamera,
@@ -23,6 +24,9 @@ class FirstPersonController {
       this.pitch -= e.movementY * this.sensitivity;
       this.pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitch));
     });
+
+    document.addEventListener("keydown", (e) => { this.keys.add(e.code); });
+    document.addEventListener("keyup", (e) => { this.keys.delete(e.code); });
   }
 
   update(delta: number) {
@@ -39,27 +43,13 @@ class FirstPersonController {
     right.y = 0;
     right.normalize();
 
-    const keys = this.getKeys();
     const velocity = new THREE.Vector3();
-    if (keys.w) velocity.add(forward);
-    if (keys.s) velocity.sub(forward);
-    if (keys.a) velocity.sub(right);
-    if (keys.d) velocity.add(right);
+    if (this.keys.has("KeyW")) velocity.add(forward);
+    if (this.keys.has("KeyS")) velocity.sub(forward);
+    if (this.keys.has("KeyA")) velocity.sub(right);
+    if (this.keys.has("KeyD")) velocity.add(right);
     velocity.normalize().multiplyScalar(this.speed * delta);
 
     this.camera.position.add(velocity);
-  }
-
-  private getKeys() {
-    return {
-      w: this.isKeyDown("KeyW"),
-      a: this.isKeyDown("KeyA"),
-      s: this.isKeyDown("KeyS"),
-      d: this.isKeyDown("KeyD"),
-    };
-  }
-
-  private isKeyDown(code: string): boolean {
-    return false;
   }
 }

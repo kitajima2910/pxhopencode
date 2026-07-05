@@ -84,9 +84,32 @@ Vòng lặp: **Code → Test → Fix** (max 3). **Review → Fix → Test** (max
 
 `vibe` (full company) | `web` | `game` (2D/2.5D/3D) | `ai` | `tool` (CLI/extension/package) | `debug` | `meeting` | `release`
 
-## 🛠 25 Skills
+### Game Pipeline hoàn chỉnh (1 prompt → release)
+```
+Prompt → Scaffold → Code → Visual Loop → Polish → Test → Review → PWA → CI/CD → Deploy
+```
+Xem chi tiết: `workflows/game.workflow.md`
 
-`webs-*` (7) | `games-*` (8) | `ais-*` (5) | `tools-*` (5)
+> Deploy **thủ công** qua GitHub Actions UI (workflow_dispatch) hoặc CLI (vercel/netlify). Không auto-deploy. Xem `game.workflow.md` Bước 7.
+
+## 🛠 28 Skills
+
+`webs-*` (7) | `games-*` (11) | `ais-*` (5) | `tools-*` (5)
+
+### games-* (11 skills)
+| Skill | Mô tả |
+|-------|-------|
+| `games-core` | Engine core: fixed-timestep, scene, asset, input, FSM |
+| `games-2d` | 2D Phaser 3 — 13 templates production-ready |
+| `games-3d` | 3D Three.js — 18 templates (FPS/TPS, shooter, audio) |
+| `games-isometric` | 2.5D Isometric — 14 templates (A*, fog of war, stacking) |
+| `games-physics` | AABB, spatial hash, raycast, swept collision |
+| `games-audio` | Audio pool, spatial 3D, compressor, format fallback |
+| `games-assets` | Auto-download + license check + procedural fallback |
+| `games-optimization` | Object pool, instancing, LOD, profiler, GC tuning |
+| `games-testing` | **NEW** — Vitest, headless Phaser/Three.js, benchmark, memory leak |
+| `games-pwa` | **NEW** — Manifest, service worker, install prompt, offline |
+| `games-deploy` | **NEW** — GitHub Actions, Itch.io Butler, Vercel, deploy checklist |
 
 ## 🎯 Tính năng doanh nghiệp
 
@@ -96,8 +119,8 @@ Vòng lặp: **Code → Test → Fix** (max 3). **Review → Fix → Test** (max
 - **Context Budget**: Tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên.
 - **Conversation Budget**: Max rounds/task, chặn lãng phí token.
 - **Chrome DevTools MCP debug**: Preview game real-time qua chrome-devtools (`--autoConnect`). Vào `chrome://inspect/#remote-debugging` bật remote debugging là dùng được.
-- **25 Skills Production**: Web (React/Next/Express/FastAPI), Game (Phaser/Three.js/Isometric), AI (RAG/LLM/Agent), Tool (CLI/Extension/Automation).
-- **143 Templates sẵn sàng**: Không code từ đầu — copy, paste, tùy chỉnh.
+- **28 Skills Production**: Web (React/Next/Express/FastAPI), Game (Phaser/Three.js/Isometric + testing/PWA/deploy), AI (RAG/LLM/Agent), Tool (CLI/Extension/Automation).
+- **157 Templates sẵn sàng**: Không code từ đầu — copy, paste, tùy chỉnh.
 - **Favicon SVG tự động**: Mỗi workflow có màu sắc riêng.
 - **Bảo toàn code**: Chỉ tác động trong TARGET, không phá code cũ.
 
@@ -106,7 +129,7 @@ Vòng lặp: **Code → Test → Fix** (max 3). **Review → Fix → Test** (max
 | Nhu cầu | Giải pháp |
 |---------|-----------|
 | Phát triển web app | Workflow Web + 7 webs-* skills |
-| Phát triển game HTML5 | Workflow Game + 8 games-* skills + Chrome DevTools preview |
+| Phát triển game HTML5 | Workflow Game + 11 games-* skills + Chrome DevTools preview |
 | AI Chatbot / RAG | Workflow AI + 5 ais-* skills |
 | CLI / Extension / Tool | Workflow Tool + 5 tools-* skills |
 | Debug & Fix bug | Workflow Debug + pxh-fix-bugs agent |
@@ -141,7 +164,7 @@ Copy-Item -Recurse ../pxhopencode .opencode
 ├── agents/         # 9 agents (T1-T4)
 ├── runtime/        # 4 tầng + contracts + policies
 ├── workflows/      # 8 workflow templates
-├── skills/         # 4 lĩnh vực, 25 skills + 143 templates
+├── skills/         # 4 lĩnh vực, 28 skills + 157 templates
 └── _shared/        # Dùng chung: context-budget, skill-quickref, scripts, templates
 ```
 
