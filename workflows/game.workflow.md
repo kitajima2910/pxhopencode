@@ -51,15 +51,15 @@ Sau mỗi feature, dùng chrome-devtools để verify TRỰC QUAN:
 Sau khi game chạy, chạy polish pipeline:
 
 ### Visual Polish Checklist
-- [ ] Color palette nhất quán — dùng `games-2d/templates/color-palettes.ts`
+- [ ] Color palette nhất quán — dùng `skills/games-2d/templates/color-palettes.ts`
 - [ ] Particle effects (hit, collect, explosion) — dùng object pool
-- [ ] Screen shake khi hit — dùng `templates/screen-shake.ts`
+- [ ] Screen shake khi hit — dùng `skills/games-2d/templates/screen-shake.ts`
 - [ ] Smooth camera follow — `camera.startFollow(player)`
 - [ ] Tween animations (menu, UI, transitions)
-- [ ] Lighting 3D: ambient + directional + hemisphere — dùng `games-3d/templates/lighting.ts`
+- [ ] Lighting 3D: ambient + directional + hemisphere — dùng `skills/games-3d/templates/lighting.ts`
 - [ ] Shadows (bật shadow map, PCFSoft cho 3D)
 - [ ] Vignette / bloom / post-processing (3D)
-- [ ] Background music + SFX — dùng `games-audio/`
+- [ ] Background music + SFX — dùng `skills/games-audio/`
 - [ ] Loading screen với progress bar
 
 ### UX Polish Checklist
@@ -67,12 +67,12 @@ Sau khi game chạy, chạy polish pipeline:
 - [ ] Responsive scale — dùng `Phaser.Scale.FIT` / resize handler
 - [ ] Pause menu (ESC/P key)
 - [ ] Game over screen + restart
-- [ ] HUD: health bar, score, ammo — dùng `HealthBar.ts`
+- [ ] HUD: health bar, score, ammo — dùng `skills/games-2d/templates/HealthBar.ts`
 - [ ] Tutorial / hướng dẫn đầu game
 - [ ] Vibration feedback (mobile)
 
 ### Code Polish
-- [ ] Object pool cho đạn/enemy/particle — `games-optimization/templates/object-pool.ts`
+- [ ] Object pool cho đạn/enemy/particle — `skills/games-optimization/templates/object-pool.ts`
 - [ ] FSM states đầy đủ: idle/run/jump/attack/hurt/die
 - [ ] FPS counter (dev mode) — `chrome-devtools_evaluate_script`
 - [ ] Memory check — `chrome-devtools_take_heapsnapshot` nếu cần

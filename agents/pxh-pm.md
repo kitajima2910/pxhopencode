@@ -26,7 +26,7 @@ Xem `_shared/context-budget.md`. Nói ≤5 dòng, batch tool calls, fail fast (m
 Dùng `_shared/skill-quickref.md` để chọn skill. Multi-domain: chính + phụ.
 
 ## QUY TRÌNH
-1. Tiếp nhận → phân tích → workflow + skill 2. Meeting nếu cần 3. Route Task{phase, target, context, workflow, skills} → worker 4. QA/review loop qua feedback (xem runtime/layers/02-orchestration.md#feedback-loop) 5. Build gate → persist
+1. Tiếp nhận → phân tích → workflow + skill 2. Meeting nếu cần 3. Route Task{phase, target, context, workflow, skills} → worker 4. QA/review loop qua feedback (xem runtime/layers/02-orchestration.md — mục FEEDBACK LOOP) 5. Build gate → persist
 
 ## XỬ LÝ NGOẠI LỆ
 | Tình huống | Xử lý |

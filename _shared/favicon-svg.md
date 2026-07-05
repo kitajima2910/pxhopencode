@@ -20,3 +20,4 @@ Tool/CLI: `[COLOR_1]=#f59e0b, [COLOR_2]=#d97706` | Letter: T
 Debug: `[COLOR_1]=#ef4444, [COLOR_2]=#dc2626` | Letter: D
 Release: `[COLOR_1]=#8b5cf6, [COLOR_2]=#7c3aed` | Letter: R
 Meeting: `[COLOR_1]=#06b6d4, [COLOR_2]=#0891b2` | Letter: M
+Vibe/Company: `[COLOR_1]=#a855f7, [COLOR_2]=#7e22ce` | Letter: V

@@ -1,6 +1,8 @@
-# pxhopencode / .opencode — AI Company cho Vibe Coding
+# pxhopencode — AI Company cho Vibe Coding
 
 Hệ thống AI agents tự động vibe code như một AI Company. Copy vào `.opencode/` → viết prompt → agents tự động thảo luận → code → test → fix → release. Enterprise AI Runtime 4-layer, structured contracts, retry/recovery/reflection policies.
+
+**Phiên bản:** 2.0 | **License:** MIT | **Tác giả:** Phạm Xuân Hoài — [Error404-Labs.Info.Vn](https://error404-labs.info.vn)
 
 ---
 
@@ -86,20 +88,31 @@ Vòng lặp: **Code → Test → Fix** (max 3). **Review → Fix → Test** (max
 
 `webs-*` (7) | `games-*` (8) | `ais-*` (5) | `tools-*` (5)
 
-## 🎯 Tính năng
-- `.opencode/STATUS.md` real-time dashboard
-- **Context Budget**: tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên
-- **Skill Quick Reference**: 1 read thay 25 SKILL.md, chỉ load template khi cần code
-- **Conversation Budget**: max rounds/task, chặn infinite loop tốn token
-- `.gitignore` tự động
-- Chrome DevTools MCP debug UI browser (`--autoConnect` — vào `chrome://inspect/#remote-debugging` bật lên là dùng được)
-- Favicon SVG tự động
-- UI text = tiếng Việt, code = tiếng Anh
-- Bảo toàn code: chỉ tác động trong TARGET
+## 🎯 Tính năng doanh nghiệp
 
----
+- **Enterprise AI Runtime 4 tầng**: Interface → Orchestration → Workers → Infrastructure. Giao tiếp qua contract, cách ly hoàn toàn.
+- **Chính sách Production**: Retry (exponential backoff, max 3), Recovery (checkpoint-based), Reflection (4 mức).
+- **Feedback Loop tự động**: Code → Test → Fix → Review → Build. Mỗi vòng lặp giới hạn, tránh infinite loop.
+- **Context Budget**: Tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên.
+- **Conversation Budget**: Max rounds/task, chặn lãng phí token.
+- **Chrome DevTools MCP debug**: Preview game real-time qua chrome-devtools (`--autoConnect`). Vào `chrome://inspect/#remote-debugging` bật remote debugging là dùng được.
+- **25 Skills Production**: Web (React/Next/Express/FastAPI), Game (Phaser/Three.js/Isometric), AI (RAG/LLM/Agent), Tool (CLI/Extension/Automation).
+- **143 Templates sẵn sàng**: Không code từ đầu — copy, paste, tùy chỉnh.
+- **Favicon SVG tự động**: Mỗi workflow có màu sắc riêng.
+- **Bảo toàn code**: Chỉ tác động trong TARGET, không phá code cũ.
 
-## Cài đặt & Cấu trúc
+## 🚀 Dành cho Doanh nghiệp
+
+| Nhu cầu | Giải pháp |
+|---------|-----------|
+| Phát triển web app | Workflow Web + 7 webs-* skills |
+| Phát triển game HTML5 | Workflow Game + 8 games-* skills + Chrome DevTools preview |
+| AI Chatbot / RAG | Workflow AI + 5 ais-* skills |
+| CLI / Extension / Tool | Workflow Tool + 5 tools-* skills |
+| Debug & Fix bug | Workflow Debug + pxh-fix-bugs agent |
+| Release Pipeline | Workflow Release + pxh-devops agent |
+
+## 📦 Cài đặt
 
 ```bash
 # macOS / Linux
@@ -109,25 +122,42 @@ cp -r ../pxhopencode .opencode
 Copy-Item -Recurse ../pxhopencode .opencode
 ```
 
+### Yêu cầu hệ thống
+- **Node.js** 18+ (cho web/game/tool development)
+- **npm** hoặc **yarn**
+- **Brave/Chrome** (cho chrome-devtools MCP preview)
+- **PowerShell** 5.1+ (Windows) hoặc bash (macOS/Linux)
+
+## 📁 Cấu trúc
+
 ```
 .opencode/
-├── opencode.json   # Config
-├── README.md       # File này
+├── opencode.json   # Config chính
+├── README.md       # Tài liệu
 ├── STATUS.md       # Dashboard real-time
 ├── LICENSE         # MIT
 ├── .gitignore      # Tự động
-├── agents/         # 9 agents
-├── runtime/        # 4 tầng, contracts, policies
+├── agents/         # 9 agents (T1-T4)
+├── runtime/        # 4 tầng + contracts + policies
 ├── workflows/      # 8 workflow templates
-├── skills/         # 4 lĩnh vực, 25 skills + templates/
-└── _shared/        # Dùng chung: context-budget, skill-quickref, templates, scripts
+├── skills/         # 4 lĩnh vực, 25 skills + 143 templates
+└── _shared/        # Dùng chung: context-budget, skill-quickref, scripts, templates
 ```
 
-## Cách dùng
-- **Prompt trực tiếp**: pxh-pm tự động phân tích → meeting → code → release
-- **Lệnh `/`**: `vibe`, `web`, `game`, `ai`, `tool`, `debug`, `release`, `meeting`
+## 💡 Cách dùng
+
+- **Prompt trực tiếp**: `pxh-pm` tự động phân tích → chọn workflow → code → test → release
+- **Lệnh `/`**: `/vibe` | `/web` | `/game` | `/ai` | `/tool` | `/debug` | `/release` | `/meeting`
 - **Gọi `@agent`** (kèm Task contract): `@pxh-expert` với task rõ ràng, `@pxh-architect`, etc.
+
+### Cross-platform notes
+- Config mặc định dùng `npx.cmd` (Windows). Trên macOS/Linux, đổi thành `npx` trong `opencode.json`.
+- Script asset download dùng PowerShell (`_shared/scripts/download-games-assets.ps1`). Trên macOS/Linux, cài `pwsh` hoặc tải thủ công.
+
+## 📄 License
+
+MIT License — xem [LICENSE](LICENSE).
 
 ---
 
-**Tác giả: Phạm Xuân Hoài - Error404-Labs.Info.Vn**
+**Tác giả: Phạm Xuân Hoài — [Error404-Labs.Info.Vn](https://error404-labs.info.vn)**

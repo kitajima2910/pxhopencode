@@ -20,7 +20,7 @@
 | **runtime/** | ✅ Agents | — | ✅ Luồng | — | ✅ Sơ đồ | ✅ Thi hành |
 | **workflows/** | ✅ Tham chiếu | ✅ Luồng | — | ✅ Tham chiếu | ✅ Tham chiếu | ✅ Tham chiếu |
 | **skills/** | ✅ Agent dùng | ✅ Ngữ cảnh | ✅ Được gọi | — | ✅ Tham chiếu | — |
-| **contracts/** | ✅ | ✅ Hướng | ✅ Luồng | — | — | ✅ Tương tác |
+| **runtime/contracts/** | ✅ | ✅ Hướng | ✅ Luồng | — | — | ✅ Tương tác |
 | **policies/** | ✅ Agent | ✅ Tầng thi hành | — | — | ✅ Tham chiếu | — |
 
 ## 📁 Cấu trúc
@@ -65,7 +65,7 @@
 - [x] 8 workflows theo lĩnh vực
 - [x] 25 skills với templates/ riêng
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
-- [x] MCP Playwright tích hợp
+- [x] Chrome DevTools MCP tích hợp (--autoConnect)
 - [x] README hướng dẫn copy vào `.opencode/`
 - [x] **Prompt auto-classification** — T1/T2/T3 tự động phân tích prompt → workflow+skill
 - [x] **Permission đúng** — Architect/DevOps `edit: deny`
