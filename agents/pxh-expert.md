@@ -42,7 +42,8 @@ Sau mỗi feature: screenshot + console check. Code xong game → Polish pipelin
 3. Code ngay — 1 file chạy được trước. Dùng `skills/games-core/templates/index.html` + `vite.config.ts`
 4. `npx vite` ngay → lỗi → sửa → chạy lại. Dùng chrome-devtools để preview.
 5. 1 feature/lần. MVP trước, polish sau (theo Polish Checklist trong game workflow)
-6. 3 lần lỗi → báo user + hypothesis
+6. Sau mỗi project code xong: tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (dùng template `_shared/templates/gitignore-template.md`)
+7. 3 lần lỗi → báo user + hypothesis
 
 ## QUY TRÌNH
 1. Xác định loại + workflow + skill 2. Code: Web=Component→API→DB→Auth. Game=Scene→Player→Enemies→UI→Polish. AI=Pipeline→Model→API. Tool=CLI→Core 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.

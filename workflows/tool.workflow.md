@@ -19,6 +19,7 @@
 - Rust CLI: `cargo init && cargo add clap`
 - Python CLI: `pip install click`
 - VS Code: `yo code` scaffold hoặc dùng template
+- Sau setup: tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (xem `_shared/templates/gitignore-template.md`)
 
 ## Bước 3: Flow code
 ```

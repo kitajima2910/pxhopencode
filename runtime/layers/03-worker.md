@@ -41,6 +41,7 @@ Gửi Event phản ánh đến Tầng 4
 - KHÔNG BAO GIỜ tự quyết định thử lại hoặc hủy bỏ — trả Result và để Điều phối quyết định.
 - Ưu tiên thay đổi tối thiểu: thêm, không viết lại.
 - Đọc .opencode/STATUS.md trước khi bắt đầu bất kỳ task nào.
+- Sau code project: luôn tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (xem template `_shared/templates/gitignore-template.md`)
 - Gửi `Event{reflection}` đến Tầng 4 sau mỗi task.
 - Nếu không thể hoàn thành, trả về `Result{status:"failure"}` kèm lỗi rõ ràng, mức độ nghiêm trọng, và các bước tái hiện.
 

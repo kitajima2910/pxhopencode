@@ -140,9 +140,11 @@ Xem chi tiết: `workflows/game.workflow.md`
 ```bash
 # macOS / Linux
 cp -r ../pxhopencode .opencode
+cp _shared/templates/gitignore-template.md ../.gitignore
 
 # Windows (PowerShell)
 Copy-Item -Recurse ../pxhopencode .opencode
+Copy-Item -Path "_shared/templates/gitignore-template.md" -Destination "../.gitignore"
 ```
 
 ### Yêu cầu hệ thống
@@ -160,7 +162,7 @@ Copy-Item -Recurse ../pxhopencode .opencode
 ├── README.md       # Tài liệu
 ├── STATUS.md       # Dashboard real-time
 ├── LICENSE         # MIT
-├── .gitignore      # Tự động
+├── .gitignore      # Luôn có `.opencode/` + `.github/` (xem template: `_shared/templates/gitignore-template.md`)
 ├── agents/         # 9 agents (T1-T4)
 ├── runtime/        # 4 tầng + contracts + policies
 ├── workflows/      # 8 workflow templates

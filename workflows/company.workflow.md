@@ -11,7 +11,7 @@
 4. KẾ HOẠCH  [T2]   init structure → features → test → release
 5. THIẾT KẾ  [T2→T3] @pxh-architect: schema, API, component tree
 6. CODE      [T2→T3] Route: @web / @game / @ai / @pxh-expert / @pxh-fix-bugs
-                      Sau code: .gitignore (3 dòng), favicon (`_shared/favicon-svg.md`)
+                      Sau code: .gitignore (luôn có `.opencode/`, `.github/`), favicon (`_shared/favicon-svg.md`)
 7. KIỂM TRA  [T2→T3] @pxh-qa: test → pass→B9, bug→B8
 8. SỬA       [T2→T3] @pxh-fix-bugs fix → test lại (max 3 lần)
 9. RÀ SOÁT   [T2→T3] @pxh-review-code: security, perf, convention

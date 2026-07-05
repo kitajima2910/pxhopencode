@@ -23,6 +23,8 @@ powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-ass
 cp -r skills/games-2d/templates/* src/
 npm init -y
 npm install phaser && npm install -D vite
+# .gitignore — luôn có .opencode/ + .github/
+cp _shared/templates/gitignore-template.md ../.gitignore
 ```
 ```html
 <!-- index.html -->
