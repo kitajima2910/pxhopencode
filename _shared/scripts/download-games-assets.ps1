@@ -1,7 +1,8 @@
 param(
   [string]$AssetType = "2d",
   [string]$GameStyle = "platformer",
-  [string]$OutDir = "assets"
+  [string]$OutDir = "assets",
+  [switch]$SkipLicenseCheck = $false
 )
 
 function Invoke-AssetDownload {
@@ -20,9 +21,100 @@ function Invoke-AssetDownload {
   return $false
 }
 
+function Test-AssetLicense {
+  param([string]$Url, [string]$SourceName = "")
+  # Known CC0 sources — auto approve
+  $CC0_PATTERNS = @(
+    'kenney\.nl',
+    'quaternius\.com',
+    'poly\.pizza',
+    'ambientcg\.com',
+    'sfxr\.me',
+    'bfxr\.net',
+    'bitsnbites\.eu'
+  )
+  foreach ($pat in $CC0_PATTERNS) {
+    if ($Url -match $pat) { return "CC0 (verified)" }
+  }
+
+  # OpenGameArt — try to parse license from page
+  if ($Url -match 'opengameart\.org') {
+    try {
+      $html = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
+      $licenseMatch = [regex]::Match($html.Content, 'CC[^<"]+')
+      if ($licenseMatch.Success) {
+        $license = $licenseMatch.Value.Trim()
+        Write-Output "  ⚖ License found: $license"
+        if ($license -match 'CC0|CC BY') { return $license }
+        Write-Output "  ⚠ Non-CC0 license: $license — requires attribution or may be restricted"
+        return $license
+      }
+      $publicDomain = [regex]::Match($html.Content, 'Public Domain')
+      if ($publicDomain.Success) { return "Public Domain" }
+    } catch { }
+    return "Unknown (OpenGameArt — verify manually)"
+  }
+
+  # Freesound — try API (freesound.org/s/ID)
+  if ($Url -match 'freesound\.org') {
+    try {
+      $html = Invoke-WebRequest -Uri $Url -UseBasicParsing -TimeoutSec 10 -ErrorAction Stop
+      $licenseMatch = [regex]::Match($html.Content, '(CC0|CC BY|Creative Commons)[^<"]*')
+      if ($licenseMatch.Success) {
+        $license = $licenseMatch.Value.Trim()
+        Write-Output "  ⚖ License found: $license"
+        if ($license -match 'CC0|CC BY') { return $license }
+        return $license
+      }
+    } catch { }
+    return "Unknown (Freesound — verify manually)"
+  }
+
+  # Pixabay — generally free but no standardised CC
+  if ($Url -match 'pixabay\.com') { return "Pixabay License (free for most uses)" }
+
+  # Unknown — flag for review
+  return "Unknown — requires manual verification"
+}
+
+function Confirm-License {
+  param([string]$License, [string]$AssetName, [switch]$Interactive)
+  if ($SkipLicenseCheck) { return $true }
+  $safeLicenses = @(
+    'CC0 (verified)',
+    'Public Domain'
+  )
+  foreach ($sl in $safeLicenses) {
+    if ($License -eq $sl) { return $true }
+  }
+  if ($License -match 'CC0') { return $true }
+
+  Write-Output "  ⚠ === License Warning ==="
+  Write-Output "     Asset : $AssetName"
+  Write-Output "     License: $License"
+  Write-Output "     ======================="
+  if ($License -match 'CC BY') {
+    Write-Output "  ℹ CC BY requires attribution — you must credit the author."
+    return $true
+  }
+  if ($Interactive) {
+    Write-Host -NoNewline "  Continue download? (y/n) [n]: "
+    $response = Read-Host
+    if ($response -eq 'y' -or $response -eq 'Y') { return $true }
+    return $false
+  }
+  # Non-interactive: warn but continue for CC BY, stop for unknown
+  if ($License -match 'CC BY') { return $true }
+  Write-Output "  ✗ Skipping — license not auto-approved. Use -SkipLicenseCheck to force."
+  return $false
+}
+
 function Install-KenneyAsset {
   param([string]$AssetName, [string]$DestDir = "assets")
   $pageUrl = "https://kenney.nl/assets/$AssetName"
+  # License check — Kenney is CC0, auto-approved
+  $license = Test-AssetLicense -Url $pageUrl -SourceName $AssetName
+  if (-not (Confirm-License -License $license -AssetName "Kenney/$AssetName" -Interactive:$true)) { return $false }
   try {
     $html = Invoke-WebRequest -Uri $pageUrl -UseBasicParsing -TimeoutSec 15
     $m = [regex]::Match($html.Content, "id='donate-text' href='(.+?)'")
@@ -40,6 +132,9 @@ function Install-KenneyAsset {
 function Install-OpenGameArtAsset {
   param([string]$Url, [string]$DestDir = "assets")
   Write-Output "  ℹ Downloading from OpenGameArt: $Url"
+  # License check — OpenGameArt may have mixed licenses
+  $license = Test-AssetLicense -Url $Url -SourceName "OpenGameArt"
+  if (-not (Confirm-License -License $license -AssetName "OpenGameArt/$Url" -Interactive:$true)) { return $false }
   $fileName = Split-Path $Url -Leaf
   $outFile = "$DestDir/$fileName"
   if (Invoke-AssetDownload -Url $Url -OutFile $outFile) {
@@ -158,9 +253,10 @@ function Get-AssetNameForStyle {
 
 # === MAIN ===
 Write-Output ""
-Write-Output "╔══════════════════════════════════════════╗"
-Write-Output "║  pxhopencode — Game Assets Downloader   ║"
-Write-Output "╚══════════════════════════════════════════╝"
+Write-Output "╔══════════════════════════════════════════════════╗"
+Write-Output "║  pxhopencode — Game Assets Downloader          ║"
+Write-Output "║  License check: $(if ($SkipLicenseCheck) { 'SKIPPED' } else { 'ACTIVE' })   ║"
+Write-Output "╚══════════════════════════════════════════════════╝"
 Write-Output ""
 Write-Output "Type: $AssetType | Style: $GameStyle | Output: $OutDir"
 Write-Output ""

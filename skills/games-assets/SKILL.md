@@ -7,6 +7,12 @@ description: Free game assets + auto-download. 2D sprites, 3D models, 2.5D tiles
 
 Skill này cung cấp nguồn assets free hợp pháp và script tự động download, setup animation states cho game 2D/2.5D/3D.
 
+> ⚖ **License Check**: Script `download-games-assets.ps1` tự động kiểm tra bản quyền trước khi download.
+> - **CC0 / Public Domain**: Tự động cho phép download
+> - **CC BY**: Cảnh báo cần ghi credit, vẫn cho download
+> - **Không xác định / hạn chế**: Hỏi người dùng hoặc từ chối
+> - Dùng flag `-SkipLicenseCheck` để bỏ qua (không khuyến khích)
+
 ## Nguồn Asset
 Xem danh sách đầy đủ: `templates/asset-sources.md`
 

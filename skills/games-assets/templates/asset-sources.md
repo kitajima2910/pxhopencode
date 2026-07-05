@@ -1,5 +1,11 @@
 # Nguồn Asset Miễn phí
 
+> ⚖ **License Check**: Script `download-games-assets.ps1` tự động kiểm tra bản quyền trước khi download.
+> Dùng `-SkipLicenseCheck` để bỏ qua (không khuyến khích).
+> - **CC0 / Public Domain**: Tự động cho phép
+> - **CC BY**: Cảnh báo cần ghi credit, vẫn cho download
+> - **Không xác định / hạn chế**: Hỏi người dùng hoặc từ chối
+
 ## Auto-download mapping (script: `_shared/scripts/download-games-assets.ps1`)
 
 Script tự động chọn asset theo `AssetType` + `GameStyle`. Ưu tiên: Kenney → OpenGameArt → procedural fallback.
@@ -17,34 +23,44 @@ Script tự động chọn asset theo `AssetType` + `GameStyle`. Ưu tiên: Kenn
 | **adventure** | adventure-pack | — | — |
 
 ## 2D Sprites & Tilesets
-- Kenney `https://kenney.nl/assets` — CC0
-- OpenGameArt `https://opengameart.org` — CC0/CC-BY/GPL
-- Itch.io `https://itch.io/game-assets/free`
-- Sprite Database `https://spritedatabase.net`
-- Lospec Palette `https://lospec.com/palette-list`
+| Nguồn | License | Ghi chú |
+|-------|---------|---------|
+| Kenney | ✅ **CC0** | Auto-download được |
+| OpenGameArt | ✅ CC0 / ⚠ CC BY / ❌ GPL | Script kiểm tra license tự động |
+| Itch.io | 🔍 Không đồng nhất | Kiểm tra thủ công từng asset |
+| Sprite Database | 🔍 Không đồng nhất | — |
+| Lospec Palette | ✅ **CC0** | — |
 
 ## 2.5D / Isometric Tiles
-- Kenney Isometric `https://kenney.nl/assets?q=isometric`
-- OpenGameArt Isometric `https://opengameart.org/art-search?keys=isometric`
-- CrusenDho `https://crusen-dho.en.lo4d.com`
+| Nguồn | License | Ghi chú |
+|-------|---------|---------|
+| Kenney Isometric | ✅ **CC0** | Auto-download được |
+| OpenGameArt Isometric | ✅ CC0 / ⚠ CC BY / ❌ GPL | Script kiểm tra license tự động |
+| CrusenDho | 🔍 Không rõ | Kiểm tra thủ công |
 
 ## 3D Models (GLB/GLTF)
-- Sketchfab `https://sketchfab.com/3d-models?features=downloadable&sort=-free` — CC0/CC-BY
-- Quaternius `https://quaternius.com` — CC0
-- Poly Pizza `https://poly.pizza` — CC0
-- AmbientCG `https://ambientcg.com` — PBR textures, CC0
-- Mixamo `https://mixamo.com` — animations, free (Adobe account)
+| Nguồn | License | Ghi chú |
+|-------|---------|---------|
+| Sketchfab | ✅ CC0 / ⚠ CC BY | Lọc `downloadable` |
+| Quaternius | ✅ **CC0** | Auto-download được |
+| Poly Pizza | ✅ **CC0** | Auto-download được |
+| AmbientCG | ✅ **CC0** | PBR textures |
+| Mixamo | ✅ **Free (Adobe)** | Cần tài khoản Adobe, miễn phí |
 
 ## Audio & SFX
-- Freesound `https://freesound.org` — CC0/CC-BY
-- Kenney Audio `https://kenney.nl/assets?q=audio` — CC0
-- Pixabay Music `https://pixabay.com/music`
-- Zapsplat `https://zapsplat.com`
-- Mixkit `https://mixkit.co/free-sound-effects`
-- jsfxr `https://sfxr.me` — 8-bit SFX generator
-- Chiptone `https://sb.bitsnbites.eu` — chiptune generator
-- BFXR `https://www.bfxr.net` — retro SFX
-- MusicGen (Meta) `https://huggingface.co/spaces/facebook/MusicGen`
+| Nguồn | License | Ghi chú |
+|-------|---------|---------|
+| Freesound | ✅ CC0 / ⚠ CC BY | Script kiểm tra license tự động |
+| Kenney Audio | ✅ **CC0** | Auto-download được |
+| Pixabay Music | ✅ **Pixabay License** | Free cho hầu hết mục đích |
+| Zapsplat | ⚠ **Cần attribution** | Ghi credit bắt buộc |
+| Mixkit | ✅ **Mixkit License** | Free, không cần credit |
+| jsfxr | ✅ **CC0** | 8-bit SFX generator, không cần download asset |
+| Chiptone | ✅ **CC0** | Chiptune generator |
+| BFXR | ✅ **CC0** | Retro SFX generator |
+| MusicGen (Meta) | ✅ **MIT (code)** / ⚠ **Research (model)** | Sinh BGM tự động, kiểm tra terms |
+
+## BGM gợi ý
 
 ## BGM gợi ý
 | Thể loại game | Nguồn gợi ý |
