@@ -126,6 +126,7 @@ Copy-Item -Recurse ../pxhopencode .opencode
 - **Node.js** 18+ (cho web/game/tool development)
 - **npm** hoặc **yarn**
 - **Brave/Chrome** (cho chrome-devtools MCP preview)
+  - **Khi copy sang máy khác**: phải sửa `browserExecutablePath` trong `opencode.json` cho đúng đường dẫn Brave/Chrome của máy đó.
 - **PowerShell** 5.1+ (Windows) hoặc bash (macOS/Linux)
 
 ## 📁 Cấu trúc

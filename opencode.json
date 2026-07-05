@@ -11,7 +11,8 @@
         "npx.cmd",
         "-y",
         "chrome-devtools-mcp@latest",
-        "--isolated",
+        "--browserExecutablePath",
+        "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
         "--autoConnect"
       ]
     }
