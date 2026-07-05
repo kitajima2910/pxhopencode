@@ -83,7 +83,7 @@
       "template": "workflows/web.workflow.md"
     },
     "game": {
-      "description": "Phát triển game HTML5: 2D, 2.5D, 3D",
+      "description": "Phát triển game HTML5: 2D (Phaser), 2.5D (Isometric), 3D (Three.js). Preview real-time qua Chrome DevTools. Tự động Polish pipeline.",
       "template": "workflows/game.workflow.md"
     },
     "ai": {

@@ -29,6 +29,16 @@ new Phaser.Game({
 });
 ```
 
+## Preview với Chrome DevTools
+Sau khi chạy `npx vite`, dùng chrome-devtools MCP:
+```
+chrome-devtools_new_page(url:http://localhost:5173)           # Mở game
+chrome-devtools_take_screenshot                               # Chụp màn hình
+chrome-devtools_list_console_messages(types:error)             # Bắt lỗi
+chrome-devtools_evaluate_script(() => game.scene.scenes[0])    # Inspect scene
+```
+Inject FPS counter để check performance: inject `fpsEl` + `requestAnimationFrame` loop.
+
 ## Mẫu chính (chống lag)
 - **Object pool**: Cho đạn, particle, enemy — dùng `Phaser.Group.maxSize`
 - **Sprite sheet**: Gộp texture vào atlas, giảm draw calls

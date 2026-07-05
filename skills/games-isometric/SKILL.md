@@ -9,6 +9,15 @@ Xem file chi tiết:
 - `game-h5-2.5d.md` — Implementation (coordinate conversion, tile map, depth sorting, pseudo-3D stacking, click detection)
 - `game-design-h5-2.5d.md` — Game design (tile types, fog of war, pathfinding A*, UX, selection)
 
+## Preview với Chrome DevTools
+Sau khi chạy `npx vite`, dùng chrome-devtools MCP:
+```
+chrome-devtools_new_page(url:http://localhost:5173)           # Mở game isometric
+chrome-devtools_take_screenshot                               # Kiểm tra depth sort
+chrome-devtools_list_console_messages(types:error)             # Bắt lỗi
+chrome-devtools_evaluate_script(() => isoScene.tileMap)       # Inspect tile map
+```
+
 ## Mẫu chính (chống lag)
 - **Frustum culling**: Chỉ vẽ tile trong viewport — tính tile min/max từ camera bounds
 - **Tile LOD**: Tile xa vẽ đơn giản (bỏ border, bỏ detail)

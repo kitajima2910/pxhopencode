@@ -1,57 +1,123 @@
-# Workflow Game — Phát triển game H5
+# Workflow Game — Phát triển game HTML5 Pro
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
+> Chrome DevTools MCP đã connected — dùng `chrome-devtools_*` tools để preview + debug game real-time.
 
-## Bước 0: Download assets (AUTO — agent tự chạy)
-Trước khi code, agent PHẢI chạy script download assets. Dùng `-ExecutionPolicy Bypass` để tránh lỗi policy Windows.
+## Bước 0: Download assets (AUTO)
 ```powershell
-# Windows — luôn dùng -ExecutionPolicy Bypass
 powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-assets.ps1" -AssetType "2d" -GameStyle "platformer"
 # GameStyle: platformer, rpg, shooter, racing, puzzle, horror, shmup, strategy, adventure
-```
-```bash
-# macOS / Linux — dùng curl + unzip thủ công hoặc cài pwsh
-# Xem hướng dẫn tại _shared/scripts/download-games-assets.ps1
 ```
 
 ## Bước 1: Chọn loại game & engine
 
-| Loại | Engine | Skill |
-|------|--------|-------|
-| 2D | Phaser 3 / PixiJS | `skills/games-2d/` |
-| 2.5D | Isometric + Phaser | `skills/games-isometric/` |
-| 3D | Three.js / Babylon.js | `skills/games-3d/` |
+| Loại | Engine | Skill | Preview |
+|------|--------|-------|---------|
+| 2D | Phaser 3 | `games-2d` | `chrome-devtools_new_page(url:http://localhost:5173)` |
+| 2.5D | Isometric + Phaser | `games-isometric` | `chrome-devtools_new_page(url:http://localhost:5173)` |
+| 3D | Three.js | `games-3d` | `chrome-devtools_new_page(url:http://localhost:5173)` |
 
-## Bước 2: Setup
+## Bước 2: Scaffold & Run
 ```bash
-# 3D (mặc định)
-npm install three @types/three -D vite
-# 2D
-npm install phaser
+# Tạo project từ templates
+cp -r skills/games-2d/templates/* src/
+npm init -y
+npm install phaser && npm install -D vite
 ```
-`.gitignore`: `.opencode`, `.gitignore`, `node_modules/`, `dist/`, `*.log`, `.env`
-Favicon: `_shared/favicon-svg.md` — `[COLOR_1]=#f43f5e, [COLOR_2]=#e11d48`
+```html
+<!-- index.html -->
+<script src="/src/main.ts" type="module"></script>
+```
+Chạy ngay: `npx vite` — sau đó dùng chrome-devtools:
+```
+chrome-devtools_new_page(url:http://localhost:5173)         # Mở preview
+chrome-devtools_take_screenshot                              # Chụp màn hình kiểm tra
+chrome-devtools_list_console_messages(types:error)           # Bắt lỗi JS
+```
 
-## Bước 3: Cấu trúc
-```
-src/scenes/ → entities/ → systems/ → ui/ → levels/ → assets/ → utils/
-public/assets/ — static assets
+## Bước 3: Visual Iteration Loop (quan trọng nhất)
+Sau mỗi feature, dùng chrome-devtools để verify TRỰC QUAN:
+
+| Feature xong | Verify bằng |
+|-------------|-------------|
+| Scene/Map | `chrome-devtools_take_screenshot` + check console |
+| Player movement | `chrome-devtools_evaluate_script(() => player.x)` |
+| Animation | `chrome-devtools_take_screenshot` (bắt khoảnh khắc) |
+| UI/HUD | `chrome-devtools_take_screenshot` + check layout |
+| Audio | `chrome-devtools_evaluate_script(() => { /* test audio */ })` |
+| Physics | `chrome-devtools_evaluate_script(() => game.physics.)` |
+
+## Bước 4: Polish Pipeline (làm đẹp — bắt buộc)
+Sau khi game chạy, chạy polish pipeline:
+
+### Visual Polish Checklist
+- [ ] Color palette nhất quán — dùng `games-2d/templates/color-palettes.ts`
+- [ ] Particle effects (hit, collect, explosion) — dùng object pool
+- [ ] Screen shake khi hit — dùng `templates/screen-shake.ts`
+- [ ] Smooth camera follow — `camera.startFollow(player)`
+- [ ] Tween animations (menu, UI, transitions)
+- [ ] Lighting 3D: ambient + directional + hemisphere — dùng `games-3d/templates/lighting.ts`
+- [ ] Shadows (bật shadow map, PCFSoft cho 3D)
+- [ ] Vignette / bloom / post-processing (3D)
+- [ ] Background music + SFX — dùng `games-audio/`
+- [ ] Loading screen với progress bar
+
+### UX Polish Checklist
+- [ ] Touch controls (mobile) — `InputManager.justPressed` pattern
+- [ ] Responsive scale — dùng `Phaser.Scale.FIT` / resize handler
+- [ ] Pause menu (ESC/P key)
+- [ ] Game over screen + restart
+- [ ] HUD: health bar, score, ammo — dùng `HealthBar.ts`
+- [ ] Tutorial / hướng dẫn đầu game
+- [ ] Vibration feedback (mobile)
+
+### Code Polish
+- [ ] Object pool cho đạn/enemy/particle — `games-optimization/templates/object-pool.ts`
+- [ ] FSM states đầy đủ: idle/run/jump/attack/hurt/die
+- [ ] FPS counter (dev mode) — `chrome-devtools_evaluate_script`
+- [ ] Memory check — `chrome-devtools_take_heapsnapshot` nếu cần
+
+## Bước 5: Quality Gate
+Dùng chrome-devtools để kiểm tra chất lượng trước release:
+
+```javascript
+// Inject FPS counter
+const fpsEl = document.createElement('div');
+fpsEl.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;color:lime;font:16px monospace';
+document.body.appendChild(fpsEl);
+let frames = 0, last = performance.now();
+function count() { frames++; requestAnimationFrame(count) }
+requestAnimationFrame(count);
+setInterval(() => {
+  const now = performance.now();
+  fpsEl.textContent = `FPS: ${Math.round(frames * 1000 / (now - last))}`;
+  frames = 0; last = now;
+}, 1000);
 ```
 
-## Bước 4: Flow code
-```
-Concept → Scene Setup → Player → Enemies → Mechanics → UI → Audio → Polish
-```
-Mỗi entity có FSM: `idle`, `run`, `jump`, `attack`, `hurt`, `die` (xem `skills/games-core/`).
+Quality passes khi:
+- ✅ FPS ≥ 55 (desktop) | ≥ 30 (mobile)
+- ✅ Console không có error
+- ✅ Network: assets load 200, không 404
+- ✅ Screenshot: UI hiển thị đúng, không overlap
 
-## Bước 5: Chạy
+## Bước 6: Build & Deploy
 ```bash
-npx vite   # live server
-npm run build  # dist/
+npx vite build     # dist/
 ```
+```bash
+# GitHub Pages deploy
+git add -A && git commit -m "game release"
+git push
+```
+Hoặc copy `dist/` lên Vercel / Netlify.
 
-## Bước 6: Game Design (nếu cần)
-Đọc skill design trước khi code: `skills/games-2d/game-design-h5-2d.md`, `skills/games-isometric/game-design-h5-2.5d.md`, `skills/games-3d/game-design-h5-3d.md`
+## Game Design & References
+- 2D design: `skills/games-2d/game-design-h5-2d.md`
+- 3D design: `skills/games-3d/game-design-h5-3d.md`
+- 2.5D design: `skills/games-isometric/game-design-h5-2.5d.md`
+- Assets: `skills/games-assets/SKILL.md`
+- Performance: `skills/games-optimization/SKILL.md`
 
-## Chất lượng & Phát hành
-Sau code → route đến agents theo `workflows/company.workflow.md` (test → fix → review → build → persist).
+## Post-code: route đến agents theo `workflows/company.workflow.md`
+Sau code → test → fix → review → build → persist.

@@ -29,6 +29,16 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.getElementById("app")!.appendChild(renderer.domElement);
 ```
 
+## Preview với Chrome DevTools
+Sau khi chạy `npx vite`, dùng chrome-devtools MCP:
+```
+chrome-devtools_new_page(url:http://localhost:5173)           # Mở game 3D
+chrome-devtools_take_screenshot                               # Chụp màn hình
+chrome-devtools_list_console_messages(types:error)             # Bắt lỗi WebGL
+chrome-devtools_performance_start_trace                        # Profiling render
+```
+Kiểm tra draw calls: `chrome-devtools_evaluate_script(() => renderer.info.render.calls)`.
+
 ## Mẫu chính (chống lag)
 - **InstancedMesh**: Cho hàng ngàn object giống nhau (cây, đá, enemy)
 - **LOD**: 3 levels, fade ở 20 và 50 units

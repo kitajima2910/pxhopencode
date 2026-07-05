@@ -13,7 +13,7 @@ Dùng để chọn skill NHANH mà không cần đọc 25 SKILL.md. Mỗi skill 
 | `webs-styling` | Tailwind, design system, responsive, dark mode | Tailwind | skills/webs-styling/ |
 | `webs-testing` | Vitest, Playwright, MSW, unit/integration/e2e | Vitest | skills/webs-testing/ |
 
-## Game Skills (8)
+## Game Skills (8) + Chrome DevTools Preview
 | Skill | Use when | Deps | Path |
 |-------|----------|------|------|
 | `games-2d` | 2D game, platformer, top-down, Phaser 3 | Phaser 3 | skills/games-2d/ |
@@ -24,6 +24,7 @@ Dùng để chọn skill NHANH mà không cần đọc 25 SKILL.md. Mỗi skill 
 | `games-isometric` | 2.5D isometric, tile engine, fog of war, A* | Phaser 3 | skills/games-isometric/ |
 | `games-optimization` | Object pool, instancing, LOD, profiling, GC | — | skills/games-optimization/ |
 | `games-physics` | AABB, spatial hash, raycast, collision response | — | skills/games-physics/ |
+> Game dev: dùng `chrome-devtools_new_page` để preview, `chrome-devtools_take_screenshot` để verify visual, `chrome-devtools_list_console_messages` để bắt lỗi.
 
 ## AI Skills (5)
 | Skill | Use when | Deps | Path |
