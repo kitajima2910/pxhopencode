@@ -10,7 +10,7 @@ Xem file chi tiết:
 - `game-design-h5-2.5d.md` — Game design (tile types, fog of war, pathfinding A*, UX, selection)
 
 ## Preview với Chrome DevTools
-Sau khi chạy `npx vite`, dùng chrome-devtools MCP:
+Chạy `npx vite &` (background). Đợi 3s cho server ready. Dùng chrome-devtools MCP:
 ```
 chrome-devtools_new_page(url:http://localhost:5173)           # Mở game isometric
 chrome-devtools_take_screenshot                               # Kiểm tra depth sort

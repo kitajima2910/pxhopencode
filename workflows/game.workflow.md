@@ -30,7 +30,7 @@ cp _shared/templates/gitignore-template.md ../.gitignore
 <!-- index.html -->
 <script src="/src/main.ts" type="module"></script>
 ```
-Chạy ngay: `npx vite` — sau đó dùng chrome-devtools:
+Chạy ngay: `npx vite &` (background) — đợi 3s cho server ready — sau đó dùng chrome-devtools:
 ```
 chrome-devtools_new_page(url:http://localhost:5173)         # Mở preview
 chrome-devtools_take_screenshot                              # Chụp màn hình kiểm tra

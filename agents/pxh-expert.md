@@ -27,8 +27,23 @@ Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files
 
 ## CHROME DEVTOOLS INTEGRATION (game dev)
 Chrome DevTools MCP đã connected — LUÔN dùng để preview game thay vì trình duyệt thủ công:
+
+**QUAN TRỌNG:** `npx vite` là long-running process → chạy background (KHÔNG block bash tool).
+
+```powershell
+# Start Vite dev server in background — dùng Start-Job để không block tool
+Start-Job -ScriptBlock { npx vite }
+# Poll server ready (tối đa 30s)
+for ($i = 0; $i -lt 10; $i++) { try { Invoke-WebRequest -Uri http://localhost:5173 -UseBasicParsing -ErrorAction Stop | Out-Null; break } catch { Start-Sleep -Seconds 3 } }
 ```
-npx vite                           # Start dev server
+```powershell
+# Unix/macOS (nếu chạy trên bash shell):
+# npx vite &    # background
+# for i in 1 2 3 4 5 6 7 8 9 10; do curl -s http://localhost:5173 > /dev/null 2>&1 && break; sleep 3; done
+```
+
+Sau khi server ready:
+```
 chrome-devtools_new_page(url:http://localhost:5173)    # Mở game
 chrome-devtools_take_screenshot                        # Verify visual
 chrome-devtools_list_console_messages(types:error)     # Catch JS lỗi
@@ -40,7 +55,7 @@ Sau mỗi feature: screenshot + console check. Code xong game → Polish pipelin
 1. Đọc project structure + skill SKILL.md + templates (batch read)
 2. Nếu workflow có download assets → chạy script ngay: `powershell.exe -ExecutionPolicy Bypass -File "..."`
 3. Code ngay — 1 file chạy được trước. Dùng `skills/games-core/templates/index.html` + `vite.config.ts`
-4. `npx vite` ngay → lỗi → sửa → chạy lại. Dùng chrome-devtools để preview.
+4. `npx vite &` (background) — đợi server ready → dùng chrome-devtools để preview. Lỗi → sửa → F5/reload lại.
 5. 1 feature/lần. MVP trước, polish sau (theo Polish Checklist trong game workflow)
 6. Sau mỗi project code xong: tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (dùng template `_shared/templates/gitignore-template.md`)
 7. 3 lần lỗi → báo user + hypothesis

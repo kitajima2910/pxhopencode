@@ -30,7 +30,7 @@ document.getElementById("app")!.appendChild(renderer.domElement);
 ```
 
 ## Preview với Chrome DevTools
-Sau khi chạy `npx vite`, dùng chrome-devtools MCP:
+Chạy `npx vite &` (background). Đợi 3s cho server ready. Dùng chrome-devtools MCP:
 ```
 chrome-devtools_new_page(url:http://localhost:5173)           # Mở game 3D
 chrome-devtools_take_screenshot                               # Chụp màn hình
