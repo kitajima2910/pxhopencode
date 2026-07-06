@@ -2,3 +2,4 @@
 
 .opencode/
 .github/
+.vite/
