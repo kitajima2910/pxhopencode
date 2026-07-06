@@ -31,14 +31,15 @@ Chrome DevTools MCP đã connected — LUÔN dùng để preview game thay vì t
 **QUAN TRỌNG:** `npx vite` là long-running process → chạy background (KHÔNG block bash tool).
 
 ```powershell
-# Start Vite dev server in background — dùng Start-Job để không block tool
-Start-Job -ScriptBlock { npx vite }
+# Start Vite dev server in background — lưu PID vào file để cleanup sau
+$vitePid = (Start-Process -NoNewWindow -FilePath "npx" -ArgumentList "vite" -PassThru).Id
+$vitePid | Out-File -FilePath ".vite.pid" -NoNewline
 # Poll server ready (tối đa 30s)
 for ($i = 0; $i -lt 10; $i++) { try { Invoke-WebRequest -Uri http://localhost:5173 -UseBasicParsing -ErrorAction Stop | Out-Null; break } catch { Start-Sleep -Seconds 3 } }
 ```
 ```powershell
 # Unix/macOS (nếu chạy trên bash shell):
-# npx vite &    # background
+# npx vite & echo $! > .vite.pid
 # for i in 1 2 3 4 5 6 7 8 9 10; do curl -s http://localhost:5173 > /dev/null 2>&1 && break; sleep 3; done
 ```
 
@@ -51,14 +52,29 @@ chrome-devtools_evaluate_script(() => ...)             # Inspect state
 ```
 Sau mỗi feature: screenshot + console check. Code xong game → Polish pipeline (effects, screen-shake, particles, tween, audio).
 
+## CLEANUP SERVER (tự động — bắt buộc khi kết thúc hoặc lỗi)
+```powershell
+# Kill vite server bằng PID đã lưu — chạy trước khi gửi Result về T2
+if (Test-Path ".vite.pid") {
+    $oldPid = Get-Content ".vite.pid"
+    Stop-Process -Id $oldPid -Force -ErrorAction SilentlyContinue
+    Remove-Item ".vite.pid" -Force -ErrorAction SilentlyContinue
+}
+```
+```powershell
+# Unix/macOS:
+# if [ -f .vite.pid ]; then kill $(cat .vite.pid) 2>/dev/null; rm -f .vite.pid; fi
+```
+
 ## VIBE CODE PROTOCOL
 1. Đọc project structure + skill SKILL.md + templates (batch read)
 2. Nếu workflow có download assets → chạy script ngay: `powershell.exe -ExecutionPolicy Bypass -File "..."`
 3. Code ngay — 1 file chạy được trước. Dùng `skills/games-core/templates/index.html` + `vite.config.ts`
-4. `npx vite &` (background) — đợi server ready → dùng chrome-devtools để preview. Lỗi → sửa → F5/reload lại.
+4. Start vite background (lưu PID vào `.vite.pid`) → đợi server ready → chrome-devtools preview. Lỗi → sửa → reload.
 5. 1 feature/lần. MVP trước, polish sau (theo Polish Checklist trong game workflow)
-6. Sau mỗi project code xong: tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (dùng template `_shared/templates/gitignore-template.md`)
-7. 3 lần lỗi → báo user + hypothesis
+6. Tạo `.gitignore` với `.opencode/`, `.github/`, `.vite/`
+7. **CLEANUP vite** (đọc `.vite.pid` → kill process → xóa file) trước khi gửi Result
+8. 3 lần lỗi → báo user + hypothesis
 
 ## QUY TRÌNH
 1. Xác định loại + workflow + skill 2. Code: Web=Component→API→DB→Auth. Game=Scene→Player→Enemies→UI→Polish. AI=Pipeline→Model→API. Tool=CLI→Core 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.

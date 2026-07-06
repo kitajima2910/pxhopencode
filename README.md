@@ -101,7 +101,7 @@ Xem chi tiết: `workflows/game.workflow.md`
 |-------|-------|
 | `games-core` | Engine core: fixed-timestep, scene, asset, input, FSM |
 | `games-2d` | 2D Phaser 3 — 13 templates production-ready |
-| `games-3d` | 3D Three.js — 18 templates (FPS/TPS, shooter, audio) |
+| `games-3d` | 3D Three.js — 19 templates (FPS/TPS, shooter, audio) |
 | `games-isometric` | 2.5D Isometric — 14 templates (A*, fog of war, stacking) |
 | `games-physics` | AABB, spatial hash, raycast, swept collision |
 | `games-audio` | Audio pool, spatial 3D, compressor, format fallback |
@@ -120,7 +120,7 @@ Xem chi tiết: `workflows/game.workflow.md`
 - **Conversation Budget**: Max rounds/task, chặn lãng phí token.
 - **Chrome DevTools MCP debug**: Preview game real-time qua chrome-devtools (`--autoConnect`). Vào `chrome://inspect/#remote-debugging` bật remote debugging là dùng được.
 - **28 Skills Production**: Web (React/Next/Express/FastAPI), Game (Phaser/Three.js/Isometric + testing/PWA/deploy), AI (RAG/LLM/Agent), Tool (CLI/Extension/Automation).
-- **157 Templates sẵn sàng**: Không code từ đầu — copy, paste, tùy chỉnh.
+- **160 Templates sẵn sàng**: Không code từ đầu — copy, paste, tùy chỉnh.
 - **Favicon SVG tự động**: Mỗi workflow có màu sắc riêng.
 - **Bảo toàn code**: Chỉ tác động trong TARGET, không phá code cũ.
 
@@ -166,7 +166,7 @@ Copy-Item -Path "_shared/templates/gitignore-template.md" -Destination "../.giti
 ├── agents/         # 9 agents (T1-T4)
 ├── runtime/        # 4 tầng + contracts + policies
 ├── workflows/      # 8 workflow templates
-├── skills/         # 4 lĩnh vực, 28 skills + 157 templates
+├── skills/         # 4 lĩnh vực, 28 skills + 160 templates
 └── _shared/        # Dùng chung: context-budget, skill-quickref, scripts, templates
 ```
 

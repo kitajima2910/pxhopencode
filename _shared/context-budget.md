@@ -39,7 +39,7 @@
 
 ### 5. Skill lazy loading
 - KHÔNG đọc SKILL.md cho đến khi xác định chính xác skill cần dùng
-- Dùng `_shared/skill-quickref.md` để chọn skill — 1 read thay vì 25
+- Dùng `_shared/skill-quickref.md` để chọn skill — 1 read thay vì 28
 - Chỉ đọc template khi sắp code feature đó
 
 ## Token Budget per Phase
