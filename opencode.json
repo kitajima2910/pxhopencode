@@ -3,21 +3,6 @@
   "default_agent": "pxh-pm",
   "instructions": ["README.md", "runtime/README.md"],
 
-  "mcp": {
-    "chrome-devtools": {
-      "type": "local",
-      "enabled": true,
-      "command": [
-        "npx.cmd",
-        "-y",
-        "chrome-devtools-mcp@latest",
-        "--browserExecutablePath",
-        "C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe",
-        "--autoConnect"
-      ]
-    }
-  },
-
   "skills": {
     "paths": ["skills", ".opencode/skills"]
   },
@@ -83,7 +68,7 @@
       "template": "workflows/web.workflow.md"
     },
     "game": {
-      "description": "Phát triển game HTML5: 2D (Phaser), 2.5D (Isometric), 3D (Three.js). Preview real-time qua Chrome DevTools. Tự động Polish pipeline.",
+      "description": "Phát triển game HTML5: 2D (Phaser), 2.5D (Isometric), 3D (Three.js). Headless testing với Vitest. Tự động Polish pipeline.",
       "template": "workflows/game.workflow.md"
     },
     "ai": {

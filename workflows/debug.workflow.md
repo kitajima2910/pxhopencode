@@ -19,16 +19,14 @@
 ### Bước 3: Khoanh vùng
 `Error → File & line → Call stack → Input → Logic`
 
-> Cần bật remote debugging trước: vào `chrome://inspect/#remote-debugging` → bật "Enable remote debugging".
-
-Chrome DevTools cho frontend:
-| Bước | Tool | Mục đích |
-|------|------|----------|
-| 1 | `chrome-devtools_take_snapshot` | Cấu trúc DOM đúng? |
-| 2 | `chrome-devtools_list_console_messages(types:error)` | Lỗi JS ẩn |
-| 3 | `chrome-devtools_list_network_requests` | API fail, 4xx, 5xx |
-| 4 | `chrome-devtools_evaluate_script` | Inspect state/variables |
-| 5 | `chrome-devtools_click/fill_form` | Tái hiện behavior |
+Debug frontend (không cần browser):
+| Loại | Cách debug |
+|------|-----------|
+| DOM/UI | Kiểm tra log output + `console.log` injection vào code |
+| Logic | Viết unit test reproduction → `npx vitest run --reporter=verbose` |
+| Network | Mock API response trong test (`MSW` / `vi.fn()`) |
+| State | Log state transitions trong FSM |
+| Behaviour | Tách minimal reproduction → test từng bước |
 
 ### Bước 4: Root cause — Rubber duck / Binary search / Hypothesis testing
 
