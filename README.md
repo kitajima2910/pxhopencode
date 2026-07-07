@@ -116,6 +116,7 @@ Xem chi tiết: `workflows/game.workflow.md`
 - **Enterprise AI Runtime 4 tầng**: Interface → Orchestration → Workers → Infrastructure. Giao tiếp qua contract, cách ly hoàn toàn.
 - **Chính sách Production**: Retry (exponential backoff, max 3), Recovery (checkpoint-based), Reflection (4 mức).
 - **Feedback Loop tự động**: Code → Test → Fix → Review → Build. Mỗi vòng lặp giới hạn, tránh infinite loop.
+- **Genre Reference**: `skills/_shared/game-genre-reference.md` — 20+ thể loại game, mỗi thể loại có architecture, anti-patterns, testing checklist. Code chuẩn, không cùi.
 - **Context Budget**: Tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên.
 - **Conversation Budget**: Max rounds/task, chặn lãng phí token.
 - **Headless testing**: Vitest + happy-dom, headless Phaser (`Phaser.HEADLESS`), headless Three.js — không cần dev server hay trình duyệt.

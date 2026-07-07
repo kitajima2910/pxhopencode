@@ -27,7 +27,7 @@ Dùng để chọn skill NHANH mà không cần đọc 28 SKILL.md. Mỗi skill 
 | `games-physics` | AABB, spatial hash, raycast, collision response | — | skills/games-physics/ |
 | `games-pwa` | Manifest, service worker, offline, install prompt | — | skills/games-pwa/ |
 | `games-testing` | Vitest, headless Phaser/Three.js, benchmark | Vitest | skills/games-testing/ |
-> Game dev: dùng Vitest headless (`games-testing`) — không cần chạy dev server. Headless Phaser/Three.js helpers, benchmark, memory leak detection.
+> Game dev: trước khi code, đọc `skills/_shared/game-genre-reference.md` — architecture + anti-patterns theo 20+ thể loại. Test headless với `games-testing` (Vitest + Phaser.HEADLESS / headless Three.js).
 
 ## AI Skills (5)
 | Skill | Use when | Deps | Path |

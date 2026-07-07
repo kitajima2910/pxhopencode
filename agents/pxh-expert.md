@@ -23,7 +23,8 @@ Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files
 ## SKILL INTEGRATION
 1. Xác định skill từ Task contract (hoặc `_shared/skill-quickref.md`)
 2. Đọc SKILL.md + dùng templates — KHÔNG code từ đầu nếu có template
-3. Chỉ code tay khi template không đáp ứng
+3. Nếu game: đọc `skills/_shared/game-genre-reference.md` — chọn architecture + tránh anti-patterns
+4. Chỉ code tay khi template không đáp ứng
 
 ## HEADLESS TESTING (không server)
 Dùng headless testing thay vì chạy server + chrome-devtools preview:

@@ -5,6 +5,7 @@ description: Game 2D với Phaser 3 — player, enemy, bullet pool, tilemap, HUD
 
 # games-2d — Game 2D
 
+Tham khảm genre: `skills/_shared/game-genre-reference.md` — chọn architecture + tránh anti-patterns theo thể loại.
 Xem file chi tiết:
 - `game-h5-2d.md` — Implementation (Phaser 3 scenes, player, enemy, collision, HUD, audio, optimization)
 - `game-design-h5-2d.md` — Game design (core loop, difficulty curve, level design, color palette, touch controls, feedback systems)

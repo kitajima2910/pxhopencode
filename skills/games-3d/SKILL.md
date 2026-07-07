@@ -5,9 +5,12 @@ description: Game 3D với Three.js — lighting, FPS/TPS camera, shooting, enem
 
 # games-3d — Game 3D
 
+Tham khảm genre: `skills/_shared/game-genre-reference.md` — chọn architecture + tránh anti-patterns theo thể loại.
 Xem file chi tiết:
 - `game-h5-3d.md` — Implementation (Three.js setup, lighting, FPS/TPS controller, shooting, enemy AI, collision)
 - `game-design-h5-3d.md` — Game design (camera systems, modular level design, time-of-day lighting, world-space UI, positional audio)
+- `game-h5-3d-marble-racing.md` — **Marble Racing Implementation** (cannon-es physics, spline track, ball controller, checkpoint/timer)
+- `game-design-h5-marble-racing.md` — **Marble Racing Design** (physics parameters, camera modes, level progression, country theming)
 
 ## Bắt đầu nhanh
 

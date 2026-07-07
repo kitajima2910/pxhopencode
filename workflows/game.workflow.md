@@ -2,6 +2,7 @@
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
 > Testing dùng Vitest headless — không cần chạy dev server. Xem `skills/games-testing/`.
+> **Genre Reference**: trước khi code bất kỳ game nào, đọc `skills/_shared/game-genre-reference.md` để chọn đúng architecture + tránh anti-patterns.
 
 ## Bước 0: Download assets (AUTO)
 ```powershell
@@ -11,21 +12,30 @@ powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-ass
 
 ## Bước 1: Chọn loại game & engine
 
-| Loại | Engine | Skill |
-|------|--------|-------|
-| 2D | Phaser 3 | `games-2d` |
-| 2.5D | Isometric + Phaser | `games-isometric` |
-| 3D | Three.js | `games-3d` |
+| Loại | Engine | Skill | Ghi chú |
+|------|--------|-------|---------|
+| 2D | Phaser 3 | `games-2d` | Platformer, top-down, shooter |
+| 2.5D | Isometric + Phaser | `games-isometric` | Strategy, RPG |
+| 3D | Three.js | `games-3d` | FPS, TPS, adventure |
+| 3D Racing | Three.js + Cannon-es | `games-3d` | **Marble racing**, physics-based ball, spline track. Xem `game-design-h5-marble-racing.md` |
 
 ## Bước 2: Scaffold & Run
 ```bash
 # Tạo project từ templates
-cp -r skills/games-2d/templates/* src/
 npm init -y
-npm install phaser && npm install -D vite
+npm install -D vite
 # .gitignore — luôn có .opencode/ + .github/
 cp _shared/templates/gitignore-template.md ../.gitignore
 ```
+
+Tuỳ thể loại:
+
+| Loại | Install | Templates |
+|------|---------|-----------|
+| 2D (Phaser) | `npm install phaser` | `cp -r skills/games-2d/templates/* src/` |
+| 3D (Three.js) | `npm install three @types/three` | `cp -r skills/games-3d/templates/* src/` |
+| **3D Racing** | `npm install three cannon-es` | Dùng `game-h5-3d-marble-racing.md` làm reference |
+
 ```html
 <!-- index.html -->
 <script src="/src/main.ts" type="module"></script>
@@ -33,8 +43,7 @@ cp _shared/templates/gitignore-template.md ../.gitignore
 Setup testing ngay:
 ```bash
 cp skills/games-testing/templates/vitest.config.ts ./
-cp skills/games-testing/templates/phaser-test-helper.ts src/test-helper.ts   # 2D/2.5D
-# hoặc: cp skills/games-testing/templates/three-test-helper.ts src/test-helper.ts  # 3D
+cp skills/games-testing/templates/three-test-helper.ts src/test-helper.ts  # 3D
 npm install -D vitest happy-dom
 ```
 
@@ -46,9 +55,14 @@ Sau mỗi feature, viết test headless để verify logic:
 | Scene/Map | `npx vitest run` — check scene lifecycle (create→update→destroy) |
 | Player movement | Unit test: kiểm tra x/y sau simulate input |
 | Animation | state machine test — FSM transitions idle→run→jump→attack |
-| UI/HUD | DOM test: check hp bar, score text rendering |
+| UI/HUD | DOM test: check hp bar, score text, timer, speed |
 | Audio | `AudioContext` mock — play/stop/restart không throw |
 | Physics | AABB collision test — edge cases overlap/separate |
+| **Racing: Ball force** | Kiểm tra velocity > 0 sau khi apply force |
+| **Racing: Fall respawn** | Ball Y < -5 → reset về checkpoint gần nhất |
+| **Racing: Checkpoint** | Ball gần checkpoint → trigger event "checkpoint" |
+| **Racing: Timer** | elapsed ≈ real time sau simulate |
+| **Racing: Spline track** | Track curve generated, wall + floor mesh tồn tại |
 
 ## Bước 4: Polish Pipeline (làm đẹp — bắt buộc)
 Sau khi game chạy, chạy polish pipeline:
@@ -66,13 +80,15 @@ Sau khi game chạy, chạy polish pipeline:
 - [ ] Loading screen với progress bar
 
 ### UX Polish Checklist
-- [ ] Touch controls (mobile) — `InputManager.justPressed` pattern
+- [ ] Touch controls (mobile) — `InputManager.justPressed` pattern, hoặc touch tilt cho racing
 - [ ] Responsive scale — dùng `Phaser.Scale.FIT` / resize handler
 - [ ] Pause menu (ESC/P key)
 - [ ] Game over screen + restart
 - [ ] HUD: health bar, score, ammo — dùng `skills/games-2d/templates/HealthBar.ts`
+- [ ] **Racing HUD**: timer (mm:ss.ms), speed (km/h), checkpoint progress, best time
 - [ ] Tutorial / hướng dẫn đầu game
 - [ ] Vibration feedback (mobile)
+- [ ] **Racing: Countdown 3-2-1-GO** trước khi bắt đầu
 
 ### Code Polish
 - [ ] Object pool cho đạn/enemy/particle — `skills/games-optimization/templates/object-pool.ts`
@@ -115,7 +131,7 @@ Test coverage yêu cầu:
 Xem: `skills/games-testing/SKILL.md`
 
 ### Game-Specific Review Checklist
-- [ ] **Draw calls** (3D): `renderer.info.render.calls < 200`
+- [ ] **Draw calls** (3D): `renderer.info.render.calls < 100` (racing), < 200 (khác)
 - [ ] **Texture memory**: texture atlas, không texture rời
 - [ ] **Shadow map**: 1024² mobile, 2048² desktop
 - [ ] **Audio**: format fallback mp3/ogg/wav, không load fail
@@ -125,6 +141,9 @@ Xem: `skills/games-testing/SKILL.md`
 - [ ] **Frustum culling**: `renderer.frustumCulling = true`
 - [ ] **Touch**: buttons ≥ 44px, gap ≥ 8px
 - [ ] **Security**: không eval, không inline script trong production
+- [ ] **Racing: Physics stability** — ball không xuyên wall, không bounce vô hạn
+- [ ] **Racing: Camera** — không clip xuyên terrain, smooth lerp
+- [ ] **Racing: Track** — không gap giữa các segment, wall liên tục
 
 ## Bước 6: PWA (Progressive Web App)
 ```bash
@@ -179,8 +198,11 @@ cp skills/games-deploy/templates/.github/workflows/deploy-pages.yml .github/work
 Xem: `skills/games-deploy/SKILL.md`
 
 ## Game Design & References
+- **Genre Reference (mọi thể loại)**: `skills/_shared/game-genre-reference.md`
 - 2D design: `skills/games-2d/game-design-h5-2d.md`
 - 3D design: `skills/games-3d/game-design-h5-3d.md`
+- 3D Racing design: `skills/games-3d/game-design-h5-marble-racing.md`
+- 3D Racing implementation: `skills/games-3d/game-h5-3d-marble-racing.md`
 - 2.5D design: `skills/games-isometric/game-design-h5-2.5d.md`
 - Assets: `skills/games-assets/SKILL.md`
 - Performance: `skills/games-optimization/SKILL.md`

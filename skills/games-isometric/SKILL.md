@@ -5,6 +5,7 @@ description: Game 2.5D Isometric — tile engine, coordinate conversion, depth s
 
 # games-isometric — Game 2.5D Isometric
 
+Tham khảm genre: `skills/_shared/game-genre-reference.md` — chọn architecture + tránh anti-patterns theo thể loại.
 Xem file chi tiết:
 - `game-h5-2.5d.md` — Implementation (coordinate conversion, tile map, depth sorting, pseudo-3D stacking, click detection)
 - `game-design-h5-2.5d.md` — Game design (tile types, fog of war, pathfinding A*, UX, selection)
