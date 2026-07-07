@@ -29,5 +29,3 @@ Web → `skills/webs-deployment/SKILL.md`. Package → `skills/tools-packaging/S
 ## NGUYÊN TẮC
 Quality gate trước build. Fail fast.
 
-## Liên kết
-Worker: `runtime/layers/03-worker.md` | Orchestration: `runtime/layers/02-orchestration.md` | Build scripts: `_shared/build-scripts.ps1` | Release workflow: `workflows/release.workflow.md` | Context: `_shared/context-budget.md`

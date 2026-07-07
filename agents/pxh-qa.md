@@ -38,5 +38,3 @@ Xem `_shared/context-budget.md`. Chạy test = 1 command. Đọc output fail, kh
 ## NGUYÊN TẮC
 Zero bug tolerance. Automation first. Không edit code. Verify fix + regression.
 
-## Liên kết
-Worker: `runtime/layers/03-worker.md` | Orchestration: `runtime/layers/02-orchestration.md` | Bug template: `_shared/templates/bug-report.md` | Context: `_shared/context-budget.md` | Skills: `_shared/skill-quickref.md`

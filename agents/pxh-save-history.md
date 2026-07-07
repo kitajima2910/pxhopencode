@@ -35,5 +35,3 @@ Chủ quản duy nhất. Cập nhật sau mỗi phase, meeting, bug, release. Đ
 ## NGUYÊN TẮC
 Chính xác. Đầy đủ. Có tổ chức. Không spam. Hỏi nếu không chắc.
 
-## Liên kết
-T4: `runtime/layers/04-infrastructure.md` | Contracts: `runtime/contracts/README.md` | Templates: `_shared/templates/` | Context: `_shared/context-budget.md`

@@ -54,5 +54,3 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 ## QUY TRÌNH
 1. Xác định loại + workflow + skill 2. Code: Web=Component→API→DB→Auth. Game=Scene→Player→Enemies→UI→Polish. AI=Pipeline→Model→API. Tool=CLI→Core 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.
 
-## Liên kết
-Worker: `runtime/layers/03-worker.md` | Contracts: `runtime/contracts/README.md` | Skills: `_shared/skill-quickref.md` | Workflows: `workflows/` | Code preservation: `_shared/code-preservation-rules.md` | Context: `_shared/context-budget.md`

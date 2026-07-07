@@ -30,18 +30,9 @@ new Phaser.Game({
 });
 ```
 
-## Testing với Vitest (headless)
-Dùng headless Phaser testing — không cần chạy server:
-
-```bash
-npx vitest run              # Unit + integration tests
-npx vitest --coverage       # Coverage ≥ 80%
-```
-
-Dùng `Phaser.HEADLESS` mode trong test helper: `skills/games-testing/templates/phaser-test-helper.ts`
-- `createHeadlessGame()` — khởi tạo game headless
-- `advanceTime(game, ms)` — simulate time passing
-- `simulatePointer(x, y)` — simulate input events
+## Testing
+`npx vitest run` | `npx vitest --coverage` (≥ 80%)
+Helper: `skills/games-testing/templates/phaser-test-helper.ts` — createHeadlessGame, advanceTime, simulatePointer
 
 ## Mẫu chính (chống lag)
 - **Object pool**: Cho đạn, particle, enemy — dùng `Phaser.Group.maxSize`

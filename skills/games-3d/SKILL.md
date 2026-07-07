@@ -32,19 +32,9 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.getElementById("app")!.appendChild(renderer.domElement);
 ```
 
-## Testing với Vitest (headless)
-Dùng headless Three.js testing — không cần chạy server:
-
-```bash
-npx vitest run              # Unit + integration tests
-npx vitest --coverage       # Coverage ≥ 80%
-```
-
-Dùng headless renderer trong test helper: `skills/games-testing/templates/three-test-helper.ts`
-- `createHeadlessRenderer()` — WebGLRenderer low-power
-- `disposeScene(obj)` — cleanup helper
-- `advanceFrames(renderer, scene, camera, count)` — render frames không display
-- Kiểm tra draw calls: `renderer.info.render.calls < 200`
+## Testing
+`npx vitest run` | `npx vitest --coverage` (≥ 80%)
+Helper: `skills/games-testing/templates/three-test-helper.ts` — createHeadlessRenderer, disposeScene, advanceFrames; check draw calls < 200
 
 ## Mẫu chính (chống lag)
 - **InstancedMesh**: Cho hàng ngàn object giống nhau (cây, đá, enemy)

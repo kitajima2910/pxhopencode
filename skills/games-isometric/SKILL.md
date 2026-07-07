@@ -10,18 +10,9 @@ Xem file chi tiết:
 - `game-h5-2.5d.md` — Implementation (coordinate conversion, tile map, depth sorting, pseudo-3D stacking, click detection)
 - `game-design-h5-2.5d.md` — Game design (tile types, fog of war, pathfinding A*, UX, selection)
 
-## Testing với Vitest (headless)
-Dùng headless Phaser testing — không cần chạy server:
-
-```bash
-npx vitest run              # Unit + integration tests
-npx vitest --coverage       # Coverage ≥ 80%
-```
-
-Dùng `Phaser.HEADLESS` mode: `skills/games-testing/templates/phaser-test-helper.ts`
-- `createHeadlessGame()` — khởi tạo game headless
-- `advanceTime(game, ms)` — simulate time passing
-- Kiểm tra coordinate conversion, depth sort, A* pathfinding bằng unit test
+## Testing
+`npx vitest run` | `npx vitest --coverage` (≥ 80%)
+Helper: `skills/games-testing/templates/phaser-test-helper.ts` — createHeadlessGame, advanceTime; test coordinate conversion, depth sort, A*
 
 ## Mẫu chính (chống lag)
 - **Frustum culling**: Chỉ vẽ tile trong viewport — tính tile min/max từ camera bounds

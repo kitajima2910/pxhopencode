@@ -40,5 +40,3 @@ Runtime: undefined, is not a function → optional chaining, API response. Netwo
 ## NGUYÊN TẮC
 Hiểu trước sửa. 1 lỗi = 1 fix. Test trước — fix sau. Bảo toàn code: `_shared/code-preservation-rules.md`.
 
-## Liên kết
-Worker: `runtime/layers/03-worker.md` | Debug workflow: `workflows/debug.workflow.md` | Context: `_shared/context-budget.md`
