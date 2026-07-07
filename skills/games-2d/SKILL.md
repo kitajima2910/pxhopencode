@@ -29,15 +29,18 @@ new Phaser.Game({
 });
 ```
 
-## Preview với Chrome DevTools
-Chạy `npx vite &` (background). Đợi 3s cho server ready. Dùng chrome-devtools MCP:
+## Testing với Vitest (headless)
+Dùng headless Phaser testing — không cần chạy server:
+
+```bash
+npx vitest run              # Unit + integration tests
+npx vitest --coverage       # Coverage ≥ 80%
 ```
-chrome-devtools_new_page(url:http://localhost:5173)           # Mở game
-chrome-devtools_take_screenshot                               # Chụp màn hình
-chrome-devtools_list_console_messages(types:error)             # Bắt lỗi
-chrome-devtools_evaluate_script(() => game.scene.scenes[0])    # Inspect scene
-```
-Inject FPS counter để check performance: inject `fpsEl` + `requestAnimationFrame` loop.
+
+Dùng `Phaser.HEADLESS` mode trong test helper: `skills/games-testing/templates/phaser-test-helper.ts`
+- `createHeadlessGame()` — khởi tạo game headless
+- `advanceTime(game, ms)` — simulate time passing
+- `simulatePointer(x, y)` — simulate input events
 
 ## Mẫu chính (chống lag)
 - **Object pool**: Cho đạn, particle, enemy — dùng `Phaser.Group.maxSize`

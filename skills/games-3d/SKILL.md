@@ -29,15 +29,19 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.getElementById("app")!.appendChild(renderer.domElement);
 ```
 
-## Preview với Chrome DevTools
-Chạy `npx vite &` (background). Đợi 3s cho server ready. Dùng chrome-devtools MCP:
+## Testing với Vitest (headless)
+Dùng headless Three.js testing — không cần chạy server:
+
+```bash
+npx vitest run              # Unit + integration tests
+npx vitest --coverage       # Coverage ≥ 80%
 ```
-chrome-devtools_new_page(url:http://localhost:5173)           # Mở game 3D
-chrome-devtools_take_screenshot                               # Chụp màn hình
-chrome-devtools_list_console_messages(types:error)             # Bắt lỗi WebGL
-chrome-devtools_performance_start_trace                        # Profiling render
-```
-Kiểm tra draw calls: `chrome-devtools_evaluate_script(() => renderer.info.render.calls)`.
+
+Dùng headless renderer trong test helper: `skills/games-testing/templates/three-test-helper.ts`
+- `createHeadlessRenderer()` — WebGLRenderer low-power
+- `disposeScene(obj)` — cleanup helper
+- `advanceFrames(renderer, scene, camera, count)` — render frames không display
+- Kiểm tra draw calls: `renderer.info.render.calls < 200`
 
 ## Mẫu chính (chống lag)
 - **InstancedMesh**: Cho hàng ngàn object giống nhau (cây, đá, enemy)

@@ -9,14 +9,18 @@ Xem file chi tiết:
 - `game-h5-2.5d.md` — Implementation (coordinate conversion, tile map, depth sorting, pseudo-3D stacking, click detection)
 - `game-design-h5-2.5d.md` — Game design (tile types, fog of war, pathfinding A*, UX, selection)
 
-## Preview với Chrome DevTools
-Chạy `npx vite &` (background). Đợi 3s cho server ready. Dùng chrome-devtools MCP:
+## Testing với Vitest (headless)
+Dùng headless Phaser testing — không cần chạy server:
+
+```bash
+npx vitest run              # Unit + integration tests
+npx vitest --coverage       # Coverage ≥ 80%
 ```
-chrome-devtools_new_page(url:http://localhost:5173)           # Mở game isometric
-chrome-devtools_take_screenshot                               # Kiểm tra depth sort
-chrome-devtools_list_console_messages(types:error)             # Bắt lỗi
-chrome-devtools_evaluate_script(() => isoScene.tileMap)       # Inspect tile map
-```
+
+Dùng `Phaser.HEADLESS` mode: `skills/games-testing/templates/phaser-test-helper.ts`
+- `createHeadlessGame()` — khởi tạo game headless
+- `advanceTime(game, ms)` — simulate time passing
+- Kiểm tra coordinate conversion, depth sort, A* pathfinding bằng unit test
 
 ## Mẫu chính (chống lag)
 - **Frustum culling**: Chỉ vẽ tile trong viewport — tính tile min/max từ camera bounds

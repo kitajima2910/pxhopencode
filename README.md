@@ -118,7 +118,7 @@ Xem chi tiết: `workflows/game.workflow.md`
 - **Feedback Loop tự động**: Code → Test → Fix → Review → Build. Mỗi vòng lặp giới hạn, tránh infinite loop.
 - **Context Budget**: Tiered loading T0→T3, lazy skill/template, batch ops — ~50% token/phiên.
 - **Conversation Budget**: Max rounds/task, chặn lãng phí token.
-- **Chrome DevTools MCP debug**: Preview game real-time qua chrome-devtools (`--autoConnect`). Vào `chrome://inspect/#remote-debugging` bật remote debugging là dùng được.
+- **Headless testing**: Vitest + happy-dom, headless Phaser (`Phaser.HEADLESS`), headless Three.js — không cần dev server hay trình duyệt.
 - **28 Skills Production**: Web (React/Next/Express/FastAPI), Game (Phaser/Three.js/Isometric + testing/PWA/deploy), AI (RAG/LLM/Agent), Tool (CLI/Extension/Automation).
 - **160 Templates sẵn sàng**: Không code từ đầu — copy, paste, tùy chỉnh.
 - **Favicon SVG tự động**: Mỗi workflow có màu sắc riêng.
@@ -150,8 +150,7 @@ Copy-Item -Path "_shared/templates/gitignore-template.md" -Destination "../.giti
 ### Yêu cầu hệ thống
 - **Node.js** 18+ (cho web/game/tool development)
 - **npm** hoặc **yarn**
-- **Brave/Chrome** (cho chrome-devtools MCP preview)
-  - **Khi copy sang máy khác**: phải sửa `browserExecutablePath` trong `opencode.json` cho đúng đường dẫn Brave/Chrome của máy đó.
+- **Node.js 18+**, **npm/yarn**
 - **PowerShell** 5.1+ (Windows) hoặc bash (macOS/Linux)
 
 ## 📁 Cấu trúc

@@ -1,7 +1,7 @@
 # Workflow Game — Phát triển game HTML5 Pro
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
-> Chrome DevTools MCP đã connected (config: `--autoConnect`). Nếu chưa dùng được: mở Brave/Chrome → vào `chrome://inspect/#remote-debugging` → bật "Enable remote debugging". Dùng `chrome-devtools_*` tools để preview + debug game real-time.
+> Testing dùng Vitest headless — không cần chạy dev server. Xem `skills/games-testing/`.
 
 ## Bước 0: Download assets (AUTO)
 ```powershell
@@ -11,11 +11,11 @@ powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/download-games-ass
 
 ## Bước 1: Chọn loại game & engine
 
-| Loại | Engine | Skill | Preview |
-|------|--------|-------|---------|
-| 2D | Phaser 3 | `games-2d` | `chrome-devtools_new_page(url:http://localhost:5173)` |
-| 2.5D | Isometric + Phaser | `games-isometric` | `chrome-devtools_new_page(url:http://localhost:5173)` |
-| 3D | Three.js | `games-3d` | `chrome-devtools_new_page(url:http://localhost:5173)` |
+| Loại | Engine | Skill |
+|------|--------|-------|
+| 2D | Phaser 3 | `games-2d` |
+| 2.5D | Isometric + Phaser | `games-isometric` |
+| 3D | Three.js | `games-3d` |
 
 ## Bước 2: Scaffold & Run
 ```bash
@@ -30,24 +30,25 @@ cp _shared/templates/gitignore-template.md ../.gitignore
 <!-- index.html -->
 <script src="/src/main.ts" type="module"></script>
 ```
-Chạy ngay: `npx vite &` (background) — đợi 3s cho server ready — sau đó dùng chrome-devtools:
-```
-chrome-devtools_new_page(url:http://localhost:5173)         # Mở preview
-chrome-devtools_take_screenshot                              # Chụp màn hình kiểm tra
-chrome-devtools_list_console_messages(types:error)           # Bắt lỗi JS
+Setup testing ngay:
+```bash
+cp skills/games-testing/templates/vitest.config.ts ./
+cp skills/games-testing/templates/phaser-test-helper.ts src/test-helper.ts   # 2D/2.5D
+# hoặc: cp skills/games-testing/templates/three-test-helper.ts src/test-helper.ts  # 3D
+npm install -D vitest happy-dom
 ```
 
-## Bước 3: Visual Iteration Loop (quan trọng nhất)
-Sau mỗi feature, dùng chrome-devtools để verify TRỰC QUAN:
+## Bước 3: Test Iteration Loop (headless)
+Sau mỗi feature, viết test headless để verify logic:
 
-| Feature xong | Verify bằng |
-|-------------|-------------|
-| Scene/Map | `chrome-devtools_take_screenshot` + check console |
-| Player movement | `chrome-devtools_evaluate_script(() => player.x)` |
-| Animation | `chrome-devtools_take_screenshot` (bắt khoảnh khắc) |
-| UI/HUD | `chrome-devtools_take_screenshot` + check layout |
-| Audio | `chrome-devtools_evaluate_script(() => { /* test audio */ })` |
-| Physics | `chrome-devtools_evaluate_script(() => game.physics.)` |
+| Feature xong | Verify bằng test |
+|-------------|-----------------|
+| Scene/Map | `npx vitest run` — check scene lifecycle (create→update→destroy) |
+| Player movement | Unit test: kiểm tra x/y sau simulate input |
+| Animation | state machine test — FSM transitions idle→run→jump→attack |
+| UI/HUD | DOM test: check hp bar, score text rendering |
+| Audio | `AudioContext` mock — play/stop/restart không throw |
+| Physics | AABB collision test — edge cases overlap/separate |
 
 ## Bước 4: Polish Pipeline (làm đẹp — bắt buộc)
 Sau khi game chạy, chạy polish pipeline:
@@ -76,32 +77,24 @@ Sau khi game chạy, chạy polish pipeline:
 ### Code Polish
 - [ ] Object pool cho đạn/enemy/particle — `skills/games-optimization/templates/object-pool.ts`
 - [ ] FSM states đầy đủ: idle/run/jump/attack/hurt/die
-- [ ] FPS counter (dev mode) — `chrome-devtools_evaluate_script`
-- [ ] Memory check — `chrome-devtools_take_heapsnapshot` nếu cần
+- [ ] FPS counter (dev mode) — inject trong code, dùng `performance.now()`
+- [ ] Memory check — `skills/games-testing/templates/memory-leak.test.ts`
 
 ## Bước 5: Quality Gate
 
-### Runtime Checks (Chrome DevTools)
-```javascript
-// Inject FPS counter
-const fpsEl = document.createElement('div');
-fpsEl.style.cssText = 'position:fixed;top:0;left:0;z-index:9999;color:lime;font:16px monospace';
-document.body.appendChild(fpsEl);
-let frames = 0, last = performance.now();
-function count() { frames++; requestAnimationFrame(count) }
-requestAnimationFrame(count);
-setInterval(() => {
-  const now = performance.now();
-  fpsEl.textContent = `FPS: ${Math.round(frames * 1000 / (now - last))}`;
-  frames = 0; last = now;
-}, 1000);
+### Runtime Checks (Headless)
+```bash
+npx vitest run              # Unit tests
+npx vitest --coverage       # Coverage ≥ 80%
+npx vitest src/performance-benchmark.test.ts  # FPS + memory benchmark
 ```
 
 Quality passes khi:
-- ✅ FPS ≥ 55 (desktop) | ≥ 30 (mobile)
-- ✅ Console không có error
-- ✅ Network: assets load 200, không 404
-- ✅ Screenshot: UI hiển thị đúng, không overlap
+- ✅ Unit tests pass
+- ✅ Coverage ≥ 80%
+- ✅ Performance benchmark: FPS ≥ 55 (desktop) | ≥ 30 (mobile)
+- ✅ Memory leak test: diff < 500KB sau 5 phút simulate
+- ✅ No console.error thrown trong test
 
 ### Automation Tests
 ```bash
@@ -126,8 +119,8 @@ Xem: `skills/games-testing/SKILL.md`
 - [ ] **Texture memory**: texture atlas, không texture rời
 - [ ] **Shadow map**: 1024² mobile, 2048² desktop
 - [ ] **Audio**: format fallback mp3/ogg/wav, không load fail
-- [ ] **Loading time**: < 3s trên 3G (Chrome DevTools emulate Slow 3G)
-- [ ] **Memory leak**: heap snapshot trước/sau 5 phút chơi, diff < 500KB
+- [ ] **Loading time**: < 3s — benchmark asset loading trong test (`skills/games-testing/templates/performance-benchmark.ts`)
+- [ ] **Memory leak**: `memory-leak.test.ts` — diff < 500KB sau 5 phút simulate
 - [ ] **LOD** (3D): 3 levels ở 20 và 50 units
 - [ ] **Frustum culling**: `renderer.frustumCulling = true`
 - [ ] **Touch**: buttons ≥ 44px, gap ≥ 8px
