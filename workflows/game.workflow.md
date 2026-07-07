@@ -2,7 +2,9 @@
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
 > Testing dùng Vitest headless — không cần chạy dev server. Xem `skills/games-testing/`.
-> **Genre Reference**: trước khi code bất kỳ game nào, đọc `skills/_shared/game-genre-reference.md` để chọn đúng architecture + tránh anti-patterns.
+> **Genre Reference**: trước khi code bất kỳ game nào, đọc `skills/_shared/game-genre-reference.md` → dùng Decision Tree để chọn đúng category.
+> **Black-box scripts**: `_shared/scripts/game-gen/` — chạy `--help` để dùng (không đọc source). Sinh physics config, spline track, eval grading.
+> **Eval assertions**: dùng `game-eval-schema.ts` + `eval-grader.js` để verify quality.
 
 ## Bước 0: Download assets (AUTO)
 ```powershell

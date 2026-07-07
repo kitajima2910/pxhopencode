@@ -23,8 +23,12 @@ Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files
 ## SKILL INTEGRATION
 1. Xác định skill từ Task contract (hoặc `_shared/skill-quickref.md`)
 2. Đọc SKILL.md + dùng templates — KHÔNG code từ đầu nếu có template
-3. Nếu game: đọc `skills/_shared/game-genre-reference.md` — chọn architecture + tránh anti-patterns
-4. Chỉ code tay khi template không đáp ứng
+3. Nếu game: đọc `skills/_shared/game-genre-reference.md` — Decision Tree → architecture + anti-patterns
+4. Nếu cần deterministic compute → dùng black-box scripts:
+   - `node _shared/scripts/game-gen/track-gen-physics.js --help` — physics config
+   - `node _shared/scripts/game-gen/track-gen-spline.js --help` — spline track
+   - (Chạy + đọc output — KHÔNG đọc source script)
+5. Chỉ code tay khi template không đáp ứng
 
 ## HEADLESS TESTING (không server)
 Dùng headless testing thay vì chạy server + chrome-devtools preview:
@@ -35,6 +39,8 @@ npx vitest --coverage       # Coverage check (≥ 80%)
 ```
 
 Sau mỗi feature: viết test → `npx vitest run` verify logic. Dùng `skills/games-testing/` cho game (headless Phaser/Three.js helpers), `skills/webs-testing/` cho web (jsdom/happy-dom).
+
+Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpointTrigger, assertFPS, assertMemoryLeak) + `node _shared/scripts/game-gen/eval-grader.js --input report.json --threshold 0.8`.
 
 ## VIBE CODE PROTOCOL
 1. Đọc project structure + skill SKILL.md + templates (batch read)

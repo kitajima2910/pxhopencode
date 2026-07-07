@@ -6,10 +6,64 @@
 
 ## Cách dùng
 1. Xác định thể loại game từ task
-2. Tìm category trong doc này
+2. Dùng Decision Tree bên dưới → tìm đúng category
 3. Đọc core mechanics + camera + controls + anti-patterns
-4. Code theo architecture pattern
-5. Test theo checklist
+4. Nếu cần deterministic compute → dùng black-box scripts:
+   - `node _shared/scripts/game-gen/track-gen-physics.js --help` — sinh physics config
+   - `node _shared/scripts/game-gen/track-gen-spline.js --help` — sinh spline track
+   - (Không đọc source — chạy script + đọc output JSON)
+5. Code theo architecture pattern
+6. Test theo checklist + eval assertions:
+   - `import { assertPhysicsStable, assertFPS } from "skills/games-testing/templates/game-eval-schema"`
+   - `node _shared/scripts/game-gen/eval-grader.js --input eval-report.json --threshold 0.8`
+
+---
+
+## Decision Tree: Chọn thể loại
+
+```
+Game có camera 3D?
+├── Không → Game 2D?
+│   ├── Platformer (nhảy + platforms) → ACTION
+│   ├── Shmup / Twin-stick / Bullet Hell → SHOOTER
+│   ├── Beat 'em Up / Hack & Slash (2D) → ACTION
+│   ├── Point & Click / Visual Novel → ADVENTURE
+│   ├── Match-3 / Puzzle / Sokoban → PUZZLE
+│   ├── RPG top-down (2D) → RPG
+│   ├── Tower Defense / Strategy 2D → STRATEGY
+│   ├── Idle / Clicker / Hyper Casual → CASUAL
+│   ├── Farming / Life / Business Sim → SIMULATION
+│   ├── Metroidvania → METROIDVANIA
+│   ├── Fighting 2D → FIGHTING
+│   ├── Card / Board / Chess → CARD / BOARD
+│   ├── Rhythm / Dance → MUSIC
+│   └── Survivor-like / Bullet Heaven → SHOOTER VARIATIONS
+│
+├── Có → 3D (Three.js)
+│   ├── Cần physics engine (cannon-es)?
+│   │   ├── Racing (marble, car, kart) → RACING
+│   │   ├── Vehicle / Flight / Truck Sim → SIMULATION
+│   │   └── Physics sandbox / Destruction → SANDBOX
+│   │
+│   ├── Góc nhìn thứ nhất (FPS)?
+│   │   ├── FPS Shooter → SHOOTER
+│   │   ├── Walking Sim / Horror → ADVENTURE / HORROR
+│   │   └── Stealth → STEALTH
+│   │
+│   ├── Góc nhìn thứ ba (TPS)?
+│   │   ├── TPS Shooter / Extraction → SHOOTER
+│   │   ├── Soulslike / ARPG → METROIDVANIA / RPG
+│   │   ├── Open World Survival → SURVIVAL
+│   │   ├── Hack & Slash 3D → ACTION
+│   │   └── Parkour → PARKOUR
+│   │
+│   └── Top-down / Isometric 3D?
+│       ├── MOBA / Auto Battler → STRATEGY
+│       ├── 3D Platformer → ACTION
+│       └── Strategy / City Builder → STRATEGY
+│
+└── Không rõ → đọc toàn bộ genre list, chọn category gần nhất
+```
 
 ---
 

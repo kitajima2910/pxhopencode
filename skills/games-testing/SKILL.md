@@ -26,6 +26,31 @@ npm install -D vitest @testing-library/dom happy-dom
 | `performance-benchmark.ts` | FPS + memory benchmark test |
 | `game-logic.test.ts` | Mẫu test: FSM, collision, scoring, spawn |
 | `memory-leak.test.ts` | Phát hiện memory leak trong game loop |
+| `game-eval-schema.ts` | **Eval assertions**: assertGameInit, assertPhysicsStable, assertCheckpointTrigger, assertFPS, assertMemoryLeak, assertFSM, assertAudioPlay, assertInputResponsive |
+
+## Eval assertions (kiểm tra chất lượng)
+
+Dùng `game-eval-schema.ts` để verify game không bị "cùi":
+
+```typescript
+import { assertPhysicsStable, assertCheckpointTrigger, assertFPS, generateReport } from "./game-eval-schema";
+
+it("physics stable", () => {
+  const result = assertPhysicsStable(ball.body, world);
+  expect(result.pass).toBe(true);
+});
+
+it("FPS target", () => {
+  const result = assertFPS(fps, 55);
+  expect(result.pass).toBe(true);
+});
+```
+
+Chạy grader để có summary:
+```bash
+# Sau khi chạy vitest → xuất JSON report
+node _shared/scripts/game-gen/eval-grader.js --input eval-report.json --threshold 0.8
+```
 
 ## Chạy test
 
