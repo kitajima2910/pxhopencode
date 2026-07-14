@@ -1,6 +1,6 @@
 # pxhopencode — AI Company cho Vibe Coding
 
-9 AI agents, 4-tier runtime, 8 workflows, 28 skills, 160 templates.
+9 AI agents, 4-tier runtime, 8 workflows, 29 skills, 162 templates.
 
 ## 9 Agents
 
@@ -24,9 +24,9 @@ T1 (Interface) → Request → T2 (Orchestration) → Task → T3 (Workers: 6 ag
 
 `vibe` | `web` | `game` | `ai` | `tool` | `debug` | `meeting` | `release`
 
-## 28 Skills
+## 29 Skills
 
-- **Web (7)**: frontend, backend, database, auth, styling, testing, deployment
+- **Web (8)**: frontend, backend, database, auth, styling, testing, deployment, security
 - **Game (11)**: core, 2d, 3d, isometric, physics, audio, assets, optimization, testing, pwa, deploy
 - **AI (5)**: agents, llm, rag, prompts, production
 - **Tool (5)**: cli, extensions, codegen, automation, packaging

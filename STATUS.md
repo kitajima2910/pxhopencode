@@ -8,7 +8,7 @@
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
 | Agents | 9 chuyên biệt (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
-| Skills | 28 skills (4 lĩnh vực) |
+| Skills | 29 skills (4 lĩnh vực) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 
@@ -32,7 +32,7 @@
 ├── agents/                 # 9 agents (Tầng 1-4)
 ├── runtime/                # 4 tầng, contracts, policies
 ├── workflows/              # 8 workflow templates
-├── skills/                 # 4 lĩnh vực, 28 skills + templates/
+├── skills/                 # 4 lĩnh vực, 29 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
 
@@ -48,7 +48,7 @@
 | **V2.0: Agent slim (9 files)** | **-227 dòng (-39%)** |
 
 | **V2.0: Contracts schema concise** | **-29 dòng** |
-| **V2.0: Skill quickref → 28 SKILL.md reads avoided** | **-728 dòng (-96%)** |
+| **V2.0: Skill quickref → 29 SKILL.md reads avoided** | **-728 dòng (-96%)** |
 | **V2.0: Context budget + tiered loading** | **~-50% token/phiên** |
 | **Total** | **~6.300 + 984 = ~7.284 dòng khỏi prompt context** |
 
@@ -63,7 +63,7 @@
 - [x] 9 agents với thẻ layer + tham chiếu chéo
 - [x] Runtime 4 layer, 6 contracts, 3 policies
 - [x] 8 workflows theo lĩnh vực
-- [x] 28 skills với templates/ riêng
+- [x] 29 skills với templates/ riêng
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
 - [x] Chrome DevTools MCP tích hợp (--autoConnect)
 - [x] README hướng dẫn copy vào `.opencode/`
