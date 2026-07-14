@@ -12,6 +12,7 @@
 - **Build**: compile error → đọc dòng báo lỗi
 - **Network**: 4xx/5xx/CORS → kiểm tra request/response
 - **Performance**: chậm/lag → profiling, benchmark
+- **Security**: XSS/CSRF/SQLi/auth bypass → chạy security checklist (`skills/webs-security/SKILL.md`)
 - **Database**: query lỗi → EXPLAIN ANALYZE
 
 ### Bước 2: Tái hiện — verbose mode, minimal reproduction
