@@ -1,10 +1,63 @@
 # pxhopencode — AI Company cho Vibe Coding
 
-ver39 — Release · 39 commits · 11 AI agents · 4-tier runtime · 8 workflows · 31 skills · 162 templates
+```
+ver39 · 39 commits · 11 AI agents · 4-tier runtime · 8 workflows · 31 skills · 162 templates
+```
+
+---
+
+## Kiến trúc Runtime 4 Tầng
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  T1 ─ INTERFACE ─── pxh-help ─────────────────────────────────────────── │
+│    ↓ Request                                                             │
+│  T2 ─ ORCHESTRATION ─ pxh-pm ──────────── retry/recovery/reflection ──── │
+│    ↓ Task                      ↑ Result                                  │
+│  T3 ─ WORKERS ─── 8 agents ───────────────────────────────────────────── │
+│    ↓ Event                                                               │
+│  T4 ─ INFRASTRUCTURE ─ pxh-save-history ─ state/checkpoint/log ──────── │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Luồng dữ liệu
+
+```
+User Prompt → T1 (Validate) → T2 (Route) → T3 (Execute) → T2 (Eval) → T1 (Response) → User
+                                                        ↘              ↙
+                                                    T4 (Persist)
+```
+
+### Trách nhiệm
+
+| Tầng | Agent | Vai trò |
+|------|-------|---------|
+| **T1** Interface | `pxh-help` | Validate input, format output |
+| **T2** Orchestration | `pxh-pm` | Route task, track state, enforce policy |
+| **T3** Workers | 8 agents | Thực thi domain (code, test, review, build...) |
+| **T4** Infrastructure | `pxh-save-history` | Persist state, checkpoint, log |
 
 ---
 
 ## 11 Agents
+
+```
+T1 ──────────────────────────────────
+│ pxh-help      Hướng dẫn workflow
+
+T2 ──────────────────────────────────
+│ pxh-pm        Điều phối, routing, policy
+
+T3 ──────────────────────────────────
+│ pxh-architect  pxh-expert       pxh-fix-bugs
+│ pxh-qa         pxh-review-code  pxh-devops
+│ pxh-mod-apk    pxh-ui-ux
+
+T4 ──────────────────────────────────
+│ pxh-save-history  State, checkpoint, recovery
+```
+
+### Chi tiết
 
 | Agent | Tầng | Role | Dùng khi |
 |-------|------|------|----------|
@@ -15,22 +68,12 @@ ver39 — Release · 39 commits · 11 AI agents · 4-tier runtime · 8 workflows
 | `pxh-qa` | T3 | Test, validate | Chạy test, verify chất lượng |
 | `pxh-review-code` | T3 | Security, perf, convention | Code review, audit |
 | `pxh-devops` | T3 | Lint → typecheck → test → build | Build pipeline, release |
-| `pxh-mod-apk` | T3 | Reverse engineering, patch smali/dex, repack | Mod APK/XAPK game/app |
+| `pxh-mod-apk` | T3 | Reverse engineering, patch smali/dex | Mod APK/XAPK game/app |
 | `pxh-ui-ux` | T3 | UI/UX design (web, game HUD, CLI) | Layout, responsive, accessibility |
 | `pxh-save-history` | T4 | State, checkpoint, recovery | Lưu session, phục hồi lỗi |
 | `pxh-help` | T1 | Hướng dẫn workflow | Cần trợ giúp, chưa biết bắt đầu |
 
-## Runtime 4 Tầng
-
-```
-T1 (Interface) → Request → T2 (Orchestration) → Task → T3 (Workers: 8 agents) → Result → T2 → Response → T1
-Mọi tầng → Event → T4 (Infrastructure)
-```
-
-- **T1** — `pxh-help`: Validate input, format output
-- **T2** — `pxh-pm`: Route task, track state, enforce policy (retry/recovery/reflection)
-- **T3** — 8 workers: architect, expert, fix-bugs, qa, review-code, devops, mod-apk, ui-ux
-- **T4** — `pxh-save-history`: Persist state, checkpoint, log
+---
 
 ## 8 Workflows · 10 Commands
 
@@ -47,100 +90,157 @@ Mọi tầng → Event → T4 (Infrastructure)
 | `/meeting` | `workflows/meeting.workflow.md` | Họp agents thảo luận giải pháp |
 | `/release` | `workflows/release.workflow.md` | Build pipeline: lint → test → build |
 
+---
+
 ## 31 Skills
 
 ### Web (8)
-| Skill | File | Dùng cho |
-|-------|------|----------|
-| frontend | `skills/webs-frontend/SKILL.md` | React, component, hooks, data fetching |
-| backend | `skills/webs-backend/SKILL.md` | Next.js App Router, Express, FastAPI |
-| database | `skills/webs-database/SKILL.md` | Prisma, PostgreSQL, migration, N+1 fix |
-| auth | `skills/webs-auth/SKILL.md` | Auth.js, OAuth, JWT, RBAC, CSRF |
-| styling | `skills/webs-styling/SKILL.md` | Tailwind, design system, responsive, dark mode |
-| testing | `skills/webs-testing/SKILL.md` | Vitest, Playwright E2E, MSW mock |
-| deployment | `skills/webs-deployment/SKILL.md` | Vercel, Docker, CI/CD, canary |
-| security | `skills/webs-security/SKILL.md` | XSS, CSRF, SQLi, rate limit, secure headers |
+
+| Skill | Dùng cho |
+|-------|----------|
+| frontend `webs-frontend` | React, component, hooks, data fetching |
+| backend `webs-backend` | Next.js App Router, Express, FastAPI |
+| database `webs-database` | Prisma, PostgreSQL, migration, N+1 fix |
+| auth `webs-auth` | Auth.js, OAuth, JWT, RBAC, CSRF |
+| styling `webs-styling` | Tailwind, design system, responsive, dark mode |
+| testing `webs-testing` | Vitest, Playwright E2E, MSW mock |
+| deployment `webs-deployment` | Vercel, Docker, CI/CD, canary |
+| security `webs-security` | XSS, CSRF, SQLi, rate limit, secure headers |
 
 ### Game (11)
-| Skill | File | Engine |
-|-------|------|--------|
-| core | `skills/games-core/SKILL.md` | Game loop, scene, asset loader, input, FSM |
-| 2d | `skills/games-2d/SKILL.md` | Phaser 3: player, enemy, bullet pool, tilemap |
-| 3d | `skills/games-3d/SKILL.md` | Three.js: lighting, camera, shooting, AI |
-| isometric | `skills/games-isometric/SKILL.md` | 2.5D: tile engine, depth sort, pathfinding |
-| physics | `skills/games-physics/SKILL.md` | AABB, spatial hash, raycast, response |
-| audio | `skills/games-audio/SKILL.md` | Web Audio API pool, spatial 3D, compression |
-| assets | `skills/games-assets/SKILL.md` | Free sprites, 3D models, sounds, fonts + auto-download |
-| optimization | `skills/games-optimization/SKILL.md` | Object pool, instancing, LOD, 60 FPS mobile |
-| testing | `skills/games-testing/SKILL.md` | Vitest + headless Phaser/Three.js |
-| pwa | `skills/games-pwa/SKILL.md` | Manifest, service worker, offline, install |
-| deploy | `skills/games-deploy/SKILL.md` | GitHub Pages, Itch.io, Vercel, CI/CD |
+
+| Skill | Engine |
+|-------|--------|
+| core `games-core` | Game loop, scene, asset loader, input, FSM |
+| 2d `games-2d` | Phaser 3: player, enemy, bullet pool, tilemap |
+| 3d `games-3d` | Three.js: lighting, camera, shooting, AI |
+| isometric `games-isometric` | 2.5D: tile engine, depth sort, pathfinding |
+| physics `games-physics` | AABB, spatial hash, raycast, response |
+| audio `games-audio` | Web Audio API pool, spatial 3D, compression |
+| assets `games-assets` | Free sprites, 3D models, sounds, fonts + auto-download |
+| optimization `games-optimization` | Object pool, instancing, LOD, 60 FPS mobile |
+| testing `games-testing` | Vitest + headless Phaser/Three.js |
+| pwa `games-pwa` | Manifest, service worker, offline, install |
+| deploy `games-deploy` | GitHub Pages, Itch.io, Vercel, CI/CD |
 
 ### AI (5)
-| Skill | File | Mục đích |
-|-------|------|----------|
-| agents | `skills/ais-agents/SKILL.md` | Tool registry, multi-step reasoning, memory |
-| llm | `skills/ais-llm/SKILL.md` | Chat, streaming SSE, function calling, cost |
-| rag | `skills/ais-rag/SKILL.md` | Ingestion, chunking, embedding, hybrid search |
-| prompts | `skills/ais-prompts/SKILL.md` | Template, versioning, A/B test, injection defense |
-| production | `skills/ais-production/SKILL.md` | Caching, rate limit, fallback, monitoring |
+
+| Skill | Mục đích |
+|-------|----------|
+| agents `ais-agents` | Tool registry, multi-step reasoning, memory |
+| llm `ais-llm` | Chat, streaming SSE, function calling, cost |
+| rag `ais-rag` | Ingestion, chunking, embedding, hybrid search |
+| prompts `ais-prompts` | Template, versioning, A/B test, injection defense |
+| production `ais-production` | Caching, rate limit, fallback, monitoring |
 
 ### Tool (5)
-| Skill | File | Dùng cho |
-|-------|------|----------|
-| cli | `skills/tools-cli/SKILL.md` | Commander, clap, click, spinner, progress |
-| extensions | `skills/tools-extensions/SKILL.md` | VS Code extension: commands, views, providers |
-| codegen | `skills/tools-codegen/SKILL.md` | Scaffold, component generator, Plop.js |
-| automation | `skills/tools-automation/SKILL.md` | File watcher, batch processor, pipeline |
-| packaging | `skills/tools-packaging/SKILL.md` | npm, Cargo, PyPI, Docker, Homebrew |
 
-### Mod (1)
-| Skill | File | Kỹ thuật |
-|-------|------|----------|
+| Skill | Dùng cho |
+|-------|----------|
+| cli `tools-cli` | Commander, clap, click, spinner, progress |
+| extensions `tools-extensions` | VS Code extension: commands, views, providers |
+| codegen `tools-codegen` | Scaffold, component generator, Plop.js |
+| automation `tools-automation` | File watcher, batch processor, pipeline |
+| packaging `tools-packaging` | npm, Cargo, PyPI, Docker, Homebrew |
+
+### Chuyên biệt
+
+| Skill | File | Kỹ thuật / Áp dụng |
+|-------|------|-------------------|
 | apk | `skills/mod-apk/SKILL.md` | Reverse engineering, smali patch, anti-tamper bypass, Unity il2cpp, Frida, split APK |
-
-### UI/UX (1)
-| Skill | File | Áp dụng |
-|-------|------|---------|
 | design | `skills/ui-ux/SKILL.md` | Web (Tailwind/React), Game (Phaser HUD), Tool (CLI output), accessibility |
 
 ---
 
 ## Cách dùng
 
-```
-# Prompt trực tiếp — pxh-pm tự động phân tích → chọn workflow → code → test → release
+### Prompt trực tiếp
+
+```bash
+# pxh-pm tự động phân tích → chọn workflow → code → test → release
 "Làm một web app TODO list với Next.js"
+```
 
-# Lệnh / — gọi workflow cụ thể
-/vibe "Game bắn súng 2D, có shop, 10 level"
-/debug "APK crash ngay khi mở, check log"
-/mod "Mod game online, bypass premium"
-/ui-ux "Fix responsive layout và dark mode"
+### Lệnh `/`
 
-# @agent — gọi agent trực tiếp kèm Task contract
+```bash
+/vibe   "Game bắn súng 2D, có shop, 10 level"
+/debug  "APK crash ngay khi mở, check log"
+/mod    "Mod game online, bypass premium"
+/ui-ux  "Fix responsive layout và dark mode"
+```
+
+### @agent — gọi trực tiếp kèm Task contract
+
+```bash
 @pxh-expert với phase=code target=./src context="Thêm API route GET /users"
 @pxh-mod-apk với phase=mod target=./mod context="Patch isPurchased return true"
 ```
 
-### Luồng khi dùng prompt/lệnh
-1. User gõ prompt hoặc `/lệnh`
-2. `pxh-pm` (T2) phân tích loại, chọn workflow
-3. Nếu phức tạp → họp `@pxh-architect` + `@pxh-expert` + `@pxh-qa` + `@pxh-devops`
-4. Route task đến worker phù hợp (T3)
-5. Worker thực thi trong TARGET, tự kiểm tra, trả Result
-6. Lặp Code → Test → Fix → Review → Build (max 3 vòng)
-7. `pxh-save-history` (T4) lưu session, ADR, bug report
+---
 
-### Chính sách
-- **Retry**: Exponential backoff (1s, 2s, 4s), max 3 lần cho lỗi tạm thời
-- **Recovery**: Checkpoint-based resume/rollback khi lỗi permanent
-- **Reflection**: 4 mức (Task/Phase/Workflow/Incident) ghi vào session log
+## Luồng xử lý
 
-## Key
+```
+User Prompt / Lệnh / @agent
+         │
+         ▼
+┌─────────────────┐
+│  T1: pxh-help   │  Validate input
+└────────┬────────┘
+         │ Request
+         ▼
+┌─────────────────┐
+│  T2: pxh-pm     │  Phân tích loại → chọn workflow
+│                 │  Nếu phức tạp → họp architect + expert + qa + devops
+└────────┬────────┘
+         │ Task
+         ▼
+┌──────────────────────┐
+│  T3: Worker phù hợp  │  Thực thi trong TARGET
+│                      │  Tự kiểm tra → trả Result
+└────────┬─────────────┘
+         │ Result
+         ▼
+┌─────────────────┐
+│  T2: pxh-pm     │  Evaluate → nếu OK thì Response
+│                 │  Nếu lỗi → retry/recovery
+└──┬──────────┬───┘
+   │ Event     │ Response
+   ▼           ▼
+┌────────┐ ┌──────────┐
+│  T4    │ │  T1      │ → User
+│ Save   │ │ Response │
+│History │ └──────────┘
+└────────┘
+```
+
+### Vòng lặp Code → Test → Fix → Review → Build
+
+```
+Code → Test ── pass ──→ Review ── pass ──→ Build ✓
+  ↑         │ fail              │ fail
+  │         ▼                   ▼
+  └── Fix ←┘         └── Fix ←┘
+                    (max 3 vòng)
+```
+
+---
+
+## Chính sách
+
+| Policy | Cơ chế | Giới hạn |
+|--------|--------|----------|
+| **Retry** | Exponential backoff (1s → 2s → 4s) | Max 3 lần, lỗi tạm thời |
+| **Recovery** | Checkpoint-based resume / rollback | Lỗi permanent |
+| **Reflection** | 4 mức: Task → Phase → Workflow → Incident | Ghi vào session log |
+
+---
+
+## Key Concepts
+
 - **Context Budget**: T0→T3 loading, lazy skill/template, batch ops
 - **Genre Reference**: `_shared/game-genre-reference.md`
 - **Headless testing**: Vitest + headless Phaser/Three.js, không cần server
 - **Code preservation**: Chỉ tác động trong TARGET
 - **Templates**: `_shared/templates/` (status, session, gitignore, bug-report, adr)
-
