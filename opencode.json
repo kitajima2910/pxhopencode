@@ -43,6 +43,10 @@
     "pxh-save-history": {
       "description": "[Tầng 4 — Hạ tầng] Thư ký lưu lịch sử. Persist state, checkpoint, phục vụ recovery. Xem runtime/layers/04-infrastructure.md.",
       "mode": "subagent"
+    },
+    "pxh-mod-apk": {
+      "description": "[Tầng 3 — Nhân công / Mod APK] Reverse engineering APK/XAPK, decompile với apktool/jadx, patch smali/dex, repack & sign. Xem runtime/layers/03-worker.md.",
+      "mode": "subagent"
     }
   },
 
@@ -78,6 +82,10 @@
     "tool": {
       "description": "Phát triển CLI, automation, extension, package",
       "template": "workflows/tool.workflow.md"
+    },
+    "mod": {
+      "description": "Mod APK/XAPK — decompile, patch smali, bypass anti-tamper, repack & sign. Hỗ trợ game online/offline, Unity, Cocos, Flutter.",
+      "template": "workflows/debug.workflow.md"
     }
   }
 }

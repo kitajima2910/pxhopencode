@@ -48,6 +48,7 @@ Mọi phase hoàn tất → tạo Response contract → gửi đến Tầng 1
 | test | `pxh-qa` | Task → Result | Thử lại, Phản ánh |
 | review | `pxh-review-code` | Task → Result | Thử lại, Phản ánh |
 | build | `pxh-devops` | Task → Result | Thử lại, Phục hồi, Phản ánh |
+| mod | `pxh-mod-apk` | Task → Result | Thử lại, Phản ánh |
 | persist | `pxh-save-history` | Event → Confirmed | Phục hồi |
 
 ## FEEDBACK LOOP — Phản hồi cấu trúc giữa các worker
