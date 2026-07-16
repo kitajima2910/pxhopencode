@@ -45,6 +45,7 @@ Debug frontend (không cần browser):
 
 > ⚠️ **LUẬT BẮT BUỘC**: Giữ nguyên cấu trúc smali gốc. Chỉ patch đúng mục tiêu. Không xoá file lạ. Luôn backup bản gốc.
 > 📖 **SKILL VIP**: `skills/mod-apk/SKILL.md` — chứa toàn bộ kiến thức hacker từ cơ bản đến nâng cao.
+> 🎯 **Cách tiếp cận**: Chỉ edit + code review. Không rebuild, không sign, không install — debug bằng mắt đọc smali/JS/dex.
 
 ### PHASE 1 — Phân tích & Xác định mục tiêu
 
@@ -104,7 +105,7 @@ Game online thường có server validation:
 | .apks / .apkm | Giải nén → mod base.apk → install-multiple | Skill #8 |
 | AAB | bundletool → .apks → mod | Skill #8 |
 
----
+
 
 ## UI/UX Debug — Web, Game, Tool
 
