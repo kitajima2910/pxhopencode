@@ -1,6 +1,6 @@
 # pxhopencode — AI Company cho Vibe Coding
 
-11 AI agents · 4-tier runtime · 8 workflows · 31 skills · 162 templates
+ver39 — Release · 39 commits · 11 AI agents · 4-tier runtime · 8 workflows · 31 skills · 162 templates
 
 ---
 
@@ -158,5 +158,4 @@ pxhopencode/
 ├── workflows/                 # 8 workflow .md templates (10 commands)
 ├── skills/                    # 31 skill directories (mỗi skill có SKILL.md)
 ├── _shared/                   # Templates, scripts, references
-└── .opencode/                 # Status, session logs (auto-gen bởi opencode runtime)
 ```
