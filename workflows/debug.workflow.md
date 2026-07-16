@@ -15,6 +15,7 @@
 - **Security**: XSS/CSRF/SQLi/auth bypass → chạy security checklist (`skills/webs-security/SKILL.md`)
 - **Database**: query lỗi → EXPLAIN ANALYZE
 - **Mod**: APK không chạy/decompile lỗi/smali syntax → đọc log, kiểm tra cấu trúc smali/dex, verify signature
+- **UX**: UI lệch/màu sai/FOUC/accessibility → responsive, dark mode, contrast, keyboard nav
 
 ### Bước 2: Tái hiện — verbose mode, minimal reproduction
 
@@ -153,3 +154,56 @@ copy TARGET/modded-aligned-debugSigned.apk TARGET/output/
 # Ghi lại log những file smali đã sửa
 # Nếu có obb: ghi chú version obb cần copy
 ```
+
+---
+
+## UI/UX Debug — Web, Game, Tool
+
+> 📖 **SKILL**: `skills/ui-ux/SKILL.md` — toàn bộ kiến thức UI/UX cho web (Tailwind/React), game (Phaser HUD), tool (CLI output).
+
+### Chuẩn đoán nhanh
+
+| Triệu chứng | Loại | Cách debug |
+|-------------|------|-----------|
+| Layout lệch trên mobile | Web | Thêm border debug: `* { outline: 1px solid red }` |
+| Dark mode không áp dụng | Web | Check `class="dark"` trên `<html>`, kiểm tra `dark:` variant |
+| Game HUD lệch màn hình | Game | `setScrollFactor(0)` chưa? Scale mode `Phaser.Scale.FIT`? |
+| Touch không hoạt động | Game | DOM overlay có `pointer-events: none`? Button zone ≥ 48×48? |
+| Output CLI loãng | Tool | Nhóm section, thêm divider, màu sắc rõ ràng |
+| Progress bar nhấp nháy | Tool | Update ≤ 10 lần/s, dùng `\r` đúng cách |
+
+### Web — Debug responsive & FOUC
+
+```bash
+# Responsive: resize trình duyệt hoặc dùng DevTools device toolbar
+# FOUC: thêm ?debug vào URL, kiểm tra CSS load order
+# Dark mode flash: kiểm tra <script> blocking trong <head>
+```
+
+### Game — Debug HUD & touch
+
+```typescript
+// Bật debug HUD
+hudContainer.style.outline = '2px solid cyan'
+// Kiểm tra scroll factor
+console.log(text.scrollFactorX, text.scrollFactorY) // phải = 0
+// Touch zone test: thêm background màu để thấy vùng chạm
+touchZone.setInteractive({ hitArea: new Phaser.Geom.Rectangle(0, 0, 48, 48), useHandCursor: true })
+```
+
+### Tool — Debug CLI output
+
+```bash
+# Test với NO_COLOR để check fallback
+$env:NO_COLOR = "1"; node tool.js
+# Test verbose mode
+tool.js --verbose
+# Kiểm tra progress bar frequency
+Measure-Command { tool.js }
+```
+
+### Route đến agent
+- Web UI/UX → `@pxh-ui-ux` với Task contract (context: mô tả bug + screenshot/mockup)
+- Game HUD → `@pxh-ui-ux` + `@pxh-expert` (via T2)
+- Tool CLI → `@pxh-ui-ux` với output sample
+- Xem `skills/ui-ux/SKILL.md` cho checklist cross-platform

@@ -8,7 +8,7 @@ Kiến trúc điều phối phân tầng (theo Microsoft Agent Mode). Mỗi tầ
 |------|-----|-------------|-------|
 | 1 | Giao diện | Xác thực đầu vào, định dạng output | `pxh-help`, user prompt |
 | 2 | Điều phối | Route tasks, quản lý luồng, theo dõi state, thi hành policy | `pxh-pm` |
-| 3 | Nhân công | Thực thi domain (thiết kế, code, fix, test, review, build) | 6 agents |
+| 3 | Nhân công | Thực thi domain (thiết kế, code, fix, test, review, build, mod, ui-ux) | 8 agents |
 | 4 | Hạ tầng | Lưu state, log, checkpoint, artifact | `pxh-save-history` |
 
 ### Quy tắc cách ly tầng
@@ -21,7 +21,7 @@ Kiến trúc điều phối phân tầng (theo Microsoft Agent Mode). Mỗi tầ
 
 **User Prompt → Tầng 1 (Interface) → Tầng 2 (Orchestration) → Tầng 3 (Worker) → Tầng 4 (Infrastructure) → Tầng 2 (Evaluate) → Tầng 1 (Response) → User**
 
-Chi tiết: `runtime/layers/` (4 files), `contracts/README.md`, `policies/` (3 files)
+Chi tiết: `runtime/layers/` (4 files), `contracts/README.md`, `policies/` (3 files: retry, recovery, reflection)
 
 ## Contract giao tiếp
 

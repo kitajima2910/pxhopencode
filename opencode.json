@@ -47,6 +47,10 @@
     "pxh-mod-apk": {
       "description": "[Tầng 3 — Nhân công / Mod APK] Reverse engineering APK/XAPK, decompile với apktool/jadx, patch smali/dex, repack & sign. Xem runtime/layers/03-worker.md.",
       "mode": "subagent"
+    },
+    "pxh-ui-ux": {
+      "description": "[Tầng 3 — Nhân công / UI/UX] Thiết kế giao diện & trải nghiệm người dùng cho Web, Game, Tool. CSS/Tailwind layout, game HUD/UI, CLI output. Xem skills/ui-ux/SKILL.md.",
+      "mode": "subagent"
     }
   },
 

@@ -49,6 +49,7 @@ Mọi phase hoàn tất → tạo Response contract → gửi đến Tầng 1
 | review | `pxh-review-code` | Task → Result | Thử lại, Phản ánh |
 | build | `pxh-devops` | Task → Result | Thử lại, Phục hồi, Phản ánh |
 | mod | `pxh-mod-apk` | Task → Result | Thử lại, Phản ánh |
+| ui-ux | `pxh-ui-ux` | Task → Result | Thử lại, Phản ánh |
 | persist | `pxh-save-history` | Event → Confirmed | Phục hồi |
 
 ## FEEDBACK LOOP — Phản hồi cấu trúc giữa các worker
@@ -85,6 +86,6 @@ Review có issues → T2 → Expert fix (Task contract)
 - **Contracts:** `runtime/contracts/README.md` — Request (đầu vào), Task (đầu ra), Result (đầu vào), Response (đầu ra), Event (đầu ra), State (đầu vào)
 - **Workers:** `runtime/layers/03-worker.md` — Workers nhận Task routing
 - **Hạ tầng:** `runtime/layers/04-infrastructure.md` — Lưu trạng thái, checkpoint phục hồi
-- **Chính sách — Thử lại:** `runtime/policies/retry.md` — Áp dụng khi worker lỗi tạm thời
-- **Chính sách — Phục hồi:** `runtime/policies/recovery.md` — Áp dụng khi lỗi không thử lại được
-- **Chính sách — Phản ánh:** `runtime/policies/reflection.md` — Điều phối kích hoạt phản ánh sau mỗi phase
+- **Chính sách — Thử lại:** `policies/retry.md` — Áp dụng khi worker lỗi tạm thời
+- **Chính sách — Phục hồi:** `policies/recovery.md` — Áp dụng khi lỗi không thử lại được
+- **Chính sách — Phản ánh:** `policies/reflection.md` — Điều phối kích hoạt phản ánh sau mỗi phase
