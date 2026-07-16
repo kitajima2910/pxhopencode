@@ -144,18 +144,3 @@ Mọi tầng → Event → T4 (Infrastructure)
 - **Code preservation**: Chỉ tác động trong TARGET
 - **Templates**: `_shared/templates/` (status, session, gitignore, bug-report, adr)
 
-## Cấu trúc thư mục
-
-```
-pxhopencode/
-├── opencode.json              # Cấu hình: agents, commands, skills
-├── README.md                  # Tổng quan (file này)
-├── runtime/
-│   ├── README.md              # Kiến trúc 4 tầng
-│   ├── contracts/README.md    # 6 contract giao tiếp
-│   └── layers/                # 01-interface .. 04-infrastructure
-├── policies/                  # retry, recovery, reflection
-├── workflows/                 # 8 workflow .md templates (10 commands)
-├── skills/                    # 31 skill directories (mỗi skill có SKILL.md)
-├── _shared/                   # Templates, scripts, references
-```
