@@ -46,6 +46,10 @@ Debug frontend (không cần browser):
 > ⚠️ **LUẬT BẮT BUỘC**: Giữ nguyên cấu trúc smali gốc. Chỉ patch đúng mục tiêu. Không xoá file lạ. Luôn backup bản gốc.
 > 📖 **SKILL VIP**: `skills/mod-apk/SKILL.md` — chứa toàn bộ kiến thức hacker từ cơ bản đến nâng cao.
 
+### CHẾ ĐỘ MẶC ĐỊNH: Edit-only
+> `/mod` và `/debug` chỉ chạy **PHASE 1→5** (edit). Bỏ qua rebuild/sign/install/test (PHASE 6→10) — user có tool riêng cho các bước đó.
+> Nếu user yêu cầu full pipeline, dùng `@pxh-devops` để rebuild/sign/install/test.
+
 ### PHASE 1 — Chuẩn bị & Decompile
 
 ```bash
