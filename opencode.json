@@ -90,6 +90,10 @@
     "mod": {
       "description": "Mod APK/XAPK — decompile, patch smali, bypass anti-tamper, repack & sign. Hỗ trợ game online/offline, Unity, Cocos, Flutter.",
       "template": "workflows/debug.workflow.md"
+    },
+    "ui-ux": {
+      "description": "UI/UX design & debug — web (Tailwind/React responsive, dark mode), game (Phaser HUD, touch), tool (CLI output format).",
+      "template": "workflows/debug.workflow.md"
     }
   }
 }

@@ -32,7 +32,7 @@ Mọi tầng → Event → T4 (Infrastructure)
 - **T3** — 8 workers: architect, expert, fix-bugs, qa, review-code, devops, mod-apk, ui-ux
 - **T4** — `pxh-save-history`: Persist state, checkpoint, log
 
-## 8 Workflows
+## 8 Workflows · 10 Commands
 
 | Lệnh | Template | Mục đích |
 |------|----------|----------|
@@ -43,6 +43,7 @@ Mọi tầng → Event → T4 (Infrastructure)
 | `/tool` | `workflows/tool.workflow.md` | CLI, extension, automation, package |
 | `/debug` | `workflows/debug.workflow.md` | Debug + fix bug + mod APK |
 | `/mod` | `workflows/debug.workflow.md` | Mod APK/XAPK (alias của /debug) |
+| `/ui-ux` | `workflows/debug.workflow.md` | UI/UX design & debug cho web, game, tool |
 | `/meeting` | `workflows/meeting.workflow.md` | Họp agents thảo luận giải pháp |
 | `/release` | `workflows/release.workflow.md` | Build pipeline: lint → test → build |
 
@@ -115,6 +116,7 @@ Mọi tầng → Event → T4 (Infrastructure)
 /vibe "Game bắn súng 2D, có shop, 10 level"
 /debug "APK crash ngay khi mở, check log"
 /mod "Mod game online, bypass premium"
+/ui-ux "Fix responsive layout và dark mode"
 
 # @agent — gọi agent trực tiếp kèm Task contract
 @pxh-expert với phase=code target=./src context="Thêm API route GET /users"
@@ -153,8 +155,8 @@ pxhopencode/
 │   ├── contracts/README.md    # 6 contract giao tiếp
 │   └── layers/                # 01-interface .. 04-infrastructure
 ├── policies/                  # retry, recovery, reflection
-├── workflows/                 # 8 workflow .md templates
+├── workflows/                 # 8 workflow .md templates (10 commands)
 ├── skills/                    # 31 skill directories (mỗi skill có SKILL.md)
 ├── _shared/                   # Templates, scripts, references
-└── .opencode/                 # Status, session logs (auto-gen)
+└── .opencode/                 # Status, session logs (auto-gen bởi opencode runtime)
 ```
