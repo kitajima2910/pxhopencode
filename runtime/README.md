@@ -4,29 +4,12 @@
 
 Kiến trúc phân tầng (Microsoft Agent Mode). Giao tiếp qua contract.
 
-## Tổng quan
-
-| Tầng | Tên | Agent | Load khi |
-|------|-----|-------|----------|
-| 1 | Giao diện | `pxh-help` | Validate input / format output |
-| 2 | Điều phối | `pxh-pm` | Route task, state, policy |
-| 3 | Nhân công | 7 agents | Execute domain work |
-| 4 | Hạ tầng | `pxh-save-history` | Lưu state, checkpoint, log |
-
 ## Quy tắc cách ly
 
 1. Giao tiếp qua contract — không @mention trực tiếp
 2. Điều phối không thực thi; nhân công không điều phối
 3. Hạ tầng không quyết định; chỉ ghi lại
 4. Thêm tầng mới = 0 thay đổi tầng cũ
-
-## Luồng
-
-```
-User → T1(validate) → T2(route) → T3(execute) → T2(eval) → T1(response) → User
-                                        ↘              ↙
-                                      T4(persist)
-```
 
 ## Contracts (tóm tắt)
 

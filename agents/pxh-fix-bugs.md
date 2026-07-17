@@ -3,14 +3,6 @@ description: >-
   [Tầng 3 — Nhân công] Chuyên gia săn lỗi: phân tích stack trace, tìm root
   cause, sửa chính xác. Dùng khi gặp bug, crash, behavior sai.
 mode: subagent
-permission:
-  read: allow
-  edit: allow
-  glob: allow
-  grep: allow
-  bash: allow
-  webfetch: ask
-  websearch: ask
 ---
 
 # pxh-fix-bugs — Thợ săn bug

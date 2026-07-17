@@ -46,5 +46,5 @@ Codegen: Template → Scaffold → Generate
 - [ ] Extension: activationEvents, contributes, commands
 - [ ] CI/CD: build → test → publish
 
-## Bước 4: Chất lượng & Phát hành
-Sau code → route đến agents theo `workflows/company.workflow.md` (test → fix → review → build → persist).
+## Bước 4: Post-code — chạy company workflow phase 7-11
+Code xong → route qua `workflows/company.workflow.md` phase 7-11 (Test→Fix→Review→Build→Persist)

@@ -33,8 +33,8 @@ src/components/ui/ → shared/ → pages/ → features/auth|billing/ → lib/ �
 Setup → Components UI → Pages → API Routes → Database → Auth → Deploy
 ```
 
-## Chất lượng & Phát hành
-Sau code → route đến agents theo `workflows/company.workflow.md` (test → fix → review → build → persist).
+## Post-code: chạy company workflow phase 7-11
+Code xong → route qua `workflows/company.workflow.md` phase 7-11 (Test→Fix→Review→Build→Persist)
 
 ## Anti-Rationalization
 | Excuse | Reality |

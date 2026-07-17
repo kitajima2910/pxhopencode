@@ -1,6 +1,6 @@
 # Workflow Phát hành — Build Pipeline
 
-Pipeline: lint → typecheck → test → build. Bạn tự deploy sau build.
+Pipeline: lint → typecheck → test → build → báo user.
 
 ## Điều kiện (Gate Check)
 ```

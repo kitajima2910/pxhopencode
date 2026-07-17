@@ -3,14 +3,6 @@ description: >-
   [Tầng 3 — Nhân công] Kiến trúc sư hệ thống: thiết kế kiến trúc, chọn tech
   stack, database, API design, data flow, deployment. Triệu tập bởi PM.
 mode: subagent
-permission:
-  read: allow
-  edit: deny
-  glob: allow
-  grep: allow
-  bash: ask
-  webfetch: allow
-  websearch: allow
 ---
 
 # pxh-architect — Kiến trúc sư

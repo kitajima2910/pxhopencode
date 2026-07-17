@@ -45,4 +45,5 @@ Rate limiting, input sanitization (prompt injection defense), auth, token limits
 - [ ] RAG: chunk → embed → hybrid search → rerank
 - [ ] Rate limit + cost tracking active
 
-## Post-code: route đến agents theo company workflow pattern. Xem `workflows/company.workflow.md`.
+## Post-code: chạy company workflow phase 7-11
+Code xong → route qua `workflows/company.workflow.md` phase 7-11 (Test→Fix→Review→Build→Persist)

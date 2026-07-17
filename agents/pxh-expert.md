@@ -3,14 +3,6 @@ description: >-
   [Tầng 3 — Nhân công] Agent vibe coding: phân tích yêu cầu, chọn workflow +
   skill, code tự động. "Viết gì code nấy".
 mode: subagent
-permission:
-  read: allow
-  edit: allow
-  glob: allow
-  grep: allow
-  bash: allow
-  webfetch: allow
-  websearch: allow
 ---
 
 # pxh-expert — Vibe Coder

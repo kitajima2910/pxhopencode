@@ -10,15 +10,19 @@
 | 2 | PHÂN TÍCH | T2 | Tech stack, quy mô | Đủ info để chọn workflow? Thiếu→hỏi |
 | 3 | HỌP | T2→@meeting | Đồng thuận tech stack | ADR ghi lại quyết định |
 | 4 | KẾ HOẠCH | T2 | Feature list, milestones | Mọi feature có acceptance criteria |
-| 5 | THIẾT KẾ | @architect | Schema, API, component tree | Thiết kế review bởi T2 trước code |
-| 6 | CODE | @expert/@ui-ux | Code trong TARGET | .gitignore + favicon + lint pass |
+| 5 | THIẾT KẾ | @pxh-architect | Schema, API, component tree | Thiết kế review bởi T2 trước code |
+| 6 | CODE | @pxh-expert/@pxh-ui-ux | Code trong TARGET | .gitignore + favicon + lint pass |
 | 7 | KIỂM TRA | @qa | Test results | Coverage ≥ 80%, all green |
 | 8 | SỬA | @fix-bugs | Bug fix | Root cause doc, test confirm fix |
 | 9 | RÀ SOÁT | @review-code | Review issues | Critical=0, max 3 nit còn lại |
 | 10 | PHÁT HÀNH | @devops | Build artifact | lint→typecheck→test→build pass |
 | 11 | LƯU | @save-history | Session log, ADR | STATUS.md updated |
 
-Vòng lặp: Code→Test→Fix (max 3), Review→Fix→Test (max 3). Quá → báo user.
+### Loop mechanism
+- Code→Test→Fix: nếu test fail → quay lại Bước 6 (max 3 lần)
+- Review→Fix→Test: nếu critical issue → quay lại Bước 8 (max 3 lần)
+- Build fail → quay lại Bước 6 (max 3 lần)
+- Quá 3 lần → báo user
 
 ## Anti-Rationalization
 

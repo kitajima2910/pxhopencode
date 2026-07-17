@@ -130,6 +130,9 @@ Pre-deploy: build success, < 10MB, source maps tắt, PWA ≥ 90, FPS ≥ 55/30,
 - [ ] Asset downloaded, animation states (idle/run/jump/attack/hurt/die)
 - [ ] Quality pass: unit test, coverage, FPS, memory leak
 
+## Post-code: chạy company workflow phase 7-11
+Code xong → route qua `workflows/company.workflow.md` phase 7-11 (Test→Fix→Review→Build→Persist)
+
 ## Game Design & References
 - **Genre Reference (mọi thể loại)**: `skills/_shared/game-genre-reference.md`
 - 2D design: `skills/games-2d/game-design-h5-2d.md`

@@ -3,14 +3,6 @@ description: >-
   [Tầng 1 — Giao diện] Tư vấn chọn workflow, validate input, chuyển
   thành Request contract cho Orchestration. KHÔNG code.
 mode: primary
-permission:
-  read: allow
-  edit: deny
-  bash: ask
-  glob: allow
-  grep: allow
-  webfetch: allow
-  websearch: allow
 ---
 
 # pxh-help — Hướng dẫn chọn workflow

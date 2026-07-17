@@ -41,24 +41,6 @@ User Prompt → T1 (Validate) → T2 (Route) → T3 (Execute) → T2 (Eval) → 
 
 ## 10 Agents
 
-```
-T1 ──────────────────────────────────
-│ pxh-help      Hướng dẫn workflow
-
-T2 ──────────────────────────────────
-│ pxh-pm        Điều phối, routing, policy
-
-T3 ──────────────────────────────────
-│ pxh-architect  pxh-expert       pxh-fix-bugs
-│ pxh-qa         pxh-review-code  pxh-devops
-│ pxh-ui-ux
-
-T4 ──────────────────────────────────
-│ pxh-save-history  State, checkpoint, recovery
-```
-
-### Chi tiết
-
 | Agent | Tầng | Role | Dùng khi |
 |-------|------|------|----------|
 | `pxh-pm` | T2 | Điều phối, routing, policy | Chạy lệnh `/`, giao việc tự động |
@@ -76,76 +58,23 @@ T4 ─────────────────────────�
 
 ## 8 Workflows · 9 Commands
 
-| Lệnh | Template | Mục đích |
-|------|----------|----------|
-| `/vibe` | `workflows/company.workflow.md` | Tự động chạy toàn bộ quy trình (phân tích → thiết kế → code → test → review → build) |
-| `/web` | `workflows/web.workflow.md` | Phát triển web app (React, Next.js, Express, FastAPI) |
-| `/game` | `workflows/game.workflow.md` | Phát triển game HTML5 (Phaser 2D, Isometric, Three.js 3D) |
-| `/ai` | `workflows/ai.workflow.md` | Ứng dụng AI (chatbot, RAG, agent, LLM) |
-| `/tool` | `workflows/tool.workflow.md` | CLI, extension, automation, package |
-| `/debug` | `workflows/debug.workflow.md` | Debug + fix bug |
-| `/ui-ux` | `workflows/debug.workflow.md` | UI/UX design & debug cho web, game, tool |
-| `/meeting` | `workflows/meeting.workflow.md` | Họp agents thảo luận giải pháp |
-| `/release` | `workflows/release.workflow.md` | Build pipeline: lint → test → build |
+| Lệnh | Mục đích |
+|------|----------|
+| `/vibe` | Toàn bộ quy trình (phân tích → code → test → review → build) |
+| `/web` | Web app (React, Next.js, Express, FastAPI) |
+| `/game` | Game HTML5 (Phaser 2D, Isometric, Three.js 3D) |
+| `/ai` | Chatbot, RAG, agent, LLM |
+| `/tool` | CLI, extension, automation, package |
+| `/debug` | Debug + fix bug |
+| `/ui-ux` | UI/UX design & debug cho web, game, tool |
+| `/meeting` | Họp agents thảo luận |
+| `/release` | Build pipeline: lint → test → build |
 
 ---
 
 ## 30 Skills
 
-### Web (8)
-
-| Skill | Dùng cho |
-|-------|----------|
-| frontend `webs-frontend` | React, component, hooks, data fetching |
-| backend `webs-backend` | Next.js App Router, Express, FastAPI |
-| database `webs-database` | Prisma, PostgreSQL, migration, N+1 fix |
-| auth `webs-auth` | Auth.js, OAuth, JWT, RBAC, CSRF |
-| styling `webs-styling` | Tailwind, design system, responsive, dark mode |
-| testing `webs-testing` | Vitest, Playwright E2E, MSW mock |
-| deployment `webs-deployment` | Vercel, Docker, CI/CD, canary |
-| security `webs-security` | XSS, CSRF, SQLi, rate limit, secure headers |
-
-### Game (11)
-
-| Skill | Engine |
-|-------|--------|
-| core `games-core` | Game loop, scene, asset loader, input, FSM |
-| 2d `games-2d` | Phaser 3: player, enemy, bullet pool, tilemap |
-| 3d `games-3d` | Three.js: lighting, camera, shooting, AI |
-| isometric `games-isometric` | 2.5D: tile engine, depth sort, pathfinding |
-| physics `games-physics` | AABB, spatial hash, raycast, response |
-| audio `games-audio` | Web Audio API pool, spatial 3D, compression |
-| assets `games-assets` | Free sprites, 3D models, sounds, fonts + auto-download |
-| optimization `games-optimization` | Object pool, instancing, LOD, 60 FPS mobile |
-| testing `games-testing` | Vitest + headless Phaser/Three.js |
-| pwa `games-pwa` | Manifest, service worker, offline, install |
-| deploy `games-deploy` | GitHub Pages, Itch.io, Vercel, CI/CD |
-
-### AI (5)
-
-| Skill | Mục đích |
-|-------|----------|
-| agents `ais-agents` | Tool registry, multi-step reasoning, memory |
-| llm `ais-llm` | Chat, streaming SSE, function calling, cost |
-| rag `ais-rag` | Ingestion, chunking, embedding, hybrid search |
-| prompts `ais-prompts` | Template, versioning, A/B test, injection defense |
-| production `ais-production` | Caching, rate limit, fallback, monitoring |
-
-### Tool (5)
-
-| Skill | Dùng cho |
-|-------|----------|
-| cli `tools-cli` | Commander, clap, click, spinner, progress |
-| extensions `tools-extensions` | VS Code extension: commands, views, providers |
-| codegen `tools-codegen` | Scaffold, component generator, Plop.js |
-| automation `tools-automation` | File watcher, batch processor, pipeline |
-| packaging `tools-packaging` | npm, Cargo, PyPI, Docker, Homebrew |
-
-### Chuyên biệt
-
-| Skill | File | Kỹ thuật / Áp dụng |
-|-------|------|-------------------|
-| design | `skills/ui-ux/SKILL.md` | Web (Tailwind/React), Game (Phaser HUD), Tool (CLI output), accessibility |
+Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, Chuyên biệt 1)
 
 ---
 
@@ -177,37 +106,11 @@ T4 ─────────────────────────�
 ## Luồng xử lý
 
 ```
-User Prompt / Lệnh / @agent
-         │
-         ▼
-┌─────────────────┐
-│  T1: pxh-help   │  Validate input
-└────────┬────────┘
-         │ Request
-         ▼
-┌─────────────────┐
-│  T2: pxh-pm     │  Phân tích loại → chọn workflow
-│                 │  Nếu phức tạp → họp architect + expert + qa + devops
-└────────┬────────┘
-         │ Task
-         ▼
-┌──────────────────────┐
-│  T3: Worker phù hợp  │  Thực thi trong TARGET
-│                      │  Tự kiểm tra → trả Result
-└────────┬─────────────┘
-         │ Result
-         ▼
-┌─────────────────┐
-│  T2: pxh-pm     │  Evaluate → nếu OK thì Response
-│                 │  Nếu lỗi → retry/recovery
-└──┬──────────┬───┘
-   │ Event     │ Response
-   ▼           ▼
-┌────────┐ ┌──────────┐
-│  T4    │ │  T1      │ → User
-│ Save   │ │ Response │
-│History │ └──────────┘
-└────────┘
+Prompt → T1 (Validate) → Request → T2 (Route + Retry/Recover/Reflect)
+  → Task → T3 Workers (Code/Test/Fix/Review/Build) → Result
+  → T2 (Eval) → OK → T1 (Response) → User
+  ↕ (loops: max 3 retries)
+T4 (Persist: state/checkpoint/log)
 ```
 
 ### Vòng lặp Code → Test → Fix → Review → Build

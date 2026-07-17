@@ -65,6 +65,77 @@ const score = this.add.text(16, 16, 'Score: 0', { fontSize:'24px', color:'#fff',
 | Red | Error |
 | Dim | Meta, timestamp |
 
+### CLI Design System — pxhopencode Runtime
+
+> CLI output format cho hệ thống 4 tầng. Dùng cho mọi agent output.
+
+**1. Symbol Set (ASCII, không emoji)**
+
+| Ý nghĩa | Symbol | Code |
+|---------|--------|------|
+| Success | `✓` | `\u2713` |
+| Fail | `✗` | `\u2717` |
+| Running | `⏳` | `\u23F3` |
+| Arrow | `→` | `\u2192` |
+| Box T | `┌──┐` | `\u250C\u2500\u2510` |
+| Box B | `└──┘` | `\u2514\u2500\u2518` |
+
+Fallback (`$env:NO_COLOR`): `[>]`, `[x]`, `[ ]`.
+
+**2. Layout — 4 tầng**
+
+```
+┌─ T1 ──────────────────────────────────────────┐
+│ pxh-help  Validate input                        │
+│   → Request {type, target, context}             │
+└────────────────────────────────────────────────┘
+    ↓
+┌─ T2 ──────────────────────────────────────────┐
+│ pxh-pm   Phase: code→test→fix  Retry: 2/3 ⏳    │
+└────────────────────────────────────────────────┘
+    ↓
+┌─ T3 ──────────────────────────────────────────┐
+│ pxh-expert  ✓ Code generated  ✓ Tests pass      │
+└────────────────────────────────────────────────┘
+    ↓
+┌─ T4 ──────────────────────────────────────────┐
+│ pxh-save-history  ✓ Session saved               │
+└────────────────────────────────────────────────┘
+```
+
+Mỗi tầng = 1 box. Prefix `[T1]`, `[T2]`, `[T3]`, `[T4]`.
+
+**3. Contract Format**
+
+```
+Request  {type|target|context}           → 1 dòng
+Task     {phase|target|skills|workflow}  → ≤2 dòng
+Result   {status|artifacts[]}            → status + summary
+Response {status|summary}                → 1 dòng cuối
+```
+
+Không in raw JSON — tóm tắt 1-2 dòng.
+
+**4. Anti-Patterns**
+
+| Anti-pattern | Thay bằng |
+|-------------|-----------|
+| Emoji trong output | ASCII symbols |
+| Raw JSON contract | Tóm tắt 1-2 dòng |
+| Spam > 10Hz | Update ≤ 5 lần/s |
+| Không prefix tầng | `[T1]`, `[T2]`, ... |
+| Màu tuỳ tiện | NO_COLOR fallback |
+
+**5. Pre-delivery checklist**
+
+- [ ] Output prefix `[Tn]` mỗi dòng
+- [ ] Box ┌─┐ cho block multi-line
+- [ ] Contract tóm tắt, không raw JSON
+- [ ] status icon ✓/✗ đúng
+- [ ] `$env:NO_COLOR` fallback hoạt động
+- [ ] Progress ≤ 5Hz
+- [ ] Phân cách section rõ ràng
+
 ## Anti-Rationalization
 
 | Excuse | Reality |

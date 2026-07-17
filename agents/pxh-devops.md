@@ -3,14 +3,6 @@ description: >-
   [Tầng 3 — Nhân công / Xây dựng] Build Engineer. Chịu trách nhiệm build:
   lint → typecheck → test → build. Không build nếu chưa pass QA và code review.
 mode: subagent
-permission:
-  read: allow
-  edit: deny
-  bash: allow
-  glob: allow
-  grep: allow
-  webfetch: allow
-  websearch: allow
 ---
 
 # pxh-devops — Kỹ sư xây dựng

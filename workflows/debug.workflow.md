@@ -57,87 +57,12 @@ Debug frontend (không cần browser):
 - Sửa 1 file nhưng ảnh hưởng 5 file khác
 - Log output không có prefix layer `[T1]`, `[T2]`, ...
 
-## CLI Design System — pxhopencode Runtime
+## CLI Output
+Xem `skills/ui-ux/SKILL.md` (CLI Design System section) — symbol set, 4-tier layout, contract format, anti-patterns, pre-delivery checklist.
 
-> Thiết kế output cho hệ thống CLI 4 tầng. Dựa trên pattern: **Symbol Set + Layout + Contract Format → Pre-delivery checklist**.
-> 📖 SKILL: `skills/ui-ux/SKILL.md`
-
-### 1. Symbol Set (không emoji, dùng ASCII)
-
-| Ý nghĩa | Symbol | Code |
-|---------|--------|------|
-| Success | `✓` | `\u2713` |
-| Fail | `✗` | `\u2717` |
-| Running | `⏳` | `\u23F3` |
-| Arrow | `→` | `\u2192` |
-| Separator | `─` x 50 | `\u2500` |
-| Box T | `┌──┐` | `\u250C\u2500\u2510` |
-| Box B | `└──┘` | `\u2514\u2500\u2518` |
-
-Không dùng emoji. Fallback: `$env:NO_COLOR` = `[>]`, `[x]`, `[ ]`.
-
-### 2. Layout cho 4 tầng
-
-```
-┌─ T1 ──────────────────────────────────────────┐
-│ pxh-help  Validate input                       │
-│   → /debug "Fix crash on login"                │
-│   → Request {type:"debug", target:"./app.js"}   │
-└────────────────────────────────────────────────┘
-    ↓
-┌─ T2 ──────────────────────────────────────────┐
-│ pxh-pm   Analyze → Route → Track               │
-│   Phase: code → test → fix                     │
-│   Retry: 2/3  ⏳                                │
-└────────────────────────────────────────────────┘
-    ↓
-┌─ T3 ──────────────────────────────────────────┐
-│ pxh-expert  Execute in TARGET                   │
-│   ✓ Code generated (src/app.js)                 │
-│   ✓ Tests pass (12/12)                          │
-└────────────────────────────────────────────────┘
-    ↓
-┌─ T4 ──────────────────────────────────────────┐
-│ pxh-save-history  Persist state                 │
-│   ✓ Session saved (session_abc123.json)         │
-└────────────────────────────────────────────────┘
-```
-
-Mỗi tầng = 1 box riêng. Dùng `console.log` với prefix `[T1]`, `[T2]`, `[T3]`, `[T4]`.
-
-### 3. Contract Format — chuẩn output
-
-```
-Request:  {type|target|context}            → 1 dòng
-Task:     {phase|target|skills|workflow}   → tối đa 2 dòng
-Result:   {status|artifacts[]}             → status + summary
-Response: {status|summary}                 → 1 dòng output cuối
-Event:    {type|phase|reflection}          → log ẩn (T4)
-State:    {checkpoint|session_id}          → JSON file
-```
-
-Quy tắc: Không in contract raw JSON ra terminal—tóm tắt thành 1-2 dòng text.
-
-### 4. Anti-Patterns (cấm)
-
-| Anti-pattern | Hậu quả | Thay bằng |
-|-------------|---------|-----------|
-| Emoji trong output | Lỗi font trên terminal cũ | ASCII symbols |
-| Contract raw JSON | Nhiễu, khó đọc | Tóm tắt 1-2 dòng |
-| Spam progress > 10Hz | Rối terminal | Update ≤ 5 lần/s |
-| Không prefix tầng | Không biết ai output | `[T1]`, `[T2]`, ... |
-| Màu sắc tuỳ tiện | Khó đọc trên terminal đen/trắng | Dùng NO_COLOR fallback |
-
-### 5. Pre-delivery checklist
-
-- [ ] Output có prefix `[Tn]` ở mỗi dòng
-- [ ] Box ┌─┐ cho block multi-line (không cho 1 dòng)
-- [ ] Contract tóm tắt, không raw JSON
-- [ ] status icon (✓/✗) hiển thị đúng
-- [ ] `$env:NO_COLOR` fallback hoạt động
-- [ ] Progress update ≤ 5 lần/s
-- [ ] Phân cách section rõ ràng (─── dòng)
-
-### 6. Route debug UI
-- CLI output sai format → `@pxh-ui-ux` với sample output + mô tả lỗi
-- Web/Game UI bug → `skills/ui-ux/SKILL.md` + `@pxh-ui-ux`
+## Verification
+- [ ] Bug loại đã xác định, workflow phụ đúng
+- [ ] Minimal reproduction step-by-step
+- [ ] Root cause doc + fix ngắn nhất
+- [ ] Test confirm fix, không regression
+- [ ] CLI output format theo skills/ui-ux/SKILL.md

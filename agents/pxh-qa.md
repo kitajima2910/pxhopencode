@@ -4,14 +4,6 @@ description: >-
   tra chất lượng, validate tính năng, phát hiện bug, xác nhận fix. Không release
   nếu chưa pass QA.
 mode: subagent
-permission:
-  read: allow
-  glob: allow
-  grep: allow
-  bash: allow
-  edit: deny
-  webfetch: allow
-  websearch: allow
 ---
 
 # pxh-qa — Kỹ sư kiểm thử
