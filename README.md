@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v40</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 35 skills &nbsp;·&nbsp; 167 templates</p>
+  <b>v41</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 35 skills &nbsp;·&nbsp; 167 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -166,7 +166,19 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 ## Changelog
 
 <details>
-<summary><b>v40 — Architecture Hardening</b> (Latest)</summary>
+<summary><b>v41 — Godot Pro Max</b> (Latest)</summary>
+
+- **Add:** `godot-master` skill — Layer Cake architecture, 30 NEVER rules, perf budgets, Server API patterns (~3k tokens)
+- **Add:** 4 domain skills — `godot-2d`, `godot-3d`, `godot-gameplay`, `godot-ui` (each ~1-1.5k tokens)
+- **Add:** `pxh-godot.md` agent file, `workflows/godot.workflow.md`, `/godot` command
+- **Add:** Auto-route Godot — `pxh-help` classifier + `pxh-pm` route table + `agent-listing` + `skill-quickref`
+- **Update:** Upstream integration `github.com/thedivergentai/GD-Agentic-Skills` (96 skills, 982 scripts)
+- **Update:** `opencode.json` — 11 agents, 10 commands
+- **Fix:** README consistency — badge, agent count, workflow count, skills count
+</details>
+
+<details>
+<summary><b>v40 — Architecture Hardening</b></summary>
 
 - **Add:** `pxh-ui-ux.md` agent file, `_shared/arch-check.ps1`, `_shared/sync-readme.ps1`
 - **Add:** Observability & Alerting (T4), Contract versioning (`v:"1.0"`), CLI Design System
