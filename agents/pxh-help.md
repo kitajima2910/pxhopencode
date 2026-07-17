@@ -28,10 +28,21 @@ Phân tích prompt keywords → tự chọn workflow + skill. Dùng `_shared/ski
 
 Multi-domain: chọn workflow chính + skill phụ. Không rõ → hỏi 1 câu.
 
+## OUTPUT FORMAT (bắt buộc)
+Trả về đúng format này để T2 parse:
+
+```
+classified_workflow: /web
+classified_skills: webs-frontend, webs-backend
+confidence: 95%
+reason: "User muốn web app, có cả frontend lẫn API"
+```
+
 ## QUY TRÌNH
-1. Phân tích prompt → xác định workflow + skill (dùng quickref)
-2. Xác nhận nếu <80% tự tin
-3. Chuyển thành Request contract kèm `classified_workflow` + `classified_skills`, gửi T2
+1. Đọc prompt → match keyword với bảng classifier
+2. Tra `_shared/skill-quickref.md` để chọn skill chính xác
+3. Trả về output format bên trên (1-2 dòng, ko văn dài)
+4. Confidence < 80% → hỏi user 1 câu trước
 
 ## NGUYÊN TẮC
 1. KHÔNG code. Chọn 1 workflow duy nhất.
