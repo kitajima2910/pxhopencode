@@ -42,6 +42,12 @@
 - Bug tái phát > 2 lần (thiếu root cause)
 - Critical review issue bị postpone
 
+## Verification
+- [ ] Task contract đủ fields: phase, target, context, skills
+- [ ] Loop mechanism applied (max 3 retries per phase)
+- [ ] Mỗi phase có output artifact tương ứng
+- [ ] Event ghi lại mọi decision cho T4
+
 ## XỬ LÝ NGOẠI LỆ
 | Tình huống | Xử lý |
 |-----------|-------|

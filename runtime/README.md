@@ -14,12 +14,12 @@ Kiến trúc phân tầng (Microsoft Agent Mode). Giao tiếp qua contract.
 ## Contracts (tóm tắt)
 
 ```
-Request  T1→T2  {type, target, context}
-Task     T2→T3  {phase, target, skills, workflow}
-Result   T3→T2  {status, artifacts[]}
-Response T2→T1  {status, summary}
-Event    any→T4 {type, phase, reflection}
-State    T4→T2  {checkpoint, session_id}
+Request  T1→T2  {version, type, target, context}
+Task     T2→T3  {version, phase, target, skills, workflow}
+Result   T3→T2  {version, status, artifacts[]}
+Response T2→T1  {version, status, summary}
+Event    any→T4 {version, type, phase, reflection}
+State    T4→T2  {version, checkpoint, session_id}
 ```
 
 Chi tiết: `runtime/layers/` (4 tầng), `policies/` (retry, recovery, reflection)

@@ -108,10 +108,10 @@ Mỗi tầng = 1 box. Prefix `[T1]`, `[T2]`, `[T3]`, `[T4]`.
 **3. Contract Format**
 
 ```
-Request  {type|target|context}           → 1 dòng
-Task     {phase|target|skills|workflow}  → ≤2 dòng
-Result   {status|artifacts[]}            → status + summary
-Response {status|summary}                → 1 dòng cuối
+Request  {version|type|target|context}           → 1 dòng
+Task     {version|phase|target|skills|workflow}  → ≤2 dòng
+Result   {version|status|artifacts[]}            → status + summary
+Response {version|status|summary}                → 1 dòng cuối
 ```
 
 Không in raw JSON — tóm tắt 1-2 dòng.

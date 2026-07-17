@@ -21,14 +21,14 @@
   },
 
   "command": {
-    "vibe": "workflows/company.workflow.md",
-    "meeting": "workflows/meeting.workflow.md",
-    "release": "workflows/release.workflow.md",
-    "debug": "workflows/debug.workflow.md",
-    "web": "workflows/web.workflow.md",
-    "game": "workflows/game.workflow.md",
-    "ai": "workflows/ai.workflow.md",
-    "tool": "workflows/tool.workflow.md",
-    "ui-ux": "workflows/debug.workflow.md"
+    "vibe": { "template": "workflows/company.workflow.md" },
+    "meeting": { "template": "workflows/meeting.workflow.md" },
+    "release": { "template": "workflows/release.workflow.md" },
+    "debug": { "template": "workflows/debug.workflow.md" },
+    "web": { "template": "workflows/web.workflow.md" },
+    "game": { "template": "workflows/game.workflow.md" },
+    "ai": { "template": "workflows/ai.workflow.md" },
+    "tool": { "template": "workflows/tool.workflow.md" },
+    "ui-ux": { "template": "workflows/debug.workflow.md" }
   }
 }
