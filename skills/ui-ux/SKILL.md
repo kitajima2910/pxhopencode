@@ -5,134 +5,92 @@ description: UI/UX design production — web (React/Tailwind), game HUD (Phaser/
 
 # ui-ux — UI/UX Design cho Web, Game, Tool
 
-## Web UI/UX
+**Khi dùng:** Yêu cầu UI/UX → load skill này. Agent tự chọn platform (web/game/tool) dựa trên project type.
 
-### Layout & Responsive
-- Mobile-first, breakpoints: sm (640), md (768), lg (1024), xl (1280)
-- Flexbox/Grid, không dùng float
-- Max-width container, padding consistent
-- Dark mode: `class="dark"` trên `<html>`, dùng `dark:` variant
+## Quy trình (3 bước)
 
-### Tailwind patterns
+| Step | Làm | Output |
+|------|-----|--------|
+| 1. Phân tích | Xác định platform + constraints (mobile-first?, dark mode?, FOUC?, a11y?) | Platform checklist |
+| 2. Áp dụng pattern | Chọn section tương ứng bên dưới, tạo component | Code + style |
+| 3. Verify | Chạy cross-platform checklist, kiểm tra NO_COLOR fallback | Pass/fail |
+
+## Web — Layout & Components
+
+- Mobile-first: sm(640) md(768) lg(1024) xl(1280), Flexbox/Grid, container padding
+- Dark mode: `class="dark"` on html, `dark:` variant
+- FOUC-free: `<style>` blocking hoặc `next/dynamic` ssr:false
+- A11y: `role` `aria-label` `tabIndex` `focus:ring`, keyboard nav, contrast ≥ 4.5:1
+
 ```tsx
-// Component với dark mode + responsive
 <div className="p-4 md:p-6 lg:p-8 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm" />
 ```
 
-### Animation (FOUC-free)
-- `useAnimate()` hoặc CSS `@keyframes`
-- `prefers-reduced-motion` tôn trọng
-- Không FOUC: dùng `<style>` blocking hoặc `next/dynamic` với `ssr: false`
+| Bug | Root Cause | Fix |
+|-----|-----------|-----|
+| Layout shift | Missing img w/h | `w-full h-auto` + aspect ratio |
+| FOUC | CSS after DOM | Inline critical CSS |
+| Dark flash | localStorage race | `<script>` blocking in `<head>` |
 
-### Accessibility
-- `role`, `aria-label`, `tabIndex`, `focus:ring`
-- Keyboard navigation: `onKeyDown` cho Enter/Escape
-- Color contrast ≥ 4.5:1
+## Game — Phaser HUD
 
-### Debug UI
-| Vấn đề | Nguyên nhân | Fix |
-|--------|-------------|-----|
-| Layout shift | Thiếu width/height cho ảnh | Thêm `w-full h-auto` + aspect ratio |
-| FOUC | CSS load sau DOM | Inline critical CSS, preload fonts |
-| Dark mode flash | localStorage chưa kịp đọc | `<script>` blocking trong `<head>` |
-| Scroll không mượt | `overflow-x` sai | `overflow-x-hidden` đúng chỗ |
+- DOM overlay cho UX phức tạp, Canvas text cho perf
+- Touch zone ≥ 48×48, `pointer` event, joystick fixed bottom-left
+- FSM sync: `idle→playing→paused→gameover` show/hide components
 
----
-
-## Game UI/UX (Phaser, Three.js)
-
-### Game HUD principles
-- HUD là DOM overlay hoặc canvas render texture
-- DOM overlay: dùng React component chồng lên canvas → dễ style, responsive
-- Canvas HUD: dùng Phaser text/graphics, không scaling distortion
-
-### Phaser HUD pattern
-```typescript
-// DOM overlay (khuyên dùng cho UX phức tạp)
-const hudContainer = document.getElementById('hud')!
-const hud = createRoot(hudContainer)
+```ts
+const hud = createRoot(document.getElementById('hud')!)
 hud.render(<HealthBar hp={player.hp} maxHp={100} />)
-
-// Canvas text (cho performance)
-const scoreText = this.add.text(16, 16, 'Score: 0', {
-  fontSize: '24px', color: '#ffffff',
-  stroke: '#000000', strokeThickness: 4
-}).setScrollFactor(0).setDepth(100)
+const score = this.add.text(16, 16, 'Score: 0', { fontSize:'24px', color:'#fff', stroke:'#000', strokeThickness:4 }).setScrollFactor(0).setDepth(100)
 ```
 
-### FSM-Driven UX
-- Dùng state machine sync UI với game state
-- `idle → playing → paused → gameover`
-- Mỗi transition show/hide UI component tương ứng
+| Bug | Fix |
+|-----|-----|
+| UI lệch viewport | `Phaser.Scale.FIT` + resize handler |
+| Touch không phản hồi | `pointer-events:none` on overlay |
+| Text nhòe | Font size chẵn (16,18,20...) |
+| UI giật camera | `setScrollFactor(0)` |
 
-### Mobile touch UX
-- Touch zone tối thiểu 48×48px, tránh overlap
-- `pointer` event thay `click` cho latency thấp hơn
-- Joystick: zone cố định góc trái màn hình
+## Tool / CLI
 
-### Debug game UI
-| Vấn đề | Nguyên nhân | Fix |
-|--------|-------------|-----|
-| UI lệch trên màn hình khác | Không scale theo viewport | Dùng `Phaser.Scale.FIT` + resize handler |
-| Touch không phản hồi | DOM overlay chặn canvas input | `pointer-events: none` trên overlay, chỉ component cần mới `auto` |
-| Text nhòe | Font size lẻ | Dùng size chẵn: 16, 18, 20, 24... |
-| UI giật khi camera move | Canvas HUD không setScrollFactor(0) | Luôn set `setScrollFactor(0)` |
+- Spinner + status icon (✓✗), NO_COLOR fallback
+- Progress bar: `[#####-----] 50%`, update ≤ 5Hz
+- Error: message + suggestion + retry hint, no stacktrace unless `--verbose`
 
----
+| Color | Use |
+|-------|-----|
+| Cyan | Info, title |
+| Green | Success |
+| Yellow | Warning |
+| Red | Error |
+| Dim | Meta, timestamp |
 
-## Tool / CLI UI/UX
+## Anti-Rationalization
 
-### Output patterns
-```bash
-# Loading spinner
-⠋ Đang xử lý...
-# Sau khi xong
-✓ Hoàn thành (1.2s)
-# Error
-✗ Lỗi: kết nối thất bại
-```
+| Excuse | Reality |
+|--------|---------|
+| "Sẽ fix responsive sau" | Mobile-first không thể patch sau — thiết kế lại toàn bộ layout |
+| "Dark mode là optional" | 30% user dùng dark mode — thiếu là UX fail |
+| "Accessibility sau" | WCAG violations = legal risk, phải refactor cả component |
+| "CLI màu không cần fallback" | Terminal không màu = output vô dụng |
+| "Game UI trên canvas là đủ" | DOM overlay cho UX phức tạp dễ hơn 10x |
+| "FOUC không đáng lo" | FOUC = perception app chậm, user thoát ngay |
 
-### Color convention
-| Màu | Dùng |
-|-----|------|
-| Cyan | Thông tin, tiêu đề |
-| Green | Thành công |
-| Yellow | Cảnh báo |
-| Red | Lỗi |
-| Dim/Gray | Mô tả phụ, timestamp |
+## Red Flags
 
-### Error UX
-- Lỗi → message rõ ràng + suggestion + `.help` command
-- Không stack trace trừ khi `--verbose`
-- Retry hint: `Thử lại với --retry 3`
+- Layout không test trên mobile < 375px
+- Game HUD không setScrollFactor(0)
+- CLI output không có NO_COLOR fallback
+- Keyboard navigation không hoạt động
+- Thiếu loading/error/empty states
 
-### Progress UX
-```bash
-# Progress bar cho task dài
-[##########--------] 50% (2/4 files)
+## Verification
 
-# Thời gian ước tính
-⏳ Còn khoảng 30s...
-```
-
-### Debug CLI
-| Vấn đề | Nguyên nhân | Fix |
-|--------|-------------|-----|
-| Output loãng | Thiếu grouping | Nhóm theo section, dùng divider `---` |
-| Màu không hiển thị | Terminal không hỗ trợ | `NO_COLOR` env, fallback plain text |
-| Progress nhấp nháy | `\r` sai frequency | Update tối đa 10 lần/giây |
-
----
-
-## Cross-platform checklist
-
-- [ ] Dark mode
-- [ ] Responsive (mobile/tablet/desktop)
-- [ ] Keyboard navigation
-- [ ] Screen reader (aria)
-- [ ] Touch support
-- [ ] Loading skeleton / spinner
-- [ ] Error state + empty state
-- [ ] Animation (reduced-motion safe)
-- [ ] Font loading không FOUC
+- [ ] Platform checklist complete (web/game/tool)
+- [ ] Dark mode toggle works, no flash
+- [ ] Keyboard nav: Tab/Enter/Escape
 - [ ] Color contrast ≥ 4.5:1
+- [ ] `$env:NO_COLOR = "1"` → plain text
+- [ ] Touch zones ≥ 48×48
+- [ ] prefers-reduced-motion respected
+- [ ] Loading + error + empty states exist

@@ -1,45 +1,46 @@
 # Enterprise AI Runtime — Kiến trúc 4 Tầng
 
-Kiến trúc điều phối phân tầng (theo Microsoft Agent Mode). Mỗi tầng một trách nhiệm duy nhất, giao tiếp qua contract.
+> Entry point. Load `runtime/layers/` khi cần chi tiết từng tầng. Load `policies/` khi xử lý lỗi.
 
-## Trách nhiệm các tầng
+Kiến trúc phân tầng (Microsoft Agent Mode). Giao tiếp qua contract.
 
-| Tầng | Tên | Trách nhiệm | Agent |
-|------|-----|-------------|-------|
-| 1 | Giao diện | Xác thực đầu vào, định dạng output | `pxh-help`, user prompt |
-| 2 | Điều phối | Route tasks, quản lý luồng, theo dõi state, thi hành policy | `pxh-pm` |
-| 3 | Nhân công | Thực thi domain (thiết kế, code, fix, test, review, build, mod, ui-ux) | 8 agents |
-| 4 | Hạ tầng | Lưu state, log, checkpoint, artifact | `pxh-save-history` |
+## Tổng quan
 
-### Quy tắc cách ly tầng
-1. Giao tiếp CHỈ qua contract — không @mention trực tiếp để giao việc
+| Tầng | Tên | Agent | Load khi |
+|------|-----|-------|----------|
+| 1 | Giao diện | `pxh-help` | Validate input / format output |
+| 2 | Điều phối | `pxh-pm` | Route task, state, policy |
+| 3 | Nhân công | 7 agents | Execute domain work |
+| 4 | Hạ tầng | `pxh-save-history` | Lưu state, checkpoint, log |
+
+## Quy tắc cách ly
+
+1. Giao tiếp qua contract — không @mention trực tiếp
 2. Điều phối không thực thi; nhân công không điều phối
 3. Hạ tầng không quyết định; chỉ ghi lại
-4. Thêm tầng mới không cần thay đổi tầng cũ
+4. Thêm tầng mới = 0 thay đổi tầng cũ
 
-## Thứ tự thực thi
+## Luồng
 
-**User Prompt → Tầng 1 (Interface) → Tầng 2 (Orchestration) → Tầng 3 (Worker) → Tầng 4 (Infrastructure) → Tầng 2 (Evaluate) → Tầng 1 (Response) → User**
+```
+User → T1(validate) → T2(route) → T3(execute) → T2(eval) → T1(response) → User
+                                        ↘              ↙
+                                      T4(persist)
+```
 
-Chi tiết: `runtime/layers/` (4 files), `contracts/README.md`, `policies/` (3 files: retry, recovery, reflection)
+## Contracts (tóm tắt)
 
-## Contract giao tiếp
+```
+Request  T1→T2  {type, target, context}
+Task     T2→T3  {phase, target, skills, workflow}
+Result   T3→T2  {status, artifacts[]}
+Response T2→T1  {status, summary}
+Event    any→T4 {type, phase, reflection}
+State    T4→T2  {checkpoint, session_id}
+```
 
-| Contract | Hướng | Mục đích |
-|----------|-------|----------|
-| `Request` | T1 → T2 | Yêu cầu từ user |
-| `Task` | T2 → T3 | Giao việc |
-| `Result` | T3 → T2 | Kết quả hoàn thành |
-| `Response` | T2 → T1 | Kết quả cuối cùng |
-| `Event` | Mọi tầng → T4 | Log / checkpoint |
-| `State` | T4 → T2 | Checkpoint phục hồi |
+Chi tiết: `runtime/layers/` (4 tầng), `policies/` (retry, recovery, reflection)
 
-## Chính sách
+## Workers: tự kiểm tra, không tự quyết định
 
-| Policy | Phạm vi | Thi hành bởi |
-|--------|---------|-------------|
-| Thử lại | Lỗi tạm thời (timeout, rate limit), exp backoff tối đa 3 lần | Tầng 2 |
-| Phục hồi | Lỗi mọi tầng, dựa trên checkpoint | Tầng 2 |
-| Phản ánh | Task/Phase/Workflow/Sự cố, 4 mức | Mọi tầng → T4 lưu |
-
-Workers không tự thử lại/phục hồi — trả về `Result{status:"failure"}` để Điều phối quyết định.
+Workers không retry/recovery — trả `Result{status:"failure"}` → T2 quyết định.
