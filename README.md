@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v39</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
+  <b>v40</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -137,7 +137,27 @@ Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickre
 
 ## Changelog
 
-### v39 — Pro Max (Latest)
+### v40 — Architecture Hardening (Latest)
+- **Add:** `pxh-ui-ux.md` agent file (còn thiếu từ v38)
+- **Add:** `_shared/arch-check.ps1` — architecture validation test (0 errors, 0 warnings)
+- **Add:** `_shared/sync-readme.ps1` — tự động đồng bộ badge + counts sau CRUD
+- **Add:** Observability & Alerting system cho T4 layer (5 metrics)
+- **Add:** Contract versioning (`v:"1.0"`) vào runtime
+- **Add:** CLI Design System vào `skills/ui-ux/SKILL.md`
+- **Add:** Mermaid flowcharts thay ASCII diagrams trong README
+- **Fix:** `opencode.json` command format (string→object, schema-compliant)
+- **Fix:** `company.workflow.md` thiếu Verification section
+- **Fix:** `debug.workflow.md` thiếu Verification section (Pro Max)
+- **Fix:** Agent permission boilerplate xoá khỏi 9 agent files (tiết kiệm ~246 tokens)
+- **Update:** `pxh-pm` auto-routing: input classifier + route table + output format chuẩn
+- **Update:** `pxh-help` output format chuẩn cho T2 parse
+- **Update:** 4 workflow files — post-code block unified thành reference
+- **Update:** README nén skills/agent tree/flow + Changelog section
+- **Update:** `opencode.json` agent/command descriptions gọn
+- **Update:** `runtime/README.md` — xoá duplicate tier table + flow
+- **Remove:** Mod APK/XAPK khỏi toàn bộ codebase
+
+### v39 — Pro Max
 _Nâng cấp toàn diện: anti-rationalization, red flags, verification trên toàn bộ architecture._
 - **Add:** Anti-Rationalization, Red Flags, Verification sections cho 47 skill/workflow/agent files
 - **Add:** `_shared/arch-check.ps1` — architecture validation test

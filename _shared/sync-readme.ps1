@@ -26,7 +26,7 @@ Write-Output "  Agents: $agentCount | Workflows: $workflowCount | Commands: $com
 
 # --- Update badge line ---
 $badgePattern = '<b>v\d+</b> &nbsp;·&nbsp; \d+ commits[^<]*'
-$newBadge = "<b>v39</b> &nbsp;·&nbsp; ${commitCount} commits &nbsp;·&nbsp; ${agentCount} AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; ${workflowCount} workflows &nbsp;·&nbsp; ${skillCount} skills &nbsp;·&nbsp; ${templateCount} templates"
+$newBadge = "<b>v40</b> &nbsp;·&nbsp; ${commitCount} commits &nbsp;·&nbsp; ${agentCount} AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; ${workflowCount} workflows &nbsp;·&nbsp; ${skillCount} skills &nbsp;·&nbsp; ${templateCount} templates"
 if ($content -match $badgePattern) {
   $content = $content -replace $badgePattern, $newBadge
   Write-Output "  BADGE updated"
