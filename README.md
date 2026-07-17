@@ -11,16 +11,22 @@
 
 ## Kiến trúc Runtime 4 Tầng
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│  T1 ─ INTERFACE ─── pxh-help ─────────────────────────────────────────── │
-│    ↓ Request                                                             │
-│  T2 ─ ORCHESTRATION ─ pxh-pm ──────────── retry/recovery/reflection ──── │
-│    ↓ Task                      ↑ Result                                  │
-│  T3 ─ WORKERS ─── 7 agents ───────────────────────────────────────────── │
-│    ↓ Event                                                               │
-│  T4 ─ INFRASTRUCTURE ─ pxh-save-history ─ state/checkpoint/log ──────── │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    User((User))
+    T1["T1 — INTERFACE<br/>pxh-help"]
+    T2["T2 — ORCHESTRATION<br/>pxh-pm"]
+    T3["T3 — WORKERS<br/>7 agents"]
+    T4["T4 — INFRASTRUCTURE<br/>pxh-save-history"]
+
+    User -->|Prompt| T1
+    T1 -->|Request| T2
+    T2 -->|Task| T3
+    T3 -->|Result| T2
+    T2 -->|Response| T1
+    T1 -->|Output| User
+    T3 -.->|Event| T4
+    T4 -.->|State| T2
 ```
 
 | Tầng | Agent | Vai trò |
@@ -30,12 +36,25 @@
 | **T3** Workers | 7 agents | Thực thi domain (code, test, review, build, UI/UX) |
 | **T4** Infrastructure | `pxh-save-history` | Persist state, checkpoint, log, alerting |
 
-```
-Prompt → T1 (Validate) → Request → T2 (Route + Retry/Recover/Reflect)
-  → Task → T3 Workers (Code/Test/Fix/Review/Build) → Result
-  → T2 (Eval) → OK → T1 (Response) → User
-  ↕ (loops: max 3 retries)
-T4 (Persist: state/checkpoint/log)
+```mermaid
+flowchart LR
+    P["Prompt / Lệnh / @agent"]
+    T1["T1 — Validate + Classify"]
+    T2["T2 — Route + Retry/Recover/Reflect"]
+    T3["T3 — Workers (Code/Test/Fix/Review/Build)"]
+    T4["T4 — Persist (state/checkpoint/log)"]
+    U{User}
+
+    P --> T1
+    T1 -->|Request| T2
+    T2 -->|Task| T3
+    T3 -->|Result| T2
+    T2 -->|OK| T1
+    T1 -->|Response| U
+    
+    T2 -.->|Max 3 retries| T2
+    T3 -.->|Event| T4
+    T4 -.->|State| T2
 ```
 
 ---
