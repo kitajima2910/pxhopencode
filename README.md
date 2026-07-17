@@ -19,6 +19,26 @@ git clone <repo-url> .opencode
 
 Sau đó dùng opencode mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
 
+### MCP Godot (tùy chọn — dùng để Godot MCP server)
+
+Thêm vào `opencode.json` trong project của bạn (đã có sẵn trong file này):
+
+```json
+"mcp": {
+  "godot": {
+    "type": "local",
+    "command": ["npx", "-y", "@coding-solo/godot-mcp"],
+    "enabled": true,
+    "environment": {
+      "DEBUG": "true",
+      "GODOT_PATH": "C:\\Program Files\\Godot\\Godot.exe"
+    }
+  }
+}
+```
+
+Thay `GODOT_PATH` bằng đường dẫn Godot.exe của bạn. Yêu cầu Node.js 18+. Chi tiết: [github.com/Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp).
+
 ---
 
 ## Kiến trúc Runtime 4 Tầng

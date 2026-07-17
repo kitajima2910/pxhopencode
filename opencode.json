@@ -21,6 +21,18 @@
     "pxh-godot": { "description": "T3 Godot Specialist", "mode": "subagent" }
   },
 
+  "mcp": {
+    "godot": {
+      "type": "local",
+      "command": ["npx", "-y", "@coding-solo/godot-mcp"],
+      "enabled": true,
+      "environment": {
+        "DEBUG": "true",
+        "GODOT_PATH": "C:\\Program Files\\Godot\\Godot.exe"
+      }
+    }
+  },
+
   "command": {
     "vibe": { "template": "workflows/company.workflow.md" },
     "meeting": { "template": "workflows/meeting.workflow.md" },
