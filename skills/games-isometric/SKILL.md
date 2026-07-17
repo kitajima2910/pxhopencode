@@ -41,3 +41,20 @@ function isoToCart(sx: number, sy: number) {
   };
 }
 ```
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Depth sort mỗi frame cũng ổn" | Map 100×100, 100 entity = sort 10k object/frame |
+| "Fog of war không cần" | Player thấy cả map = mất chiến thuật |
+| "A* không cần, enemy đi thẳng" | Enemy stuck vào tường |
+
+## Red Flags
+- Depth sort chạy mỗi frame
+- Fog of war missing cho strategy game
+- A* pathfinding không implement cho enemy
+
+## Verification
+- [ ] Depth sort cache, chỉ sort khi entity move
+- [ ] Frustum culling: chỉ vẽ tile trong viewport
+- [ ] A* pathfinding cho enemy AI

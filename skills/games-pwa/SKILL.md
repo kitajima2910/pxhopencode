@@ -26,3 +26,20 @@ Biến game HTML5 thành app có thể cài đặt trên mobile/desktop.
 - [ ] Offline fallback page
 - [ ] Game load < 3s trên 3G (dùng Chrome DevTools emulate Slow 3G)
 - [ ] Lighthouse PWA badge ≥ 90
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "PWA cho web app, game không cần" | Game mobile = user muốn install, offline |
+| "Service worker phức tạp" | Template có sẵn, copy → register |
+| "Icon 192x192 là đủ" | 512x512 cần cho splash screen Android |
+
+## Red Flags
+- Manifest missing start_url hoặc display fullscreen
+- Service worker không cache game assets
+- beforeinstallprompt không handle
+
+## Verification
+- [ ] Manifest: start_url, display=fullscreen, icons 192+512
+- [ ] SW cache-first cho assets, network-first cho API
+- [ ] Lighthouse PWA ≥ 90

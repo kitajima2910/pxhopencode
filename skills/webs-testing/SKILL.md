@@ -28,3 +28,20 @@ HTTP handlers GET + POST cho `/api/todos`. Dùng `HttpResponse.json`.
 ## E2E với Playwright
 Todo App: empty state, add + complete, persist after reload.
 → `templates/e2e-todo.spec.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Test chạy thủ công đủ" | Manual bỏ sót edge case, regression không phát hiện |
+| "Coverage 50% là ổn" | < 80% = code không test = bug tiềm ẩn |
+| "E2E flaky, không cần" | Flaky = setup sai, không phải lý do bỏ |
+
+## Red Flags
+- Test mock quá nhiều, không test real integration
+- Coverage < 80%
+- E2E test flaky không debug
+
+## Verification
+- [ ] Unit test cho component + hook
+- [ ] MSW mock cho API test
+- [ ] Coverage ≥ 80%

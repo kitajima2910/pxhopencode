@@ -32,6 +32,23 @@ Dùng template trong `_shared/templates/`. Điền data → ghi file. Nếu chư
 ## STATUS.md
 Chủ quản duy nhất. Cập nhật sau mỗi phase, meeting, bug, release. Đọc hiện tại → cập nhật section → ghi đè.
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Không cần STATUS.md, nhớ hết mà" | Session sau không biết đang ở phase nào |
+| "Ghi ADR sau" | Quyết định không doc = mất context |
+| "Bug report không cần, fix rồi" | Bug tái phát → không có trace |
+
+## Red Flags
+- STATUS.md không cập nhật sau mỗi phase
+- ADR missing cho decision quan trọng
+- Session log không persist
+
+## Verification
+- [ ] STATUS.md updated sau mỗi phase/meeting/bug/release
+- [ ] ADR file exists cho decision
+- [ ] Session log format: date, decisions, artifacts
+
 ## NGUYÊN TẮC
 Chính xác. Đầy đủ. Có tổ chức. Không spam. Hỏi nếu không chắc.
 

@@ -37,6 +37,23 @@ Runtime: undefined, is not a function → optional chaining, API response. Netwo
 ## KHI BẾ TẮC
 3 lần → báo user. Đề xuất `git bisect` nếu regression.
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Stack trace đọc từ trên xuống" | Lỗi ở dưới cùng, ở trên là caller chain |
+| "Fix theo intuition, không cần reproduce" | Không reproduce → không biết fix đúng |
+| "1 fix nhiều file, chắc liên quan" | Sửa lan → bug mới |
+
+## Red Flags
+- Không reproduce step trước khi fix
+- Fix không kèm test verify
+- Root cause không xác định
+
+## Verification
+- [ ] Minimal reproduction step
+- [ ] Root cause doc + fix ngắn nhất
+- [ ] Test confirm fix, không regression
+
 ## NGUYÊN TẮC
 Hiểu trước sửa. 1 lỗi = 1 fix. Test trước — fix sau. Bảo toàn code: `_shared/code-preservation-rules.md`.
 

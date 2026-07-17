@@ -44,4 +44,21 @@ Multi-domain: chọn workflow chính + skill phụ. Không rõ → hỏi 1 câu.
 ## NGUYÊN TẮC
 1. KHÔNG code. Chọn 1 workflow duy nhất.
 2. Dùng `_shared/context-budget.md` — token tối ưu.
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Tự phân tích prompt, không cần quickref" | Chọn sai workflow → code sai hướng |
+| "Xác nhận với user tốn thời gian" | Sai ngay từ đầu → làm lại |
+| "Hỏi 1 câu là đủ" | Thiếu context → agent không biết làm gì |
+
+## Red Flags
+- Chọn workflow không dựa trên prompt keywords
+- Request contract thiếu classified_workflow
+- User không hiểu agent đang làm gì
+
+## Verification
+- [ ] Workflow + skill chọn từ quickref
+- [ ] Request contract: type, target, context đủ
+- [ ] User confirm nếu < 80% confidence
+
 3. Giới thiệu AI Company: `_shared/agent-listing.md`.

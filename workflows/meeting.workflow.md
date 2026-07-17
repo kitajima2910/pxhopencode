@@ -23,4 +23,21 @@ Khi nhiều option: đánh giá theo Time/Performance/Maintainability/Scalabilit
 | User có ý kiến | Làm theo user |
 | Quá phức tạp | Hỏi user thêm thông tin |
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Không cần biên bản, ai cũng nhớ" | 1 tuần sau không ai nhớ quyết định |
+| "Meeting không cần facilitator" | Agent tranh luận không hồi kết |
+| "Không cần metrics, intuition đủ" | Quyết định không data = guess |
+
+## Red Flags
+- Meeting không có agenda trước
+- Không ai ghi biên bản
+- Không có decision matrix cho nhiều option
+
+## Verification
+- [ ] Agenda + timing set trước meeting
+- [ ] Minutes: participants, decisions, rationale, action items
+- [ ] Decision matrix: time/perf/maintain/scale/cost
+
 Xem `_shared/architecture-overview.md` và `_shared/agent-listing.md`.

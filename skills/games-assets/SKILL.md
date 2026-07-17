@@ -63,3 +63,20 @@ Xem: `templates/animation-controller.ts`
 - `templates/sound-integration.ts` — Gắn vào game loop
 - `templates/entity-fsm.ts` — FSM + SFX auto-play theo state transition
 - `templates/placeholders.ts` — Procedural fallback khi không có assets
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Download assets tay cho chắc" | Script auto-download + license check = nhanh hơn |
+| "Asset từ Google Images" | Copyright violation, DMCA |
+| "Procedural fallback không cần" | Link die → không có asset → game lỗi |
+
+## Red Flags
+- Asset không có license (CC0/CC BY)
+- Download script không chạy
+- Thiếu animation state idle/run/jump/attack/hurt/die
+
+## Verification
+- [ ] Chạy download script trước khi code game
+- [ ] Asset có license rõ ràng
+- [ ] Entity có đủ 6 animation states

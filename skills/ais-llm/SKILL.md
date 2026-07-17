@@ -26,3 +26,20 @@ resp = await chat([{"role": "user", "content": "hello"}])
 - Set `OPENAI_API_KEY` via env, never hardcode
 - Validate tool call args with Pydantic before execution
 - Set `daily_budget` in CostTracker to prevent bill shock
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Retry không cần, API luôn ổn" | OpenAI rate limit 429, network timeout thường xuyên |
+| "Streaming phức tạp, dùng chat luôn" | UX chậm, user thấy loading lâu |
+| "Cost tracker sau" | Bill $1000 bất ngờ vì infinite retry loop |
+
+## Red Flags
+- API call không retry
+- LLM response không parse error
+- Cost tracker không setup
+
+## Verification
+- [ ] Retry: exp backoff 1→2→4s, max 3
+- [ ] Streaming endpoint cho chat UX
+- [ ] CostTracker with daily budget

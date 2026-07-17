@@ -43,3 +43,20 @@ Helper: `skills/games-testing/templates/three-test-helper.ts` — createHeadless
 - **Texture atlas + Draco compression**: Giảm dung lượng texture
 - **Shadow map 1024×1024** trên mobile (2048 trên desktop)
 - **Reuse Vector3/Matrix4**: Không `new` trong game loop
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Instancing phức tạp, vài object thôi" | 50 cây giống nhau = 50 draw call thay vì 1 |
+| "LOD thêm sau" | Mobile không chạy nổi full poly |
+| "Shadow map 4K cho đẹp" | Mobile chết vì fill rate |
+
+## Red Flags
+- Draw calls > 200
+- Shadow map > 2048 trên mobile
+- new Vector3/Matrix4 trong game loop
+
+## Verification
+- [ ] InstancedMesh cho repetitive object
+- [ ] LOD 3 levels, fade at 20/50
+- [ ] Draw calls < 200, FPS ≥ 55

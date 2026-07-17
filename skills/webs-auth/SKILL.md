@@ -20,3 +20,20 @@ Sign/verify với `jose` (HS256, 7d expiry). Dùng khi không cần Auth.js full
 ## Bảo vệ CSRF
 So sánh `csrf-token` cookie với `x-csrf-token` header. Ném `AppError(403)` nếu không khớp.
 → `templates/csrf-protection.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "JWT trong localStorage cũng được" | XSS → mất token, HTTP-only cookie an toàn hơn |
+| "CSRF chỉ cần cho POST" | GET cũng có thể mutate nếu API không chuẩn |
+| "RBAC thêm sau" | Ai cũng admin = security hole |
+
+## Red Flags
+- JWT storage trong localStorage
+- CSRF token không validated
+- API endpoint không kiểm tra role
+
+## Verification
+- [ ] HTTP-only cookie, sameSite=Lax/Strict, secure
+- [ ] CSRF token check trên mutation request
+- [ ] RBAC middleware trên protected routes

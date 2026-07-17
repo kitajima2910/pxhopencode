@@ -24,3 +24,20 @@ Add nullable → backfill batch → NOT NULL + default → index CONCURRENTLY.
 ## Giao dịch
 `prisma.$transaction` cho atomic operations.
 → `templates/transactions.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "N+1 không đáng lo với ít data" | Khi scale, N+1 chết DB ngay |
+| "Không cần index" | Full scan trên bảng lớn = timeout |
+| "Migration tay cũng được" | Sai type, mất dữ liệu, downtime |
+
+## Red Flags
+- Query loop (N+1) trong API response
+- Không index trên foreign key
+- Migration không có rollback plan
+
+## Verification
+- [ ] include/_count dùng đúng, không N+1
+- [ ] Index trên FK + field thường query
+- [ ] Migration zero-downtime: add nullable → backfill → NOT NULL

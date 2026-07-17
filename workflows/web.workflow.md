@@ -36,5 +36,22 @@ Setup → Components UI → Pages → API Routes → Database → Auth → Deplo
 ## Chất lượng & Phát hành
 Sau code → route đến agents theo `workflows/company.workflow.md` (test → fix → review → build → persist).
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Setup thủ công, không cần template" | Thiếu .gitignore, thiếu favicon → lỗi commit |
+| "Flow code không cần theo thứ tự" | API viết trước UI → không có component để test |
+| "Security review sau" | Auth/XSS lỗi đi production = incident |
+
+## Red Flags
+- Không dùng template scaffold
+- Component không dark mode
+- API không validate input
+
+## Verification
+- [ ] Template scaffold dùng đúng stack
+- [ ] .gitignore + favicon setup
+- [ ] Security checklist chạy phase review
+
 ### Security checklist (tích hợp trong phase review)
 Khi `pxh-review-code` chạy, load `skills/webs-security/SKILL.md` + `security-checklist.ts` để kiểm tra: auth, XSS, CSRF, SQLi, rate limit, URL bypass, secure headers, dependency audit. Một pass, không thêm phase.

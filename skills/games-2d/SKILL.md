@@ -39,3 +39,20 @@ Helper: `skills/games-testing/templates/phaser-test-helper.ts` — createHeadles
 - **Sprite sheet**: Gộp texture vào atlas, giảm draw calls
 - **Tilemap**: Dùng Tiled JSON, không vẽ từng tile riêng
 - **Disable off-screen**: Kiểm tra `sprite.y > camera.height + margin` trước khi update
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Object pool không cần cho indie game" | 30 enemy + 20 bullet = GC spike, giật |
+| "Tilemap tay nhanh hơn Tiled" | Sửa map = sửa code, không scale |
+| "Sprite sheet sau, dùng ảnh rời" | 100 draw call = 10 FPS thay vì 60 |
+
+## Red Flags
+- Object pool thiếu cho bullet/enemy
+- Texture atlas không dùng
+- Sprite không disable khi off-screen
+
+## Verification
+- [ ] Object pool cho đạn + enemy
+- [ ] Sprite sheet atlas, không ảnh rời
+- [ ] `npx vitest run` pass, coverage ≥ 80%

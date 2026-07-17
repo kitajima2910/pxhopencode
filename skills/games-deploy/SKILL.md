@@ -27,4 +27,21 @@ description: Game deploy pipeline — GitHub Pages, Itch.io Butler, Vercel. CI/C
 
 ```
 Push → GitHub Actions → Lint → Test → Build → Deploy
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Deploy tay lên GitHub Pages nhanh hơn" | CI/CD = zero human error, tự động build |
+| "Itch.io Butler không cần" | Upload manual mỗi bản = mất thời gian |
+| "Checklist deploy không cần" | Quên compress, source maps bật → game chậm |
+
+## Red Flags
+- Build không chạy CI/CD
+- Deploy manual không qua GitHub Actions
+- Pre-deploy checklist không review
+
+## Verification
+- [ ] CI/CD pipeline: test → build → deploy
+- [ ] Pre-deploy checklist executed
+- [ ] Build output < 10MB, source maps tắt
 ```

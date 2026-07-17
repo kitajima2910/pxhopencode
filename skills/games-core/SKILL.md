@@ -39,3 +39,20 @@ engine.fixedUpdate = (dt) => {
 };
 engine.start();
 ```
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Fixed timestep không cần, requestAnimationFrame đủ" | FPS khác nhau → physics không đồng nhất |
+| "Scene manager viết tay" | Memory leak khi switch scene không destroy |
+| "FSM over-engineering" | State bug = animation sai, input sai |
+
+## Red Flags
+- dt không clamp → spiral of death
+- Scene switch không destroy cũ
+- FSM không có transition guard
+
+## Verification
+- [ ] Fixed timestep loop với accumulator + clamp
+- [ ] Scene lifecycle destroy → init
+- [ ] FSM transition rules cho mọi state

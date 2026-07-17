@@ -28,3 +28,20 @@ result = await chat_with_fallback(messages)
 - Rate limiter wraps all external calls
 - Fallback chain ensures graceful degradation
 - Metrics exported at `/metrics` for Prometheus
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Cache không cần, LLM response đa dạng" | Câu hỏi giống nhau → cache giảm 50% cost |
+| "Fallback model khi main model down = app chết" | Graceful degradation > 500 error |
+| "Monitoring thêm sau" | Không biết latency tăng, cost vượt |
+
+## Red Flags
+- LLM call không có fallback chain
+- Rate limiter missing
+- Monitoring/metrics không export
+
+## Verification
+- [ ] LRU cache trước LLM call
+- [ ] Fallback chain: gpt-4o → gpt-4o-mini → claude-haiku
+- [ ] Rate limiter + cost monitoring active

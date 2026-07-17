@@ -22,3 +22,20 @@ Polymorphic Box + Compound Tabs pattern.
 ## Tối ưu Bundle
 `React.lazy()` cho route và heavy library. Import tree-shaking friendly (`date-fns`). Tailwind purge mặc định.
 → `templates/bundle-optimization.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "React.lazy() sau" | Bundle lớn = LCP chậm, Core Web Vitals fail |
+| "Custom hook không cần test" | Hook lỗi = crash toàn component |
+| "data-fetching pattern giống nhau" | Mỗi page khác cache strategy → sai dữ liệu |
+
+## Red Flags
+- Component > 200 dòng
+- useEffect thiếu deps
+- fetch trong component, không qua hook
+
+## Verification
+- [ ] Lazy loading cho route + heavy lib
+- [ ] Custom hook có unit test
+- [ ] TanStack Query config: staleTime, gcTime, retry

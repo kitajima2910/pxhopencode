@@ -52,5 +52,22 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 7. 3 lần lỗi → báo user + hypothesis
 
 ## QUY TRÌNH
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Template không cần, tự code nhanh hơn" | Template đã battle-tested, code tay dễ bug |
+| "Skip test, feature nhỏ mà" | Feature nhỏ + bug nhỏ = production incident |
+| "Context budget thì kệ, đọc hết project" | Token tràn → agent mất focus, output kém |
+
+## Red Flags
+- Code không theo template có sẵn
+- Feature xong không chạy test
+- Đọc > 5 file không cần thiết
+
+## Verification
+- [ ] Dùng template trước khi code tay
+- [ ] Chạy `npx vitest run` sau mỗi feature
+- [ ] .gitignore có .opencode/ + .github/
+
 1. Xác định loại + workflow + skill 2. Code: Web=Component→API→DB→Auth. Game=Scene→Player→Enemies→UI→Polish. AI=Pipeline→Model→API. Tool=CLI→Core 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.
 

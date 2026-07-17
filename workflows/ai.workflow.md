@@ -28,4 +28,21 @@ Chat đơn giản / RAG với PDF / AI Agent / Multi-modal / Streaming SSE / Fun
 ## Bước 6: Security
 Rate limiting, input sanitization (prompt injection defense), auth, token limits + cost monitoring, logging LLM calls
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "LLM output không cần validate" | JSON parse fail, injection, hallucination |
+| "RAG chunking sau" | Embedding sai → search sai → user nhận kết quả rác |
+| "Streaming optional" | Chat không streaming → user thấy chậm, bỏ cuộc |
+
+## Red Flags
+- LLM call không retry + fallback
+- RAG pipeline không dedup
+- Không cost monitoring
+
+## Verification
+- [ ] Streaming SSE cho chat UX
+- [ ] RAG: chunk → embed → hybrid search → rerank
+- [ ] Rate limit + cost tracking active
+
 ## Post-code: route đến agents theo company workflow pattern. Xem `workflows/company.workflow.md`.

@@ -35,6 +35,23 @@ Xem `_shared/context-budget.md`. Chạy test = 1 command. Đọc output fail, kh
 - [ ] Page load < 3s, API < 500ms
 - [ ] Không hardcode secret, CSRF, SQL injection
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Test pass hết rồi, không cần coverage check" | Pass nhưng coverage 20% → logic core không test |
+| "Bug UI không block release" | UX fail = user không dùng được |
+| "Verify fix nhanh thôi, không cần regression" | Fix bug A → bug B mới → production fail |
+
+## Red Flags
+- Test suite pass nhưng coverage < 60%
+- Bug report không có reproduction steps
+- Regression test không chạy sau fix
+
+## Verification
+- [ ] Coverage ≥ 80%
+- [ ] Bug report: type, file, steps, expected/actual
+- [ ] Regression test pass
+
 ## NGUYÊN TẮC
 Zero bug tolerance. Automation first. Không edit code. Verify fix + regression.
 

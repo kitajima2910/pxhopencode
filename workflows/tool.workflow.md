@@ -29,5 +29,22 @@ Automation: Watcher → Pipeline → Retry → Log
 Codegen: Template → Scaffold → Generate
 ```
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "CLI không cần test" | Parse sai arg → crash, user mất dữ liệu |
+| "Extension manifest.json auto-gen" | Thiếu activation event → extension không chạy |
+| "Package publish CI/CD tốn thời gian" | Publish tay quên build → package hỏng |
+
+## Red Flags
+- CLI không parse error handling
+- VS Code extension missing activationEvents
+- Build script không có trong CI
+
+## Verification
+- [ ] CLI: arg parse validate + error handling
+- [ ] Extension: activationEvents, contributes, commands
+- [ ] CI/CD: build → test → publish
+
 ## Bước 4: Chất lượng & Phát hành
 Sau code → route đến agents theo `workflows/company.workflow.md` (test → fix → review → build → persist).

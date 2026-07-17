@@ -16,3 +16,20 @@ Zod validation, pagination (skip/take), proper error responses.
 ## Giới hạn tốc độ (in-memory)
 Sliding window, tự cleanup khi > 10000 keys. Không cần Redis, phù hợp serverless. Dùng `rateLimiter.check(key)` → `{ allowed, remaining, resetIn }`.
 → `templates/rate-limiter.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Không cần validate input" | ZodError = 400, lỗi không validate = 500 |
+| "Error handling sau" | Crash không bắt = production outage |
+| "Rate limit cho production sau" | Bị spam → API chết |
+
+## Red Flags
+- API route không có Zod validation
+- Error response format không đồng nhất
+- Rate limiter không set trên production
+
+## Verification
+- [ ] Mọi API route có Zod validate body/query/params
+- [ ] AppError class xử lý mọi lỗi
+- [ ] Rate limiter active trên route công cộng

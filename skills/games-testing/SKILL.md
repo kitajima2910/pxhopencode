@@ -76,3 +76,20 @@ Test tự động chạy trong GitHub Actions (xem CI/CD templates).
 - [ ] Scene lifecycle (create → update → destroy)
 - [ ] Touch input simulation
 - [ ] FPS benchmark ≥ 55 desktop / ≥ 30 mobile
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Game logic test không cần, chơi tay là đủ" | Bug vào production vì không test FSM/collision |
+| "Headless test khó setup" | Template có sẵn, copy → chạy |
+| "Coverage game thấp cũng được" | Logic không test = bug không phát hiện |
+
+## Red Flags
+- FSM transition không được test
+- Performance benchmark không chạy
+- Memory leak test missing
+
+## Verification
+- [ ] FSM state transitions test
+- [ ] Performance + memory benchmark pass
+- [ ] eval-grader threshold ≥ 0.8

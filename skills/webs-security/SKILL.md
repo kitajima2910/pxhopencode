@@ -44,3 +44,20 @@ Dùng template `security-checklist.ts` ở cuối phase review. Review chạy tu
 - [ ] `npm audit` / `pnpm audit` không có critical?
 - [ ] Không dùng thư viện deprecated / không bảo trì?
 - [ ] .env không commit, secrets dùng env, không hardcode?
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Audit sau deploy" | Critical CVE đang public, hacker dùng ngay |
+| "CORS * cho nhanh" | Any domain có thể gọi API của bạn |
+| "Secret trong env local cũng được" | Commit nhầm → leak luôn |
+
+## Red Flags
+- CSP header missing
+- npm audit có critical chưa fix
+- API endpoint public không auth
+
+## Verification
+- [ ] Chạy checklist ở phase review — 1 pass duy nhất
+- [ ] Mọi issue critical = block release
+- [ ] Secret guard: grep .env, hardcode key

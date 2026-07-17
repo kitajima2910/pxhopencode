@@ -24,3 +24,20 @@ Exponential backoff: baseDelay * 2^attempt + jitter. Max 3 retries by default. T
 See `templates/logger.ts`.
 
 Async buffered writer with JSON output. Auto-flush every 5s or on buffer full (50). Handles exit and uncaughtException.
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "File watcher không cần debounce" | Save 1 file → fire 3 events → chạy 3 lần |
+| "Retry fixed delay đủ" | Rate limit → retry ngay → lại rate limit → chết |
+| "Logger đồng bộ cho đơn giản" | Block I/O mỗi log → chậm cả pipeline |
+
+## Red Flags
+- File watcher không debounce
+- Retry không exponential backoff + jitter
+- Logger blocking I/O
+
+## Verification
+- [ ] File watcher debounced > 100ms
+- [ ] Retry: exp backoff baseDelay * 2^attempt + jitter
+- [ ] Logger async, buffer, auto-flush

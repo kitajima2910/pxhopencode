@@ -113,6 +113,23 @@ Targets: GitHub Pages (Actions), Itch.io (Butler), Vercel, Netlify, hoặc copy 
 
 Pre-deploy: build success, < 10MB, source maps tắt, PWA ≥ 90, FPS ≥ 55/30, responsive 3 sizes.
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Bỏ qua genre reference, game đơn giản mà" | Thiết kế sai thể loại → core loop không fun |
+| "Polish pipeline sau, MVP trước" | Không polish = game xấu, user không chơi |
+| "Headless test không cần, chơi tay đủ" | Bug physics/collision lên production |
+
+## Red Flags
+- Genre reference không đọc trước khi code
+- Asset download script không chạy
+- Quality gate: FPS < 55 hoặc coverage < 80%
+
+## Verification
+- [ ] Genre reference đọc, đúng category
+- [ ] Asset downloaded, animation states (idle/run/jump/attack/hurt/die)
+- [ ] Quality pass: unit test, coverage, FPS, memory leak
+
 ## Game Design & References
 - **Genre Reference (mọi thể loại)**: `skills/_shared/game-genre-reference.md`
 - 2D design: `skills/games-2d/game-design-h5-2d.md`

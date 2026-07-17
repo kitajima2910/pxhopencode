@@ -29,3 +29,20 @@ result = await agent.run("find docs about X")
 - Tool results are truncated to 2000 chars to prevent token explosion
 - Agent timeout prevents runaway loops
 - Validate all tool arguments before execution
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "ReAct loop 15 steps là an toàn" | Tool call sai → loop tốn token, timeout |
+| "Không cần memory summarization" | Context quá dài → LLM mất focus |
+| "Tool result truncation 2000 chars thừa" | LLM context bị tràn bởi tool output dài |
+
+## Red Flags
+- Agent không có timeout
+- Tool args không validate
+- Memory không giới hạn → token explosion
+
+## Verification
+- [ ] Agent timeout ≤ 30s, max steps ≤ 15
+- [ ] Tool result truncated ≤ 2000 chars
+- [ ] Tool args validated trước execute

@@ -29,3 +29,20 @@ Lint → typecheck → test → deploy Vercel (amondnet/vercel-action).
 ## Triển khai Canary
 Feature flag dựa trên userId hash (mod 100). 10% newCheckout, 5% newDashboard.
 → `templates/feature-flags.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "CI/CD thêm sau" | Deploy tay = human error, downtime |
+| "Health check không cần" | Không biết app chết đến khi user report |
+| "Docker cho dev thôi" | Môi trường khác nhau = bug khác nhau |
+
+## Red Flags
+- Deploy manual không qua CI
+- Không health check endpoint
+- Sentry/Datadog không setup
+
+## Verification
+- [ ] CI/CD pipeline chạy lint→typecheck→test→deploy
+- [ ] Health check endpoint trả status
+- [ ] Sentry/Datadog active, tracesSampleRate ≥ 0.1

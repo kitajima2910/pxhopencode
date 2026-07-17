@@ -20,3 +20,20 @@ Xem: `templates/audio-compressor.ts`
 ## Format Fallback
 Tự động detect format browser hỗ trợ (mp3/ogg/wav/aac), fallback về mp3.
 Xem: `templates/format-fallback.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Audio pool không cần, tạo mới mỗi lần" | GC không kịp thu hồi → memory leak |
+| "Spatial audio cho web game là overkill" | 3D game không spatial = âm thanh phẳng |
+| "Compression không cần, file nhỏ" | Nhiều âm thanh cùng lúc → distortion |
+
+## Red Flags
+- AudioSourceNode leak (tạo mới không release)
+- Spatial audio không update listener position
+- Không fallback format cho browser cũ
+
+## Verification
+- [ ] Audio pool: acquire/release, auto-GC
+- [ ] Spatial audio: PannerNode HRTF
+- [ ] Format fallback: auto-detect browser support

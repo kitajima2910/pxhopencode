@@ -28,3 +28,20 @@ Xem: `templates/gc-tuning.ts`
 ## Profiling (FPS + Memory)
 Đếm FPS mỗi giây, track heap memory trend (Chrome), phát hiện memory leak.
 Xem: `templates/profiler.ts`
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Object pool khó, tạo mới cho nhanh" | GC pause = giật mỗi khi object chết |
+| "Mobile chậm tại thiết bị, không phải code" | Pool + LOD = 2x FPS trên mobile |
+| "Profiler sau" | Không biết bottleneck ở đâu |
+
+## Red Flags
+- new Vector3/Matrix4 trong update loop
+- Không object pool cho bullet/particle
+- FPS desktop < 55 hoặc mobile < 30
+
+## Verification
+- [ ] Object pool cho mọi object tạo/thường xuyên
+- [ ] InstancedMesh cho repetitive 3D objects
+- [ ] Profiler xác nhận FPS ≥ 55 (desktop) / ≥ 30 (mobile)

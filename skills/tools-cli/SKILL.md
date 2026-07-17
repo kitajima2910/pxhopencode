@@ -24,3 +24,20 @@ Deps: `pip install click rich`
 See `templates/error-handling.ts`.
 
 Wrap main entry point; throw `CLIError` for known failures, let unexpected errors bubble to the catch-all.
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Spinner không cần, CLI nhanh mà" | Task 3s+ → user tưởng treo, Ctrl+C |
+| "Error thô đủ rõ" | Stack trace làm user hoảng, không biết fix |
+| "Auto-completion lãng phí" | User gõ sai option liên tục → bad UX |
+
+## Red Flags
+- CLI không có progress indicator cho task dài
+- Error output show stack trace (no --verbose)
+- Không auto-completion
+
+## Verification
+- [ ] Spinner/progress bar cho task > 2s
+- [ ] CLIError message + suggestion, stacktrace chỉ --verbose
+- [ ] NO_COLOR fallback hoạt động

@@ -43,3 +43,20 @@ docker run my-tool --help
 See `templates/.github/release.yml`.
 
 Triggers on tag push `v*`. Runs tests + publishes to npm. Adjust `setup-node` registry for other registries.
+
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "publish manual cũng được" | Quên build, quên bump version → publish hỏng |
+| "Docker image không cần tag" | latest = ai biết version nào đang chạy |
+| "Pre-release channel không cần" | Breaking change đến thẳng user = support tăng |
+
+## Red Flags
+- Publish manual không qua CI/CD
+- Docker image không version tag
+- Changelog không update
+
+## Verification
+- [ ] CI/CD publish: tag push → test → build → publish
+- [ ] Docker image tagged with version
+- [ ] npm/cargo/pip publish command tested
