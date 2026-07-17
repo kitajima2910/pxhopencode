@@ -38,53 +38,87 @@ Debug frontend (không cần browser):
 
 ## Post-fix: route đến agents theo company workflow pattern. Xem `workflows/company.workflow.md`.
 
-## UI/UX Debug — Web, Game, Tool
+## CLI Design System — pxhopencode Runtime
 
-> 📖 **SKILL**: `skills/ui-ux/SKILL.md` — toàn bộ kiến thức UI/UX cho web (Tailwind/React), game (Phaser HUD), tool (CLI output).
+> Thiết kế output cho hệ thống CLI 4 tầng. Dựa trên pattern: **Symbol Set + Layout + Contract Format → Pre-delivery checklist**.
+> 📖 SKILL: `skills/ui-ux/SKILL.md`
 
-### Chuẩn đoán nhanh
+### 1. Symbol Set (không emoji, dùng ASCII)
 
-| Triệu chứng | Loại | Cách debug |
-|-------------|------|-----------|
-| Layout lệch trên mobile | Web | Thêm border debug: `* { outline: 1px solid red }` |
-| Dark mode không áp dụng | Web | Check `class="dark"` trên `<html>`, kiểm tra `dark:` variant |
-| Game HUD lệch màn hình | Game | `setScrollFactor(0)` chưa? Scale mode `Phaser.Scale.FIT`? |
-| Touch không hoạt động | Game | DOM overlay có `pointer-events: none`? Button zone ≥ 48×48? |
-| Output CLI loãng | Tool | Nhóm section, thêm divider, màu sắc rõ ràng |
-| Progress bar nhấp nháy | Tool | Update ≤ 10 lần/s, dùng `\r` đúng cách |
+| Ý nghĩa | Symbol | Code |
+|---------|--------|------|
+| Success | `✓` | `\u2713` |
+| Fail | `✗` | `\u2717` |
+| Running | `⏳` | `\u23F3` |
+| Arrow | `→` | `\u2192` |
+| Separator | `─` x 50 | `\u2500` |
+| Box T | `┌──┐` | `\u250C\u2500\u2510` |
+| Box B | `└──┘` | `\u2514\u2500\u2518` |
 
-### Web — Debug responsive & FOUC
+Không dùng emoji. Fallback: `$env:NO_COLOR` = `[>]`, `[x]`, `[ ]`.
 
-```bash
-# Responsive: resize trình duyệt hoặc dùng DevTools device toolbar
-# FOUC: thêm ?debug vào URL, kiểm tra CSS load order
-# Dark mode flash: kiểm tra <script> blocking trong <head>
+### 2. Layout cho 4 tầng
+
+```
+┌─ T1 ──────────────────────────────────────────┐
+│ pxh-help  Validate input                       │
+│   → /debug "Fix crash on login"                │
+│   → Request {type:"debug", target:"./app.js"}   │
+└────────────────────────────────────────────────┘
+    ↓
+┌─ T2 ──────────────────────────────────────────┐
+│ pxh-pm   Analyze → Route → Track               │
+│   Phase: code → test → fix                     │
+│   Retry: 2/3  ⏳                                │
+└────────────────────────────────────────────────┘
+    ↓
+┌─ T3 ──────────────────────────────────────────┐
+│ pxh-expert  Execute in TARGET                   │
+│   ✓ Code generated (src/app.js)                 │
+│   ✓ Tests pass (12/12)                          │
+└────────────────────────────────────────────────┘
+    ↓
+┌─ T4 ──────────────────────────────────────────┐
+│ pxh-save-history  Persist state                 │
+│   ✓ Session saved (session_abc123.json)         │
+└────────────────────────────────────────────────┘
 ```
 
-### Game — Debug HUD & touch
+Mỗi tầng = 1 box riêng. Dùng `console.log` với prefix `[T1]`, `[T2]`, `[T3]`, `[T4]`.
 
-```typescript
-// Bật debug HUD
-hudContainer.style.outline = '2px solid cyan'
-// Kiểm tra scroll factor
-console.log(text.scrollFactorX, text.scrollFactorY) // phải = 0
-// Touch zone test: thêm background màu để thấy vùng chạm
-touchZone.setInteractive({ hitArea: new Phaser.Geom.Rectangle(0, 0, 48, 48), useHandCursor: true })
+### 3. Contract Format — chuẩn output
+
+```
+Request:  {type|target|context}            → 1 dòng
+Task:     {phase|target|skills|workflow}   → tối đa 2 dòng
+Result:   {status|artifacts[]}             → status + summary
+Response: {status|summary}                 → 1 dòng output cuối
+Event:    {type|phase|reflection}          → log ẩn (T4)
+State:    {checkpoint|session_id}          → JSON file
 ```
 
-### Tool — Debug CLI output
+Quy tắc: Không in contract raw JSON ra terminal—tóm tắt thành 1-2 dòng text.
 
-```bash
-# Test với NO_COLOR để check fallback
-$env:NO_COLOR = "1"; node tool.js
-# Test verbose mode
-tool.js --verbose
-# Kiểm tra progress bar frequency
-Measure-Command { tool.js }
-```
+### 4. Anti-Patterns (cấm)
 
-### Route đến agent
-- Web UI/UX → `@pxh-ui-ux` với Task contract (context: mô tả bug + screenshot/mockup)
-- Game HUD → `@pxh-ui-ux` + `@pxh-expert` (via T2)
-- Tool CLI → `@pxh-ui-ux` với output sample
-- Xem `skills/ui-ux/SKILL.md` cho checklist cross-platform
+| Anti-pattern | Hậu quả | Thay bằng |
+|-------------|---------|-----------|
+| Emoji trong output | Lỗi font trên terminal cũ | ASCII symbols |
+| Contract raw JSON | Nhiễu, khó đọc | Tóm tắt 1-2 dòng |
+| Spam progress > 10Hz | Rối terminal | Update ≤ 5 lần/s |
+| Không prefix tầng | Không biết ai output | `[T1]`, `[T2]`, ... |
+| Màu sắc tuỳ tiện | Khó đọc trên terminal đen/trắng | Dùng NO_COLOR fallback |
+
+### 5. Pre-delivery checklist
+
+- [ ] Output có prefix `[Tn]` ở mỗi dòng
+- [ ] Box ┌─┐ cho block multi-line (không cho 1 dòng)
+- [ ] Contract tóm tắt, không raw JSON
+- [ ] status icon (✓/✗) hiển thị đúng
+- [ ] `$env:NO_COLOR` fallback hoạt động
+- [ ] Progress update ≤ 5 lần/s
+- [ ] Phân cách section rõ ràng (─── dòng)
+
+### 6. Route debug UI
+- CLI output sai format → `@pxh-ui-ux` với sample output + mô tả lỗi
+- Web/Game UI bug → `skills/ui-ux/SKILL.md` + `@pxh-ui-ux`
