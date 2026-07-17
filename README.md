@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v40</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
+  <b>v40</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 35 skills &nbsp;·&nbsp; 167 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -45,7 +45,7 @@ flowchart TD
 |------|-------|---------|
 | **T1** Interface | `pxh-help` | Validate input, classify prompt, format output |
 | **T2** Orchestration | `pxh-pm` | Auto-route task, track state, enforce retry/recovery/reflection |
-| **T3** Workers | 7 agents | Thực thi domain (code, test, review, build, UI/UX) |
+| **T3** Workers | 8 agents | Thực thi domain (code, test, review, build, UI/UX, Godot) |
 | **T4** Infrastructure | `pxh-save-history` | Persist state, checkpoint, log, alerting |
 
 ```mermaid
@@ -71,7 +71,7 @@ flowchart LR
 
 ---
 
-## 10 Agents
+## 11 Agents
 
 | Agent | Tầng | Role | Dùng khi |
 |-------|------|------|----------|
@@ -84,11 +84,12 @@ flowchart LR
 | `pxh-devops` | T3 | Lint → typecheck → test → build | Build pipeline, release |
 | `pxh-ui-ux` | T3 | UI/UX design (web, game HUD, CLI) | Layout, responsive, accessibility |
 | `pxh-save-history` | T4 | State, checkpoint, recovery | Lưu session, phục hồi lỗi |
+| `pxh-godot` | T3 | Godot 4.x game dev | Dự án Godot, game GDScript |
 | `pxh-help` | T1 | Hướng dẫn workflow | Cần trợ giúp, chưa biết bắt đầu |
 
 ---
 
-## 8 Workflows · 9 Commands
+## 9 Workflows · 10 Commands
 
 | Lệnh | Mục đích |
 |------|----------|
@@ -98,15 +99,16 @@ flowchart LR
 | `/ai` | Chatbot, RAG, agent, LLM |
 | `/tool` | CLI, extension, automation, package |
 | `/debug` | Debug + fix bug |
-| `/ui-ux` | UI/UX design & debug cho web, game, tool |
+| `/ui-ux` | UI/UX design & debug cho web, game, tool, Godot |
+| `/godot` | Godot 4.x game (GDScript, Layer Cake architecture) |
 | `/meeting` | Họp agents thảo luận |
 | `/release` | Build pipeline: lint → test → build |
 
 ---
 
-## 30 Skills
+## 35 Skills
 
-Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, Chuyên biệt 1)
+Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, Godot 5, UI/UX 1)
 
 ---
 
