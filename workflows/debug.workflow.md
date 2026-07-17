@@ -14,7 +14,6 @@
 - **Performance**: chậm/lag → profiling, benchmark
 - **Security**: XSS/CSRF/SQLi/auth bypass → chạy security checklist (`skills/webs-security/SKILL.md`)
 - **Database**: query lỗi → EXPLAIN ANALYZE
-- **Mod**: APK không chạy/decompile lỗi/smali syntax → đọc log, kiểm tra cấu trúc smali/dex, verify signature
 - **UX**: UI lệch/màu sai/FOUC/accessibility → responsive, dark mode, contrast, keyboard nav
 
 ### Bước 2: Tái hiện — verbose mode, minimal reproduction
@@ -38,74 +37,6 @@ Debug frontend (không cần browser):
 ### Bước 6: Prevent — unit test, error boundary, validation, logging
 
 ## Post-fix: route đến agents theo company workflow pattern. Xem `workflows/company.workflow.md`.
-
----
-
-## Mod APK — Quy trình mod game/app (online & offline)
-
-> ⚠️ **LUẬT BẮT BUỘC**: Giữ nguyên cấu trúc smali gốc. Chỉ patch đúng mục tiêu. Không xoá file lạ. Luôn backup bản gốc.
-> 📖 **SKILL VIP**: `skills/mod-apk/SKILL.md` — chứa toàn bộ kiến thức hacker từ cơ bản đến nâng cao.
-> 🎯 **Cách tiếp cận**: Chỉ edit + code review. Không rebuild, không sign, không install — debug bằng mắt đọc smali/JS/dex.
-
-### PHASE 1 — Phân tích & Xác định mục tiêu
-
-Search string trong source đã decompile để tìm class cần patch:
-
-| String search | Mục tiêu |
-|--------------|----------|
-| `premium`, `pro`, `unlock`, `vip` | Premium bypass |
-| `purchase`, `buy`, `paid`, `iap`, `product` | In-app purchase |
-| `license`, `verify`, `signature`, `integrity` | License/anti-tamper |
-| `root`, `su`, `emulator`, `debug` | Root/emulator detection |
-| `coin`, `diamond`, `gold`, `gem`, `cash`, `credit` | In-game currency |
-| `damage`, `hp`, `health`, `mana`, `ammo` | Player stats |
-| `https://`, `http://api`, `endpoint` | Server URL (có thể chặn) |
-| `isPurchased`, `isPremium`, `checkLicense` | Method trả boolean |
-
-### PHASE 2 — Vibe code (sửa smali)
-
-Quy tắc vàng khi sửa smali:
-1. **`.locals` phải ≥ số register dùng** — sai là crash ngay
-2. **Chỉ dùng v0–v15** (trừ khi method có `.locals` lớn)
-3. **Label không duplicate** — mỗi label unique trong method
-4. **Giữ nguyên signature method** — không đổi tên method, params
-
-Xem `skills/mod-apk/SKILL.md` #10 cho tất cả pattern smali.
-
-### PHASE 3 — Anti-tamper bypass (nếu game crash)
-
-Nếu mod xong → crash / tự thoát / hiện "App tampered":
-
-1. Search `Signature`, `Integrity`, `Checksum`, `Tamper` trong source
-2. Patch các method check đó → return success
-3. Xem `skills/mod-apk/SKILL.md` #3 (Anti-Tamper Matrix)
-
-### PHASE 4 — Online game (nếu mod số không生效)
-
-Game online thường có server validation:
-- **Client trust**: Patch smali return true là được
-- **Server trust**: KHÔNG THỂ mod coin/diamond — chỉ mod hack map, auto-aim, wallhack
-- **Hybrid**: Patch logic tấn công (dame x100), không mod được số dư
-- Dùng Frida bypass runtime check nếu cần (xem skill #9)
-
-### PHASE 5 — Unity / Cocos / Flutter (game engine đặc thù)
-
-| Engine | Cách mod | Xem skill |
-|--------|---------|-----------|
-| Unity Mono (Assembly-CSharp.dll) | dnSpy patch C# → recompile | Skill #4 |
-| Unity il2cpp (libil2cpp.so) | Il2CppDumper → hex patch ARM64 | Skill #4 |
-| Cocos2d-x (assets/*.js) | Edit JS trực tiếp | Skill #5 |
-| Flutter (libapp.so) | ReFlutter hoặc Frida | Skill #6 |
-
-### PHASE 6 — Split APK / XAPK / AAB
-
-| Format | Cách xử lý | Xem skill |
-|--------|-----------|-----------|
-| XAPK (có obb) | Mod APK + copy obb riêng | Skill #8 |
-| .apks / .apkm | Giải nén → mod base.apk → install-multiple | Skill #8 |
-| AAB | bundletool → .apks → mod | Skill #8 |
-
-
 
 ## UI/UX Debug — Web, Game, Tool
 

@@ -48,7 +48,6 @@ Mọi phase hoàn tất → tạo Response contract → gửi đến Tầng 1
 | test | `pxh-qa` | Task → Result | Thử lại, Phản ánh |
 | review | `pxh-review-code` | Task → Result | Thử lại, Phản ánh |
 | build | `pxh-devops` | Task → Result | Thử lại, Phục hồi, Phản ánh |
-| mod | `pxh-mod-apk` | Task → Result | Thử lại, Phản ánh |
 | ui-ux | `pxh-ui-ux` | Task → Result | Thử lại, Phản ánh |
 | persist | `pxh-save-history` | Event → Confirmed | Phục hồi |
 

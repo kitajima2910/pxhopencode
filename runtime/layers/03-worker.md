@@ -2,7 +2,7 @@
 
 **Trách nhiệm:** Thực thi các tác vụ theo domain. Mỗi worker có ĐÚNG MỘT công việc.
 
-**Chủ quản:** `pxh-architect`, `pxh-expert`, `pxh-fix-bugs`, `pxh-qa`, `pxh-review-code`, `pxh-devops`, `pxh-mod-apk`, `pxh-ui-ux`
+**Chủ quản:** `pxh-architect`, `pxh-expert`, `pxh-fix-bugs`, `pxh-qa`, `pxh-review-code`, `pxh-devops`, `pxh-ui-ux`
 
 **Trách nhiệm duy nhất mỗi Worker:**
 
@@ -14,7 +14,6 @@
 | `pxh-qa` | Chạy test, xác thực chất lượng |
 | `pxh-review-code` | Rà soát bảo mật, hiệu năng, quy ước |
 | `pxh-devops` | Lint, typecheck, build, đóng gói |
-| `pxh-mod-apk` | Reverse engineering APK, decompile/apktool/jadx, patch smali/dex, repack & sign |
 | `pxh-ui-ux` | UI/UX design cho web (React/Tailwind), game (Phaser/Three.js HUD), tool (CLI output) |
 
 ## Luồng
