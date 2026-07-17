@@ -17,7 +17,8 @@
     "pxh-fix-bugs": { "description": "T3 Bug Hunter", "mode": "subagent" },
     "pxh-review-code": { "description": "T3 Code Reviewer", "mode": "subagent" },
     "pxh-save-history": { "description": "T4 Historian", "mode": "subagent" },
-    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent" }
+    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent" },
+    "pxh-godot": { "description": "T3 Godot Specialist", "mode": "subagent" }
   },
 
   "command": {
@@ -29,6 +30,7 @@
     "game": { "template": "workflows/game.workflow.md" },
     "ai": { "template": "workflows/ai.workflow.md" },
     "tool": { "template": "workflows/tool.workflow.md" },
-    "ui-ux": { "template": "workflows/debug.workflow.md" }
+    "ui-ux": { "template": "workflows/debug.workflow.md" },
+    "godot": { "template": "workflows/godot.workflow.md" }
   }
 }

@@ -47,5 +47,15 @@ Dùng để chọn skill NHANH mà không cần đọc 28 SKILL.md. Mỗi skill 
 | `tools-extensions` | VS Code extension, commands, views, providers | VS Code API | skills/tools-extensions/ |
 | `tools-packaging` | npm/Cargo/PyPI/Docker/Homebrew packaging | — | skills/tools-packaging/ |
 
+## Godot Skills (5)
+| Skill | Use when | Deps | Path |
+|-------|----------|------|------|
+| `godot-master` | Godot project start, architecture, anti-patterns, perf budgets | — | skills/godot-master/ |
+| `godot-2d` | Godot 2D: CharacterBody2D, physics, tilemap, animation, camera | godot-master | skills/godot-2d/ |
+| `godot-3d` | Godot 3D: lighting, materials, world, physics, nav, procgen | godot-master | skills/godot-3d/ |
+| `godot-gameplay` | Godot combat, inventory, quest, dialogue, save, abilities | godot-master | skills/godot-gameplay/ |
+| `godot-ui` | Godot UI: containers, theming, rich text, input handling | godot-master | skills/godot-ui/ |
+> Godot: load `godot-master` trước (3k tokens). Load domain skill cụ thể (1-1.5k tokens). NEVER load all — Context Storm. Upstream: `github.com/thedivergentai/GD-Agentic-Skills` (96 skills chi tiết).
+
 ## Templates per Skill
 Chi tiết template trong `skills/<skill>/templates/`. Chỉ đọc khi cần code feature cụ thể — lazy load.
