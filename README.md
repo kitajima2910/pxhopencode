@@ -17,7 +17,7 @@ git clone <repo-url> .opencode
 # hoặc download zip, giải nén, rename pxhopencode → .opencode
 ```
 
-Sau đó dùng opencode (hoặc Cursor, Windsurf, etc.) mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
+Sau đó dùng opencode mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
 
 ---
 
