@@ -5,7 +5,19 @@
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
-> **Sync:** Sau khi CRUD agent/workflow/skill/template, chạy `powershell.exe -ExecutionPolicy Bypass -File _shared\sync-readme.ps1` để đồng bộ badge + section headers.
+---
+
+## Cài đặt
+
+Clone vào project của bạn, đổi tên thành `.opencode`:
+
+```bash
+# Trong thư mục project của bạn
+git clone <repo-url> .opencode
+# hoặc download zip, giải nén, rename pxhopencode → .opencode
+```
+
+Sau đó dùng opencode (hoặc Cursor, Windsurf, etc.) mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
 
 ---
 
@@ -100,17 +112,31 @@ Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickre
 
 ## Cách dùng
 
+Có 3 cách tương tác với AI Company — tất cả đều tự động route qua T1→T2→T3:
+
+| Cách | Cú pháp | Luồng |
+|------|---------|-------|
+| **Prompt tự nhiên** | Gõ thẳng mô tả công việc | `pxh-pm` classify → chọn workflow → route → code → test → review → build |
+| **Lệnh `/`** | `/workflow` + mô tả | Load workflow template → route thẳng T3 |
+| **@mention** | `@agent` + task contract | Gọi agent cụ thể, bỏ qua classify |
+
+### Prompt tự nhiên
 ```bash
-# Prompt trực tiếp — pxh-pm tự động classify → route → code → test → release
 "Làm một web app TODO list với Next.js"
+# pxh-pm tự động phân tích, chọn workflow /web, gọi agent phù hợp
+```
 
-# Lệnh / — xác định workflow rõ ràng
+### Lệnh `/`
+```bash
 /vibe   "Game bắn súng 2D, có shop, 10 level"
-/debug  "Fix bug, crash, behavior sai"
+/debug  "Fix bug crash khi login"
 /ui-ux  "Fix responsive layout và dark mode"
+```
 
-# @agent — gọi trực tiếp kèm Task contract
+### @mention
+```bash
 @pxh-expert với phase=code target=./src context="Thêm API route GET /users"
+@pxh-architect thiết kế schema cho hệ thống chat
 ```
 
 ---
@@ -137,7 +163,9 @@ Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickre
 
 ## Changelog
 
-### v40 — Architecture Hardening (Latest)
+<details>
+<summary><b>v40 — Architecture Hardening</b> (Latest)</summary>
+
 - **Add:** `pxh-ui-ux.md` agent file, `_shared/arch-check.ps1`, `_shared/sync-readme.ps1`
 - **Add:** Observability & Alerting (T4), Contract versioning (`v:"1.0"`), CLI Design System
 - **Add:** Mermaid flowcharts thay ASCII diagrams
@@ -145,10 +173,59 @@ Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickre
 - **Fix:** Agent permission boilerplate xoá (~246 tokens)
 - **Update:** Auto-routing (pxh-pm + pxh-help), README/runtime/README nén
 - **Remove:** Mod APK/XAPK khỏi toàn bộ codebase
+</details>
 
-### v39 — Pro Max
+<details>
+<summary><b>v39 — Pro Max</b></summary>
+
 - **Add:** Anti-Rationalization + Red Flags + Verification cho 47 files
 - **Update:** Token optimization, workflow compression, context budget
+</details>
 
-### v32 → v38
-Xem chi tiết tại `git log` hoặc file `_shared/arch-check.ps1`.
+<details>
+<summary><b>v38 — UI/UX & Workflow Polish</b></summary>
+
+- **Add:** `/ui-ux` command, Web security checklist
+- **Update:** Debug workflow CLI Design System, README restructure
+- **Fix:** Agent name mismatches (`@architect`→`@pxh-architect`)
+</details>
+
+<details>
+<summary><b>v37 — Game Racing & Security</b></summary>
+
+- **Add:** Marble Racing 3D, black-box scripts, game eval assertions
+- **Add:** Web security checklist skill (`webs-security`)
+</details>
+
+<details>
+<summary><b>v36 — Headless Testing Migration</b></summary>
+
+- **Add:** Vitest headless testing (Phaser/Three.js)
+- **Remove:** Chrome DevTools integration
+</details>
+
+<details>
+<summary><b>v35 — Agent Refactoring & Context Budget</b></summary>
+
+- **Add:** Context Budget, Skill Quick Reference
+- **Remove:** Chrome DevTools MCP
+</details>
+
+<details>
+<summary><b>v34 — Architecture Diagrams</b></summary>
+
+- **Add:** Mermaid flow diagrams, PowerShell build scripts
+</details>
+
+<details>
+<summary><b>v33 — Game Assets & Build Pipeline</b></summary>
+
+- **Add:** Asset download script, build scripts
+</details>
+
+<details>
+<summary><b>v32 — Initial Foundation</b></summary>
+
+- **Add:** 4-tier architecture, 10 agents, 8 workflows, 28 skills
+- **Add:** Contract system, Retry/Recovery/Reflection policies, templates
+</details>
