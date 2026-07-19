@@ -42,6 +42,8 @@ Sau classify: `classified_workflow` quyết định workflow, `classified_skills
 
 **ko match** → hỏi user 1 câu.
 
+**Sub-routing**: Nếu `/debug` + classified_skills chứa `games-*` → sau khi @pxh-fix-bugs, route tiếp @pxh-ui-ux làm polish game (Bước 6 trong debug workflow). Cũng load thêm `games-optimization`, `games-testing` skills.
+
 ## QUY TRÌNH
 1. Tiếp nhận → xác định loại input (command/mention/prompt)
 2. Nếu prompt tự nhiên → **gọi `@pxh-help` classify** trước, nhận `classified_workflow`

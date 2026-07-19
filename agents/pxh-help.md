@@ -25,6 +25,8 @@ Phân tích prompt keywords → tự chọn workflow + skill. Dùng `_shared/ski
 | CLI, tool, automation, script | `/tool` | `tools-*` |
 | VS Code extension | `/tool` | `tools-extensions` |
 | debug, fix, bug, crash, lỗi | `/debug` | — |
+| **game debug**, physics bug, animation lỗi, FPS drop, game crash, game asset lỗi | `/debug` | `games-testing`, `games-optimization` |
+| **game polish**, làm đẹp game, game visual, game UI, game animation, game performance | `/game` | `games-*`, `ui-ux` |
 
 Multi-domain: chọn workflow chính + skill phụ. Không rõ → hỏi 1 câu.
 
