@@ -24,7 +24,6 @@ Phân tích prompt keywords → tự chọn workflow + skill. Dùng `_shared/ski
 | AI, chatbot, LLM, RAG, agent | `/ai` | `ais-*` |
 | CLI, tool, automation, script | `/tool` | `tools-*` |
 | VS Code extension | `/tool` | `tools-extensions` |
-| Godot, GDScript, game Godot, Godot 2D/3D, Godot FPS | `/godot` | `godot-master`, `godot-*` |
 | debug, fix, bug, crash, lỗi | `/debug` | — |
 
 Multi-domain: chọn workflow chính + skill phụ. Không rõ → hỏi 1 câu.

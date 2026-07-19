@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v41</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 35 skills &nbsp;·&nbsp; 167 templates</p>
+  <b>v42</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -19,25 +19,29 @@ git clone <repo-url> .opencode
 
 Sau đó dùng opencode mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
 
-### MCP Godot (tùy chọn — dùng để Godot MCP server)
+### MCP Servers (tùy chọn)
 
-Thêm vào `opencode.json` trong project của bạn (đã có sẵn trong file này):
+MCP servers mở rộng khả năng của AI Company — có thể là local (VD: database, game engine) hoặc remote (VD: API, cloud service).
+
+Thêm vào `opencode.json` trong project của bạn (xem cấu hình mẫu trong file này):
 
 ```json
 "mcp": {
-  "godot": {
+  "<server-name>": {
     "type": "local",
-    "command": ["npx", "-y", "@coding-solo/godot-mcp"],
+    "command": ["<lệnh>", "<arg>", ...],
     "enabled": true,
     "environment": {
-      "DEBUG": "true",
-      "GODOT_PATH": "C:\\Program Files\\Godot\\Godot.exe"
+      "KEY": "value"
     }
   }
 }
 ```
 
-Thay `GODOT_PATH` bằng đường dẫn Godot.exe của bạn. Yêu cầu Node.js 18+. Chi tiết: [github.com/Coding-Solo/godot-mcp](https://github.com/Coding-Solo/godot-mcp).
+**Local** (`"type": "local"`): chạy process trên máy bạn. Cần `command` là đường dẫn executable + args.
+**Remote** (`"type": "remote"`): kết nối đến MCP server qua URL. Cần trường `url` + `headers` nếu có auth.
+
+Chi tiết: [opencode.ai/docs/mcp](https://opencode.ai/docs/mcp).
 
 ---
 
@@ -65,7 +69,7 @@ flowchart TD
 |------|-------|---------|
 | **T1** Interface | `pxh-help` | Validate input, classify prompt, format output |
 | **T2** Orchestration | `pxh-pm` | Auto-route task, track state, enforce retry/recovery/reflection |
-| **T3** Workers | 8 agents | Thực thi domain (code, test, review, build, UI/UX, Godot) |
+| **T3** Workers | 7 agents | Thực thi domain (code, test, review, build, UI/UX) |
 | **T4** Infrastructure | `pxh-save-history` | Persist state, checkpoint, log, alerting |
 
 ```mermaid
@@ -91,7 +95,7 @@ flowchart LR
 
 ---
 
-## 11 Agents
+## 10 Agents
 
 | Agent | Tầng | Role | Dùng khi |
 |-------|------|------|----------|
@@ -104,12 +108,11 @@ flowchart LR
 | `pxh-devops` | T3 | Lint → typecheck → test → build | Build pipeline, release |
 | `pxh-ui-ux` | T3 | UI/UX design (web, game HUD, CLI) | Layout, responsive, accessibility |
 | `pxh-save-history` | T4 | State, checkpoint, recovery | Lưu session, phục hồi lỗi |
-| `pxh-godot` | T3 | Godot 4.x game dev | Dự án Godot, game GDScript |
 | `pxh-help` | T1 | Hướng dẫn workflow | Cần trợ giúp, chưa biết bắt đầu |
 
 ---
 
-## 9 Workflows · 10 Commands
+## 8 Workflows · 9 Commands
 
 | Lệnh | Mục đích |
 |------|----------|
@@ -119,16 +122,15 @@ flowchart LR
 | `/ai` | Chatbot, RAG, agent, LLM |
 | `/tool` | CLI, extension, automation, package |
 | `/debug` | Debug + fix bug |
-| `/ui-ux` | UI/UX design & debug cho web, game, tool, Godot |
-| `/godot` | Godot 4.x game (GDScript, Layer Cake architecture) |
+| `/ui-ux` | UI/UX design & debug cho web, game, tool |
 | `/meeting` | Họp agents thảo luận |
 | `/release` | Build pipeline: lint → test → build |
 
 ---
 
-## 35 Skills
+## 30 Skills
 
-Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, Godot 5, UI/UX 1)
+Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, UI/UX 1)
 
 ---
 
@@ -186,15 +188,12 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 ## Changelog
 
 <details>
-<summary><b>v41 — Godot Pro Max</b> (Latest)</summary>
+<summary><b>v42 — Godot Removal</b> (Latest)</summary>
 
-- **Add:** `godot-master` skill — Layer Cake architecture, 30 NEVER rules, perf budgets, Server API patterns (~3k tokens)
-- **Add:** 4 domain skills — `godot-2d`, `godot-3d`, `godot-gameplay`, `godot-ui` (each ~1-1.5k tokens)
-- **Add:** `pxh-godot.md` agent file, `workflows/godot.workflow.md`, `/godot` command
-- **Add:** Auto-route Godot — `pxh-help` classifier + `pxh-pm` route table + `agent-listing` + `skill-quickref`
-- **Update:** Upstream integration `github.com/thedivergentai/GD-Agentic-Skills` (96 skills, 982 scripts)
-- **Update:** `opencode.json` — 11 agents, 10 commands
-- **Fix:** README consistency — badge, agent count, workflow count, skills count
+- **Remove:** Godot entirely — agent `pxh-godot`, 5 skills (`godot-master`, `godot-2d`, `godot-3d`, `godot-gameplay`, `godot-ui`), `workflows/godot.workflow.md`, `/godot` command
+- **Remove:** Auto-route Godot từ pxh-help classifier, pxh-pm route table, agent-listing, skill-quickref
+- **Update:** General MCP server instructions thay Godot-specific MCP
+- **Update:** README counts — 10 agents, 8 workflows, 30 skills
 </details>
 
 <details>
