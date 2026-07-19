@@ -12,11 +12,11 @@
 | 4 | KẾ HOẠCH | T2 | Feature list, milestones | Mọi feature có acceptance criteria |
 | 5 | THIẾT KẾ | @pxh-architect | Schema, API, component tree | Thiết kế review bởi T2 trước code |
 | 6 | CODE | @pxh-expert/@pxh-ui-ux | Code trong TARGET | .gitignore + favicon + lint pass |
-| 7 | KIỂM TRA | @qa | Test results | Coverage ≥ 80%, all green |
-| 8 | SỬA | @fix-bugs | Bug fix | Root cause doc, test confirm fix |
-| 9 | RÀ SOÁT | @review-code | Review issues | Critical=0, max 3 nit còn lại |
-| 10 | PHÁT HÀNH | @devops | Build artifact | lint→typecheck→test→build pass |
-| 11 | LƯU | @save-history | Session log, ADR | STATUS.md updated |
+| 7 | KIỂM TRA | @pxh-qa | Test results | Coverage ≥ 85%, all green |
+| 8 | SỬA | @pxh-fix-bugs | Bug fix | Root cause doc, test confirm fix |
+| 9 | RÀ SOÁT | @pxh-review-code | Review issues | Critical=0, max 3 nit còn lại |
+| 10 | PHÁT HÀNH | @pxh-devops | Build artifact | lint→typecheck→test→build pass |
+| 11 | LƯU | @pxh-save-history | Session log, ADR | STATUS.md updated |
 
 ### Loop mechanism
 - Code→Test→Fix: nếu test fail → quay lại Bước 6 (max 3 lần)

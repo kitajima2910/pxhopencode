@@ -4,7 +4,7 @@
 > Debug game: dùng headless test — không cần browser. Xem `skills/games-testing/`.
 > Eval assertions: `skills/games-testing/templates/game-eval-schema.ts` để verify chất lượng.
 
-## Quy trình (7 bước + verify gate)
+## Quy trình (8 bước + verify gate)
 
 | # | Bước | Làm | Verify Gate |
 |---|------|-----|-------------|
@@ -70,7 +70,8 @@ Sau khi fix bug, **bắt buộc** phải chạy polish để game đẹp như AI
 Dùng `game-eval-schema.ts` để verify chất lượng sau fix:
 
 ```typescript
-import { assertGameInit, assertPhysicsStable, assertCheckpointTrigger, assertFPS, assertMemoryLeak, assertFSM, assertAudioPlay, assertInputResponsive, generateReport } from "skills/games-testing/templates/game-eval-schema";
+// File đã copy từ template vào src/eval.ts (xem game workflow Bước 2)
+import { assertGameInit, assertPhysicsStable, assertCheckpointTrigger, assertFPS, assertMemoryLeak, assertFSM, assertAudioPlay, assertInputResponsive, generateReport } from "./eval";
 ```
 
 Chạy grader để auto-verify:

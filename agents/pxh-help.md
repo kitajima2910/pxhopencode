@@ -17,16 +17,16 @@ Phân tích prompt keywords → tự chọn workflow + skill. Dùng `_shared/ski
 
 | Keyword | Workflow | Skill |
 |---------|----------|-------|
+| debug, fix, bug, crash, lỗi | `/debug` | — |
+| **game debug**, game physics bug, game animation lỗi, FPS drop, game crash, game asset lỗi, game 2D bug, game 3D bug | `/debug` | `games-testing`, `games-optimization` |
 | web, website, SPA, landing, blog, dashboard, API backend | `/web` | `webs-*` |
 | game 2D, platformer, Phaser | `/game` | `games-2d` |
 | game 3D, Three.js, FPS | `/game` | `games-3d` |
 | game isometric, 2.5D, tactical | `/game` | `games-isometric` |
+| **game polish**, làm đẹp game, game visual, game UI, game animation, game performance | `/game` | `games-*`, `ui-ux` |
 | AI, chatbot, LLM, RAG, agent | `/ai` | `ais-*` |
 | CLI, tool, automation, script | `/tool` | `tools-*` |
 | VS Code extension | `/tool` | `tools-extensions` |
-| debug, fix, bug, crash, lỗi | `/debug` | — |
-| **game debug**, physics bug, animation lỗi, FPS drop, game crash, game asset lỗi | `/debug` | `games-testing`, `games-optimization` |
-| **game polish**, làm đẹp game, game visual, game UI, game animation, game performance | `/game` | `games-*`, `ui-ux` |
 
 Multi-domain: chọn workflow chính + skill phụ. Không rõ → hỏi 1 câu.
 
