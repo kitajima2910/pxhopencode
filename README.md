@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v42</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
+  <b>v43</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -34,6 +34,26 @@ Thêm vào `opencode.json` trong project của bạn (xem cấu hình mẫu tron
     "environment": {
       "KEY": "value"
     }
+  }
+}
+```
+
+Ví dụ cụ thể — local database MCP server:
+```json
+"mcp": {
+  "database": {
+    "type": "local",
+    "command": ["npx", "-y", "@your-org/db-mcp"],
+    "enabled": true,
+    "environment": {
+      "DB_URL": "postgresql://..."
+    }
+  },
+  "api-service": {
+    "type": "remote",
+    "url": "https://api.example.com/mcp",
+    "headers": { "Authorization": "Bearer <token>" },
+    "enabled": true
   }
 }
 ```
@@ -188,7 +208,17 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 ## Changelog
 
 <details>
-<summary><b>v42 — Godot Removal</b> (Latest)</summary>
+<summary><b>v43 — Game Polish & AI Studio Quality</b> (Latest)</summary>
+
+- **Add:** AI Studio debug pipeline — `workflows/debug.workflow.md` (68→157 dòng): game debug categories (11 loại), Polish Pipeline (12 hạng mục), AI Studio Quality Standard matrix (2D/2.5D/3D), Eval assertions (`game-eval-schema.ts` + grader threshold ≥0.85)
+- **Add:** AI Studio Polish Pipeline — `workflows/game.workflow.md` (147→206 dòng): 5 sub-pipelines (Visual, UX, Audio, Animation, Performance), Quality Matrix (Standard vs Premium), Eval auto-verify threshold ≥0.9
+- **Add:** Game debug routing — `pxh-help` classifier (game debug/polish keywords), `pxh-pm` sub-routing (debug→fix-bugs→ui-ux polish)
+- **Fix:** Agent name consistency — `@qa`→`@pxh-qa`, `@fix-bugs`→`@pxh-fix-bugs`, `@review-code`→`@pxh-review-code`, `@devops`→`@pxh-devops`, `@save-history`→`@pxh-save-history` across all workflows
+- **Fix:** Classifier priority — game debug keywords checked before game type keywords
+</details>
+
+<details>
+<summary><b>v42 — Godot Removal</b></summary>
 
 - **Remove:** Godot entirely — agent `pxh-godot`, 5 skills (`godot-master`, `godot-2d`, `godot-3d`, `godot-gameplay`, `godot-ui`), `workflows/godot.workflow.md`, `/godot` command
 - **Remove:** Auto-route Godot từ pxh-help classifier, pxh-pm route table, agent-listing, skill-quickref
