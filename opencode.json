@@ -3,8 +3,21 @@
   "default_agent": "pxh-pm",
   "instructions": ["README.md", "runtime/README.md"],
 
+  "compaction": {
+    "auto": true,
+    "strategy": "summary",
+    "min_turns": 2,
+    "tail_turns": 3
+  },
+
+  "tool_output": {
+    "max_lines": 50,
+    "max_bytes": 4096
+  },
+
   "skills": {
-    "paths": ["skills", ".opencode/skills"]
+    "paths": ["skills", ".opencode/skills"],
+    "lazy": true
   },
 
   "agent": {
@@ -15,7 +28,10 @@
     "pxh-help": { "description": "T1 Interface", "mode": "primary" },
     "pxh-expert": { "description": "T3 Vibe Coder", "mode": "subagent" },
     "pxh-fix-bugs": { "description": "T3 Bug Hunter", "mode": "subagent" },
-    "pxh-review-code": { "description": "T3 Code Reviewer", "mode": "subagent" },
+    "pxh-review-code": {
+      "description": "T3 Code Reviewer",
+      "mode": "subagent"
+    },
     "pxh-save-history": { "description": "T4 Historian", "mode": "subagent" },
     "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent" }
   },
