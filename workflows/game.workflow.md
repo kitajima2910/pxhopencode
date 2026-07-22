@@ -47,7 +47,30 @@ npm install -D vitest happy-dom
 cp skills/games-testing/templates/game-eval-schema.ts src/eval.ts
 ```
 
-## Bước 3: Test Iteration Loop (headless)
+## Bước 3: Live Preview — AI Studio Style (bắt buộc)
+
+> Code xong thấy ngay. Mở Vite dev server với HMR, edit file → browser auto reload.
+
+```bash
+copy skills\games-preview\templates\vite.config.ts .
+copy skills\games-preview\templates\index.html .
+npx vite --open --host
+```
+
+| Engine | Preview behavior |
+|--------|-----------------|
+| Phaser 2D | HMR reload scene, giữ game state |
+| Three.js 3D | HMR rebuild scene, camera giữ nguyên |
+| Isometric | HMR update tilemap tức thì |
+
+**Sau mỗi lần code feature** → nhìn preview → thấy đẹp → qua test. Không preview = code mù.
+
+**Package.json scripts** (thêm tay nếu chưa có):
+```json
+"scripts": { "dev": "vite --open --host", "build": "vite build" }
+```
+
+## Bước 4: Test Iteration Loop (headless)
 Sau mỗi feature, viết test headless để verify logic:
 
 | Feature xong | Verify bằng test |
@@ -64,7 +87,7 @@ Sau mỗi feature, viết test headless để verify logic:
 | Racing: Timer | elapsed ≈ real time sau simulate |
 | Racing: Spline track | Track curve generated, wall + floor mesh tồn tại |
 
-## Bước 4: AI Studio Polish Pipeline (làm đẹp — bắt buộc)
+## Bước 5: AI Studio Polish Pipeline (làm đẹp — bắt buộc)
 
 > **LUẬT**: Mọi game **phải** qua polish pipeline. Không polish = game cùi = reject.
 
@@ -117,7 +140,7 @@ Sau mỗi feature, viết test headless để verify logic:
 | Draw calls (3D) | < 200 |
 | GC tuning | Pool reuse ≤ 100 alloc/s, avoid closure in loop |
 
-## Bước 5: Quality Gate — AI Studio Standard
+## Bước 6: Quality Gate — AI Studio Standard
 
 ### Runtime Checks (Headless)
 ```bash
@@ -147,7 +170,7 @@ node _shared/scripts/game-gen/eval-grader.js --input eval-report.json --threshol
 | No console.error | ✅ | ✅ |
 | PWA score | ≥ 80 | **≥ 90** |
 
-## Bước 6: PWA + Build & Deploy
+## Bước 7: PWA + Build & Deploy
 ```bash
 npm run build
 ```
@@ -162,6 +185,7 @@ Pre-deploy: build success, < 10MB, source maps tắt, PWA ≥ 90, FPS ≥ 58/30,
 | Excuse | Reality |
 |--------|---------|
 | "Bỏ qua genre reference, game đơn giản mà" | Thiết kế sai thể loại → core loop không fun |
+| "Bỏ qua preview, build xong xem luôn" | Sai layout/animation → mất 30p debug |
 | "Polish pipeline sau, MVP trước" | Không polish = game xấu, user không chơi |
 | "Headless test không cần, chơi tay đủ" | Bug physics/collision lên production |
 | "Skip eval assertions, nhìn ổn rồi" | Chất lượng không đo được = không biết có tốt không |
@@ -198,6 +222,7 @@ Pre-deploy: build success, < 10MB, source maps tắt, PWA ≥ 90, FPS ≥ 58/30,
 ## Verification
 - [ ] Genre reference đọc, đúng category
 - [ ] Asset downloaded, animation states (idle/run/jump/attack/hurt/die)
+- [ ] Live Preview chạy: `npx vite --open` → browser thấy game
 - [ ] Polish pipeline đã chạy: visual, UX, audio, animation, performance
 - [ ] Quality pass: unit test, coverage ≥ 85%, FPS ≥ 58, memory < 300KB
 - [ ] Eval threshold ≥ 0.9

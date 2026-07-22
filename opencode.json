@@ -45,6 +45,10 @@
     "game": { "template": "workflows/game.workflow.md" },
     "ai": { "template": "workflows/ai.workflow.md" },
     "tool": { "template": "workflows/tool.workflow.md" },
-    "ui-ux": { "template": "workflows/debug.workflow.md" }
+    "ui-ux": { "template": "workflows/debug.workflow.md" },
+    "preview": {
+      "description": "Start game live preview dev server (Vite HMR + browser auto-open)",
+      "template": "Load `skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
+    }
   }
 }

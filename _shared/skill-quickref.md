@@ -13,7 +13,7 @@ Dùng để chọn skill NHANH mà không cần đọc 28 SKILL.md. Mỗi skill 
 | `webs-styling` | Tailwind, design system, responsive, dark mode | Tailwind | skills/webs-styling/ |
 | `webs-testing` | Vitest, Playwright, MSW, unit/integration/e2e | Vitest | skills/webs-testing/ |
 
-## Game Skills (11) + Chrome DevTools Preview
+## Game Skills (12) — gồm Live Preview
 | Skill | Use when | Deps | Path |
 |-------|----------|------|------|
 | `games-2d` | 2D game, platformer, top-down, Phaser 3 | Phaser 3 | skills/games-2d/ |
@@ -26,6 +26,7 @@ Dùng để chọn skill NHANH mà không cần đọc 28 SKILL.md. Mỗi skill 
 | `games-optimization` | Object pool, instancing, LOD, profiling, GC | — | skills/games-optimization/ |
 | `games-physics` | AABB, spatial hash, raycast, collision response | — | skills/games-physics/ |
 | `games-pwa` | Manifest, service worker, offline, install prompt | — | skills/games-pwa/ |
+| `games-preview` | Live preview real-time, Vite HMR, hot-reload, browser auto-open | Vite | skills/games-preview/ |
 | `games-testing` | Vitest, headless Phaser/Three.js, benchmark | Vitest | skills/games-testing/ |
 > Game dev: trước khi code, đọc `skills/_shared/game-genre-reference.md` — architecture + anti-patterns theo 20+ thể loại. Test headless với `games-testing` (Vitest + Phaser.HEADLESS / headless Three.js).
 

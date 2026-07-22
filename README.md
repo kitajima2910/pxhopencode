@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v43</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 30 skills &nbsp;·&nbsp; 167 templates</p>
+  <b>v44</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 31 skills &nbsp;·&nbsp; 170 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -148,7 +148,7 @@ flowchart LR
 
 ---
 
-## 30 Skills
+## 31 Skills
 
 Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, UI/UX 1)
 
