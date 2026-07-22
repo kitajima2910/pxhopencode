@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v44</b> &nbsp;·&nbsp; 53 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 31 skills &nbsp;·&nbsp; 170 templates</p>
+  <b>v44</b> &nbsp;·&nbsp; 70 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 10 commands &nbsp;·&nbsp; 31 skills &nbsp;·&nbsp; 159 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -132,7 +132,7 @@ flowchart LR
 
 ---
 
-## 8 Workflows · 9 Commands
+## 8 Workflows · 10 Commands
 
 | Lệnh | Mục đích |
 |------|----------|
@@ -145,12 +145,13 @@ flowchart LR
 | `/ui-ux` | UI/UX design & debug cho web, game, tool |
 | `/meeting` | Họp agents thảo luận |
 | `/release` | Build pipeline: lint → test → build |
+| `/preview` | Live preview game (Vite HMR + browser auto-open) |
 
 ---
 
 ## 31 Skills
 
-Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 11, AI 5, Tool 5, UI/UX 1)
+Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 12, AI 5, Tool 5, UI/UX 1)
 
 ---
 
@@ -198,6 +199,9 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 ## Key Concepts
 
 - **Context Budget**: T0→T3 loading, lazy skill/template, batch ops
+- **Compaction**: Auto nén context cũ → summary, giữ 3 turns gần nhất, kéo session từ ~8 lên ~40 request
+- **Tool Output**: `max_lines: 50, max_bytes: 4096` — cắt output tool tiết kiệm token
+- **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms, browser auto-open (AI Studio style)
 - **Genre Reference**: `_shared/game-genre-reference.md`
 - **Headless testing**: Vitest + headless Phaser/Three.js, không cần server
 - **Code preservation**: Chỉ tác động trong TARGET
@@ -208,7 +212,20 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 ## Changelog
 
 <details>
-<summary><b>v43 — Game Polish & AI Studio Quality</b> (Latest)</summary>
+<summary><b>v44 — Context Compaction & AI Studio Live Preview</b> (Latest)</summary>
+
+- **Add:** Context compaction — `opencode.json` compaction config với `strategy: summary`, `min_turns: 2`, `tail_turns: 3`. Kéo session từ ~8 lên ~40-50 request
+- **Add:** Tool output truncation — `max_lines: 50, max_bytes: 4096` tiết kiệm ~30% token/turn
+- **Add:** Skill lazy loading — `skills.lazy: true` chỉ load skill khi cần, không preload 31 skills
+- **Add:** `games-preview` skill — Vite HMR live preview, hot-reload < 50ms, browser auto-open (AI Studio style)
+- **Add:** `/preview` command — mở game preview dev server nhanh
+- **Add:** Live Preview step — `workflows/game.workflow.md` Bước 3: code xong thấy ngay trước polish
+- **Update:** `skill-quickref.md` — 12 game skills (thêm games-preview)
+- **Update:** README counts — 70 commits, 10 commands, 31 skills, 159 templates
+</details>
+
+<details>
+<summary><b>v43 — Game Polish & AI Studio Quality</b></summary>
 
 - **Add:** AI Studio debug pipeline — `workflows/debug.workflow.md` (68→157 dòng): game debug categories (11 loại), Polish Pipeline (12 hạng mục), AI Studio Quality Standard matrix (2D/2.5D/3D), Eval assertions (`game-eval-schema.ts` + grader threshold ≥0.85)
 - **Add:** AI Studio Polish Pipeline — `workflows/game.workflow.md` (147→206 dòng): 5 sub-pipelines (Visual, UX, Audio, Animation, Performance), Quality Matrix (Standard vs Premium), Eval auto-verify threshold ≥0.9
