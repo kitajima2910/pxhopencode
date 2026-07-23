@@ -724,7 +724,7 @@ function processEvent(event){
       if(!raw)return
       const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
       if(!line)return
-      oc.ts='Mirror';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now()
+      oc.ts='Typing';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now()
       if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
       if(line.match(/\[TUI STOP\]/i)){oc._lastEvt=0}
       if(!oc._msgs)oc._msgs=[]
@@ -756,12 +756,6 @@ function animate(now){fc++;updateElapsed()
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w){ch.it=now+2000+Math.random()*3000;ch._wanderScheduled=false}}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
     // Event-driven idle timeout: leave desk after 5s of no events
     if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>5000){stopTyping(ch)}
-    // PXHOpenCode: stays working as long as TUI is active or any agent works
-    const oc=chars['pxh-opencode'];if(oc){
-      const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
-      if(anyWorking&&oc.state!=='typing'){oc.hrw=true;startTyping(oc);oc._msgs=['In sync with agents...'];oc.tsm=oc._msgs}
-      if(!anyWorking&&oc.w&&now-oc._lastEvt>5000){stopTyping(oc)}
-    }
     // Wander when idle (after returning from desk)
     if(ch.state==='idle'&&!ch.w&&now>ch.it&&!ch._wanderScheduled){
       ch._wanderScheduled=true
@@ -775,6 +769,13 @@ function animate(now){fc++;updateElapsed()
         setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+2000+Math.random()*4000;ch._wanderScheduled=false;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w){moveChar(ch,ch.ix,ch.iy,.8);ch._wanderScheduled=true}},2000)}},1200+Math.random()*1800)
     }
   })
+
+  // PXHOpenCode: always sits when any agent works or TUI is active
+  const poc=chars['pxh-opencode'];if(poc){
+    const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
+    if(anyWorking&&poc.state!=='typing'){poc.hrw=true;startTyping(poc)}
+    if(!anyWorking&&poc.w&&now-poc._lastEvt>5000){stopTyping(poc)}
+  }
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
   for(let i=doneNotifs.length-1;i>=0;i--){const dn=doneNotifs[i];dn.life--;dn.y=dn.sy-(70-dn.life)*.8;if(dn.life<=0){doneNotifs.splice(i,1);continue}}
@@ -893,7 +894,7 @@ function animate(now){fc++;updateElapsed()
   ctx.strokeStyle='#d29922';ctx.lineWidth=3;ctx.stroke()
   // Header bg
   ctx.fillStyle='rgba(210,153,34,0.18)';ctx.beginPath();ctx.roundRect(dX+3,dY+3,92,dHead-3,[8,8,0,0]);ctx.fill()
-  ctx.fillStyle='#f0d060';ctx.font='bold 12px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('CEO DASHBOARD',W-61,dY+24)
+  ctx.fillStyle='#f0d060';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('CEO DASHBOARD',W-61,dY+23)
   ctx.strokeStyle='rgba(210,153,34,0.5)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(dX+8,dY+dHead+3);ctx.lineTo(dX+90,dY+dHead+3);ctx.stroke()
   dashboardAgents.forEach((a,i)=>{
     const ch=chars[a.n],ly=dY+dHead+14+i*rowH
