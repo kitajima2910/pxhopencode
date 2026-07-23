@@ -56,10 +56,19 @@ const state = {
   phaseIndex: 0,
   workflowIndex: 0,
   directBroadcast: null,
-  activeAgents: {},  // track which agents are currently working
-  idleTimer: null,   // timer to emit idle when work stops
+  activeAgents: {},
+  idleTimers: {},
 }
-const WORK_IDLE_MS = 8000  // 8s of no file changes → agents go idle
+const WORK_IDLE_MS = 8000
+
+function startIdleTimer(agent) {
+  clearTimeout(state.idleTimers[agent])
+  state.idleTimers[agent] = setTimeout(() => {
+    emit({ type: 'agent_state', agent, tuiState: 'idle', message: '' })
+    delete state.activeAgents[agent]
+    delete state.idleTimers[agent]
+  }, WORK_IDLE_MS)
+}
 
 function getRelative(filePath) {
   return path.relative(ROOT, filePath).replace(/\\/g, '/')
@@ -170,26 +179,16 @@ function processBatch() {
   batch.forEach((c) => {
     activeNow[c.agent] = true
     if (!state.activeAgents[c.agent]) {
-      // First time — start working
       const seq = createTaskSequence(c)
       for (const evt of seq) emit(evt)
     } else {
-      // Already working — update log details
       emit({ type: 'agent_state', agent: c.agent, tuiState: 'update', message: `${c.action}: ${c.file}` })
     }
+    startIdleTimer(c.agent)
   })
 
-  // Update active agents
+  // Remove agents not in this batch from activeAgents (they'll idle via their own timer)
   state.activeAgents = activeNow
-
-  // Reset idle timer — when no changes for WORK_IDLE_MS, agents go idle
-  clearTimeout(state.idleTimer)
-  state.idleTimer = setTimeout(() => {
-    for (const ag of Object.keys(state.activeAgents)) {
-      emit({ type: 'agent_state', agent: ag, tuiState: 'idle', message: '' })
-    }
-    state.activeAgents = {}
-  }, WORK_IDLE_MS)
 }
 
 function startHeartbeat() {
