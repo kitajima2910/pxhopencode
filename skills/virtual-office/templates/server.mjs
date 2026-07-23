@@ -278,6 +278,9 @@ try {
         })
         prevState = st.state
         prevAgent = st.agent
+      } else if(st.agent === 'pxh-opencode' && st.state === 'Mirror' && st.message){
+        // Mirror: always broadcast each line for PXHOpenCode
+        broadcast({ type: 'tui_mirror', agent: 'pxh-opencode', message: st.message })
       } else if(!st.state || st.state === 'idle'){
         prevState = 'idle'
         prevAgent = null

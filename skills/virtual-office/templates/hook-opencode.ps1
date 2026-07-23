@@ -104,6 +104,7 @@ function Send-Agent($agent, $state, $msg) {
 function Send-Mirror($lineText) {
   $body = @{ type='tui_mirror'; agent='pxh-opencode'; message=$lineText } | ConvertTo-Json -Compress
   try {
+    [System.IO.File]::WriteAllText($STATE_FILE, (@{ state='Mirror'; agent='pxh-opencode'; message=$lineText } | ConvertTo-Json -Compress))
     Invoke-RestMethod -Uri $MIRROR_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null
   } catch {}
 }
@@ -171,20 +172,43 @@ if(-not $proc) {
 $activeAgents = @{}
 $agentCooldown = @{}
 $lastCheck = Get-Date
+$outFile = "$env:TEMP\opencode-out.txt"
+$errFile = "$env:TEMP\opencode-err.txt"
+$lastOutPos = 0
+$lastErrPos = 0
+
+function Read-NewLines($filePath, [ref]$lastPos) {
+  if(-not (Test-Path $filePath)) { return @() }
+  try {
+    $stream = [System.IO.File]::Open($filePath, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+    $len = $stream.Length
+    if($len -lt $lastPos.Value) { $lastPos.Value = 0 }
+    if($len -le $lastPos.Value) { $stream.Close(); return @() }
+    $stream.Seek($lastPos.Value, [System.IO.SeekOrigin]::Begin) | Out-Null
+    $buf = New-Object byte[] ($len - $lastPos.Value)
+    $read = $stream.Read($buf, 0, $buf.Length)
+    $lastPos.Value = $stream.Position
+    $stream.Close()
+    $text = [System.Text.Encoding]::UTF8.GetString($buf, 0, $read)
+    return $text -split '\r?\n' | Where-Object { $_ }
+  } catch { return @() }
+}
 
 while(!$proc.HasExited) {
-  Start-Sleep -Milliseconds 200
-  if(-not (Test-Path "$env:TEMP\opencode-out.txt")) { continue }
+  Start-Sleep -Milliseconds 150
 
-  $lines = Get-Content "$env:TEMP\opencode-out.txt" -Tail 15 -ErrorAction SilentlyContinue
-  $foundAny = $false
   $now = Get-Date
+  $newLines = Read-NewLines $outFile ([ref]$lastOutPos)
+  $newLines += Read-NewLines $errFile ([ref]$lastErrPos)
 
-  foreach($line in $lines) {
-    $clean = Clean-Line $line
+  if($newLines.Count -eq 0) { continue }
+  $foundAny = $false
+
+  foreach($raw in $newLines) {
+    $clean = Clean-Line $raw
     if([string]::IsNullOrWhiteSpace($clean)) { continue }
 
-    # Mirror EVERY TUI output line to PXHOpenCode
+    # Mirror EVERY line to PXHOpenCode
     Send-Mirror $clean
 
     # Step 1: Try to detect tool state from the line

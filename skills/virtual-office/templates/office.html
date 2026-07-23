@@ -700,7 +700,7 @@ function processEvent(event){
       if(!oc._mirrorLog)oc._mirrorLog=[]
       oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
       if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
-      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},2500)
+      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts='';oc.state='sitting';oc.w=false;oc.hrw=false;oc.it=performance.now()+500},2500)
     }
     addLog(event.message||'','#00e5ff')
   }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
