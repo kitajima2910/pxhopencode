@@ -441,6 +441,70 @@ function drawCharacter(ch){
   ctx.restore()
 }
 
+function drawCat(cat){
+  ctx.save();ctx.translate(cat.x,cat.y)
+  const ph=fc*.04+cat.ap
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.15)';ctx.beginPath();ctx.ellipse(0,cat.state==='sleep'?2:0,cat.state==='sleep'?16:8,3,0,0,Math.PI*2);ctx.fill()
+  if(cat.state==='sleep'){
+    // Sleeping cat — curled up
+    ctx.fillStyle='#f5a030';ctx.beginPath();ctx.ellipse(0,0,12,8,0,0,Math.PI*2);ctx.fill()
+    ctx.fillStyle='#e89020';ctx.beginPath();ctx.ellipse(0,-2,10,6,0,0,Math.PI*2);ctx.fill()
+    // Ears poking out
+    ctx.fillStyle='#f5a030';ctx.beginPath();ctx.moveTo(-8,-4);ctx.lineTo(-10,-10);ctx.lineTo(-4,-4);ctx.fill()
+    ctx.beginPath();ctx.moveTo(8,-4);ctx.lineTo(10,-10);ctx.lineTo(4,-4);ctx.fill()
+    // Closed eyes
+    ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(-4,-1);ctx.lineTo(-1,-1);ctx.stroke()
+    ctx.beginPath();ctx.moveTo(1,-1);ctx.lineTo(4,-1);ctx.stroke()
+    // Zzz
+    ctx.fillStyle='#fff';ctx.font='bold 7px sans-serif';ctx.fillText('Z',8,-12)
+    ctx.fillStyle='#ddd';ctx.font='bold 5px sans-serif';ctx.fillText('z',13,-16)
+  }else{
+    const wlk=cat.state==='walk'?Math.sin(ph*4)*3:0
+    // Body
+    ctx.fillStyle='#f5a030';ctx.beginPath();ctx.ellipse(0,2,9,7,0,0,Math.PI*2);ctx.fill()
+    // Tail
+    ctx.strokeStyle='#f5a030';ctx.lineWidth=3;ctx.lineCap='round'
+    ctx.beginPath();ctx.moveTo(cat.flip?-6:6,4);ctx.quadraticCurveTo(cat.flip?-12:12,2+Math.sin(ph)*3,cat.flip?-10:10,-4+Math.sin(ph)*4);ctx.stroke()
+    // Legs
+    ctx.fillStyle='#e89020'
+    ctx.fillRect(-7+wlk*.3,6,4,5);ctx.fillRect(3-wlk*.3,6,4,5)
+    // Head
+    ctx.fillStyle='#f5a030';ctx.beginPath();ctx.arc(0,-5,8,0,Math.PI*2);ctx.fill()
+    // Ears
+    ctx.fillStyle='#f5a030';ctx.beginPath();ctx.moveTo(-5,-10);ctx.lineTo(-3,-16);ctx.lineTo(0,-9);ctx.fill()
+    ctx.beginPath();ctx.moveTo(5,-10);ctx.lineTo(3,-16);ctx.lineTo(0,-9);ctx.fill()
+    ctx.fillStyle='#f8c0a0';ctx.beginPath();ctx.moveTo(-4,-11);ctx.lineTo(-3,-14);ctx.lineTo(-1,-10);ctx.fill()
+    ctx.beginPath();ctx.moveTo(4,-11);ctx.lineTo(3,-14);ctx.lineTo(1,-10);ctx.fill()
+    // Eyes
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cat.flip?-4:4,-6,3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cat.flip?2:-2,-6,3,0,Math.PI*2);ctx.fill()
+    const blink=Math.sin(ph*.4)>.92
+    if(!blink){ctx.fillStyle='#2a2a3a';ctx.beginPath();ctx.arc(cat.flip?-4:4,-6,1.8,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cat.flip?2:-2,-6,1.8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cat.flip?-3.5:4.5,-7,.8,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cat.flip?2.5:-1.5,-7,.8,0,Math.PI*2);ctx.fill()}
+    // Nose + mouth
+    ctx.fillStyle='#f8a0a0';ctx.beginPath();ctx.arc(cat.flip?-1:1,-3,1.5,0,Math.PI*2);ctx.fill()
+    ctx.strokeStyle='#333';ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(cat.flip?-0.5:0.5,-1.5);ctx.lineTo(cat.flip?-1:1,0);ctx.lineTo(cat.flip?-3:3,0);ctx.stroke()
+  }
+  ctx.restore()
+}
+
+const cat={x:400,y:300,state:'sit',timer:0,ap:Math.random()*Math.PI*2,flip:false,tx:400,ty:300}
+function updateCat(){
+  cat.ap+=.02;cat.timer--
+  if(cat.timer<=0){
+    const r=Math.random()
+    if(r<.3){cat.state='sleep';cat.timer=300+Math.random()*400}
+    else if(r<.7){cat.state='sit';cat.timer=150+Math.random()*200}
+    else{
+      cat.state='walk';cat.timer=80+Math.random()*120
+      cat.flip=Math.random()>.5
+      cat.tx=60+Math.random()*(W-120);cat.ty=80+Math.random()*(H-160)
+    }
+  }
+  if(cat.state==='walk'){
+    cat.x+=(cat.tx-cat.x)*.02;cat.y+=(cat.ty-cat.y)*.02
+    if(Math.abs(cat.x-cat.tx)<3&&Math.abs(cat.y-cat.ty)<3){cat.state='sit';cat.timer=100}
+  }
+}
 function drawContract(ct){
   if(ct.life<=0)return
   ctx.save();ctx.globalAlpha=Math.min(1,ct.life/30)
@@ -568,6 +632,7 @@ function animate(now){fc++;updateElapsed()
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
   for(let i=doneNotifs.length-1;i>=0;i--){const dn=doneNotifs[i];dn.life--;dn.y=dn.sy-(70-dn.life)*.8;if(dn.life<=0){doneNotifs.splice(i,1);continue}}
+  updateCat()
 
   // RENDER
   ctx.clearRect(0,0,W,H)
@@ -622,6 +687,7 @@ function animate(now){fc++;updateElapsed()
   // Characters
   const walkers=AL.filter(a=>chars[a.n].state==='walking'||chars[a.n].state==='idle'),workers=AL.filter(a=>chars[a.n].state==='sitting'||chars[a.n].state==='typing')
   walkers.forEach(a=>drawCharacter(chars[a.n]));workers.forEach(a=>drawCharacter(chars[a.n]))
+  drawCat(cat)
 
   // Water cooler — right side
   const wcx=W*.86,wcy=H*.68;ctx.fillStyle='#1a4060';ctx.fillRect(wcx-5,wcy,10,22);ctx.fillStyle='#58a6ff';ctx.fillRect(wcx-4,wcy-3,8,5);ctx.fillStyle='rgba(88,166,255,0.15)';ctx.fillRect(wcx-3,wcy+3,6,14)
