@@ -148,75 +148,10 @@ const server = http.createServer((req, res) => {
   }
 
   if (url.pathname === '/simulate' && req.method === 'POST') {
-    let body = ''
-    req.on('data', c => body += c)
-    req.on('end', () => {
-      try {
-        const opts = body ? JSON.parse(body) : {}
-        const count = Math.max(1, parseInt(opts.count) || 1)
-        const batch = opts.batch || false
-        const pipeline = [
-          { type:'phase_change', phase:'Tiếp nhận', workflow:opts.workflow||'/vibe', from:'pxh-help', to:'pxh-pm', tier_from:'T0', tier_to:'T1', message:'→ Prompt received at help desk' },
-          { type:'phase_change', phase:'Điều phối', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-pm', tier_from:'T1', tier_to:'T2', message:'→ CEO - PXH routing tasks...' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-help', to:'pxh-pm', tier_from:'T1', tier_to:'T2', message:'→ Điều phối & quản lý task' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-help', tier_from:'T2', tier_to:'T1', message:'→ Validate & classify input' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-architect', tier_from:'T2', tier_to:'T3', message:'→ Thiết kế architecture' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-expert', tier_from:'T2', tier_to:'T3', message:'→ Viết code implementation' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-qa', tier_from:'T2', tier_to:'T3', message:'→ Viết & chạy tests' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-fix-bugs', tier_from:'T2', tier_to:'T3', message:'→ Debug & fix issues' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-review-code', tier_from:'T2', tier_to:'T3', message:'→ Review code quality' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-devops', tier_from:'T2', tier_to:'T3', message:'→ Build & deploy' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-ui-ux', tier_from:'T2', tier_to:'T3', message:'→ Thiết kế UI/UX' },
-          { type:'task_start', phase:'Làm việc', workflow:opts.workflow||'/vibe', from:'pxh-pm', to:'pxh-save-history', tier_from:'T2', tier_to:'T4', message:'→ Lưu trữ session & logs' },
-        ]
-        if(batch){
-          // Batch mode: all agents start together, then all finish together
-          const starts = pipeline.filter(e => e.type === 'task_start')
-          emit({ type:'phase_change', phase:'Bắt đầu', workflow:opts.workflow||'/vibe', from:'pxh-help', to:'pxh-pm', tier_from:'T0', tier_to:'T1', message:'→ All agents: bắt đầu làm việc!' })
-          let delay = 400
-          // All task_start staggered by 200ms
-          starts.forEach((evt, i) => {
-            setTimeout(() => emit(evt), delay + i * 200)
-          })
-          delay += starts.length * 200 + 3000
-          // Auto-generate task_end for each agent
-          starts.forEach((evt, i) => {
-            setTimeout(() => emit({
-              type: 'task_end', status: 'success',
-              from: evt.to, to: 'pxh-pm',
-              tier_from: evt.tier_to, tier_to: 'T2',
-              message: `✓ ${evt.to} hoàn thành`,
-            }), delay + i * 150)
-          })
-          delay += starts.length * 150 + 500
-          // Final phase: all done
-          setTimeout(() => emit({
-            type: 'agent_status', from: 'pxh-office',
-            message: '🏁 Tất cả agents đã hoàn thành!',
-          }), delay)
-          res.writeHead(200, { 'Content-Type': 'application/json' })
-          res.end(JSON.stringify({ status:'ok', batch: true, agents: starts.length, emitted: starts.length * 2 + 2 }))
-        } else if(count > 1){
-          const results = []
-          for(let i = 0; i < count; i++){
-            for(const evt of pipeline) results.push(emit(evt))
-          }
-          res.writeHead(200, { 'Content-Type': 'application/json' })
-          res.end(JSON.stringify({ status:'ok', pipeline: pipeline.length, cycles: count, emitted: results.length }))
-        } else {
-          let delay = 0
-          pipeline.forEach(evt => {
-            setTimeout(() => emit(evt), delay)
-            delay += 800
-          })
-          res.writeHead(200, { 'Content-Type': 'application/json' })
-          res.end(JSON.stringify({ status:'ok', pipeline: pipeline.length, cycles: 1, emitted: pipeline.length, staged: true }))
-        }
-      } catch(e) {
-        res.writeHead(400)
-        res.end(JSON.stringify({ error: e.message }))
-      }
-    })
+    // Deprecated: simulation mode removed per event-driven architecture
+    // Use real event stream via /emit or /state instead
+    res.writeHead(410, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error:'simulate deprecated. Use /emit or /state for real events only.' }))
     return
   }
 
@@ -299,5 +234,5 @@ server.listen(PORT, () => {
   console.log(`  \x1b[36m\u251C\u2500\x1b[0m  Sim:  \x1b[1mhttp://localhost:${PORT}/simulate\x1b[0m (POST — mô phỏng pipeline TUI)`)
   console.log(`  \x1b[36m\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\x1b[0m\n`)
 
-  emit({ type: 'agent_status', from: 'pxh-office', message: `Server + Bridge started. Watching ${bridgeActive ? 'workspace activity' : 'for events...'}` })
+  emit({ type: 'agent_status', from: 'pxh-office', message: 'Server started. Ready for real event stream.' })
 })

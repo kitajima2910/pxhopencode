@@ -76,12 +76,12 @@ const AGENTS={
   'pxh-devops':{n:'pxh-devops',role:'DevOps',tier:'T3',c:'#58a6ff',g:'male',sk:'#dcc0a0',hc:'#2c3e50',hs:'short',bc:'#1a5080',outfit:'hoodie',oc:'#0a3060',acc:'glasses',pat:'solid'},
   'pxh-ui-ux':{n:'pxh-ui-ux',role:'UI/UX Designer',tier:'T3',c:'#f85149',g:'female',sk:'#f8dcc8',hc:'#6a1b9a',hs:'long',bc:'#8b2550',outfit:'dress',oc:'#b03060',acc:'scarf',pat:'solid'},
   'pxh-save-history':{n:'pxh-save-history',role:'Historian',tier:'T4',c:'#bc8cff',g:'male',sk:'#f0e0c8',hc:'#2a2a3a',hs:'short',bc:'#3a2a5a',outfit:'cardigan',oc:'#5a4a7a',acc:'glasses',pat:'solid'},
-  'pxh-opencode':{n:'pxh-opencode',role:'PXHOpenCode',tier:'T3',c:'#00e5ff',g:'male',sk:'#e8dcc8',hc:'#1a1a2a',hs:'short',bc:'#0a2a3a',outfit:'hoodie',oc:'#0d4a5a',acc:'glasses',pat:'solid'},
+  'pxh-opencode':{n:'pxh-opencode',role:'PXHOpenCode',tier:'T3',c:'#00e5ff',g:'male',sk:'#e8dcc8',hc:'#1a1a2a',hs:'short',bc:'#0a2a3a',outfit:'jacket',oc:'#0d4a5a',acc:'glasses',pat:'solid'},
 }
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:'',_monitorLog:[],_lastEvt:0}})
 const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 
 // ============================================================
@@ -204,6 +204,36 @@ function drawMonitor(x,y,active){
 }
 function drawKeyboard(x,y){ctx.save();const kw=42,kh=12;ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-kw/2,y,kw,kh,2.5);ctx.fill();ctx.fillStyle='#2a2d34';for(let r=0;r<5;r++){ctx.fillRect(x-kw/2+3,y+2+r*2,kw-6,1.4)}ctx.fillRect(x-12,y+9.5,24,1.4);ctx.restore()}
 function drawMouse(x,y){ctx.save();ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.ellipse(x,y,6,7.5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#2a2d34';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+3);ctx.stroke();ctx.restore()}
+function drawAgentMonitor(x,y,ch){
+  if(!ch)return;ctx.save()
+  const mw=54,mh=36,ml=ch._monitorLog||[]
+  // Screen bezel
+  ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-mw/2-1,y-1,mw+2,mh+2,3);ctx.fill()
+  ctx.fillStyle='#22262d';ctx.fillRect(x-mw/2-1,y+mh-8,mw+2,9)
+  ctx.fillStyle='#3a3d44';ctx.beginPath();ctx.arc(x,y+mh-1.5,2,0,Math.PI*2);ctx.fill()
+  ctx.fillStyle='#252830';ctx.fillRect(x-3,y+mh,6,5);ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-14,y+mh+4,28,4,2);ctx.fill()
+  // Screen content - scrollable terminal
+  ctx.save();ctx.beginPath();ctx.rect(x-mw/2+4,y+3,mw-8,mh-14);ctx.clip()
+  ctx.fillStyle='#0a141e';ctx.fillRect(x-mw/2+4,y+3,mw-8,mh-14)
+  if(ml.length){
+    ml.slice(-6).forEach((entry,i)=>{
+      const ly=y+mh-8-(ml.slice(-6).length-1-i)*5
+      let c='#8cf';if(entry.s&&entry.s.match(/error|fail|debug|fix/i))c='#f85149'
+      else if(entry.s&&entry.s.match(/build|execute|test/i))c='#d29922'
+      else if(entry.s&&entry.s.match(/code|write|edit/i))c='#3fb950'
+      ctx.fillStyle=c;ctx.font='6px "Consolas",monospace';ctx.textAlign='left'
+      const txt=entry.m.length>22?entry.m.slice(0,21)+'…':entry.m
+      ctx.fillText(txt,x-mw/2+6,ly)
+    })
+  }else if(ch.a.n==='pxh-help'||ch.a.n==='pxh-pm'){
+    ctx.fillStyle='rgba(255,255,255,0.15)';ctx.font='bold 6px "Consolas",monospace';ctx.textAlign='center'
+    ctx.fillText(ch.a.n==='pxh-pm'?'CEO Dashboard':ch.a.n==='pxh-help'?'Help Desk Queue':'Waiting...',x,y+14)
+  }
+  ctx.restore()
+  // Status LED
+  const act=ch.state==='typing'||ch.w;ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(x+mw/2-7,y+mh-3,2.5,0,Math.PI*2);ctx.fill()
+  ctx.restore()
+}
 function drawLaptop(x,y,active){
   ctx.save();const lw=40,sh=24,bh=8
   ctx.fillStyle='#a8acb4';ctx.beginPath();ctx.roundRect(x-lw/2,y-sh,lw,sh,3);ctx.fill()
@@ -660,6 +690,9 @@ function processEvent(event){
         completed:'✅ Completed',failed:'❌ Failed',idle:'',update:''
       }
       const msg=event.message||SM[st]||(st?`🔄 ${st}...`:'')
+      const timestamp=Date.now();ch._lastEvt=timestamp
+      if(!ch._monitorLog)ch._monitorLog=[]
+      if(st&&st!=='idle'){ch._monitorLog.push({t:timestamp,m:msg||st,s:st});if(ch._monitorLog.length>40)ch._monitorLog.shift()}
       const short=msg.length>32?msg.slice(0,29)+'...':msg
       const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
       const line=ts+' '+short
@@ -689,7 +722,7 @@ function processEvent(event){
       if(!raw)return
       const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
       if(!line)return
-      oc.ts='Mirror';oc.w=true;oc.hrw=true
+      oc.ts='Mirror';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now()
       if(!oc._msgs)oc._msgs=[]
       oc._msgs=[line]
       oc.tsm=oc._msgs;oc._bcol='#00e5ff'
@@ -716,21 +749,9 @@ function animate(now){fc++;updateElapsed()
   if(state.mode==='sse'&&state.sseConnected&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
-    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+1000+Math.random()*2000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
-    if(ch.state==='idle'&&now>ch.it&&!ch.w){
-      if(a.n==='pxh-help'||a.n==='pxh-pm'){
-        if(Math.random()<.0015)randomWander(ch)
-        else if(Math.random()<.001){
-          ch.hrw=true;startTyping(ch);ch._msgs=['📋 Monitoring...'];ch.tsm=ch._msgs
-          setTimeout(()=>{if(ch.w)stopTyping(ch)},2500+Math.random()*2000)
-        }
-      }else if(Math.random()<.015)randomWander(ch)
-    }
-    // Random desk check — occasionally sit briefly (T3/T4 only)
-    if(ch.state==='idle'&&!ch.w&&Math.random()<.00015&&now-state.lastRealEvent>15000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'&&a.n!=='pxh-opencode'){
-      ch.hrw=true;startTyping(ch);ch._msgs=['🔍 Checking...'];ch.tsm=ch._msgs
-      setTimeout(()=>{if(ch.w)stopTyping(ch)},800+Math.random()*1200)
-    }
+    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w)ch.it=now+1000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
+    // Event-driven idle timeout: leave desk after 10s of no events
+    if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>10000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'){stopTyping(ch)}
   })
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
@@ -767,41 +788,62 @@ function animate(now){fc++;updateElapsed()
   })
 
   // Desks — monitor row
-  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+36,ch.dy+15,18,27);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+37,ch.dy+18,15,21);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+45,ch.dy+33,2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawMonitor(ch.dx,ch.dy-4,act);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
+  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawAgentMonitor(ch.dx,ch.dy-4,ch);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
 
   // Desks — laptop row
-  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-32,ch.dy+22,65,8);drawLaptop(ch.dx,ch.dy+9,act)})
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-32,ch.dy+22,65,8);drawAgentMonitor(ch.dx,ch.dy-6,ch)})
 
   // Chairs — all agents
   ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+40;ctx.fillStyle='#282d38';ctx.fillRect(cx-13,cy,27,6);ctx.fillStyle='#222830';ctx.fillRect(cx-4,cy-22,9,22);ctx.fillStyle='#303840';ctx.fillRect(cx-3,cy-25,6,3)})
 
   // PM corner desk
-  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-60,pm.dy+22,100,9);drawMonitor(pm.dx,pm.dy-4,pm.state==='typing');drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+40,pm.dy+32);ctx.fillStyle='#1a1d24';ctx.fillRect(pm.dx+44,pm.dy+15,21,27)
+  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-60,pm.dy+22,100,9);drawAgentMonitor(pm.dx,pm.dy-4,pm);drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+40,pm.dy+32)
 
   // Help desk
-  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-40,hh.dy+22,80,9);drawMonitor(hh.dx,hh.dy-4,hh.state==='typing');drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+28,hh.dy+32)
+  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-40,hh.dy+22,80,9);drawAgentMonitor(hh.dx,hh.dy-4,hh);drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+28,hh.dy+32)
 
   // Historian desk
-  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawMonitor(sh.dx,sh.dy-4,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
+  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawAgentMonitor(sh.dx,sh.dy-4,sh);drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
-  // TUI Mirror terminal — large display screen
-  const oc=chars['pxh-opencode'];ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(oc.dx-55,oc.dy-28,110,60,5);ctx.fill();ctx.strokeStyle='#00e5ff';ctx.lineWidth=1.5;ctx.stroke()
-  ctx.fillStyle='#0a1620';ctx.fillRect(oc.dx-50,oc.dy-22,100,42)
-  ctx.save()
-  ctx.beginPath();ctx.rect(oc.dx-48,oc.dy-20,96,38);ctx.clip()
+  // PXHOpenCode terminal -- Physical Visualization of OpenCode
+  const oc=chars['pxh-opencode'];ctx.fillStyle='#111620';ctx.beginPath();ctx.roundRect(oc.dx-65,oc.dy-35,130,70,6);ctx.fill();ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.stroke()
+  ctx.fillStyle='#0a1218';ctx.fillRect(oc.dx-60,oc.dy-30,120,56)
+  ctx.save();ctx.beginPath();ctx.rect(oc.dx-58,oc.dy-28,116,52);ctx.clip()
+  // Header bar
+  ctx.fillStyle='#0d1520';ctx.fillRect(oc.dx-58,oc.dy-28,116,14)
+  ctx.strokeStyle='rgba(0,229,255,0.3)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(oc.dx-57,oc.dy-14);ctx.lineTo(oc.dx+57,oc.dy-14);ctx.stroke()
+  ctx.fillStyle='#00e5ff';ctx.font='bold 7px "Consolas",monospace';ctx.textAlign='left';ctx.fillText('PXHOpenCode -- Physical Visualization',oc.dx-54,oc.dy-20)
+  // Agent count
+  const activeCount=AL.filter(a=>chars[a.n]&&chars[a.n].w).length
+  ctx.fillStyle='#0a8';ctx.font='7px "Consolas",monospace';ctx.textAlign='right';ctx.fillText('agents:'+activeCount,oc.dx+54,oc.dy-20)
+  // Output lines
   const mirrorLines=oc._mirrorLog||oc._msgs||[]
   if(mirrorLines.length){
-    ctx.fillStyle='#0a8';ctx.font='bold 8px "Consolas",monospace';ctx.textAlign='left'
-    ctx.fillText('> root@pxh2910:~',oc.dx-44,oc.dy-8)
-    ctx.fillStyle='#00e5ff';ctx.font='8px "Consolas",monospace'
-    mirrorLines.slice(-3).forEach((l,i)=>{
-      let disp=l;const maxW=92,md=ctx.measureText(disp);if(md.width>maxW){let cut=disp.length;while(cut>3&&ctx.measureText(disp.slice(0,cut)+'…').width>maxW)cut--;disp=disp.slice(0,cut)+'…'}
-      ctx.fillText(disp,oc.dx-44,oc.dy+4+i*12)
+    mirrorLines.slice(-4).forEach((l,i)=>{
+      const t=new Date();const ts=String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0')
+      let label='',color='#00e5ff'
+      if(l.match(/\b(read|reading|load|loading)\b/i)){label='READ';color='#58a6ff'}
+      else if(l.match(/\b(write|writing|create|edit|modify|generate|code)\b/i)){label='WRITE';color='#3fb950'}
+      else if(l.match(/\b(execute|run|bash|build|deploy|install|command)\b/i)){label='EXEC';color='#d29922'}
+      else if(l.match(/\b(test|testing|verify|spec)\b/i)){label='TEST';color='#3fb950'}
+      else if(l.match(/\b(review|audit|inspect)\b/i)){label='REVIEW';color='#d29922'}
+      else if(l.match(/\b(fix|debug|error|bug|fail)\b/i)){label='FIX';color='#f85149'}
+      else if(l.match(/\b(think|analyze|plan|route|architect)\b/i)){label='THINK';color='#bc8cff'}
+      else if(l.match(/\b(search|find|grep|glob|explore)\b/i)){label='FIND';color='#58a6ff'}
+      else if(l.match(/\b(classify|validate|help)\b/i)){label='HELP';color='#8b949e'}
+      else{label='INFO';color='#00e5ff'}
+      const y=oc.dy-10+i*12
+      ctx.fillStyle='#222';ctx.fillRect(oc.dx-55,y-5,30,10);ctx.fillStyle=color;ctx.font='bold 6px "Consolas",monospace';ctx.textAlign='center';ctx.fillText(label,oc.dx-40,y+2)
+      const txt=l.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,36)
+      ctx.fillStyle='#aaa';ctx.textAlign='left';ctx.font='7px "Consolas",monospace';ctx.fillText(ts,oc.dx-20,y+2)
+      ctx.fillStyle='#8cf';ctx.font='7px "Consolas",monospace';ctx.fillText(txt,oc.dx+4,y+2)
     })
+  }else{
+    ctx.fillStyle='rgba(0,229,255,0.25)';ctx.font='8px "Consolas",monospace';ctx.textAlign='center';ctx.fillText('waiting for TUI output...',oc.dx,oc.dy+6)
   }
-  const blink=Math.sin(fc*.06)>0;ctx.fillStyle=blink?'#00e5ff':'transparent';ctx.fillRect(oc.dx-48,oc.dy+16,6,11)
+  const blink=Math.sin(fc*.05)>0;ctx.fillStyle=blink?'#00e5ff':'transparent';ctx.fillRect(oc.dx-56,oc.dy+18,5,10)
   ctx.restore()
-  ctx.fillStyle='#4a3520';ctx.fillRect(oc.dx-40,oc.dy+34,80,8)
+  ctx.fillStyle='#4a3520';ctx.fillRect(oc.dx-45,oc.dy+40,90,8)
 
   // Contracts + notifs
   contracts.forEach(ct=>drawContract(ct))
@@ -822,11 +864,22 @@ function animate(now){fc++;updateElapsed()
   // Meeting table — top left
   const mtx=W*.26,mty=H*.12;ctx.fillStyle='#4a3520';ctx.fillRect(mtx-25,mty+4,50,7);ctx.fillStyle='#3a2a18';ctx.fillRect(mtx-23,mty+11,3,8);ctx.fillRect(mtx+20,mty+11,3,8)
 
-  // Whiteboard — right wall
-  ctx.fillStyle='#f5f5f0';ctx.fillRect(W-60,H*.28,48,40);ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.strokeRect(W-60,H*.28,48,40)
-  ctx.fillStyle='#58a6ff';ctx.font='bold 7px sans-serif';ctx.textAlign='center'
-  ctx.fillText('SPRINT',W-36,H*.28+15);ctx.fillStyle='#3fb950';ctx.fillText('✓ Backlog',W-36,H*.28+25)
-  ctx.fillStyle='#d29922';ctx.fillText('→ In Progress',W-36,H*.28+35)
+  // CEO Dashboard — right wall
+  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.beginPath();ctx.roundRect(W-62,H*.26,52,52,5);ctx.fill()
+  ctx.strokeStyle='#d29922';ctx.lineWidth=1.5;ctx.stroke()
+  ctx.fillStyle='#d29922';ctx.font='bold 7px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('CEO DASHBOARD',W-36,H*.28+8)
+  ctx.strokeStyle='rgba(210,153,34,0.3)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(W-58,H*.28+11);ctx.lineTo(W-14,H*.28+11);ctx.stroke()
+  AL.filter(a=>a.n!=='pxh-opencode').forEach((a,i)=>{
+    const ch=chars[a.n],ly=H*.30+i*8.5
+    const act=ch&&(ch.w||ch.state==='typing');let st='idle',sc='#555'
+    if(act&&ch.ts){st=ch.ts;if(st.match(/interface/i))sc='#58a6ff';else if(st.match(/orchestration/i))sc='#d29922';else if(st.match(/design/i))sc='#bc8cff';else if(st.match(/code|write|read|edit/i))sc='#3fb950';else if(st.match(/debug|fix/i))sc='#f85149';else if(st.match(/test/i))sc='#3fb950';else if(st.match(/review/i))sc='#d29922';else if(st.match(/build/i))sc='#d29922';else if(st.match(/infrastructure/i))sc='#bc8cff';else sc='#aaa'}
+    ctx.fillStyle='#aaa';ctx.font='6px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.fillText(a.role.slice(0,12),W-58,ly)
+    ctx.fillStyle=sc;ctx.beginPath();ctx.arc(W-15,ly-2,2.5,0,Math.PI*2);ctx.fill()
+    const sn=st.length>8?st.slice(0,7):st;ctx.fillStyle=sc;ctx.font='5px "Consolas",monospace';ctx.textAlign='right';ctx.fillText(act?sn:'idle',W-12,ly)
+  })
+  // Summary
+  const totalWorking=AL.filter(a=>chars[a.n]&&chars[a.n].w).length
+  ctx.fillStyle='#aaa';ctx.font='bold 6px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('Active: '+totalWorking+'/'+AL.length,W-36,H*.30+AL.length*8.5+5)
 
   // Door — right bottom
   ctx.fillStyle='#3a2a18';ctx.fillRect(W-30,H*.78,22,H*.16);ctx.strokeStyle='#4a3a28';ctx.lineWidth=1.5;ctx.strokeRect(W-30,H*.78,22,H*.16);ctx.fillStyle='#c8a050';ctx.beginPath();ctx.arc(W-18,H*.86,2,0,Math.PI*2);ctx.fill()
