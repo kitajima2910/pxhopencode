@@ -8,72 +8,24 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --wall:#e8ddd0; --floor-wood:#c49464; --floor-dark:#a07040;
-  --desk:#d4a060; --monitor:#2a2a2a; --screen:#1a2a3a;
-  --glass:rgba(135,206,235,0.15); --plant:#4a7c3f;
-  --bg:#0d1117; --cyan:#58a6ff; --yellow:#d29922;
-  --green:#3fb950; --red:#f85149; --magenta:#bc8cff;
-  --white:#c9d1d9; --subtle:#8b949e;
+  --bg:#0a0e17; --surface:#111620; --border:rgba(255,255,255,0.06);
   --t1:#58a6ff; --t2:#d29922; --t3:#3fb950; --t4:#bc8cff;
+  --wall-top:#1a1f2e; --wall-bot:#141820;
 }
-body{
-  font-family:'Segoe UI',system-ui,sans-serif;
-  background:var(--bg); color:var(--white);
-  overflow:hidden; height:100vh; user-select:none;
-}
-#app{
-  width:100vw; height:100vh;
-  display:flex; flex-direction:column;
-}
-/* TITLE BAR */
-.title-bar{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:6px 16px; background:rgba(255,255,255,0.03);
-  border-bottom:1px solid rgba(255,255,255,0.06); flex-shrink:0;
-}
-.title-bar h1{font-size:14px;font-weight:700;letter-spacing:0.5px}
-.title-bar .ver{font-size:10px;opacity:0.3}
-
-/* CANVAS AREA */
-#canvasWrap{
-  flex:1; position:relative; overflow:hidden;
-  background:radial-gradient(ellipse at 50% 30%, #1a2030 0%, #0d1117 70%);
-}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c9d1d9;overflow:hidden;height:100vh;user-select:none}
+#app{width:100vw;height:100vh;display:flex;flex-direction:column}
+.title-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 16px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);flex-shrink:0}
+.title-bar h1{font-size:13px;font-weight:600;letter-spacing:0.3px;background:linear-gradient(90deg,#58a6ff,#bc8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.title-bar .ver{font-size:9px;opacity:0.25}
+#canvasWrap{flex:1;position:relative;overflow:hidden}
 canvas{display:block;width:100%;height:100%}
-
-/* STATUS BAR */
-.status-bar{
-  display:flex; align-items:center; gap:16px;
-  padding:6px 16px; background:rgba(0,0,0,0.5);
-  border-top:1px solid rgba(255,255,255,0.06); flex-shrink:0; font-size:12px;
-}
-.st-item{display:flex;align-items:center;gap:4px;opacity:0.7}
-.st-item .lbl{font-size:10px;opacity:0.5;text-transform:uppercase}
-.st-item .val{font-weight:600}
-.st-item .val.t1{color:var(--t1)} .st-item .val.t2{color:var(--t2)}
-.st-item .val.t3{color:var(--t3)} .st-item .val.t4{color:var(--t4)}
-
-/* ACTIVITY LOG OVERLAY */
-#logOverlay{
-  position:absolute; right:8px; bottom:8px; z-index:30;
-  max-width:240px; pointer-events:none;
-}
-.log-item{
-  font-size:9px; padding:2px 8px; margin:1px 0;
-  background:rgba(0,0,0,0.7); border-radius:3px;
-  border-left:2px solid rgba(255,255,255,0.2);
-  animation:slideIn 0.3s ease-out;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-@keyframes slideIn{0%{opacity:0;transform:translateX(20px)}100%{opacity:1;transform:translateX(0)}}
-
-/* SPEECH BUBBLE (positioned absolutely by JS) */
-.speech-bubble{
-  position:absolute; padding:3px 8px; font-size:9px;
-  background:rgba(0,0,0,0.85); color:var(--white);
-  border-radius:6px; white-space:nowrap; pointer-events:none;
-  opacity:0; transition:opacity 0.3s; z-index:40;
-}
+.status-bar{display:flex;align-items:center;gap:14px;padding:5px 16px;background:rgba(0,0,0,0.4);border-top:1px solid var(--border);flex-shrink:0;font-size:11px}
+.st-item{display:flex;align-items:center;gap:3px;opacity:0.7}
+.st-item .lbl{font-size:9px;opacity:0.4;text-transform:uppercase;letter-spacing:0.5px}
+.st-item .val{font-weight:600;font-size:11px}
+#logOverlay{position:absolute;right:8px;top:8px;z-index:30;max-width:260px;pointer-events:none}
+.log-item{font-size:9px;padding:3px 10px;margin:2px 0;background:rgba(0,0,0,0.75);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideIn 0.25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
+@keyframes slideIn{0%{opacity:0;transform:translateX(15px)}100%{opacity:1;transform:translateX(0)}}
 </style>
 </head>
 <body>
@@ -82,1585 +34,364 @@ canvas{display:block;width:100%;height:100%}
     <h1>🏢 Error404Labs - PXH2910</h1>
     <span class="ver">AI Company · 4-tier Runtime</span>
   </div>
-  <div id="canvasWrap">
-    <canvas id="c"></canvas>
-    <div id="logOverlay"></div>
-  </div>
+  <div id="canvasWrap"><canvas id="c"></canvas><div id="logOverlay"></div></div>
   <div class="status-bar" id="statusBar">
     <div class="st-item"><span class="lbl">Workflow</span><span class="val" id="wfVal">—</span></div>
     <div class="st-item"><span class="lbl">Phase</span><span class="val" id="phVal">—</span></div>
     <div class="st-item"><span class="lbl">Agent</span><span class="val" id="agVal">—</span></div>
     <div class="st-item"><span class="lbl">Elapsed</span><span class="val" id="elVal">00:00:00</span></div>
-    <div class="st-item"><span class="lbl">Retry</span><span class="val" id="rtVal">0/3</span></div>
     <div style="flex:1"></div>
-    <div class="st-item"><span id="modeTxt" style="opacity:0.8">🔴 Live</span></div>
-    <div class="st-item"><span class="lbl">Sound</span><span id="sndToggle" style="cursor:pointer" title="Toggle sound">🔊</span></div>
+    <div class="st-item"><span id="modeTxt" style="opacity:0.8">⚪ Idle</span></div>
+    <div class="st-item"><span id="sndToggle" style="cursor:pointer;opacity:0.5" title="Toggle sound">🔊</span></div>
   </div>
 </div>
 
 <script>
 // ============================================================
-// SOUND ENGINE
+// SOUND
 // ============================================================
-const AudioCtx = window.AudioContext || window.webkitAudioContext
-let audioCtx = null
-let soundOn = true
-
-// Keep ambient procedural sounds (footstep, notification, etc.)
-function ensureAudio(){ if(!audioCtx) audioCtx = new AudioCtx() }
-
-let ambientNode = null
-function playAmbient(){
-  if(!soundOn) return
-  ensureAudio()
-  if(ambientNode) return
-  const ctx = audioCtx
-  ambientNode = { stop:()=>{} }
-  const gain = ctx.createGain()
-  gain.gain.value = 0.015
-  gain.connect(ctx.destination)
-
-  function addHum(freq, mod){
-    const o = ctx.createOscillator()
-    const g = ctx.createGain()
-    o.type = 'sine'; o.frequency.value = freq
-    g.gain.value = mod * 0.05
-    o.connect(g); g.connect(gain)
-    o.start()
-    ambientNode._nodes = ambientNode._nodes || []
-    ambientNode._nodes.push(o)
-    return o
-  }
-  addHum(60, 0.5)
-  addHum(90, 0.3)
-  addHum(120, 0.2)
-  const lfo = ctx.createOscillator()
-  const lfoG = ctx.createGain()
-  lfo.frequency.value = 0.1; lfo.type = 'sine'
-  lfoG.gain.value = 0.005
-  lfo.connect(lfoG); lfoG.connect(gain.gain)
-  lfo.start()
-  ambientNode._nodes.push(lfo)
-  ambientNode.stop = ()=>{
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5)
-    setTimeout(()=>{
-      ambientNode._nodes.forEach(n=>{try{n.stop()}catch{}})
-      ambientNode = null
-    }, 600)
-  }
-}
-
-function sfx(type){
-  if(!soundOn) return
-  ensureAudio()
-  const ctx = audioCtx
-  const t = ctx.currentTime
-  const master = ctx.createGain()
-  master.connect(ctx.destination)
-
-  if(type === 'footstep'){
-    master.gain.setValueAtTime(0.02, t)
-    master.gain.exponentialRampToValueAtTime(0.001, t + 0.06)
-    const o = ctx.createOscillator()
-    o.type = 'triangle'; o.frequency.setValueAtTime(100 + Math.random()*50, t)
-    o.connect(master); o.start(t); o.stop(t + 0.06)
-  } else if(type === 'notification'){
-    master.gain.setValueAtTime(0.05, t)
-    master.gain.exponentialRampToValueAtTime(0.001, t + 0.2)
-    const o1 = ctx.createOscillator(); o1.type = 'sine'
-    o1.frequency.setValueAtTime(880, t); o1.frequency.setValueAtTime(1100, t + 0.08)
-    o1.connect(master); o1.start(t); o1.stop(t + 0.2)
-  } else if(type === 'task_start'){
-    master.gain.setValueAtTime(0.06, t)
-    master.gain.exponentialRampToValueAtTime(0.001, t + 0.3)
-    const o1 = ctx.createOscillator(); o1.type = 'sine'
-    o1.frequency.setValueAtTime(523, t); o1.frequency.setValueAtTime(659, t + 0.08)
-    o1.frequency.setValueAtTime(784, t + 0.16)
-    o1.connect(master); o1.start(t); o1.stop(t + 0.3)
-  } else if(type === 'contract'){
-    master.gain.setValueAtTime(0.03, t)
-    const o = ctx.createOscillator(); o.type = 'triangle'
-    o.frequency.setValueAtTime(300, t); o.frequency.linearRampToValueAtTime(600, t + 0.4)
-    o.connect(master); o.start(t); o.stop(t + 0.5)
-  } else if(type === 'door'){
-    master.gain.setValueAtTime(0.03, t)
-    master.gain.exponentialRampToValueAtTime(0.001, t + 0.15)
-    const o = ctx.createOscillator(); o.type = 'triangle'
-    o.frequency.setValueAtTime(200, t); o.frequency.linearRampToValueAtTime(100, t + 0.15)
-    o.connect(master); o.start(t); o.stop(t + 0.15)
-  }
-}
-
-function toggleSound(){
-  soundOn = !soundOn
-  document.getElementById('sndToggle').textContent = soundOn ? '🔊' : '🔇'
-  if(soundOn){ playAmbient() } else {
-    if(ambientNode){ ambientNode.stop(); ambientNode = null }
-  }
-}
-document.getElementById('sndToggle').addEventListener('click', toggleSound)
+const AudioCtx=window.AudioContext||window.webkitAudioContext
+let audioCtx=null,soundOn=true,ambientNode=null
+function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx}
+function playAmbient(){if(!soundOn)return;ensureAudio();if(ambientNode)return;const g=(audioCtx.createGain());g.gain.value=0.01;g.connect(audioCtx.destination);ambientNode={_ns:[],stop(){g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.5);setTimeout(()=>{ambientNode._ns.forEach(n=>{try{n.stop()}catch{}});ambientNode=null},600)}};const o=audioCtx.createOscillator();o.type='sine';o.frequency.value=55;const gg=audioCtx.createGain();gg.gain.value=0.05;o.connect(gg);gg.connect(g);o.start();ambientNode._ns.push(o)}
+function sfx(t){if(!soundOn)return;ensureAudio();const g=audioCtx.createGain();g.connect(audioCtx.destination);const now=audioCtx.currentTime;if(t==='footstep'){g.gain.setValueAtTime(0.015,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.05);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(80+Math.random()*40,now);o.connect(g);o.start(now);o.stop(now+0.05)}else if(t==='notification'){g.gain.setValueAtTime(0.04,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.15);const o=audioCtx.createOscillator();o.type='sine';o.frequency.setValueAtTime(880,now);o.frequency.setValueAtTime(1100,now+0.06);o.connect(g);o.start(now);o.stop(now+0.15)}else if(t==='task_start'){g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.25);const o=audioCtx.createOscillator();o.type='sine';o.frequency.setValueAtTime(523,now);o.frequency.setValueAtTime(659,now+0.06);o.frequency.setValueAtTime(784,now+0.12);o.connect(g);o.start(now);o.stop(now+0.25)}else if(t==='contract'){g.gain.setValueAtTime(0.02,now);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(300,now);o.frequency.linearRampToValueAtTime(600,now+0.3);o.connect(g);o.start(now);o.stop(now+0.4)}else if(t==='door'){g.gain.setValueAtTime(0.02,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.12);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(200,now);o.frequency.linearRampToValueAtTime(100,now+0.12);o.connect(g);o.start(now);o.stop(now+0.12)}}
+function toggleSound(){soundOn=!soundOn;document.getElementById('sndToggle').textContent=soundOn?'🔊':'🔇';if(soundOn)playAmbient();else{if(ambientNode){ambientNode.stop();ambientNode=null}}}
+document.getElementById('sndToggle').addEventListener('click',toggleSound)
 
 // ============================================================
 // DATA
 // ============================================================
-const AGENTS = {
-  'pxh-help':        { id:'help', name:'pxh-help', role:'Help Desk',    tier:'T1', color:'#58a6ff', gender:'female', skin:'#f5d5c0', hairColor:'#3a2a1a', hairStyle:'pony',    bodyC:'#1a5c8a' },
-  'pxh-pm':          { id:'pm', name:'pxh-pm', role:'CEO - PXH', tier:'T2', color:'#d29922', gender:'male', skin:'#e8c8a0', hairColor:'#1a1a2e', hairStyle:'short', bodyC:'#8b6914' },
-  'pxh-architect':   { id:'arch', name:'pxh-architect', role:'Architect', tier:'T3', color:'#bc8cff', gender:'female', skin:'#f0c8b0', hairColor:'#4a3020', hairStyle:'long',    bodyC:'#6b3fa0' },
-  'pxh-expert':      { id:'expert', name:'pxh-expert', role:'Developer', tier:'T3', color:'#3fb950', gender:'male',   skin:'#edc8a8', hairColor:'#2a2a3a', hairStyle:'spiky',   bodyC:'#2a7a3f' },
-  'pxh-fix-bugs':    { id:'fix', name:'pxh-fix-bugs', role:'Bug Hunter', tier:'T3', color:'#f85149', gender:'male',   skin:'#d4a580', hairColor:'#cc3333', hairStyle:'buzz',    bodyC:'#9b2d2d' },
-  'pxh-qa':          { id:'qa', name:'pxh-qa', role:'QA Engineer',    tier:'T3', color:'#3fb950', gender:'female', skin:'#eed0b8', hairColor:'#6b3510', hairStyle:'curly',   bodyC:'#1a6b5a' },
-  'pxh-review-code': { id:'review', name:'pxh-review-code', role:'Code Reviewer',    tier:'T3', color:'#d29922', gender:'male',   skin:'#e0c098', hairColor:'#555555', hairStyle:'short',   bodyC:'#7a5a10' },
-  'pxh-devops':      { id:'devops', name:'pxh-devops', role:'DevOps', tier:'T3', color:'#58a6ff', gender:'male',   skin:'#dcc0a0', hairColor:'#2c3e50', hairStyle:'short',   bodyC:'#1a5080' },
-  'pxh-ui-ux':       { id:'uiux', name:'pxh-ui-ux', role:'UI/UX Designer', tier:'T3', color:'#f85149', gender:'female', skin:'#f8dcc8', hairColor:'#6a1b9a', hairStyle:'long',    bodyC:'#8b2550' },
-  'pxh-save-history':{ id:'save', name:'pxh-save-history', role:'Historian', tier:'T4', color:'#bc8cff', gender:'male',   skin:'#e8c8a0', hairColor:'#666666', hairStyle:'buzz',    bodyC:'#4a2a6b' },
+const AGENTS={
+  'pxh-help':{n:'pxh-help',role:'Help Desk',tier:'T1',c:'#58a6ff',g:'female',sk:'#f5d5c0',hc:'#3a2a1a',hs:'pony',bc:'#1a5c8a'},
+  'pxh-pm':{n:'pxh-pm',role:'CEO - PXH',tier:'T2',c:'#d29922',g:'male',sk:'#e8c8a0',hc:'#1a1a2e',hs:'short',bc:'#8b6914'},
+  'pxh-architect':{n:'pxh-architect',role:'Architect',tier:'T3',c:'#bc8cff',g:'female',sk:'#f0c8b0',hc:'#4a3020',hs:'long',bc:'#6b3fa0'},
+  'pxh-expert':{n:'pxh-expert',role:'Developer',tier:'T3',c:'#3fb950',g:'male',sk:'#edc8a8',hc:'#2a2a3a',hs:'spiky',bc:'#2a7a3f'},
+  'pxh-fix-bugs':{n:'pxh-fix-bugs',role:'Bug Hunter',tier:'T3',c:'#f85149',g:'male',sk:'#d4a580',hc:'#cc3333',hs:'buzz',bc:'#9b2d2d'},
+  'pxh-qa':{n:'pxh-qa',role:'QA Engineer',tier:'T3',c:'#3fb950',g:'female',sk:'#eed0b8',hc:'#6b3510',hs:'curly',bc:'#1a6b5a'},
+  'pxh-review-code':{n:'pxh-review-code',role:'Reviewer',tier:'T3',c:'#d29922',g:'male',sk:'#e0c098',hc:'#555',hs:'short',bc:'#7a5a10'},
+  'pxh-devops':{n:'pxh-devops',role:'DevOps',tier:'T3',c:'#58a6ff',g:'male',sk:'#dcc0a0',hc:'#2c3e50',hs:'short',bc:'#1a5080'},
+  'pxh-ui-ux':{n:'pxh-ui-ux',role:'UI/UX Designer',tier:'T3',c:'#f85149',g:'female',sk:'#f8dcc8',hc:'#6a1b9a',hs:'long',bc:'#8b2550'},
+  'pxh-save-history':{n:'pxh-save-history',role:'Historian',tier:'T4',c:'#bc8cff',g:'male',sk:'#e8c8a0',hc:'#666',hs:'buzz',bc:'#4a2a6b'},
 }
-const AGENT_LIST = Object.values(AGENTS)
-
-// LAYOUT: pixel positions based on canvas size
-let W, H
-
-// ============================================================
-// CHARACTER STATE MACHINE
-// ============================================================
-// States: 'idle' | 'walking' | 'sitting' | 'typing' | 'wandering'
-const chars = {}
-AGENT_LIST.forEach(a => {
-  chars[a.name] = {
-    agent: a,
-    state: 'idle',
-    x: 0, y: 0,        // current position
-    tx: 0, ty: 0,      // target position
-    deskX: 0, deskY: 0, // assigned desk position
-    idleX: 0, idleY: 0, // idle standing position (near desk)
-    walkSpeed: 0,
-    walkPhase: Math.random() * Math.PI * 2, // random starting phase for walk cycle
-    animPhase: Math.random() * Math.PI * 2,
-    idleTimer: Math.random() * 8000 + 4000,
-    typingInterval: null,
-    working: false,
-    bobY: 0,
-    hasRealWork: false,
-    tuiState: '',
-    tuiStateMsg: '',
-  }
-})
-
-// Contract flying objects
-const contracts = []
-
-// Points of interest for idle wandering
-const POI = []
-
-// Office plants
-const plants = []
+const AL=Object.values(AGENTS)
+let W,H
+const chars={}
+AL.forEach(a=>{chars[a.n]={a,x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*8e3+4e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
+const contracts=[],POI=[],plants=[],doneNotifs=[]
 
 // ============================================================
-// LAYOUT ENGINE
+// LAYOUT
 // ============================================================
 function calcLayout(){
-  W = c.width; H = c.height
+  W=c.width;H=c.height
+  const m=60,ah=H*.96
+  const t4H=ah*.16,t3H=ah*.42,t2H=ah*.18,t1H=ah*.16,fg=ah*.02
+  let y=H*.02
+  const t4t=y,t4b=t4t+t4H;y=t4b+fg
+  const t3t=y,t3b=t3t+t3H;y=t3b+fg
+  const t2t=y,t2b=t2t+t2H;y=t2b+fg
+  const t1t=y,t1b=t1t+t1H
 
-  // Define floor regions
-  const margin = 60
-  const headerH = 0
-  const footerH = 0
-  const availH = H - headerH - footerH
+  const topR=['pxh-architect','pxh-expert','pxh-fix-bugs']
+  const botR=['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
+  const tryY=t3t+t3H*.25,bryY=t3t+t3H*.72
+  const dW=(W-m*2)/4
+  topR.forEach((n,i)=>{const cx=m+dW*(i+.5)+dW*.25,cc=chars[n];cc.dx=cx;cc.dy=tryY;cc.ix=cx+20;cc.iy=tryY+20;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
+  botR.forEach((n,i)=>{const cx=m+dW*(i+.5)+dW*.125,cc=chars[n];cc.dx=cx;cc.dy=bryY;cc.ix=cx+25;cc.iy=bryY+30;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
+  const pm=chars['pxh-pm'];pm.dx=W*.5;pm.dy=t2t+t2H*.4;pm.ix=W*.5+30;pm.iy=t2t+t2H*.4+20;pm.x=pm.ix;pm.y=pm.iy;pm.tx=pm.ix;pm.ty=pm.iy
+  const h=chars['pxh-help'];h.dx=W*.25;h.dy=t1t+t1H*.4;h.ix=W*.25+30;h.iy=t1t+t1H*.4+20;h.x=h.ix;h.y=h.iy;h.tx=h.ix;h.ty=h.iy
+  const s=chars['pxh-save-history'];s.dx=W*.5;s.dy=t4t+t4H*.5;s.ix=W*.5+25;s.iy=t4t+t4H*.5+10;s.x=s.ix;s.y=s.iy;s.tx=s.ix;s.ty=s.iy
 
-  // Floor heights (proportional)
-  const t4H = availH * 0.18
-  const t3H = availH * 0.40
-  const t2H = availH * 0.18
-  const t1H = availH * 0.16
-  const gapH = availH * 0.02
-  const floorGap = availH * 0.02
+  plants.length=0
+  plants.push({x:m*.3,y:t1t+t1H*.3,s:20});plants.push({x:W-m*.3,y:t1t+t1H*.55,s:16})
+  plants.push({x:m*.5,y:t3t+t3H*.5,s:24});plants.push({x:W-m*.5,y:t3t+t3H*.5,s:18})
+  plants.push({x:W-m*.4,y:t4t+t4H*.65,s:14});plants.push({x:m*.7,y:t2t+t2H*.6,s:15})
 
-  let y = headerH
+  POI.length=0
+  POI.push({x:W*.82,y:t2t+t2H*.5,ti:'T2'});POI.push({x:W*.28,y:t2t+t2H*.6,ti:'T2'})
+  POI.push({x:m*.5,y:t3t+t3H*.5,ti:'T3'});POI.push({x:W-m*.5,y:t3t+t3H*.5,ti:'T3'})
+  POI.push({x:m*.3,y:t1t+t1H*.5,ti:'T1'});POI.push({x:W-40,y:t1t+t1H*.5,ti:'T1'})
+  POI.push({x:W*.3,y:t3t+t3H*.4,ti:'T3'});POI.push({x:W*.7,y:t3t+t3H*.4,ti:'T3'})
 
-  // T4 - Server Room
-  const t4Top = y
-  const t4Bot = t4Top + t4H
-  y = t4Bot + floorGap
-
-  // T3 - Open Workspace (biggest)
-  const t3Top = y
-  const t3Bot = t3Top + t3H
-  y = t3Bot + floorGap
-
-  // T2 - PM Office
-  const t2Top = y
-  const t2Bot = t2Top + t2H
-  y = t2Bot + floorGap
-
-  // T1 - Reception
-  const t1Top = y
-  const t1Bot = t1Top + t1H
-
-  // Desk positions for T3 (7 workers in 2 rows)
-  // Top row: architect, expert, fix-bugs
-  // Bottom row: qa, review-code, devops, ui-ux
-  const t3Desks = ['pxh-architect','pxh-expert','pxh-fix-bugs','pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
-  const topRow = ['pxh-architect','pxh-expert','pxh-fix-bugs']
-  const botRow = ['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
-
-  const topRowY = t3Top + t3H * 0.25
-  const botRowY = t3Top + t3H * 0.7
-  const deskW = (W - margin * 2) / 4
-
-  topRow.forEach((name, i) => {
-    const cx = margin + deskW * (i + 0.5) + deskW * 0.25
-    const a = chars[name]
-    a.deskX = cx; a.deskY = topRowY
-    a.idleX = cx + 20; a.idleY = topRowY + 20
-    a.x = a.idleX; a.y = a.idleY
-    a.tx = a.idleX; a.ty = a.idleY
-  })
-  botRow.forEach((name, i) => {
-    const cx = margin + deskW * (i + 0.5) + deskW * 0.125
-    const a = chars[name]
-    a.deskX = cx; a.deskY = botRowY
-    a.idleX = cx + 25; a.idleY = botRowY + 30
-    a.x = a.idleX; a.y = a.idleY
-    a.tx = a.idleX; a.ty = a.idleY
-  })
-
-  // T2 - PM desk (center)
-  const pm = chars['pxh-pm']
-  pm.deskX = W * 0.5; pm.deskY = t2Top + t2H * 0.4
-  pm.idleX = W * 0.5 + 30; pm.idleY = t2Top + t2H * 0.4 + 20
-  pm.x = pm.idleX; pm.y = pm.idleY
-  pm.tx = pm.idleX; pm.ty = pm.idleY
-
-  // T1 - Help desk (left)
-  const help = chars['pxh-help']
-  help.deskX = W * 0.25; help.deskY = t1Top + t1H * 0.4
-  help.idleX = W * 0.25 + 30; help.idleY = t1Top + t1H * 0.4 + 20
-  help.x = help.idleX; help.y = help.idleY
-  help.tx = help.idleX; help.ty = help.idleY
-
-  // T4 - Server room (right side)
-  const sh = chars['pxh-save-history']
-  sh.deskX = W * 0.5; sh.deskY = t4Top + t4H * 0.5
-  sh.idleX = W * 0.5 + 25; sh.idleY = t4Top + t4H * 0.5 + 10
-  sh.x = sh.idleX; sh.y = sh.idleY
-  sh.tx = sh.idleX; sh.ty = sh.idleY
-
-  // Plants
-  plants.length = 0
-  plants.push({ x: margin * 0.3, y: t1Top + t1H * 0.3, size: 18 })
-  plants.push({ x: W - margin * 0.3, y: t1Top + t1H * 0.6, size: 14 })
-  plants.push({ x: margin * 0.6, y: t3Top + t3H * 0.5, size: 22 })
-  plants.push({ x: W - margin * 0.6, y: t3Top + t3H * 0.5, size: 16 })
-  plants.push({ x: W - margin * 0.5, y: t4Top + t4H * 0.7, size: 12 })
-
-  // Store regions for rendering
-  chars._regions = { t1Top, t1Bot, t2Top, t2Bot, t3Top, t3Bot, t4Top, t4Bot, gapH, floorGap }
-
-  // Points of interest for idle wandering
-  POI.length = 0
-  POI.push({ x: W * 0.82, y: t2Top + t2H * 0.5, tier: 'T2', name: 'water-cooler' })
-  POI.push({ x: W * 0.28, y: t2Top + t2H * 0.6, tier: 'T2', name: 'meeting-table' })
-  POI.push({ x: margin * 0.6, y: t3Top + t3H * 0.5, tier: 'T3', name: 'plant-left' })
-  POI.push({ x: W - margin * 0.6, y: t3Top + t3H * 0.5, tier: 'T3', name: 'plant-right' })
-  POI.push({ x: margin * 0.3, y: t1Top + t1H * 0.5, tier: 'T1', name: 'plant-lobby' })
-  POI.push({ x: W - 40, y: t1Top + t1H * 0.5, tier: 'T1', name: 'door' })
-  POI.push({ x: W * 0.3, y: t3Top + t3H * 0.45, tier: 'T3', name: 't3-center' })
-  POI.push({ x: W * 0.7, y: t3Top + t3H * 0.45, tier: 'T3', name: 't3-right' })
+  chars._r={t1t,t1b,t2t,t2b,t3t,t3b,t4t,t4b,fg}
 }
 
 // ============================================================
-// RENDERING
+// RENDER HELPERS
 // ============================================================
-const c = document.getElementById('c')
-const ctx = c.getContext('2d')
+const c=document.getElementById('c'),ctx=c.getContext('2d')
+function resize(){const w=document.getElementById('canvasWrap');const dpr=window.devicePixelRatio||1;c.width=w.clientWidth*dpr;c.height=w.clientHeight*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);W=w.clientWidth;H=w.clientHeight;calcLayout()}
+window.addEventListener('resize',resize);resize()
 
-function resize(){
-  const wrap = document.getElementById('canvasWrap')
-  const dpr = window.devicePixelRatio || 1
-  c.width = wrap.clientWidth * dpr
-  c.height = wrap.clientHeight * dpr
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-  W = wrap.clientWidth; H = wrap.clientHeight
-  calcLayout()
-}
-window.addEventListener('resize', resize)
-resize()
+let fc=0
+function hr(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`${r},${g},${b}`}
+function dc(hex,f=.6){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgb(${Math.floor(r*f)},${Math.floor(g*f)},${Math.floor(b*f)})`}
 
-let frameCount = 0
-
-function drawFloor(y0, y1, label, color, alpha){
-  // Floor background
-  const grad = ctx.createLinearGradient(0, y0, 0, y1)
-  grad.addColorStop(0, `rgba(${hexToRgb(color)},${alpha*0.08})`)
-  grad.addColorStop(1, `rgba(${hexToRgb(color)},${alpha*0.04})`)
-  ctx.fillStyle = grad
-  ctx.fillRect(0, y0, W, y1 - y0)
-
-  // Floor line at bottom
-  ctx.strokeStyle = `rgba(${hexToRgb(color)},${alpha*0.3})`
-  ctx.lineWidth = 1.5
-  ctx.beginPath()
-  ctx.moveTo(40, y1)
-  ctx.lineTo(W - 40, y1)
-  ctx.stroke()
-
-  // Floor label
-  ctx.fillStyle = color
-  ctx.globalAlpha = alpha * 0.7
-  ctx.font = 'bold 11px "Segoe UI",sans-serif'
-  ctx.textAlign = 'left'
-  ctx.fillText(label, 12, y0 + 16)
-  ctx.globalAlpha = 1
+function drawFloor(y0,y1,label,color){
+  const g=ctx.createLinearGradient(0,y0,0,y1)
+  g.addColorStop(0,`rgba(${hr(color)},0.06)`);g.addColorStop(0.5,`rgba(${hr(color)},0.03)`);g.addColorStop(1,`rgba(${hr(color)},0.01)`)
+  ctx.fillStyle=g;ctx.fillRect(0,y0,W,y1-y0)
+  ctx.strokeStyle=`rgba(${hr(color)},0.2)`;ctx.lineWidth=1
+  ctx.beginPath();ctx.moveTo(30,y1);ctx.lineTo(W-30,y1);ctx.stroke()
+  ctx.fillStyle=color;ctx.globalAlpha=0.5;ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.fillText(label,10,y0+14);ctx.globalAlpha=1
 }
 
-function hexToRgb(hex){
-  const r = parseInt(hex.slice(1,3), 16)
-  const g = parseInt(hex.slice(3,5), 16)
-  const b = parseInt(hex.slice(5,7), 16)
-  return `${r},${g},${b}`
-}
-
-function drawPlant(x, y, size){
-  ctx.save()
-  // Pot
-  ctx.fillStyle = '#5a3a1a'
-  ctx.beginPath()
-  ctx.moveTo(x - size*0.3, y)
-  ctx.lineTo(x + size*0.3, y)
-  ctx.lineTo(x + size*0.25, y + size*0.4)
-  ctx.lineTo(x - size*0.25, y + size*0.4)
-  ctx.closePath()
-  ctx.fill()
-
-  // Leaves
-  const sway = Math.sin(frameCount * 0.02 + x) * 2
-  ctx.fillStyle = '#4a7c3f'
-  ctx.beginPath()
-  ctx.arc(x + sway, y - size*0.15, size*0.4, 0, Math.PI*2)
-  ctx.fill()
-  ctx.fillStyle = '#5a9a4f'
-  ctx.beginPath()
-  ctx.arc(x + sway + 3, y - size*0.25, size*0.25, 0, Math.PI*2)
-  ctx.fill()
-  ctx.fillStyle = '#3a6a2f'
-  ctx.beginPath()
-  ctx.arc(x + sway - 2, y - size*0.3, size*0.2, 0, Math.PI*2)
-  ctx.fill()
+function drawPlant(x,y,s){
+  ctx.save();const sw=Math.sin(fc*.015+x)*2
+  ctx.fillStyle='#3a2a1a';ctx.beginPath();ctx.moveTo(x-s*.25,y);ctx.lineTo(x+s*.25,y);ctx.lineTo(x+s*.2,y+s*.35);ctx.lineTo(x-s*.2,y+s*.35);ctx.closePath();ctx.fill()
+  ctx.fillStyle='#3a6a2f';ctx.beginPath();ctx.arc(x+sw,y-s*.12,s*.35,0,Math.PI*2);ctx.fill()
+  ctx.fillStyle='#4a8a3f';ctx.beginPath();ctx.arc(x+sw+3,y-s*.22,s*.22,0,Math.PI*2);ctx.fill()
+  ctx.fillStyle='#2a5a1f';ctx.beginPath();ctx.arc(x+sw-2,y-s*.28,s*.18,0,Math.PI*2);ctx.fill()
   ctx.restore()
 }
 
-function drawServerRack(x, y, w, h){
-  ctx.save()
-  ctx.fillStyle = '#161b22'
-  ctx.strokeStyle = '#30363d'
-  ctx.lineWidth = 1
-  ctx.fillRect(x, y, w, h)
-  ctx.strokeRect(x, y, w, h)
-
-  for(let i = 0; i < 5; i++){
-    const uy = y + 4 + i * (h - 8) / 5
-    const blink = Math.sin(frameCount * 0.05 + i * 1.2) > 0
-    ctx.fillStyle = blink ? (i%2 ? '#0d4a3a':'#0a3a5a') : '#0a1a1a'
-    ctx.fillRect(x + 3, uy, w - 6, (h - 8) / 5 - 2)
-
-    // LED
-    ctx.fillStyle = blink ? (i%2 ? '#3fb950':'#58a6ff') : '#30363d'
-    ctx.beginPath()
-    ctx.arc(x + w - 6, uy + 3, 1.5, 0, Math.PI*2)
-    ctx.fill()
-  }
+function drawServerRack(x,y,w,h){
+  ctx.save();ctx.fillStyle='#111620';ctx.strokeStyle='#252b38';ctx.lineWidth=1
+  ctx.beginPath();ctx.roundRect(x,y,w,h,3);ctx.fill();ctx.stroke()
+  for(let i=0;i<5;i++){const uy=y+4+i*(h-8)/5,bl=Math.sin(fc*.04+i*1.2)>0;ctx.fillStyle=bl?(i%2?'#0a3a2a':'#0a2a3a'):'#0a111a';ctx.fillRect(x+3,uy,w-6,(h-8)/5-2);ctx.fillStyle=bl?(i%2?'#3fb950':'#58a6ff'):'#1a2a2a';ctx.beginPath();ctx.arc(x+w-7,uy+3,1.5,0,Math.PI*2);ctx.fill()}
   ctx.restore()
 }
 
-function drawMonitor(x, y, isActive){
-  ctx.save()
-  const mw = 38, mh = 23
-
-  // === Stand neck ===
-  ctx.fillStyle = '#3a3d44'
-  ctx.fillRect(x - 2, y + mh, 4, 5)
-  // Stand base
-  ctx.fillStyle = '#2a2d34'
-  ctx.beginPath()
-  ctx.roundRect(x - 14, y + mh + 4, 28, 4, 2)
-  ctx.fill()
-
-  // === Monitor body ===
-  // Outer frame
-  ctx.fillStyle = '#1a1d24'
-  ctx.beginPath()
-  ctx.roundRect(x - mw/2 - 1, y - 1, mw + 2, mh + 2, 2)
-  ctx.fill()
-  // Bottom chin (thicker bezel)
-  ctx.fillStyle = '#252830'
-  ctx.fillRect(x - mw/2 - 1, y + mh - 6, mw + 2, 7)
-  // Brand dot
-  ctx.fillStyle = '#484f58'
-  ctx.beginPath()
-  ctx.arc(x, y + mh - 1, 1.5, 0, Math.PI*2)
-  ctx.fill()
-
-  // === Screen ===
-  if(isActive){
-    ctx.fillStyle = '#0a1628'
-    ctx.fillRect(x - mw/2 + 3, y + 3, mw - 6, mh - 10)
-    // Code lines (green for PC)
-    ctx.strokeStyle = '#3fb950'
-    ctx.lineWidth = 0.8
-    const cY = y + 5
-    for(let i = 0; i < 5; i++){
-      const ly = cY + i * 2.5
-      const indent = (i % 3) * 3
-      ctx.beginPath()
-      ctx.moveTo(x - mw/2 + 5 + indent, ly)
-      ctx.lineTo(x - mw/2 + 5 + indent + Math.sin(frameCount*0.08 + i)*3 + 12, ly)
-      ctx.stroke()
-    }
-    if(Math.floor(frameCount/15) % 2){
-      ctx.fillStyle = '#3fb950'
-      ctx.fillRect(x - mw/2 + 5 + 12, cY, 5, 2)
-    }
-    // Power LED
-    ctx.fillStyle = '#3fb950'
-    ctx.beginPath()
-    ctx.arc(x + mw/2 - 6, y + mh - 2, 1.5, 0, Math.PI*2)
-    ctx.fill()
-  } else {
-    ctx.fillStyle = '#0d1117'
-    ctx.fillRect(x - mw/2 + 3, y + 3, mw - 6, mh - 10)
-    ctx.fillStyle = '#1a2a1a'
-    ctx.beginPath()
-    ctx.arc(x + mw/2 - 6, y + mh - 2, 1.5, 0, Math.PI*2)
-    ctx.fill()
-  }
-
+function drawMonitor(x,y,active){
+  ctx.save();const mw=36,mh=22
+  ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-mw/2-1,y-1,mw+2,mh+2,2);ctx.fill()
+  ctx.fillStyle='#22262d';ctx.fillRect(x-mw/2-1,y+mh-6,mw+2,7)
+  ctx.fillStyle='#3a3d44';ctx.beginPath();ctx.arc(x,y+mh-1,1.5,0,Math.PI*2);ctx.fill() // brand dot
+  ctx.fillStyle='#252830';ctx.fillRect(x-2,y+mh,4,4);ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-11,y+mh+3,22,3,1.5);ctx.fill()
+  if(active){ctx.fillStyle='#0a1628';ctx.fillRect(x-mw/2+3,y+3,mw-6,mh-10);ctx.strokeStyle='#3fb950';ctx.lineWidth=0.7;for(let i=0;i<5;i++){const ly=y+5+i*2.5,ind=(i%3)*3;ctx.beginPath();ctx.moveTo(x-mw/2+5+ind,ly);ctx.lineTo(x-mw/2+5+ind+Math.sin(fc*.07+i)*3+11,ly);ctx.stroke()}if(Math.floor(fc/15)%2){ctx.fillStyle='#3fb950';ctx.fillRect(x-mw/2+5+11,y+5,4,2)}ctx.fillStyle='#3fb950';ctx.beginPath();ctx.arc(x+mw/2-6,y+mh-2,1.5,0,Math.PI*2);ctx.fill()}
+  else{ctx.fillStyle='#0d1117';ctx.fillRect(x-mw/2+3,y+3,mw-6,mh-10);ctx.fillStyle='#1a2a1a';ctx.beginPath();ctx.arc(x+mw/2-6,y+mh-2,1.5,0,Math.PI*2);ctx.fill()}
+  ctx.restore()
+}
+function drawKeyboard(x,y){ctx.save();const kw=32,kh=9;ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-kw/2,y,32,kh,2);ctx.fill();ctx.fillStyle='#2a2d34';for(let r=0;r<4;r++){ctx.fillRect(x-kw/2+2,y+2+r*1.8,kw-4,1.2)}ctx.fillRect(x-8,y+7,16,1.2);ctx.restore()}
+function drawMouse(x,y){ctx.save();ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.ellipse(x,y,4.5,5.5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#2a2d34';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+2);ctx.stroke();ctx.restore()}
+function drawLaptop(x,y,active){
+  ctx.save();const lw=29,sh=18,bh=6
+  ctx.fillStyle='#a8acb4';ctx.beginPath();ctx.roundRect(x-lw/2,y-sh,lw,sh,2);ctx.fill()
+  ctx.fillStyle='#161a20';ctx.fillRect(x-lw/2+2,y-sh+3,lw-4,sh-6)
+  ctx.fillStyle='#0d1117';ctx.beginPath();ctx.arc(x,y-sh+2,1,0,Math.PI*2);ctx.fill()
+  if(active){ctx.fillStyle='#0a1628';ctx.fillRect(x-lw/2+3,y-sh+5,lw-6,sh-9);ctx.strokeStyle='#58a6ff';ctx.lineWidth=0.7;for(let i=0;i<4;i++){const ly=y-sh+7+i*3;ctx.beginPath();ctx.moveTo(x-lw/2+5,ly);ctx.lineTo(x-lw/2+5+Math.sin(fc*.06+i)*2+9,ly);ctx.stroke()}if(Math.floor(fc/12)%2){ctx.fillStyle='#58a6ff';ctx.fillRect(x-lw/2+5+9,y-sh+7,4,2)}}
+  else{ctx.fillStyle='#0d1117';ctx.fillRect(x-lw/2+3,y-sh+5,lw-6,sh-9)}
+  ctx.fillStyle='#888c94';ctx.fillRect(x-lw/2,y-.5,lw,1.5)
+  ctx.fillStyle='#a8acb4';ctx.beginPath();ctx.roundRect(x-lw/2,y+1,lw,bh,1);ctx.fill()
+  ctx.fillStyle='#2a2d34';ctx.fillRect(x-lw/2+2,y+2,lw-4,3);ctx.fillStyle='#3a3d44';for(let r=0;r<5;r++)ctx.fillRect(x-lw/2+3,y+2.2+r*.5,lw-6,.35)
+  ctx.fillStyle='#787c84';ctx.beginPath();ctx.roundRect(x-5,y+5.3,10,1.5,.5);ctx.fill()
   ctx.restore()
 }
 
-function drawKeyboard(x, y){
-  ctx.save()
-  const kw = 32, kh = 10
-  // Keyboard body
-  ctx.fillStyle = '#1a1d24'
-  ctx.fillRect(x - kw/2, y, kw, kh)
-  ctx.strokeStyle = '#30363d'; ctx.lineWidth = 0.5
-  ctx.strokeRect(x - kw/2, y, kw, kh)
-  // Key rows
-  ctx.fillStyle = '#2a2d34'
-  for(let row = 0; row < 4; row++){
-    const ry = y + 2 + row * 2
-    ctx.fillRect(x - kw/2 + 2, ry, kw - 4, 1.5)
-  }
-  // Spacebar
-  ctx.fillStyle = '#2a2d34'
-  ctx.fillRect(x - 8, y + 7, 16, 1.5)
-  ctx.restore()
+// ============================================================
+// CHARACTER RENDERING
+// ============================================================
+function drawHair(hx,hy,a,g){
+  ctx.fillStyle=a.hc;const hs=a.hs||'short'
+  if(hs==='pony'){ctx.beginPath();ctx.arc(hx,hy-1,9.5,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle='#cc4488';ctx.fillRect(hx-8,hy+2,16,2);ctx.fillStyle=a.hc;ctx.beginPath();ctx.moveTo(hx+4,hy+3);ctx.quadraticCurveTo(hx+12,hy-2,hx+14,hy+6);ctx.quadraticCurveTo(hx+8,hy+4,hx+2,hy+2);ctx.fill()}
+  else if(hs==='long'){ctx.beginPath();ctx.arc(hx,hy-1,9.5,Math.PI,Math.PI*2);ctx.fill();ctx.fillRect(hx-10,hy,5,8);ctx.fillRect(hx+5,hy,5,8)}
+  else if(hs==='buzz'){ctx.beginPath();ctx.arc(hx,hy+1,8.5,Math.PI,Math.PI*2);ctx.fill()}
+  else if(hs==='spiky'){for(let i=-3;i<=3;i++){const sx=hx+i*2.8;ctx.beginPath();ctx.moveTo(sx-1.5,hy-6);ctx.lineTo(sx,hy-6-(5+Math.abs(i)*2));ctx.lineTo(sx+1.5,hy-6);ctx.fill()}ctx.beginPath();ctx.arc(hx,hy,9,Math.PI,Math.PI*2);ctx.fill()}
+  else if(hs==='curly'){ctx.beginPath();ctx.arc(hx,hy-1,9.5,Math.PI,Math.PI*2);ctx.fill();for(let i=-2;i<=3;i++){ctx.beginPath();ctx.arc(hx+i*3.5,hy-3,3,0,Math.PI*2);ctx.fill()}}
+  else{ctx.beginPath();ctx.arc(hx,hy-1,9.5,Math.PI,Math.PI*2);ctx.fill()}
 }
 
-function drawMouse(x, y){
-  ctx.save()
-  ctx.fillStyle = '#1a1d24'
-  ctx.beginPath()
-  ctx.ellipse(x, y, 5, 6, 0, 0, Math.PI*2)
-  ctx.fill()
-  // Scroll wheel line
-  ctx.strokeStyle = '#383e4e'
-  ctx.lineWidth = 0.5
-  ctx.beginPath()
-  ctx.moveTo(x, y - 2)
-  ctx.lineTo(x, y + 2)
-  ctx.stroke()
-  ctx.restore()
-}
-
-function drawLaptop(x, y, isActive){
-  ctx.save()
-  const lw = 30, screenH = 19, baseH = 6
-  const hingeY = y
-
-  // === Screen lid (aluminum) ===
-  ctx.fillStyle = '#a8acb4'
-  ctx.beginPath()
-  ctx.roundRect(x - lw/2, hingeY - screenH, lw, screenH, 2)
-  ctx.fill()
-  // Inner display bezel
-  ctx.fillStyle = '#161a20'
-  ctx.fillRect(x - lw/2 + 2, hingeY - screenH + 3, lw - 4, screenH - 6)
-  // Camera dot
-  ctx.fillStyle = '#0d1117'
-  ctx.beginPath()
-  ctx.arc(x, hingeY - screenH + 2, 1, 0, Math.PI*2)
-  ctx.fill()
-
-  // Screen
-  if(isActive){
-    ctx.fillStyle = '#0a1628'
-    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 9)
-    ctx.strokeStyle = '#58a6ff'
-    ctx.lineWidth = 0.8
-    for(let i = 0; i < 4; i++){
-      const ly = hingeY - screenH + 7 + i*3.5
-      ctx.beginPath()
-      ctx.moveTo(x - lw/2 + 5, ly)
-      ctx.lineTo(x - lw/2 + 5 + Math.sin(frameCount*0.07 + i)*3 + 10, ly)
-      ctx.stroke()
-    }
-    if(Math.floor(frameCount/12) % 2){
-      ctx.fillStyle = '#58a6ff'
-      ctx.fillRect(x - lw/2 + 5 + 10, hingeY - screenH + 7, 4, 2)
-    }
-  } else {
-    ctx.fillStyle = '#0d1117'
-    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 9)
-  }
-
-  // === Hinge ===
-  ctx.fillStyle = '#80848c'
-  ctx.fillRect(x - lw/2, hingeY - 0.5, lw, 1.5)
-
-  // === Base (keyboard deck) ===
-  ctx.fillStyle = '#a8acb4'
-  ctx.beginPath()
-  ctx.roundRect(x - lw/2, hingeY + 1, lw, baseH, 1)
-  ctx.fill()
-  // Speaker grill (top edge)
-  ctx.fillStyle = '#3a3d44'
-  for(let i = 0; i < 8; i++){
-    ctx.fillRect(x - lw/2 + 3 + i*3, hingeY + 1.5, 2, 0.4)
-  }
-  // Keyboard area
-  ctx.fillStyle = '#2a2d34'
-  ctx.fillRect(x - lw/2 + 2.5, hingeY + 2.5, lw - 5, 3)
-  // Key rows
-  ctx.fillStyle = '#3a3d44'
-  for(let row = 0; row < 5; row++){
-    ctx.fillRect(x - lw/2 + 3.5, hingeY + 2.7 + row*0.5, lw - 7, 0.3)
-  }
-  // Trackpad
-  ctx.fillStyle = '#787c84'
-  ctx.beginPath()
-  ctx.roundRect(x - 5, hingeY + 5.3, 10, 1.5, 0.5)
-  ctx.fill()
-
-  ctx.restore()
-}
-
-function darkenColor(hex, factor=0.65){
-  const r = parseInt(hex.slice(1,3), 16)
-  const g = parseInt(hex.slice(3,5), 16)
-  const b = parseInt(hex.slice(5,7), 16)
-  return `rgb(${Math.floor(r*factor)},${Math.floor(g*factor)},${Math.floor(b*factor)})`
-}
-
-function drawHair(headCX, headCY, a, gender){
-  ctx.fillStyle = a.hairColor
-  const hs = a.hairStyle || 'short'
-  if(hs === 'pony'){
-    // Ponytail: top half + tail flowing back
-    ctx.beginPath()
-    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
-    ctx.fill()
-    // Hair band
-    ctx.fillStyle = '#cc4488'
-    ctx.fillRect(headCX - 8, headCY + 2, 16, 2)
-    // Ponytail
-    ctx.fillStyle = a.hairColor
-    ctx.beginPath()
-    ctx.moveTo(headCX + 4, headCY + 3)
-    ctx.quadraticCurveTo(headCX + 12, headCY - 2, headCX + 14, headCY + 6)
-    ctx.quadraticCurveTo(headCX + 8, headCY + 4, headCX + 2, headCY + 2)
-    ctx.fill()
-  } else if(hs === 'long'){
-    ctx.beginPath()
-    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
-    ctx.fill()
-    // Long hair on sides
-    ctx.fillRect(headCX - 10, headCY, 5, 8)
-    ctx.fillRect(headCX + 5, headCY, 5, 8)
-  } else if(hs === 'buzz'){
-    ctx.beginPath()
-    ctx.arc(headCX, headCY + 1, 8.5, Math.PI, Math.PI*2)
-    ctx.fill()
-  } else if(hs === 'spiky'){
-    // Spiky hair
-    for(let i = -3; i <= 3; i++){
-      const sx = headCX + i * 2.8
-      const sh = 5 + Math.abs(i) * 2
-      ctx.beginPath()
-      ctx.moveTo(sx - 1.5, headCY - 6)
-      ctx.lineTo(sx, headCY - 6 - sh)
-      ctx.lineTo(sx + 1.5, headCY - 6)
-      ctx.fill()
-    }
-    ctx.beginPath()
-    ctx.arc(headCX, headCY, 9, Math.PI, Math.PI*2)
-    ctx.fill()
-  } else if(hs === 'curly'){
-    ctx.beginPath()
-    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
-    ctx.fill()
-    // Curly bumps
-    for(let i = -2; i <= 3; i++){
-      ctx.beginPath()
-      ctx.arc(headCX + i * 3.5, headCY - 3, 3, 0, Math.PI*2)
-      ctx.fill()
-    }
-  } else {
-    // Default short
-    ctx.beginPath()
-    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
-    ctx.fill()
-  }
-}
-
-// Floating "Đã Làm Xong" notification
-const doneNotifs = []
-function showDoneNotif(x, y, agentName, color){
-  doneNotifs.push({
-    x, y, agentName, color,
-    life: 80, startY: y,
-  })
-}
-
-function drawComicBubble(cx, cy, msg, accentColor){
-  ctx.save()
-  const mw = msg.length * 4.5 + 12
-  const bh = 14
-  const bx = cx - mw / 2
-  const by = cy - bh / 2
-
-  // White background with border
-  ctx.fillStyle = '#ffffff'
-  ctx.strokeStyle = '#111111'
-  ctx.lineWidth = 1.5
-  ctx.beginPath()
-  ctx.roundRect(bx, by, mw, bh, 6)
-  ctx.fill()
-  ctx.stroke()
-
-  // Tail pointing down to character
-  ctx.fillStyle = '#ffffff'
-  ctx.strokeStyle = '#111111'
-  ctx.beginPath()
-  ctx.moveTo(cx - 4, by + bh - 1)
-  ctx.lineTo(cx, by + bh + 6)
-  ctx.lineTo(cx + 4, by + bh - 1)
-  ctx.closePath()
-  ctx.fill()
-  ctx.stroke()
-
-  // Text
-  ctx.fillStyle = '#111111'
-  ctx.font = 'bold 8px "Segoe UI",sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText(msg, cx, cy + 3)
-
-  // Tiny accent line
-  ctx.strokeStyle = accentColor
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(bx + 6, by + bh - 1)
-  ctx.lineTo(bx + mw - 6, by + bh - 1)
-  ctx.stroke()
-
+function drawComicBubble(cx,cy,msg,accent){
+  ctx.save();const mw=msg.length*4.2+12,bh=14;ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=1.5
+  ctx.beginPath();ctx.roundRect(cx-mw/2,cy-bh/2,mw,bh,5);ctx.fill();ctx.stroke()
+  ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.beginPath();ctx.moveTo(cx-4,cy+bh/2-1);ctx.lineTo(cx,cy+bh/2+6);ctx.lineTo(cx+4,cy+bh/2-1);ctx.closePath();ctx.fill();ctx.stroke()
+  ctx.fillStyle='#111';ctx.font='bold 7.5px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(msg,cx,cy+3)
+  ctx.strokeStyle=accent;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx-mw/2+6,cy+bh/2-1);ctx.lineTo(cx+mw/2-6,cy+bh/2-1);ctx.stroke()
   ctx.restore()
 }
 
 function drawCharacter(ch){
-  const a = ch.agent
-  const x = ch.x, y = ch.y
-  const s = ch.state
-  const phase = frameCount * 0.05 + ch.animPhase
-  const breath = Math.sin(phase * 0.7) * (s === 'idle' ? 1 : 0)
-  const gender = a.gender || 'male'
-  const skin = a.skin
-  const skinD = darkenColor(skin)
+  const a=ch.a,x=ch.x,y=ch.y,s=ch.state,ph=fc*.05+ch.ap,br=Math.sin(ph*.7)*(s==='idle'?1:0)
+  const g=a.g||'male',sk=a.sk,skd=dc(sk)
+  ctx.save();ctx.translate(x,y+ch.by)
+  const st=s==='idle'||s==='walking'
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.ellipse(0,st?0:-6,st?7:11,2.5,0,0,Math.PI*2);ctx.fill()
 
-  ctx.save()
-  ctx.translate(x, y + ch.bobY)
-
-  const isStanding = s === 'idle' || s === 'walking'
-
-  // ── Shadow ──
-  ctx.fillStyle = 'rgba(0,0,0,0.25)'
-  ctx.beginPath()
-  ctx.ellipse(0, isStanding ? 0 : -6, isStanding ? 8 : 12, 3, 0, 0, Math.PI*2)
-  ctx.fill()
-
-  if(isStanding){
-    // ===== STANDING / WALKING =====
-    const walkCycle = Math.sin(phase * 3)
-    const legSpread = s === 'walking' ? walkCycle * 6 : 0
-    const bw = gender === 'female' ? 7 : 8 // narrower shoulders for female
-
-    // Left leg
-    ctx.fillStyle = '#30363d'
-    ctx.save()
-    ctx.translate(-3, -14)
-    if(s === 'walking') ctx.rotate(legSpread * 0.04)
-    ctx.fillRect(-2, 0, 5, 14)
-    ctx.fillStyle = '#21262d'
-    ctx.fillRect(-3, 12, 7, 3)
-    ctx.restore()
-
-    // Right leg
-    ctx.save()
-    ctx.translate(3, -14)
-    if(s === 'walking') ctx.rotate(-legSpread * 0.04)
-    ctx.fillRect(-3, 0, 5, 14)
-    ctx.fillStyle = '#21262d'
-    ctx.fillRect(-4, 12, 7, 3)
-    ctx.restore()
-
-    // Body
-    const bodyTop = -32
-    const bodyBot = -14
-    ctx.fillStyle = a.bodyC
-    ctx.beginPath()
-    if(gender === 'female'){
-      ctx.moveTo(-bw + 1, bodyBot)
-      ctx.lineTo(bw - 1, bodyBot)
-      ctx.quadraticCurveTo(bw + 1, (bodyTop + bodyBot)/2, bw - 1, bodyTop)
-      ctx.quadraticCurveTo(-bw + 1, (bodyTop + bodyBot)/2, -bw + 1, bodyBot)
-    } else {
-      ctx.moveTo(-bw, bodyBot)
-      ctx.lineTo(bw, bodyBot)
-      ctx.lineTo(bw - 1, bodyTop)
-      ctx.lineTo(-bw + 1, bodyTop)
-    }
-    ctx.closePath()
-    ctx.fill()
-
-    // Arms
-    const armSwing = s === 'walking' ? walkCycle * 10 : 0
-    const aw = gender === 'female' ? 3.5 : 4
-    ctx.fillStyle = a.bodyC
-    // Left arm
-    ctx.save()
-    ctx.translate(-bw, bodyTop + 4)
-    ctx.rotate(-0.2 + armSwing * 0.03)
-    ctx.fillRect(-aw/2, 0, aw, 14)
-    ctx.fillStyle = skin
-    ctx.beginPath(); ctx.arc(0, 15, 3, 0, Math.PI*2); ctx.fill()
-    ctx.restore()
-    // Right arm
-    ctx.save()
-    ctx.translate(bw, bodyTop + 4)
-    ctx.rotate(0.2 - armSwing * 0.03)
-    ctx.fillRect(-aw/2, 0, aw, 14)
-    ctx.fillStyle = skin
-    ctx.beginPath(); ctx.arc(0, 15, 3, 0, Math.PI*2); ctx.fill()
-    ctx.restore()
-
-    // Head
-    const headCY = bodyTop - 5 + breath
-    ctx.fillStyle = skinD
-    ctx.fillRect(-3, bodyTop, 6, 3)
-
-    ctx.fillStyle = skin
-    ctx.beginPath()
-    ctx.arc(0, headCY, 9, 0, Math.PI*2)
-    ctx.fill()
-
-    // Hair
-    drawHair(0, headCY, a, gender)
-
-    // Eyes
-    ctx.fillStyle = '#0d1117'
-    ctx.beginPath(); ctx.arc(-3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
-    ctx.beginPath(); ctx.arc(3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
-
-    // Blink
-    if(Math.floor(phase / 3) % 4 === 0){
-      ctx.fillStyle = skin
-      ctx.fillRect(-6, headCY - 3, 5, 5)
-      ctx.fillRect(1, headCY - 3, 5, 5)
-    }
-
-    // Mouth
-    ctx.strokeStyle = '#c44'; ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.arc(0, headCY + 4, 2.5, 0.1, Math.PI - 0.1)
-    ctx.stroke()
-
-    // ── Name label ABOVE head ──
-    const labelY = headCY - 12
-    ctx.fillStyle = `rgba(0,0,0,0.6)`
-    const roleW = a.role.length * 3.5 + 4
-    ctx.fillRect(-roleW / 2, labelY - 7, roleW, 10)
-    ctx.fillStyle = a.color
-    ctx.font = 'bold 7px "Segoe UI",sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(a.role, 0, labelY)
-
-    // TUI State label
-    if(ch.tuiState && ch.working){
-      const stateY = labelY - 16
-      const st = ch.tuiState.toUpperCase()
-      const sw = st.length * 3 + 8
-      const pulse = Math.sin(phase * 2) * 0.15 + 0.85
-      ctx.fillStyle = `rgba(${hexToRgb(a.color)},${pulse})`
-      ctx.beginPath()
-      ctx.roundRect(-sw / 2, stateY - 7, sw, 11, 3)
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = 'bold 6px "Segoe UI",sans-serif'
-      ctx.fillText(st, 0, stateY + 1)
-    }
-
-    // ── Comic-style speech bubble (TUI state) ──
-    if(s === 'walking' && ch.working && ch.tuiState){
-      drawComicBubble(0, headCY - 24, ch.tuiStateMsg || ch.tuiState, a.color)
-    }
-
-  } else {
-    // ===== SITTING / TYPING AT DESK =====
-    const bw = gender === 'female' ? 8 : 9
-
-    // Chair
-    ctx.fillStyle = '#30363d'
-    ctx.fillRect(-10, 0, 20, 6)
-    ctx.fillStyle = '#484f58'
-    ctx.fillRect(-8, -2, 4, 4)
-    ctx.fillRect(4, -2, 4, 4)
-
-    // Legs (bent on chair)
-    ctx.fillStyle = '#30363d'
-    ctx.fillRect(-5, 4, 5, 8)
-    ctx.fillRect(2, 4, 5, 8)
-    ctx.fillStyle = '#21262d'
-    ctx.fillRect(-6, 11, 7, 3)
-    ctx.fillRect(1, 11, 7, 3)
-
-    // Body (sitting, slightly tilted forward)
-    const bodyTop = -28
-    const bodyBot = -4
-    ctx.fillStyle = a.bodyC
-    ctx.beginPath()
-    ctx.moveTo(-bw, bodyBot)
-    ctx.lineTo(bw, bodyBot)
-    ctx.lineTo(bw - 1, bodyTop)
-    ctx.lineTo(-bw + 1, bodyTop)
-    ctx.closePath()
-    ctx.fill()
-
-    if(s === 'typing'){
-      const typeAnim = Math.sin(phase * 6) * 3
-      ctx.fillStyle = a.bodyC
-      // Left arm to keyboard - longer reach
-      ctx.save()
-      ctx.translate(-bw, bodyTop + 4)
-      ctx.rotate(-0.65)
-      const leftHandY = 20 + typeAnim
-      ctx.fillRect(-2, 0, 4, leftHandY)
-      ctx.fillStyle = skin
-      for(let f = -1; f <= 1; f++){
-        ctx.fillRect(-1 + f, leftHandY, 2, 3 + Math.abs(typeAnim) * 0.5)
-      }
-      ctx.restore()
-      // Right arm to keyboard
-      ctx.save()
-      ctx.translate(bw, bodyTop + 4)
-      ctx.rotate(0.65)
-      const rightHandY = 20 - typeAnim * 0.7
-      ctx.fillRect(-2, 0, 4, rightHandY)
-      ctx.fillStyle = skin
-      for(let f = -1; f <= 1; f++){
-        ctx.fillRect(-1 + f, rightHandY, 2, 3 + Math.abs(typeAnim) * 0.5)
-      }
-      ctx.restore()
-    } else {
-      // Sitting: arms on lap
-      ctx.fillStyle = a.bodyC
-      ctx.save()
-      ctx.translate(-bw, bodyTop + 4)
-      ctx.rotate(-0.3)
-      ctx.fillRect(-2, 0, 4, 12)
-      ctx.fillStyle = skin
-      ctx.beginPath(); ctx.arc(0, 13, 3, 0, Math.PI*2); ctx.fill()
-      ctx.restore()
-      ctx.save()
-      ctx.translate(bw, bodyTop + 4)
-      ctx.rotate(0.3)
-      ctx.fillRect(-2, 0, 4, 12)
-      ctx.fillStyle = skin
-      ctx.beginPath(); ctx.arc(0, 13, 3, 0, Math.PI*2); ctx.fill()
-      ctx.restore()
-    }
-
-    // Head (connected to body top)
-    const headCY = bodyTop - 5 + breath
-    ctx.fillStyle = skinD
-    ctx.fillRect(-3, bodyTop, 6, 3)
-
-    ctx.fillStyle = skin
-    ctx.beginPath()
-    ctx.arc(0, headCY, 9, 0, Math.PI*2)
-    ctx.fill()
-
-    // Hair
-    drawHair(0, headCY, a, gender)
-
-    // Eyes
-    ctx.fillStyle = '#0d1117'
-    ctx.beginPath(); ctx.arc(-3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
-    ctx.beginPath(); ctx.arc(3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
-
-    if(Math.floor(phase / 3) % 4 === 0){
-      ctx.fillStyle = skin
-      ctx.fillRect(-6, headCY - 3, 5, 5)
-      ctx.fillRect(1, headCY - 3, 5, 5)
-    }
-
-    // Mouth
-    ctx.strokeStyle = '#c44'; ctx.lineWidth = 1
-    ctx.beginPath()
-    if(s === 'typing'){
-      ctx.moveTo(-2, headCY + 4); ctx.lineTo(2, headCY + 4)
-    } else {
-      ctx.arc(0, headCY + 4, 2.5, 0.1, Math.PI - 0.1)
-    }
-    ctx.stroke()
-
-    // ── Name label ABOVE head ──
-    const labelY = headCY - 12
-    ctx.fillStyle = `rgba(0,0,0,0.6)`
-    const roleW = a.role.length * 3.5 + 4
-    ctx.fillRect(-roleW / 2, labelY - 7, roleW, 10)
-    ctx.fillStyle = a.color
-    ctx.font = 'bold 7px "Segoe UI",sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(a.role, 0, labelY)
-
-    // TUI State label
-    if(ch.tuiState && ch.working){
-      const stateY = labelY - 16
-      const st = ch.tuiState.toUpperCase()
-      const sw = st.length * 3 + 8
-      const pulse = Math.sin(phase * 2) * 0.15 + 0.85
-      ctx.fillStyle = `rgba(${hexToRgb(a.color)},${pulse})`
-      ctx.beginPath()
-      ctx.roundRect(-sw / 2, stateY - 7, sw, 11, 3)
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = 'bold 6px "Segoe UI",sans-serif'
-      ctx.fillText(st, 0, stateY + 1)
-    }
-
-    // ── Comic speech bubble (TUI state) ──
-    if(s === 'typing' && ch.tuiState){
-      drawComicBubble(0, headCY - 24, ch.tuiStateMsg || ch.tuiState, a.color)
-    }
+  if(st){
+    const wc=Math.sin(ph*3),ls=s==='walking'?wc*5:0,bw=g==='female'?7:8
+    //legs
+    ctx.fillStyle='#282d38';ctx.save();ctx.translate(-3,-14);if(s==='walking')ctx.rotate(ls*.04);ctx.fillRect(-2,0,5,13);ctx.fillStyle='#1a1d24';ctx.fillRect(-3,11,7,3);ctx.restore()
+    ctx.save();ctx.translate(3,-14);if(s==='walking')ctx.rotate(-ls*.04);ctx.fillRect(-3,0,5,13);ctx.fillStyle='#1a1d24';ctx.fillRect(-4,11,7,3);ctx.restore()
+    //body
+    const bt=-32,bb=-14;ctx.fillStyle=a.bc;ctx.beginPath()
+    if(g==='female'){ctx.moveTo(-bw+1,bb);ctx.lineTo(bw-1,bb);ctx.quadraticCurveTo(bw+1,(bt+bb)/2,bw-1,bt);ctx.quadraticCurveTo(-bw+1,(bt+bb)/2,-bw+1,bb)}
+    else{ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb);ctx.lineTo(bw-1,bt);ctx.lineTo(-bw+1,bt)}
+    ctx.closePath();ctx.fill()
+    //arms
+    const asw=s==='walking'?wc*10:0,aw=g==='female'?3.5:4
+    ctx.fillStyle=a.bc;ctx.save();ctx.translate(-bw,bt+4);ctx.rotate(-.2+asw*.03);ctx.fillRect(-aw/2,0,aw,13);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,14,3,0,Math.PI*2);ctx.fill();ctx.restore()
+    ctx.save();ctx.translate(bw,bt+4);ctx.rotate(.2-asw*.03);ctx.fillRect(-aw/2,0,aw,13);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,14,3,0,Math.PI*2);ctx.fill();ctx.restore()
+    //head
+    const hcy=bt-5+br;ctx.fillStyle=skd;ctx.fillRect(-3,bt,6,3);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,9,0,Math.PI*2);ctx.fill()
+    drawHair(0,hcy,a,g)
+    ctx.fillStyle='#0d1117';ctx.beginPath();ctx.arc(-3.5,hcy-1,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(3.5,hcy-1,2,0,Math.PI*2);ctx.fill()
+    if(Math.floor(ph/3)%4===0){ctx.fillStyle=sk;ctx.fillRect(-6,hcy-3,5,5);ctx.fillRect(1,hcy-3,5,5)}
+    ctx.strokeStyle='#c44';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,hcy+4,2.5,.1,Math.PI-.1);ctx.stroke()
+    //name label
+    const ly=hcy-12;ctx.fillStyle='rgba(0,0,0,0.6)';const rw=a.role.length*3.3+4;ctx.fillRect(-rw/2,ly-7,rw,10);ctx.fillStyle=a.c;ctx.font='bold 6.5px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly)
+    //state
+    if(ch.ts&&ch.w){const sy=ly-15,st=ch.ts.toUpperCase(),sw=st.length*3+6;const p=Math.sin(ph*2)*.15+.85;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-6,sw,10,3);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 5.5px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
+    //bubble
+    if(s==='walking'&&ch.w&&ch.tsm)drawComicBubble(0,hcy-24,ch.tsm,a.c)
+  }else{
+    const bw=g==='female'?8:9
+    ctx.fillStyle='#282d38';ctx.fillRect(-10,0,18,5);ctx.fillStyle='#383e4e';ctx.fillRect(-7,-2,3,4);ctx.fillRect(4,-2,3,4)
+    ctx.fillStyle='#282d38';ctx.fillRect(-5,4,5,8);ctx.fillRect(2,4,5,8);ctx.fillStyle='#1a1d24';ctx.fillRect(-6,11,7,3);ctx.fillRect(1,11,7,3)
+    const bt=-28,bb=-4;ctx.fillStyle=a.bc;ctx.beginPath();ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb);ctx.lineTo(bw-1,bt);ctx.lineTo(-bw+1,bt);ctx.closePath();ctx.fill()
+    if(s==='typing'){const ta=Math.sin(ph*6)*3;ctx.fillStyle=a.bc;ctx.save();ctx.translate(-bw,bt+4);ctx.rotate(-.65);const lh=20+ta;ctx.fillRect(-2,0,4,lh);ctx.fillStyle=sk;for(let f=-1;f<=1;f++)ctx.fillRect(-1+f,lh,2,3+Math.abs(ta)*.5);ctx.restore();ctx.save();ctx.translate(bw,bt+4);ctx.rotate(.65);const rh=20-ta*.7;ctx.fillRect(-2,0,4,rh);ctx.fillStyle=sk;for(let f=-1;f<=1;f++)ctx.fillRect(-1+f,rh,2,3+Math.abs(ta)*.5);ctx.restore()}
+    else{ctx.fillStyle=a.bc;ctx.save();ctx.translate(-bw,bt+4);ctx.rotate(-.3);ctx.fillRect(-2,0,4,11);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,12,3,0,Math.PI*2);ctx.fill();ctx.restore();ctx.save();ctx.translate(bw,bt+4);ctx.rotate(.3);ctx.fillRect(-2,0,4,11);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,12,3,0,Math.PI*2);ctx.fill();ctx.restore()}
+    const hcy=bt-5+br;ctx.fillStyle=skd;ctx.fillRect(-3,bt,6,3);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,9,0,Math.PI*2);ctx.fill()
+    drawHair(0,hcy,a,g)
+    ctx.fillStyle='#0d1117';ctx.beginPath();ctx.arc(-3.5,hcy-1,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(3.5,hcy-1,2,0,Math.PI*2);ctx.fill()
+    if(Math.floor(ph/3)%4===0){ctx.fillStyle=sk;ctx.fillRect(-6,hcy-3,5,5);ctx.fillRect(1,hcy-3,5,5)}
+    ctx.strokeStyle='#c44';ctx.lineWidth=1;ctx.beginPath();if(s==='typing'){ctx.moveTo(-2,hcy+4);ctx.lineTo(2,hcy+4)}else ctx.arc(0,hcy+4,2.5,.1,Math.PI-.1);ctx.stroke()
+    //name
+    const ly=hcy-12;ctx.fillStyle='rgba(0,0,0,0.6)';const rw=a.role.length*3.3+4;ctx.fillRect(-rw/2,ly-7,rw,10);ctx.fillStyle=a.c;ctx.font='bold 6.5px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly)
+    //state
+    if(ch.ts&&ch.w){const sy=ly-15,st=ch.ts.toUpperCase(),sw=st.length*3+6;const p=Math.sin(ph*2)*.15+.85;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-6,sw,10,3);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 5.5px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
+    //bubble
+    if(s==='typing'&&ch.tsm)drawComicBubble(0,hcy-24,ch.tsm,a.c)
   }
-
   ctx.restore()
 }
 
-function drawContract(cx, cy, alpha, emoji){
-  ctx.save()
-  ctx.globalAlpha = alpha
-  ctx.translate(cx, cy)
-  ctx.rotate(Math.sin(frameCount * 0.05) * 0.1)
-  // Paper
-  ctx.fillStyle = '#f0e6d3'
-  ctx.fillRect(-10, -7, 20, 14)
-  ctx.strokeStyle = '#d4a574'
-  ctx.lineWidth = 1
-  ctx.strokeRect(-10, -7, 20, 14)
-  // Lines
-  ctx.strokeStyle = '#ccc'
-  ctx.lineWidth = 0.5
-  for(let i = 0; i < 3; i++){
-    ctx.beginPath()
-    ctx.moveTo(-7, -3 + i * 4)
-    ctx.lineTo(7, -3 + i * 4)
-    ctx.stroke()
-  }
-  ctx.font = '10px sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText(emoji || '📄', 0, 2)
-  ctx.restore()
+function drawContract(cx,cy,alpha,emoji){
+  ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy);ctx.rotate(Math.sin(fc*.05)*.1)
+  ctx.fillStyle='#f0e6d3';ctx.fillRect(-10,-7,20,14);ctx.strokeStyle='#d4a574';ctx.lineWidth=1;ctx.strokeRect(-10,-7,20,14)
+  ctx.strokeStyle='#ccc';ctx.lineWidth=.5;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-7,-3+i*4);ctx.lineTo(7,-3+i*4);ctx.stroke()}
+  ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(emoji||'📄',0,2);ctx.restore()
 }
 
 // ============================================================
-// ANIMATION + SIMULATION
+// CORE LOGIC
 // ============================================================
-function moveChar(ch, tx, ty, speed){
-  ch.tx = tx; ch.ty = ty
-  ch.walkSpeed = speed || 1.5
-  if(ch.state !== 'walking'){
-    ch.state = 'walking'
-    ch.walkPhase = 0
-  }
-}
-
-function sitAtDesk(ch){
-  ch.state = 'sitting'
-  ch.x = ch.deskX
-  ch.y = ch.deskY + 16
-  ch.tx = ch.x; ch.ty = ch.y
-  ch.working = false
-}
-
-function startTyping(ch){
-  const deskTargetX = ch.deskX
-  const deskTargetY = ch.deskY + 16
-  const dist = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
-  if(dist > 25){
-    moveChar(ch, deskTargetX, deskTargetY, 2)
-    ch.working = true
-    const check = setInterval(() => {
-      if(!ch.working){ clearInterval(check); return }
-      const d = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
-      if(d < 8 || ch.state !== 'walking'){
-        clearInterval(check)
-        if(!ch.working) return
-        ch.state = 'typing'
-        ch.x = deskTargetX; ch.y = deskTargetY
-        ch.tx = ch.x; ch.ty = ch.y
-        if(ch.typingInterval) clearInterval(ch.typingInterval)
-        ch.typingInterval = setInterval(() => {
-          if(ch.state !== 'typing' || !ch.working){ clearInterval(ch.typingInterval); ch.typingInterval = null; return }
-        }, 150 + Math.random() * 250)
-      }
-    }, 100)
-  } else {
-    if(!ch.working) return
-    ch.state = 'typing'
-    ch.x = deskTargetX; ch.y = deskTargetY
-    ch.tx = ch.x; ch.ty = ch.y
-    ch.working = true
-    if(ch.typingInterval) clearInterval(ch.typingInterval)
-    ch.typingInterval = setInterval(() => {
-      if(ch.state !== 'typing' || !ch.working){ clearInterval(ch.typingInterval); ch.typingInterval = null; return }
-    }, 150 + Math.random() * 250)
-  }
-}
-
-function stopTyping(ch){
-  ch.state = 'idle'
-  ch.working = false
-  ch.hasRealWork = false
-  if(ch.typingInterval){ clearInterval(ch.typingInterval); ch.typingInterval = null }
-  ch.idleTimer = performance.now() + 2000
-  moveChar(ch, ch.idleX, ch.idleY, 1)
+function moveChar(ch,tx,ty,sp){ch.tx=tx;ch.ty=ty;ch.ws=sp||1.5;if(ch.state!=='walking'){ch.state='walking';ch.wp=0}}
+function startTyping(ch){const dtx=ch.dx,dty=ch.dy+16;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
+  if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;const ck=setInterval(()=>{if(!ch.w){clearInterval(ck);return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ck);if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
+  else{if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;ch.w=true;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}}
+function stopTyping(ch){ch.state='idle';ch.w=false;ch.hrw=false;if(ch.ti){clearInterval(ch.ti);ch.ti=null};ch.it=performance.now()+2000;moveChar(ch,ch.ix,ch.iy,1)}
+function highlightAgent(name){const now=performance.now();if(!state._lt||(now-state._lt)>1000){AL.forEach(a=>{if(a.n!==name){const oc=chars[a.n];if(oc&&oc.w)stopTyping(oc)}})};state._lt=now;const ch=chars[name];if(!ch)return;ch.hrw=true;if(ch.state!=='typing')startTyping(ch)}
+function showDoneNotif(x,y,agentName,color){doneNotifs.push({x,y,agentName,color,life:70,sy:y})}
+function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=ch.a;let wx,wy;const roll=Math.random()
+  if(roll<.3&&POI.length>0){const p=POI[Math.floor(Math.random()*POI.length)];wx=p.x+(Math.random()-.5)*20;wy=p.y+(Math.random()-.5)*10}
+  else if(roll<.6){const cols=AL.filter(c=>c.tier===a.tier&&c.n!==a.n);if(cols.length>0){const cl=chars[cols[Math.floor(Math.random()*cols.length)].n];wx=cl.x+(Math.random()-.5)*30+20;wy=cl.y+(Math.random()-.5)*15}else{wx=ch.ix+(Math.random()-.5)*60;wy=ch.iy+(Math.random()-.5)*20}}
+  else{wx=ch.ix+(Math.random()-.5)*80;wy=ch.iy+(Math.random()-.5)*30}
+  if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20);else if(a.tier==='T2')wy=Math.min(Math.max(wy,r.t2t+20),r.t2b-20);else if(a.tier==='T3')wy=Math.min(Math.max(wy,r.t3t+30),r.t3b-30);else wy=Math.min(Math.max(wy,r.t4t+20),r.t4b-20)
+  wx=Math.max(60,Math.min(W-60,wx));moveChar(ch,wx,wy,.8+Math.random()*.5);sfx('footstep')
+  setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+4000+Math.random()*6000;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w)moveChar(ch,ch.ix,ch.iy,1)},3000)}},1500)
 }
 
 // ============================================================
 // STATE
 // ============================================================
-const state = {
-  workflow: '—', phase: '—', agent: null, retry: '0/3',
-  elapsed: 0, startTime: Date.now(),
-  mode: location.protocol === 'http:' || location.protocol === 'https:' ? 'sse' : 'demo',
-  sseConnected: false, lastRealEvent: 0,
-  lastTick: -1,
-}
-
-function addLog(msg, color){
-  const ct = document.getElementById('logOverlay')
-  const d = document.createElement('div')
-  d.className = 'log-item'
-  d.style.borderLeftColor = color || '#888'
-  const now = new Date()
-  d.textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} ${msg}`
-  ct.insertBefore(d, ct.firstChild)
-  if(ct.children.length > 8) ct.removeChild(ct.lastChild)
-}
-
-function updateStatus(){
-  document.getElementById('wfVal').textContent = state.workflow
-  document.getElementById('phVal').textContent = state.phase
-  document.getElementById('agVal').textContent = state.agent || '—'
-  document.getElementById('rtVal').textContent = state.retry
-}
-
-function updateElapsed(){
-  const ms = Date.now() - state.startTime
-  const h = String(Math.floor(ms/3600000)).padStart(2,'0')
-  const m = String(Math.floor((ms%3600000)/60000)).padStart(2,'0')
-  const s = String(Math.floor((ms%60000)/1000)).padStart(2,'0')
-  document.getElementById('elVal').textContent = `${h}:${m}:${s}`
-}
-
-function highlightAgent(name){
-  // Batch detection: if a task_start arrives within 1s of last one, it's batch mode — don't stop others
-  const now = performance.now()
-  if(!state._lastTaskStart || (now - state._lastTaskStart) > 1000){
-    // Sequential mode: stop all other agents
-    AGENT_LIST.forEach(a => {
-      if(a.name !== name){
-        const oc = chars[a.name]
-        if(oc && oc.working) stopTyping(oc)
-      }
-    })
-  }
-  state._lastTaskStart = now
-
-  const ch = chars[name]
-  if(!ch) return
-  ch.hasRealWork = true
-  if(ch.state !== 'typing') startTyping(ch)
-}
+const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0}
+function addLog(msg,color){const ct=document.getElementById('logOverlay');const d=document.createElement('div');d.className='log-item';d.style.borderLeftColor=color||'#888';const t=new Date();d.textContent=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')} ${msg}`;ct.insertBefore(d,ct.firstChild);if(ct.children.length>8)ct.removeChild(ct.lastChild)}
+function updateStatus(){document.getElementById('wfVal').textContent=state.workflow;document.getElementById('phVal').textContent=state.phase;document.getElementById('agVal').textContent=state.agent||'—';document.getElementById('rtVal').textContent=state.retry}
+function updateElapsed(){const ms=Date.now()-state.startTime;const h=String(Math.floor(ms/3600000)).padStart(2,'0'),m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0'),s=String(Math.floor((ms%60000)/1000)).padStart(2,'0');document.getElementById('elVal').textContent=`${h}:${m}:${s}`}
 
 function processEvent(event){
-  const isRealEvent = event.type !== 'agent_status' && event.type !== 'connected'
-  if(isRealEvent){
-    state.lastRealEvent = performance.now()
-    document.getElementById('modeTxt').textContent = '🔴 Live'
-    document.getElementById('modeTxt').style.opacity = '0.8'
-  }
-
-  const tc = { T0:'#8b949e', T1:'#58a6ff', T2:'#d29922', T3:'#3fb950', T4:'#bc8cff' }
-  const ac = event.tier_from || event.tier_to || 'T1'
-  const color = tc[ac] || '#888'
-
-  if(event.type === 'task_start' || event.type === 'phase_change'){
-    state.agent = event.to || event.from || state.agent
-    if(event.phase) state.phase = event.phase
-    if(event.workflow) state.workflow = event.workflow
-    if(event.retry) state.retry = event.retry
-    if(state.agent) highlightAgent(state.agent)
-    if(event.tier_from && event.tier_to){
-      const regs = chars._regions
-      const tierMap = { T0: regs.t1Top + 10, T1: (regs.t1Top + regs.t1Bot)/2, T2: (regs.t2Top + regs.t2Bot)/2, T3: (regs.t3Top + regs.t3Bot)/2, T4: (regs.t4Top + regs.t4Bot)/2 }
-      contracts.push({
-        x: W * 0.5, y: tierMap[event.tier_from] || 0,
-        ty: tierMap[event.tier_to] || 0,
-        alpha: 1,
-        emoji: '📄',
-        life: 80,
-      })
-      sfx('contract')
-    }
-    const msg = event.message || `${event.type} event`
-    addLog(`[${ac}] ${msg}`, color)
-    if(isRealEvent) sfx('notification')
-  } else if(event.type === 'agent_state'){
-    // TUI state update: show on agent's head, make them work
-    const ag = event.agent
-    const ch = chars[ag]
-    if(ch){
-      ch.tuiState = event.tuiState || event.state || ''
-      ch.tuiStateMsg = event.message || ''
-      if(!ch.working && ch.state !== 'typing'){
-        ch.hasRealWork = true
-        startTyping(ch)
-      }
-      state.agent = ag
-      if(event.tuiState) state.phase = event.tuiState
-      addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState}`, AGENTS[ag]?.color||'#888')
-    }
-    updateStatus()
-    return
-  } else if(event.type === 'task_end'){
-    const ch = chars[event.from || event.to]
-    if(ch){
-      stopTyping(ch)
-      if(event.status !== 'fail') showDoneNotif(ch.x, ch.y - 30, ch.agent.role, ch.agent.color)
-    }
-    addLog(`[${ac}] ${event.message || (event.status==='fail'?'✗ Failed':'✓ Done')}`, event.status==='fail'?'#f85149':color)
-  } else if(event.type === 'contract'){
-    if(event.tier_from && event.tier_to){
-      const regs = chars._regions
-      const tierMap = { T0: regs.t1Top + 10, T1: (regs.t1Top + regs.t1Bot)/2, T2: (regs.t2Top + regs.t2Bot)/2, T3: (regs.t3Top + regs.t3Bot)/2, T4: (regs.t4Top + regs.t4Bot)/2 }
-      contracts.push({
-        x: W * 0.5, y: tierMap[event.tier_from] || 0,
-        ty: tierMap[event.tier_to] || 0,
-        alpha: 1,
-        emoji: '📄',
-        life: 80,
-      })
-      sfx('contract')
-    }
-  } else if(!isRealEvent){
-    // heartbeat — ignore visually
-    return
-  } else {
-    addLog(event.message || '', '#8b949e')
-  }
+  const isReal=event.type!=='agent_status'&&event.type!=='connected'
+  if(isReal){state.lastRealEvent=performance.now();document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'}
+  const tc={T0:'#8b949e',T1:'#58a6ff',T2:'#d29922',T3:'#3fb950',T4:'#bc8cff'},ac=event.tier_from||event.tier_to||'T1',color=tc[ac]||'#888'
+  if(event.type==='task_start'||event.type==='phase_change'){
+    state.agent=event.to||event.from||state.agent;if(event.phase)state.phase=event.phase;if(event.workflow)state.workflow=event.workflow;if(event.retry)state.retry=event.retry
+    if(state.agent)highlightAgent(state.agent)
+    if(event.tier_from&&event.tier_to){const r=chars._r,tm={T0:r.t1t+10,T1:(r.t1t+r.t1b)/2,T2:(r.t2t+r.t2b)/2,T3:(r.t3t+r.t3b)/2,T4:(r.t4t+r.t4b)/2};contracts.push({x:W*.5,y:tm[event.tier_from]||0,ty:tm[event.tier_to]||0,alpha:1,emoji:'📄',life:70});sfx('contract')}
+    addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
+  }else if(event.type==='agent_state'){
+    const ag=event.agent,ch=chars[ag];if(ch){ch.ts=event.tuiState||event.state||'';ch.tsm=event.message||'';if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)};state.agent=ag;if(event.tuiState)state.phase=event.tuiState;addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888')}
+    updateStatus();return
+  }else if(event.type==='task_end'){
+    const ch=chars[event.from||event.to];if(ch){stopTyping(ch);if(event.status!=='fail')showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}
+    addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Done')}`,event.status==='fail'?'#f85149':color)
+  }else if(event.type==='contract'){if(event.tier_from&&event.tier_to){const r=chars._r,tm={T0:r.t1t+10,T1:(r.t1t+r.t1b)/2,T2:(r.t2t+r.t2b)/2,T3:(r.t3t+r.t3b)/2,T4:(r.t4t+r.t4b)/2};contracts.push({x:W*.5,y:tm[event.tier_from]||0,ty:tm[event.tier_to]||0,alpha:1,emoji:'📄',life:70});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
   updateStatus()
 }
 
 // ============================================================
 // SSE
 // ============================================================
-function connectSSE(){
-  const evtSource = new EventSource('/events')
-  evtSource.onopen = () => {
-    state.sseConnected = true
-    state.lastRealEvent = performance.now()
-    document.getElementById('modeTxt').textContent = '🔴 Live'
-    document.getElementById('modeTxt').style.opacity = '0.8'
-    addLog('🔴 SSE — real-time sync', '#58a6ff')
-    playAmbient()
-    sfx('door')
-  }
-  evtSource.onmessage = (e) => {
-    try {
-      const event = JSON.parse(e.data)
-      if(event.type === 'connected') return
-      processEvent(event)
-    } catch {}
-  }
-  evtSource.onerror = () => {
-    state.sseConnected = false
-    document.getElementById('modeTxt').textContent = '⚠️ Reconnecting...'
-    document.getElementById('modeTxt').style.opacity = '0.4'
-    setTimeout(connectSSE, 3000)
-  }
-}
-
-// ============================================================
-// IDLE BEHAVIOR
-// ============================================================
-function randomWander(ch){
-  if(ch.state !== 'idle' || ch.working) return
-  const regs = chars._regions
-  const a = ch.agent
-
-  // 30% chance: walk to a point of interest (water cooler, meeting table, plant)
-  // 30% chance: walk near a colleague to "chat"
-  // 40% chance: random wander near idle position
-  const roll = Math.random()
-  let wx, wy
-
-  if(roll < 0.3 && POI.length > 0){
-    // Walk to a point of interest
-    const poi = POI[Math.floor(Math.random() * POI.length)]
-    // Only walk to POIs in same tier or adjacent
-    if(poi.tier === a.tier || Math.abs(
-      parseInt(poi.tier.slice(1)) - parseInt(a.tier.slice(1))
-    ) <= 1){
-      wx = poi.x + (Math.random() - 0.5) * 20
-      wy = poi.y + (Math.random() - 0.5) * 10
-    } else {
-      wx = ch.idleX + (Math.random() - 0.5) * 60
-      wy = ch.idleY + (Math.random() - 0.5) * 20
-    }
-  } else if(roll < 0.6){
-    // Walk near a colleague
-    const colleagues = AGENT_LIST.filter(c => c.tier === a.tier && c.name !== a.name)
-    if(colleagues.length > 0){
-      const col = colleagues[Math.floor(Math.random() * colleagues.length)]
-      const colCh = chars[col.name]
-      wx = colCh.x + (Math.random() - 0.5) * 30 + 20
-      wy = colCh.y + (Math.random() - 0.5) * 15
-    } else {
-      wx = ch.idleX + (Math.random() - 0.5) * 60
-      wy = ch.idleY + (Math.random() - 0.5) * 20
-    }
-  } else {
-    wx = ch.idleX + (Math.random() - 0.5) * 80
-    wy = ch.idleY + (Math.random() - 0.5) * 30
-  }
-
-  // Clamp to tier
-  if(a.tier === 'T1'){ wy = Math.min(Math.max(wy, regs.t1Top + 20), regs.t1Bot - 20) }
-  else if(a.tier === 'T2'){ wy = Math.min(Math.max(wy, regs.t2Top + 20), regs.t2Bot - 20) }
-  else if(a.tier === 'T3'){ wy = Math.min(Math.max(wy, regs.t3Top + 30), regs.t3Bot - 30) }
-  else { wy = Math.min(Math.max(wy, regs.t4Top + 20), regs.t4Bot - 20) }
-  wx = Math.max(60, Math.min(W - 60, wx))
-
-  moveChar(ch, wx, wy, 0.8 + Math.random() * 0.5)
-  sfx('footstep')
-
-  // Return to idle position after wandering
-  setTimeout(() => {
-    if(ch && ch.state === 'walking' && !ch.working){
-      ch.state = 'idle'
-      ch.idleTimer = performance.now() + 4000 + Math.random() * 6000
-      setTimeout(() => {
-        if(ch && ch.state === 'idle' && !ch.working){
-          moveChar(ch, ch.idleX, ch.idleY, 1)
-        }
-      }, 3000)
-    }
-  }, 1500)
-}
+function connectSSE(){const es=new EventSource('/events');es.onopen=()=>{state.sseConnected=true;state.lastRealEvent=performance.now();document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5';addLog('🔴 SSE connected','#58a6ff');playAmbient();sfx('door')};es.onmessage=(e)=>{try{const ev=JSON.parse(e.data);if(ev.type==='connected')return;processEvent(ev)}catch{}};es.onerror=()=>{state.sseConnected=false;document.getElementById('modeTxt').textContent='⚠️ Reconnecting...';document.getElementById('modeTxt').style.opacity='0.4';setTimeout(connectSSE,3000)}}
 
 // ============================================================
 // MAIN LOOP
 // ============================================================
-function animate(now){
-  frameCount++
-  updateElapsed()
+function animate(now){fc++;updateElapsed()
+  if(state.mode==='sse'&&state.sseConnected&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
 
-  // Show idle state when no real events for 15s
-  if(state.mode === 'sse' && state.sseConnected && now - state.lastRealEvent > 15000){
-    document.getElementById('modeTxt').textContent = '⚪ Chờ prompt'
-    document.getElementById('modeTxt').style.opacity = '0.5'
-  }
-
-  // Character animation updates
-  AGENT_LIST.forEach(a => {
-    const ch = chars[a.name]
-    ch.animPhase += 0.03
-
-    // Move toward target with step-based animation
-    if(ch.state === 'walking'){
-      const dx = ch.tx - ch.x
-      const dy = ch.ty - ch.y
-      const dist = Math.sqrt(dx*dx + dy*dy)
-      if(dist < 2){
-        ch.x = ch.tx; ch.y = ch.ty
-        ch.state = ch.working ? 'typing' : 'idle'
-        if(!ch.working) ch.idleTimer = now + 3000 + Math.random() * 5000
-      } else {
-        const step = ch.walkSpeed * 1.5
-        ch.x += (dx / dist) * step
-        ch.y += (dy / dist) * step
-        ch.walkPhase += step * 0.3
-        if(frameCount % 15 === 0) sfx('footstep')
-      }
-    }
-
-    // Idle wander
-    if(ch.state === 'idle' && now > ch.idleTimer && !ch.working){
-      if(Math.random() < 0.008){
-        randomWander(ch)
-      }
-    }
-
+  AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
+    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+3000+Math.random()*5000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
+    if(ch.state==='idle'&&now>ch.it&&!ch.w){if(Math.random()<.006)randomWander(ch)}
   })
 
-  // Update contracts
-  for(let i = contracts.length - 1; i >= 0; i--){
-    const ct = contracts[i]
-    ct.y += (ct.ty - ct.y) * 0.06
-    ct.life--
-    ct.alpha = Math.min(1, ct.life / 40)
-    if(ct.life <= 0) contracts.splice(i, 1)
-  }
+  for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.y+=(ct.ty-ct.y)*.06;ct.life--;ct.alpha=Math.min(1,ct.life/35);if(ct.life<=0)contracts.splice(i,1)}
+  for(let i=doneNotifs.length-1;i>=0;i--){const dn=doneNotifs[i];dn.life--;dn.y=dn.sy-(70-dn.life)*.5;if(dn.life<=0){doneNotifs.splice(i,1);continue}}
 
-  // Update done notifications
-  for(let i = doneNotifs.length - 1; i >= 0; i--){
-    const dn = doneNotifs[i]
-    dn.life--
-    dn.y = dn.startY - (80 - dn.life) * 0.6
-    if(dn.life <= 0){ doneNotifs.splice(i, 1); continue }
-  }
+  // RENDER
+  ctx.clearRect(0,0,W,H)
+  const r=chars._r
+  // Background gradient
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0d1220');bg.addColorStop(.5,'#0a0f1a');bg.addColorStop(1,'#0d1220');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+  // Subtle grid
+  ctx.strokeStyle='rgba(255,255,255,0.015)';ctx.lineWidth=.5
+  for(let gx=0;gx<W;gx+=40)for(let gy=0;gy<H;gy+=40){ctx.strokeRect(gx,gy,40,40)}
 
-  // === RENDER ===
-  ctx.clearRect(0, 0, W, H)
-  const regs = chars._regions
+  drawFloor(r.t4t,r.t4b,'T4 — HẠ TẦNG','#bc8cff')
+  drawFloor(r.t3t,r.t3b,'T3 — NHÂN CÔNG (7)','#3fb950')
+  drawFloor(r.t2t,r.t2b,'T2 — CEO - PXH','#d29922')
+  drawFloor(r.t1t,r.t1b,'T1 — GIAO DIỆN','#58a6ff')
 
-  // Draw floors
-  drawFloor(regs.t4Top, regs.t4Bot, 'T4 — HẠ TẦNG', '#bc8cff', 0.5)
-  drawFloor(regs.t3Top, regs.t3Bot, 'T3 — NHÂN CÔNG (7 agents)', '#3fb950', 0.6)
-  drawFloor(regs.t2Top, regs.t2Bot, 'T2 — ĐIỀU PHỐI (CEO)', '#d29922', 0.5)
-  drawFloor(regs.t1Top, regs.t1Bot, 'T1 — GIAO DIỆN', '#58a6ff', 0.5)
+  plants.forEach(p=>drawPlant(p.x,p.y,p.s))
+  drawServerRack(W*.12,r.t4t+12,28,50);drawServerRack(W*.2,r.t4t+8,28,55);drawServerRack(W*.76,r.t4t+12,28,50);drawServerRack(W*.84,r.t4t+8,28,55)
 
-  // Draw decorations
-  plants.forEach(p => drawPlant(p.x, p.y, p.size))
+  // Desks
+  ['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n],act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+20,ch.dy+10,12,18);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+21,ch.dy+12,10,14);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+26,ch.dy+22,1.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-22,ch.dy+14,44,5);drawMonitor(ch.dx,ch.dy-2,act);drawKeyboard(ch.dx,ch.dy+16);drawMouse(ch.dx+14,ch.dy+21)})
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n],act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-18,ch.dy+14,36,5);drawLaptop(ch.dx,ch.dy+6,act)})
+  // Chairs
+  ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+26;ctx.fillStyle='#282d38';ctx.fillRect(cx-9,cy,18,4);ctx.fillStyle='#222830';ctx.fillRect(cx-3,cy-14,6,14);ctx.fillStyle='#303840';ctx.fillRect(cx-2,cy-16,4,2)})
+  // PM desk
+  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-28,pm.dy+14,56,6);drawMonitor(pm.dx,pm.dy-2,pm.state==='typing');drawKeyboard(pm.dx,pm.dy+16);drawMouse(pm.dx+18,pm.dy+21);ctx.fillStyle='#1a1d24';ctx.fillRect(pm.dx+23,pm.dy+10,12,18)
+  // Help desk
+  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-22,hh.dy+14,44,6);drawMonitor(hh.dx,hh.dy-2,hh.state==='typing');drawKeyboard(hh.dx,hh.dy+16);drawMouse(hh.dx+14,hh.dy+21)
+  // Historian desk
+  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-22,sh.dy+14,44,6);drawMonitor(sh.dx,sh.dy-2,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+16);drawMouse(sh.dx+14,sh.dy+21)
 
-  // Draw server racks (T4)
-  drawServerRack(W * 0.15, regs.t4Top + 15, 30, 55)
-  drawServerRack(W * 0.22, regs.t4Top + 10, 30, 60)
-  drawServerRack(W * 0.75, regs.t4Top + 15, 30, 55)
-  drawServerRack(W * 0.82, regs.t4Top + 10, 30, 60)
+  // Contracts
+  contracts.forEach(ct=>drawContract(ct.x,ct.y,ct.alpha,ct.emoji))
+  // Done notifs
+  doneNotifs.forEach(dn=>{if(dn.life<=0)return;const a=Math.min(1,dn.life/25);ctx.save();ctx.globalAlpha=a;const t='✓ Đã Làm Xong',tw=t.length*4+10;ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(dn.x-tw/2,dn.y-7,tw,16,5);ctx.fill();ctx.stroke();ctx.fillStyle='#111';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(t,dn.x,dn.y+3);ctx.restore()})
 
-  // Draw desks + chairs + CPU (T3 - top row: monitors, bottom row: laptops)
-  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(name => {
-    const ch = chars[name]
-    const active = ch.state === 'typing'
-    // CPU tower under desk
-    ctx.fillStyle = '#1a1d24'
-    ctx.fillRect(ch.deskX + 20, ch.deskY + 12, 14, 20)
-    ctx.fillStyle = '#2a2d34'
-    ctx.fillRect(ch.deskX + 22, ch.deskY + 14, 10, 16)
-    ctx.fillStyle = active ? '#3fb950' : '#1a2a1a'
-    ctx.beginPath(); ctx.arc(ch.deskX + 27, ch.deskY + 24, 1.5, 0, Math.PI*2); ctx.fill()
-    // Desk surface
-    ctx.fillStyle = '#4a3520'
-    ctx.fillRect(ch.deskX - 22, ch.deskY + 16, 44, 6)
-    drawMonitor(ch.deskX, ch.deskY, active)
-    drawKeyboard(ch.deskX, ch.deskY + 18)
-    drawMouse(ch.deskX + 14, ch.deskY + 22)
-  })
-  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(name => {
-    const ch = chars[name]
-    const active = ch.state === 'typing'
-    // Desk surface
-    ctx.fillStyle = '#4a3520'
-    ctx.fillRect(ch.deskX - 18, ch.deskY + 16, 36, 5)
-    drawLaptop(ch.deskX, ch.deskY + 8, active)
-  })
-
-  // Draw chairs (behind characters, in front of desks)
-  ;['pxh-architect','pxh-expert','pxh-fix-bugs','pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux','pxh-pm','pxh-help','pxh-save-history'].forEach(name => {
-    const ch = chars[name]
-    const cx = ch.deskX
-    const cy = ch.deskY + 28
-    // Chair seat
-    ctx.fillStyle = '#30363d'
-    ctx.fillRect(cx - 10, cy, 20, 5)
-    // Chair back
-    ctx.fillStyle = '#2a3040'
-    ctx.fillRect(cx - 3, cy - 16, 6, 16)
-    ctx.fillStyle = '#383e4e'
-    ctx.fillRect(cx - 2, cy - 18, 4, 2)
-  })
-
-  // T2 PM desk (big desk with monitor)
-  const pm = chars['pxh-pm']
-  ctx.fillStyle = '#5a4020'
-  ctx.fillRect(pm.deskX - 30, pm.deskY + 16, 60, 7)
-  drawMonitor(pm.deskX, pm.deskY, pm.state === 'typing')
-  drawKeyboard(pm.deskX, pm.deskY + 18)
-  drawMouse(pm.deskX + 18, pm.deskY + 22)
-  // CPU
-  ctx.fillStyle = '#1a1d24'
-  ctx.fillRect(pm.deskX + 24, pm.deskY + 12, 14, 20)
-
-  // T1 Help desk
-  const help = chars['pxh-help']
-  ctx.fillStyle = '#4a3520'
-  ctx.fillRect(help.deskX - 22, help.deskY + 16, 44, 6)
-  drawMonitor(help.deskX, help.deskY, help.state === 'typing')
-  drawKeyboard(help.deskX, help.deskY + 18)
-  drawMouse(help.deskX + 14, help.deskY + 22)
-
-  // T4 historian desk
-  const sh = chars['pxh-save-history']
-  ctx.fillStyle = '#4a3520'
-  ctx.fillRect(sh.deskX - 22, sh.deskY + 16, 44, 6)
-  drawMonitor(sh.deskX, sh.deskY, sh.state === 'typing')
-  drawKeyboard(sh.deskX, sh.deskY + 18)
-  drawMouse(sh.deskX + 14, sh.deskY + 22)
-
-  // Draw contracts (behind characters)
-  contracts.forEach(ct => drawContract(ct.x, ct.y, ct.alpha, ct.emoji))
-
-  // Draw "Đã Làm Xong" notifications
-  doneNotifs.forEach(dn => {
-    if(dn.life <= 0) return
-    const alpha = Math.min(1, dn.life / 30)
-    ctx.save()
-    ctx.globalAlpha = alpha
-    // Bubble
-    const text = `✓ Đã Làm Xong`
-    const tw = text.length * 4 + 10
-    ctx.fillStyle = '#ffffff'
-    ctx.strokeStyle = '#111111'
-    ctx.lineWidth = 1.5
-    ctx.beginPath()
-    ctx.roundRect(dn.x - tw/2, dn.y - 7, tw, 16, 5)
-    ctx.fill()
-    ctx.stroke()
-    ctx.fillStyle = '#111111'
-    ctx.font = 'bold 8px "Segoe UI",sans-serif'
-    ctx.textAlign = 'center'
-    ctx.fillText(text, dn.x, dn.y + 3)
-    ctx.restore()
-  })
-
-  // Draw characters (walking ones first, then sitting/typing ones)
-  const walkers = AGENT_LIST.filter(a => chars[a.name].state === 'walking' || chars[a.name].state === 'idle')
-  const workers = AGENT_LIST.filter(a => chars[a.name].state === 'sitting' || chars[a.name].state === 'typing')
-
-  walkers.forEach(a => drawCharacter(chars[a.name]))
-  workers.forEach(a => drawCharacter(chars[a.name]))
+  // Characters
+  const walkers=AL.filter(a=>chars[a.n].state==='walking'||chars[a.n].state==='idle'),workers=AL.filter(a=>chars[a.n].state==='sitting'||chars[a.n].state==='typing')
+  walkers.forEach(a=>drawCharacter(chars[a.n]));workers.forEach(a=>drawCharacter(chars[a.n]))
 
   // Water cooler (T2)
-  const wcX = W * 0.82, wcY = regs.t2Top + regs.t2Bot * 0.1
-  ctx.fillStyle = '#1a5080'
-  ctx.fillRect(wcX - 5, wcY, 10, 22)
-  ctx.fillStyle = '#58a6ff'
-  ctx.fillRect(wcX - 4, wcY - 4, 8, 5)
-  ctx.fillStyle = 'rgba(88,166,255,0.3)'
-  ctx.fillRect(wcX - 3, wcY + 2, 6, 12)
+  const wcx=W*.82,wcy=r.t2t+r.t2b*.1;ctx.fillStyle='#1a4060';ctx.fillRect(wcx-5,wcy,10,20);ctx.fillStyle='#58a6ff';ctx.fillRect(wcx-4,wcy-3,8,4);ctx.fillStyle='rgba(88,166,255,0.2)';ctx.fillRect(wcx-3,wcy+2,6,11)
+  // Meeting table
+  const mtx=W*.28,mty=r.t2t+(r.t2b-r.t2t)*.5;ctx.fillStyle='#4a3520';ctx.fillRect(mtx-22,mty,44,7);ctx.fillStyle='#3a2a18';ctx.fillRect(mtx-20,mty+7,3,8);ctx.fillRect(mtx+17,mty+7,3,8)
+  // Whiteboard (T3)
+  ctx.fillStyle='#f5f5f0';ctx.fillRect(W-50,r.t3t+15,38,22);ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.strokeRect(W-50,r.t3t+15,38,22);ctx.fillStyle='#58a6ff';ctx.font='5px sans-serif';ctx.textAlign='center';ctx.fillText('// TODO:',W-31,r.t3t+28);ctx.fillStyle='#3fb950';ctx.fillText('✓ Code',W-31,r.t3t+33)
+  // Door (T1)
+  ctx.fillStyle='#3a2a18';ctx.fillRect(W-35,r.t1t+6,26,r.t1b-r.t1t-10);ctx.strokeStyle='#4a3a28';ctx.lineWidth=1.5;ctx.strokeRect(W-35,r.t1t+6,26,r.t1b-r.t1t-10);ctx.fillStyle='#c8a050';ctx.beginPath();ctx.arc(W-15,r.t1t+(r.t1b-r.t1t)*.5,2.5,0,Math.PI*2);ctx.fill()
+  // Wall clock (T2)
+  ctx.fillStyle='#f5f5f0';ctx.beginPath();ctx.arc(W*.15,r.t2t+14,10,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(W*.15-.5,r.t2t+14-9,1,4);ctx.fillRect(W*.15-.5,r.t2t+14+1,1,4)
+  // Wall poster (T1)
+  ctx.fillStyle='#2a2a3a';ctx.fillRect(40,r.t1t+8,30,22);ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.strokeRect(40,r.t1t+8,30,22);ctx.fillStyle='#fff';ctx.font='5px sans-serif';ctx.textAlign='center';ctx.fillText('SAFETY',55,r.t1t+19);ctx.fillText('FIRST',55,r.t1t+25)
 
-  // Meeting table (T2)
-  const mtX = W * 0.28, mtY = regs.t2Top + (regs.t2Bot - regs.t2Top) * 0.5
-  ctx.fillStyle = '#5a4020'
-  ctx.fillRect(mtX - 25, mtY, 50, 8)
-  ctx.fillStyle = '#4a3520'
-  ctx.fillRect(mtX - 23, mtY + 8, 4, 8)
-  ctx.fillRect(mtX + 19, mtY + 8, 4, 8)
-
-  // Door (T1 right)
-  ctx.fillStyle = '#4a3520'
-  ctx.fillRect(W - 40, regs.t1Top + 8, 28, regs.t1Bot - regs.t1Top - 16)
-  ctx.strokeStyle = '#5a4020'
-  ctx.lineWidth = 2
-  ctx.strokeRect(W - 40, regs.t1Top + 8, 28, regs.t1Bot - regs.t1Top - 16)
-  ctx.fillStyle = '#d4a574'
-  ctx.beginPath()
-  ctx.arc(W - 18, regs.t1Top + (regs.t1Bot - regs.t1Top) * 0.5, 2.5, 0, Math.PI*2)
-  ctx.fill()
-
-  // Flow arrows between tiers
-  const tiers = [
-    { y: (regs.t3Bot + regs.t2Top) / 2, label: '↓' },
-    { y: (regs.t2Bot + regs.t1Top) / 2, label: '↓' },
-  ]
-  tiers.forEach(t => {
-    ctx.fillStyle = 'rgba(255,255,255,0.15)'
-    ctx.font = '14px sans-serif'
-    ctx.textAlign = 'center'
-    const pulse = Math.sin(frameCount * 0.03) * 0.1 + 0.2
-    ctx.globalAlpha = pulse
-    ctx.fillText(t.label, W * 0.5, t.y)
-    ctx.globalAlpha = 1
-  })
-
-  // T3→T4 arrow
-  const t3t4y = (regs.t4Bot + regs.t3Top) / 2
-  ctx.globalAlpha = Math.sin(frameCount * 0.03) * 0.1 + 0.2
-  ctx.fillText('↑', W * 0.5, t3t4y)
-  ctx.globalAlpha = 1
-
+  // Arrows
+  const ars=[(r.t4b+r.t3t)/2,(r.t3b+r.t2t)/2,(r.t2b+r.t1t)/2]
+  ars.forEach(ay=>{ctx.globalAlpha=Math.sin(fc*.03)*.1+.15;ctx.fillStyle='#fff';ctx.font='12px sans-serif';ctx.textAlign='center';ctx.fillText('↓',W*.5,ay);ctx.globalAlpha=1})
   requestAnimationFrame(animate)
 }
 
 // ============================================================
 // INIT
 // ============================================================
-function init(){
-  resize()
-  addLog('🏢 Error404Labs - PXH2910', '#58a6ff')
-
-  if(state.mode === 'sse'){
-    addLog('⚡ SSE — chờ TUI gửi prompt...', '#8b949e')
-    addLog('💡 Agents sẽ làm việc khi TUI xử lý task', '#8b949e')
-    connectSSE()
-  } else {
-    addLog('⚡ Demo mode — mở qua server để sync TUI', '#8b949e')
-    playAmbient()
-  }
-
-  state.startTime = Date.now()
-  requestAnimationFrame(animate)
-}
-
-// Click on canvas → find nearest agent
-c.addEventListener('click', (e) => {
-  const rect = c.getBoundingClientRect()
-  const mx = e.clientX - rect.left
-  const my = e.clientY - rect.top
-
-  let closest = null, closestDist = 40
-  AGENT_LIST.forEach(a => {
-    const ch = chars[a.name]
-    const dx = ch.x - mx, dy = ch.y - my
-    const dist = Math.sqrt(dx*dx + dy*dy)
-    if(dist < closestDist){ closestDist = dist; closest = a }
-  })
-  if(closest){
-    state.agent = closest.name
-    updateStatus()
-    addLog(`👤 Click: ${closest.role} (${closest.name})`, closest.color)
-    sfx('notification')
-    // Wiggle
-    const ch = chars[closest.name]
-    ch.bobY = -8
-    setTimeout(() => { ch.bobY = 0 }, 300)
-  }
-})
-
-window.addEventListener('resize', resize)
-document.addEventListener('DOMContentLoaded', init)
+function init(){resize();addLog('🏢 Error404Labs - PXH2910','#58a6ff')
+  if(state.mode==='sse'){addLog('⚡ SSE — real-time sync','#8b949e');connectSSE()}else{addLog('⚡ Demo — mở qua server để sync TUI','#8b949e');playAmbient()}
+  state.startTime=Date.now();requestAnimationFrame(animate)}
+c.addEventListener('click',(e)=>{const rect=c.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;let cl=null,cd=35;AL.forEach(a=>{const ch=chars[a.n],dx=ch.x-mx,dy=ch.y-my,d=Math.sqrt(dx*dx+dy*dy);if(d<cd){cd=d;cl=a}});if(cl){state.agent=cl.n;updateStatus();addLog(`👤 ${cl.role} (${cl.n})`,cl.c);sfx('notification');const ch=chars[cl.n];ch.by=-6;setTimeout(()=>{ch.by=0},300)}})
+window.addEventListener('resize',resize);document.addEventListener('DOMContentLoaded',init)
 </script>
 </body>
 </html>

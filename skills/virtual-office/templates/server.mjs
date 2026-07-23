@@ -237,6 +237,30 @@ try {
   })
 } catch {}
 
+// Watch state file for real-time opencode state sync
+const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode-state.json')
+let stateWatcher = null
+try {
+  if(fs.existsSync(STATE_FILE) || true){
+    stateWatcher = fs.watch(path.dirname(STATE_FILE), (eventType, filename) => {
+      if(filename !== 'opencode-state.json') return
+      try {
+        const raw = fs.readFileSync(STATE_FILE, 'utf-8')
+        const st = JSON.parse(raw)
+        if(st.state){
+          const event = {
+            type: 'agent_state',
+            agent: st.agent || 'pxh-expert',
+            tuiState: st.state,
+            message: st.message || `${st.state}...`,
+          }
+          broadcast(event)
+        }
+      } catch {}
+    })
+  }
+} catch {}
+
 server.listen(PORT, () => {
   console.log(`\n  \x1b[36m\u250C\u2500 Error404Labs - PXH2910 \u2500\u2510\x1b[0m`)
   console.log(`  \x1b[36m\u2502\x1b[0m  Web:  \x1b[1mhttp://localhost:${PORT}\x1b[0m`)
