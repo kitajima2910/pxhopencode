@@ -5,6 +5,7 @@ param([string]$Prompt)
 $STATE_URL = "http://localhost:2910/state"
 $STATE_FILE = "$PSScriptRoot\..\..\..\_shared\opencode-state.json"
 $EMIT_URL = "http://localhost:2910/emit"
+$MIRROR_URL = "http://localhost:2910/emit"
 
 # Tool action patterns detected from TUI output (emoji or keyword)
 $TOOL_RX = @{}
@@ -100,6 +101,13 @@ function Send-Agent($agent, $state, $msg) {
   } catch {}
 }
 
+function Send-Mirror($lineText) {
+  $body = @{ type='tui_mirror'; agent='pxh-opencode'; message=$lineText } | ConvertTo-Json -Compress
+  try {
+    Invoke-RestMethod -Uri $MIRROR_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null
+  } catch {}
+}
+
 function Idle-All {
   foreach($p in $AGENT_PATTERNS) {
     $body = @{ state='idle'; agent=$p.agent; message='' } | ConvertTo-Json -Compress
@@ -175,6 +183,9 @@ while(!$proc.HasExited) {
   foreach($line in $lines) {
     $clean = Clean-Line $line
     if([string]::IsNullOrWhiteSpace($clean)) { continue }
+
+    # Mirror EVERY TUI output line to PXHOpenCode
+    Send-Mirror $clean
 
     # Step 1: Try to detect tool state from the line
     $detectedTool = Detect-Tool -Line $clean

@@ -136,6 +136,7 @@ const server = http.createServer((req, res) => {
       try {
         const event = JSON.parse(body)
         const result = emit(event)
+        broadcast(event)
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify(result))
       } catch (e) {

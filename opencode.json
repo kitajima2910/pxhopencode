@@ -37,6 +37,10 @@
     "pxh-office": {
       "description": "Virtual Office TUI — real-time 4-tier visualization with pixel-art agents",
       "mode": "subagent"
+    },
+    "pxh-opencode": {
+      "description": "TUI Mirror — hiển thị real-time mọi output từ TUI lên Virtual Office",
+      "mode": "subagent"
     }
   },
 

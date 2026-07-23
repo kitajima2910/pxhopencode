@@ -76,6 +76,7 @@ const AGENTS={
   'pxh-devops':{n:'pxh-devops',role:'DevOps',tier:'T3',c:'#58a6ff',g:'male',sk:'#dcc0a0',hc:'#2c3e50',hs:'short',bc:'#1a5080',outfit:'hoodie',oc:'#0a3060',acc:'glasses',pat:'solid'},
   'pxh-ui-ux':{n:'pxh-ui-ux',role:'UI/UX Designer',tier:'T3',c:'#f85149',g:'female',sk:'#f8dcc8',hc:'#6a1b9a',hs:'long',bc:'#8b2550',outfit:'dress',oc:'#b03060',acc:'scarf',pat:'solid'},
   'pxh-save-history':{n:'pxh-save-history',role:'Historian',tier:'T4',c:'#bc8cff',g:'male',sk:'#f0e0c8',hc:'#2a2a3a',hs:'short',bc:'#3a2a5a',outfit:'cardigan',oc:'#5a4a7a',acc:'glasses',pat:'solid'},
+  'pxh-opencode':{n:'pxh-opencode',role:'TUI Mirror',tier:'T3',c:'#00e5ff',g:'male',sk:'#e8dcc8',hc:'#1a1a2a',hs:'short',bc:'#0a2a3a',outfit:'hoodie',oc:'#0d4a5a',acc:'glasses',pat:'solid'},
 }
 const AL=Object.values(AGENTS)
 let W,H
@@ -89,7 +90,7 @@ const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 function calcLayout(){
   const m=60
 
-  const r1y=H*.10, r2y=H*.32, r3y=H*.54, r4y=H*.78
+  const r1y=H*.10, r2y=H*.26, r3y=H*.46, r4y=H*.78
 
   const pm=chars['pxh-pm'];pm.dx=W*.5;pm.dy=H*.85;pm.ix=W*.5+30;pm.iy=H*.85+60;pm.x=pm.ix;pm.y=pm.iy;pm.tx=pm.ix;pm.ty=pm.iy
 
@@ -102,6 +103,8 @@ function calcLayout(){
   const sh=chars['pxh-save-history'];sh.dx=W*.22;sh.dy=r4y;sh.ix=W*.22+30;sh.iy=r4y+60;sh.x=sh.ix;sh.y=sh.iy;sh.tx=sh.ix;sh.ty=sh.iy
 
   const hh=chars['pxh-help'];hh.dx=W*.72;hh.dy=r4y;hh.ix=W*.72+30;hh.iy=r4y+60;hh.x=hh.ix;hh.y=hh.iy;hh.tx=hh.ix;hh.ty=hh.iy
+
+  const oc=chars['pxh-opencode'];oc.dx=W*.40;oc.dy=H*.60;oc.ix=W*.40+25;oc.iy=H*.66+65;oc.x=oc.ix;oc.y=oc.iy;oc.tx=oc.ix;oc.ty=oc.iy;oc.mirror=true
 
   plants.length=0
   plants.push({x:W*.18,y:H*.23,s:22},{x:W*.93,y:H*.22,s:16},{x:W*.15,y:H*.6,s:20})
@@ -587,6 +590,10 @@ function stopTyping(ch){
   ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[]
   if(ch.ti){clearInterval(ch.ti);ch.ti=null}
   ch.it=performance.now()+2000
+  if(ch.a.n==='pxh-opencode'){
+    ch.it=performance.now()+500
+    return
+  }
   if(ch.a.n==='pxh-help'||ch.a.n==='pxh-pm'){
     moveChar(ch,ch.dx,ch.dy+42,.8)
     ch.it=performance.now()+500
@@ -677,6 +684,22 @@ function processEvent(event){
   }else if(event.type==='task_end'){
     const ch=chars[event.from||event.to];if(ch){const wasWorking=ch.w;stopTyping(ch);if(event.status!=='fail'&&wasWorking)showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)}
     addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Đã làm xong')}`,event.status==='fail'?'#f85149':color)
+  }else if(event.type==='tui_mirror'){
+    const oc=chars['pxh-opencode'];if(oc){
+      const raw=event.message||event.line||''
+      if(!raw)return
+      const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
+      if(!line)return
+      oc.ts='Mirror';oc.w=true;oc.hrw=true
+      if(!oc._msgs)oc._msgs=[]
+      oc._msgs=[line]
+      oc.tsm=oc._msgs;oc._bcol='#00e5ff'
+      if(!oc._mirrorLog)oc._mirrorLog=[]
+      oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
+      if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
+      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},2500)
+    }
+    addLog(event.message||'','#00e5ff')
   }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
   updateStatus()
 }
@@ -696,6 +719,7 @@ function animate(now){fc++;updateElapsed()
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+1000+Math.random()*2000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
     if(ch.state==='idle'&&now>ch.it&&!ch.w){
+      if(a.n==='pxh-opencode'){return}
       if(a.n==='pxh-help'||a.n==='pxh-pm'){
         if(Math.random()<.0015)randomWander(ch)
         else if(Math.random()<.001){
@@ -705,7 +729,7 @@ function animate(now){fc++;updateElapsed()
       }else if(Math.random()<.015)randomWander(ch)
     }
     // Random desk check — occasionally sit briefly (T3/T4 only)
-    if(ch.state==='idle'&&!ch.w&&Math.random()<.00015&&now-state.lastRealEvent>15000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'){
+    if(ch.state==='idle'&&!ch.w&&Math.random()<.00015&&now-state.lastRealEvent>15000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'&&a.n!=='pxh-opencode'){
       ch.hrw=true;startTyping(ch);ch._msgs=['🔍 Checking...'];ch.tsm=ch._msgs
       setTimeout(()=>{if(ch.w)stopTyping(ch)},800+Math.random()*1200)
     }
@@ -761,6 +785,25 @@ function animate(now){fc++;updateElapsed()
 
   // Historian desk
   const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawMonitor(sh.dx,sh.dy-4,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
+
+  // TUI Mirror terminal — large display screen
+  const oc=chars['pxh-opencode'];ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(oc.dx-55,oc.dy-28,110,60,5);ctx.fill();ctx.strokeStyle='#00e5ff';ctx.lineWidth=1.5;ctx.stroke()
+  ctx.fillStyle='#0a1620';ctx.fillRect(oc.dx-50,oc.dy-22,100,42)
+  ctx.save()
+  ctx.beginPath();ctx.rect(oc.dx-48,oc.dy-20,96,38);ctx.clip()
+  const mirrorLines=oc._mirrorLog||oc._msgs||[]
+  if(mirrorLines.length){
+    ctx.fillStyle='#0a8';ctx.font='bold 8px "Consolas",monospace';ctx.textAlign='left'
+    ctx.fillText('> root@pxh2910:~',oc.dx-44,oc.dy-8)
+    ctx.fillStyle='#00e5ff';ctx.font='8px "Consolas",monospace'
+    mirrorLines.slice(-3).forEach((l,i)=>{
+      let disp=l;const maxW=92,md=ctx.measureText(disp);if(md.width>maxW){let cut=disp.length;while(cut>3&&ctx.measureText(disp.slice(0,cut)+'…').width>maxW)cut--;disp=disp.slice(0,cut)+'…'}
+      ctx.fillText(disp,oc.dx-44,oc.dy+4+i*12)
+    })
+  }
+  const blink=Math.sin(fc*.06)>0;ctx.fillStyle=blink?'#00e5ff':'transparent';ctx.fillRect(oc.dx-48,oc.dy+16,6,11)
+  ctx.restore()
+  ctx.fillStyle='#4a3520';ctx.fillRect(oc.dx-40,oc.dy+34,80,8)
 
   // Contracts + notifs
   contracts.forEach(ct=>drawContract(ct))
