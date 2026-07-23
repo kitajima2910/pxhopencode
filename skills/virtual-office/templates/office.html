@@ -208,16 +208,16 @@ document.getElementById('sndToggle').addEventListener('click', toggleSound)
 // DATA
 // ============================================================
 const AGENTS = {
-  'pxh-help':        { id:'help', name:'pxh-help', role:'Help Desk', tier:'T1', color:'#58a6ff', hair:'#006699', body:'#1a5c8a', eyes:true },
-  'pxh-pm':          { id:'pm', name:'pxh-pm', role:'CEO', tier:'T2', color:'#d29922', hair:'#1a1a2e', body:'#8b6914', eyes:true },
-  'pxh-architect':   { id:'architect', name:'pxh-architect', role:'Architect', tier:'T3', color:'#bc8cff', hair:'#4a3520', body:'#6b3fa0', eyes:true },
-  'pxh-expert':      { id:'expert', name:'pxh-expert', role:'Developer', tier:'T3', color:'#3fb950', hair:'#2a2a3a', body:'#2a7a3f', eyes:true },
-  'pxh-fix-bugs':    { id:'fix-bugs', name:'pxh-fix-bugs', role:'Bug Hunter', tier:'T3', color:'#f85149', hair:'#cc3333', body:'#9b2d2d', eyes:true },
-  'pxh-qa':          { id:'qa', name:'pxh-qa', role:'QA Engineer', tier:'T3', color:'#3fb950', hair:'#8B4513', body:'#1a6b5a', eyes:true },
-  'pxh-review-code': { id:'review-code', name:'pxh-review-code', role:'Reviewer', tier:'T3', color:'#d29922', hair:'#444', body:'#7a5a10', eyes:true },
-  'pxh-devops':      { id:'devops', name:'pxh-devops', role:'DevOps', tier:'T3', color:'#58a6ff', hair:'#2c3e50', body:'#1a5080', eyes:true },
-  'pxh-ui-ux':       { id:'ui-ux', name:'pxh-ui-ux', role:'Designer', tier:'T3', color:'#f85149', hair:'#6a1b9a', body:'#8b2550', eyes:true },
-  'pxh-save-history':{ id:'save-history', name:'pxh-save-history', role:'Historian', tier:'T4', color:'#bc8cff', hair:'#555', body:'#4a2a6b', eyes:true },
+  'pxh-help':        { id:'help', name:'pxh-help', role:'Help Desk',    tier:'T1', color:'#58a6ff', gender:'female', skin:'#f5d5c0', hairColor:'#3a2a1a', hairStyle:'pony',    bodyC:'#1a5c8a' },
+  'pxh-pm':          { id:'pm', name:'pxh-pm', role:'CEO',             tier:'T2', color:'#d29922', gender:'male',   skin:'#e8c8a0', hairColor:'#1a1a2e', hairStyle:'short',   bodyC:'#8b6914' },
+  'pxh-architect':   { id:'arch', name:'pxh-architect', role:'Architect', tier:'T3', color:'#bc8cff', gender:'female', skin:'#f0c8b0', hairColor:'#4a3020', hairStyle:'long',    bodyC:'#6b3fa0' },
+  'pxh-expert':      { id:'expert', name:'pxh-expert', role:'Developer', tier:'T3', color:'#3fb950', gender:'male',   skin:'#edc8a8', hairColor:'#2a2a3a', hairStyle:'spiky',   bodyC:'#2a7a3f' },
+  'pxh-fix-bugs':    { id:'fix', name:'pxh-fix-bugs', role:'Bug Hunter', tier:'T3', color:'#f85149', gender:'male',   skin:'#d4a580', hairColor:'#cc3333', hairStyle:'buzz',    bodyC:'#9b2d2d' },
+  'pxh-qa':          { id:'qa', name:'pxh-qa', role:'QA Engineer',    tier:'T3', color:'#3fb950', gender:'female', skin:'#eed0b8', hairColor:'#6b3510', hairStyle:'curly',   bodyC:'#1a6b5a' },
+  'pxh-review-code': { id:'review', name:'pxh-review-code', role:'Code Reviewer',    tier:'T3', color:'#d29922', gender:'male',   skin:'#e0c098', hairColor:'#555555', hairStyle:'short',   bodyC:'#7a5a10' },
+  'pxh-devops':      { id:'devops', name:'pxh-devops', role:'DevOps', tier:'T3', color:'#58a6ff', gender:'male',   skin:'#dcc0a0', hairColor:'#2c3e50', hairStyle:'short',   bodyC:'#1a5080' },
+  'pxh-ui-ux':       { id:'uiux', name:'pxh-ui-ux', role:'UI/UX Designer', tier:'T3', color:'#f85149', gender:'female', skin:'#f8dcc8', hairColor:'#6a1b9a', hairStyle:'long',    bodyC:'#8b2550' },
+  'pxh-save-history':{ id:'save', name:'pxh-save-history', role:'Historian', tier:'T4', color:'#bc8cff', gender:'male',   skin:'#e8c8a0', hairColor:'#666666', hairStyle:'buzz',    bodyC:'#4a2a6b' },
 }
 const AGENT_LIST = Object.values(AGENTS)
 
@@ -546,18 +546,98 @@ function drawLaptop(x, y, isActive){
   ctx.restore()
 }
 
+function darkenColor(hex, factor=0.65){
+  const r = parseInt(hex.slice(1,3), 16)
+  const g = parseInt(hex.slice(3,5), 16)
+  const b = parseInt(hex.slice(5,7), 16)
+  return `rgb(${Math.floor(r*factor)},${Math.floor(g*factor)},${Math.floor(b*factor)})`
+}
+
+function drawHair(headCX, headCY, a, gender){
+  ctx.fillStyle = a.hairColor
+  const hs = a.hairStyle || 'short'
+  if(hs === 'pony'){
+    // Ponytail: top half + tail flowing back
+    ctx.beginPath()
+    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
+    ctx.fill()
+    // Hair band
+    ctx.fillStyle = '#cc4488'
+    ctx.fillRect(headCX - 8, headCY + 2, 16, 2)
+    // Ponytail
+    ctx.fillStyle = a.hairColor
+    ctx.beginPath()
+    ctx.moveTo(headCX + 4, headCY + 3)
+    ctx.quadraticCurveTo(headCX + 12, headCY - 2, headCX + 14, headCY + 6)
+    ctx.quadraticCurveTo(headCX + 8, headCY + 4, headCX + 2, headCY + 2)
+    ctx.fill()
+  } else if(hs === 'long'){
+    ctx.beginPath()
+    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
+    ctx.fill()
+    // Long hair on sides
+    ctx.fillRect(headCX - 10, headCY, 5, 8)
+    ctx.fillRect(headCX + 5, headCY, 5, 8)
+  } else if(hs === 'buzz'){
+    ctx.beginPath()
+    ctx.arc(headCX, headCY + 1, 8.5, Math.PI, Math.PI*2)
+    ctx.fill()
+  } else if(hs === 'spiky'){
+    // Spiky hair
+    for(let i = -3; i <= 3; i++){
+      const sx = headCX + i * 2.8
+      const sh = 5 + Math.abs(i) * 2
+      ctx.beginPath()
+      ctx.moveTo(sx - 1.5, headCY - 6)
+      ctx.lineTo(sx, headCY - 6 - sh)
+      ctx.lineTo(sx + 1.5, headCY - 6)
+      ctx.fill()
+    }
+    ctx.beginPath()
+    ctx.arc(headCX, headCY, 9, Math.PI, Math.PI*2)
+    ctx.fill()
+  } else if(hs === 'curly'){
+    ctx.beginPath()
+    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
+    ctx.fill()
+    // Curly bumps
+    for(let i = -2; i <= 3; i++){
+      ctx.beginPath()
+      ctx.arc(headCX + i * 3.5, headCY - 3, 3, 0, Math.PI*2)
+      ctx.fill()
+    }
+  } else {
+    // Default short
+    ctx.beginPath()
+    ctx.arc(headCX, headCY - 1, 9.5, Math.PI, Math.PI*2)
+    ctx.fill()
+  }
+}
+
+// Speech bubbles for preparing/thinking
+const PREP_MSGS = [
+  '📋 Đang phân tích...', '🤔 Thinking...', '📐 Thiết kế...',
+  '💻 Chuẩn bị code...', '🔍 Đọc yêu cầu...', '⚙️ Đang setup...',
+  '📊 Đánh giá task...', '🎯 Xác định target...',
+]
+
 function drawCharacter(ch){
   const a = ch.agent
   const x = ch.x, y = ch.y
   const s = ch.state
   const phase = frameCount * 0.05 + ch.animPhase
   const breath = Math.sin(phase * 0.7) * (s === 'idle' ? 1 : 0)
+  const gender = a.gender || 'male'
+  const skin = a.skin
+  const skinD = darkenColor(skin)
 
   ctx.save()
   ctx.translate(x, y + ch.bobY)
 
+  // When typing: tilt upward to face the monitor
+  if(s === 'typing') ctx.rotate(-0.12)
+
   const isStanding = s === 'idle' || s === 'walking'
-  const isAtDesk = s === 'sitting' || s === 'typing'
 
   // ── Shadow ──
   ctx.fillStyle = 'rgba(0,0,0,0.25)'
@@ -567,9 +647,9 @@ function drawCharacter(ch){
 
   if(isStanding){
     // ===== STANDING / WALKING =====
-    const walkCycle = Math.sin(phase * 3) 
-    const walkStr = s === 'walking' ? Math.abs(walkCycle) : 0
+    const walkCycle = Math.sin(phase * 3)
     const legSpread = s === 'walking' ? walkCycle * 6 : 0
+    const bw = gender === 'female' ? 7 : 8 // narrower shoulders for female
 
     // Left leg
     ctx.fillStyle = '#30363d'
@@ -577,7 +657,6 @@ function drawCharacter(ch){
     ctx.translate(-3, -14)
     if(s === 'walking') ctx.rotate(legSpread * 0.04)
     ctx.fillRect(-2, 0, 5, 14)
-    // Shoe
     ctx.fillStyle = '#21262d'
     ctx.fillRect(-3, 12, 7, 3)
     ctx.restore()
@@ -591,64 +670,67 @@ function drawCharacter(ch){
     ctx.fillRect(-4, 12, 7, 3)
     ctx.restore()
 
-    // Body (connects directly from legs up)
+    // Body
     const bodyTop = -32
     const bodyBot = -14
-    ctx.fillStyle = a.body
+    ctx.fillStyle = a.bodyC
     ctx.beginPath()
-    ctx.moveTo(-8, bodyBot)
-    ctx.lineTo(8, bodyBot)
-    ctx.lineTo(7, bodyTop)
-    ctx.lineTo(-7, bodyTop)
+    if(gender === 'female'){
+      ctx.moveTo(-bw + 1, bodyBot)
+      ctx.lineTo(bw - 1, bodyBot)
+      ctx.quadraticCurveTo(bw + 1, (bodyTop + bodyBot)/2, bw - 1, bodyTop)
+      ctx.quadraticCurveTo(-bw + 1, (bodyTop + bodyBot)/2, -bw + 1, bodyBot)
+    } else {
+      ctx.moveTo(-bw, bodyBot)
+      ctx.lineTo(bw, bodyBot)
+      ctx.lineTo(bw - 1, bodyTop)
+      ctx.lineTo(-bw + 1, bodyTop)
+    }
     ctx.closePath()
     ctx.fill()
 
     // Arms
     const armSwing = s === 'walking' ? walkCycle * 10 : 0
-    ctx.fillStyle = a.body
+    const aw = gender === 'female' ? 3.5 : 4
+    ctx.fillStyle = a.bodyC
     // Left arm
     ctx.save()
-    ctx.translate(-8, bodyTop + 4)
+    ctx.translate(-bw, bodyTop + 4)
     ctx.rotate(-0.2 + armSwing * 0.03)
-    ctx.fillRect(-2, 0, 4, 14)
-    // Hand
-    ctx.fillStyle = '#e8c090'
+    ctx.fillRect(-aw/2, 0, aw, 14)
+    ctx.fillStyle = skin
     ctx.beginPath(); ctx.arc(0, 15, 3, 0, Math.PI*2); ctx.fill()
     ctx.restore()
     // Right arm
     ctx.save()
-    ctx.translate(8, bodyTop + 4)
+    ctx.translate(bw, bodyTop + 4)
     ctx.rotate(0.2 - armSwing * 0.03)
-    ctx.fillRect(-2, 0, 4, 14)
-    ctx.fillStyle = '#e8c090'
+    ctx.fillRect(-aw/2, 0, aw, 14)
+    ctx.fillStyle = skin
     ctx.beginPath(); ctx.arc(0, 15, 3, 0, Math.PI*2); ctx.fill()
     ctx.restore()
 
-    // Head (on top of body, overlapping)
+    // Head
     const headCY = bodyTop - 5 + breath
-    // Neck
-    ctx.fillStyle = '#d4a574'
+    ctx.fillStyle = skinD
     ctx.fillRect(-3, bodyTop, 6, 3)
 
-    ctx.fillStyle = '#e8c090'
+    ctx.fillStyle = skin
     ctx.beginPath()
     ctx.arc(0, headCY, 9, 0, Math.PI*2)
     ctx.fill()
 
     // Hair
-    ctx.fillStyle = a.hair
-    ctx.beginPath()
-    ctx.arc(0, headCY - 1, 9.5, Math.PI, Math.PI*2)
-    ctx.fill()
+    drawHair(0, headCY, a, gender)
 
     // Eyes
     ctx.fillStyle = '#0d1117'
     ctx.beginPath(); ctx.arc(-3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
     ctx.beginPath(); ctx.arc(3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
 
-    // Blink (every ~3s)
+    // Blink
     if(Math.floor(phase / 3) % 4 === 0){
-      ctx.fillStyle = '#e8c090'
+      ctx.fillStyle = skin
       ctx.fillRect(-6, headCY - 3, 5, 5)
       ctx.fillRect(1, headCY - 3, 5, 5)
     }
@@ -659,16 +741,40 @@ function drawCharacter(ch){
     ctx.arc(0, headCY + 4, 2.5, 0.1, Math.PI - 0.1)
     ctx.stroke()
 
-    // Badge below body
-    ctx.fillStyle = `rgba(${hexToRgb(a.color)},0.25)`
-    ctx.fillRect(-8, bodyBot, 16, 7)
+    // ── Name label ABOVE head ──
+    const labelY = headCY - 12
+    ctx.fillStyle = `rgba(0,0,0,0.6)`
+    const roleW = a.role.length * 3.5 + 4
+    ctx.fillRect(-roleW / 2, labelY - 7, roleW, 10)
     ctx.fillStyle = a.color
-    ctx.font = '5.5px "Segoe UI",sans-serif'
+    ctx.font = 'bold 7px "Segoe UI",sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText(a.role.toUpperCase(), 0, bodyBot + 5.5)
+    ctx.fillText(a.role, 0, labelY)
+
+    // Speech bubble for "preparing" state (walking to desk)
+    if(s === 'walking' && ch.working){
+      const msg = PREP_MSGS[Math.floor(ch.walkPhase / 2) % PREP_MSGS.length]
+      const bubbleY = headCY - 24
+      ctx.fillStyle = 'rgba(0,0,0,0.85)'
+      const mw = msg.length * 4 + 8
+      ctx.beginPath()
+      ctx.roundRect(-mw / 2, bubbleY - 7, mw, 14, 4)
+      ctx.fill()
+      // Pointer
+      ctx.beginPath()
+      ctx.moveTo(-2, bubbleY + 7)
+      ctx.lineTo(0, bubbleY + 10)
+      ctx.lineTo(2, bubbleY + 7)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.font = '8px "Segoe UI",sans-serif'
+      ctx.fillText(msg, 0, bubbleY + 2)
+    }
 
   } else {
     // ===== SITTING / TYPING AT DESK =====
+    const bw = gender === 'female' ? 8 : 9
+
     // Chair
     ctx.fillStyle = '#30363d'
     ctx.fillRect(-10, 0, 20, 6)
@@ -687,76 +793,71 @@ function drawCharacter(ch){
     // Body (sitting, slightly tilted forward)
     const bodyTop = -28
     const bodyBot = -4
-    ctx.fillStyle = a.body
+    ctx.fillStyle = a.bodyC
     ctx.beginPath()
-    ctx.moveTo(-9, bodyBot)
-    ctx.lineTo(9, bodyBot)
-    ctx.lineTo(7, bodyTop)
-    ctx.lineTo(-7, bodyTop)
+    ctx.moveTo(-bw, bodyBot)
+    ctx.lineTo(bw, bodyBot)
+    ctx.lineTo(bw - 1, bodyTop)
+    ctx.lineTo(-bw + 1, bodyTop)
     ctx.closePath()
     ctx.fill()
 
     if(s === 'typing'){
-      // Typing arms: hands on desk/keyboard, rapid movement
       const typeAnim = Math.sin(phase * 6) * 3
-      ctx.fillStyle = a.body
+      ctx.fillStyle = a.bodyC
       // Left arm to keyboard
       ctx.save()
-      ctx.translate(-9, bodyTop + 4)
+      ctx.translate(-bw, bodyTop + 4)
       ctx.rotate(-0.5)
       const leftHandY = 14 + typeAnim
       ctx.fillRect(-2, 0, 4, leftHandY)
-      // Fingers
-      ctx.fillStyle = '#e8c090'
+      ctx.fillStyle = skin
       for(let f = -1; f <= 1; f++){
         ctx.fillRect(-1 + f, leftHandY, 2, 3 + Math.abs(typeAnim) * 0.5)
       }
       ctx.restore()
       // Right arm to keyboard
       ctx.save()
-      ctx.translate(9, bodyTop + 4)
+      ctx.translate(bw, bodyTop + 4)
       ctx.rotate(0.5)
       const rightHandY = 14 - typeAnim * 0.7
       ctx.fillRect(-2, 0, 4, rightHandY)
-      ctx.fillStyle = '#e8c090'
+      ctx.fillStyle = skin
       for(let f = -1; f <= 1; f++){
         ctx.fillRect(-1 + f, rightHandY, 2, 3 + Math.abs(typeAnim) * 0.5)
       }
       ctx.restore()
     } else {
-      // Sitting: arms resting on lap
-      ctx.fillStyle = a.body
+      // Sitting: arms on lap
+      ctx.fillStyle = a.bodyC
       ctx.save()
-      ctx.translate(-9, bodyTop + 4)
+      ctx.translate(-bw, bodyTop + 4)
       ctx.rotate(-0.3)
       ctx.fillRect(-2, 0, 4, 12)
-      ctx.fillStyle = '#e8c090'
+      ctx.fillStyle = skin
       ctx.beginPath(); ctx.arc(0, 13, 3, 0, Math.PI*2); ctx.fill()
       ctx.restore()
       ctx.save()
-      ctx.translate(9, bodyTop + 4)
+      ctx.translate(bw, bodyTop + 4)
       ctx.rotate(0.3)
       ctx.fillRect(-2, 0, 4, 12)
-      ctx.fillStyle = '#e8c090'
+      ctx.fillStyle = skin
       ctx.beginPath(); ctx.arc(0, 13, 3, 0, Math.PI*2); ctx.fill()
       ctx.restore()
     }
 
     // Head (connected to body top)
     const headCY = bodyTop - 5 + breath
-    ctx.fillStyle = '#d4a574'
+    ctx.fillStyle = skinD
     ctx.fillRect(-3, bodyTop, 6, 3)
 
-    ctx.fillStyle = '#e8c090'
+    ctx.fillStyle = skin
     ctx.beginPath()
     ctx.arc(0, headCY, 9, 0, Math.PI*2)
     ctx.fill()
 
     // Hair
-    ctx.fillStyle = a.hair
-    ctx.beginPath()
-    ctx.arc(0, headCY - 1, 9.5, Math.PI, Math.PI*2)
-    ctx.fill()
+    drawHair(0, headCY, a, gender)
 
     // Eyes
     ctx.fillStyle = '#0d1117'
@@ -764,7 +865,7 @@ function drawCharacter(ch){
     ctx.beginPath(); ctx.arc(3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
 
     if(Math.floor(phase / 3) % 4 === 0){
-      ctx.fillStyle = '#e8c090'
+      ctx.fillStyle = skin
       ctx.fillRect(-6, headCY - 3, 5, 5)
       ctx.fillRect(1, headCY - 3, 5, 5)
     }
@@ -773,19 +874,40 @@ function drawCharacter(ch){
     ctx.strokeStyle = '#c44'; ctx.lineWidth = 1
     ctx.beginPath()
     if(s === 'typing'){
-      ctx.moveTo(-2, headCY + 4); ctx.lineTo(2, headCY + 4) // focused
+      ctx.moveTo(-2, headCY + 4); ctx.lineTo(2, headCY + 4)
     } else {
       ctx.arc(0, headCY + 4, 2.5, 0.1, Math.PI - 0.1)
     }
     ctx.stroke()
 
-    // Badge
-    ctx.fillStyle = `rgba(${hexToRgb(a.color)},0.25)`
-    ctx.fillRect(-8, bodyBot, 16, 7)
+    // ── Name label ABOVE head ──
+    const labelY = headCY - 12
+    ctx.fillStyle = `rgba(0,0,0,0.6)`
+    const roleW = a.role.length * 3.5 + 4
+    ctx.fillRect(-roleW / 2, labelY - 7, roleW, 10)
     ctx.fillStyle = a.color
-    ctx.font = '5.5px "Segoe UI",sans-serif'
+    ctx.font = 'bold 7px "Segoe UI",sans-serif'
     ctx.textAlign = 'center'
-    ctx.fillText(a.role.toUpperCase(), 0, bodyBot + 5.5)
+    ctx.fillText(a.role, 0, labelY)
+
+    // Speech bubble for typing agent
+    if(s === 'typing'){
+      const msg = PREP_MSGS[Math.floor(phase / 2) % PREP_MSGS.length]
+      const bubbleY = headCY - 24
+      ctx.fillStyle = 'rgba(0,0,0,0.85)'
+      const mw = msg.length * 4 + 8
+      ctx.beginPath()
+      ctx.roundRect(-mw / 2, bubbleY - 7, mw, 14, 4)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.moveTo(-2, bubbleY + 7)
+      ctx.lineTo(0, bubbleY + 10)
+      ctx.lineTo(2, bubbleY + 7)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.font = '8px "Segoe UI",sans-serif'
+      ctx.fillText(msg, 0, bubbleY + 2)
+    }
   }
 
   ctx.restore()
