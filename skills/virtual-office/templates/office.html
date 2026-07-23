@@ -23,7 +23,7 @@ canvas{display:block;width:100%;height:100%}
 .st-item{display:flex;align-items:center;gap:3px;opacity:0.7}
 .st-item .lbl{font-size:9px;opacity:0.4;text-transform:uppercase;letter-spacing:0.5px}
 .st-item .val{font-weight:600;font-size:11px}
-#logOverlay{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:30;max-width:320px;pointer-events:none;text-align:center}
+#logOverlay{display:none}
 .log-item{font-size:10px;padding:3px 12px;margin:2px 0;background:rgba(0,0,0,0.8);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideUp .25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
 @keyframes slideUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
 </style>
@@ -82,7 +82,7 @@ const AL=Object.values(AGENTS)
 let W,H
 const chars={}
 AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
-const contracts=[],POI=[],plants=[],doneNotifs=[]
+const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 
 // ============================================================
 // LAYOUT
@@ -358,7 +358,7 @@ function drawCharacter(ch){
     //state badge
     if(ch.ts&&ch.w){const sy=ly-22,st=ch.ts.toUpperCase(),sw=st.length*5+10;const p=Math.sin(ph*2)*.2+.8;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
     //bubble
-    if(s==='walking'&&ch.w&&ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,a.c)
+    if(ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,ch._bcol||a.c)
   }else{
     const bw=g==='female'?12:14,bt=-40,bb=-3
     // Legs under desk
@@ -393,7 +393,7 @@ function drawCharacter(ch){
     const ly=hcy-19;ctx.fillStyle='rgba(0,0,0,0.65)';const rw=a.role.length*5+7;ctx.beginPath();ctx.roundRect(-rw/2,ly-10,rw,15,5);ctx.fill();ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly+1)
     // State badge
     if(ch.ts&&ch.w){const sy=ly-22,st=ch.ts.toUpperCase(),sw=st.length*5+10;const p=Math.sin(ph*2)*.2+.8;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
-    if(s==='typing'&&ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,a.c)
+    if(ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,ch._bcol||a.c)
   }
   ctx.restore()
 }
@@ -431,7 +431,15 @@ function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=c
 // STATE
 // ============================================================
 const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0}
-function addLog(msg,color){const ct=document.getElementById('logOverlay');const d=document.createElement('div');d.className='log-item';d.style.borderLeftColor=color||'#888';const t=new Date();d.textContent=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')} ${msg}`;ct.insertBefore(d,ct.firstChild);if(ct.children.length>8)ct.removeChild(ct.lastChild)}
+function addLog(msg,color,agentName){
+  if(agentName&&chars[agentName]){
+    chars[agentName].tsm=msg;chars[agentName]._bcol=color||'#888'
+    clearTimeout(chars[agentName]._bt);chars[agentName]._bt=setTimeout(()=>{chars[agentName].tsm=''},3000)
+    return
+  }
+  sysLogs.unshift({msg,color:color||'#888',ts:Date.now()})
+  if(sysLogs.length>3)sysLogs.length=3
+}
 function updateStatus(){document.getElementById('wfVal').textContent=state.workflow;document.getElementById('phVal').textContent=state.phase;document.getElementById('agVal').textContent=state.agent||'—';const el=document.getElementById('rtVal');if(el)el.textContent=state.retry}
 function updateElapsed(){const ms=Date.now()-state.startTime;const h=String(Math.floor(ms/3600000)).padStart(2,'0'),m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0'),s=String(Math.floor((ms%60000)/1000)).padStart(2,'0');document.getElementById('elVal').textContent=`${h}:${m}:${s}`}
 
@@ -447,10 +455,12 @@ function processEvent(event){
   }else if(event.type==='agent_state'){
     const ag=event.agent,ch=chars[ag];if(ch){
       ch.ts=event.tuiState||event.state||'';ch.tsm=event.message||'';
+      ch._bcol=AGENTS[ag]?.c||'#888'
+      clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm=''},3000)
       if(event.tuiState==='idle'||!event.tuiState){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}}
       else if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)}
       state.agent=ag;if(event.tuiState)state.phase=event.tuiState;
-      addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888')
+      addLog(`${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888',ag)
     }
     updateStatus();return
   }else if(event.type==='task_end'){
@@ -497,13 +507,16 @@ function animate(now){fc++;updateElapsed()
 
   plants.forEach(p=>drawPlant(p.x,p.y,p.s))
 
-  // Banner — top center
-  ctx.fillStyle='rgba(88,166,255,0.06)';ctx.fillRect(W*.32,H*.02,W*.36,H*.04)
-  ctx.strokeStyle='rgba(88,166,255,0.12)';ctx.lineWidth=1;ctx.strokeRect(W*.32,H*.02,W*.36,H*.04)
-  ctx.fillStyle='rgba(88,166,255,0.22)';ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company',W*.5,H*.044)
-
-  // Wall clock
-  ctx.fillStyle='#f5f5f0';ctx.beginPath();ctx.arc(W*.7,H*.06,11,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(W*.7-.5,H*.06-7,1,4);ctx.fillRect(W*.7-.5,H*.06+2,1,5);
+  // Banner — top center with system logs
+  const bh=H*.085,bwW=W*.55,btop=H*.012
+  ctx.fillStyle='rgba(0,0,0,0.45)';ctx.beginPath();ctx.roundRect((W-bwW)/2,btop,bwW,bh,6);ctx.fill()
+  ctx.strokeStyle='rgba(88,166,255,0.25)';ctx.lineWidth=1.2;ctx.stroke()
+  ctx.fillStyle='rgba(88,166,255,0.5)';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company',W*.5,btop+16)
+  ctx.fillStyle='rgba(255,255,255,0.25)';ctx.fillRect((W-bwW)/2+20,btop+22,bwW-40,1)
+  sysLogs.forEach((l,i)=>{
+    ctx.fillStyle=l.color;ctx.font='8px "Segoe UI",sans-serif';ctx.textAlign='center'
+    ctx.fillText(l.msg,W*.5,btop+36+i*12)
+  })
 
   // Desks — monitor row
   ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+36,ch.dy+15,18,27);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+37,ch.dy+18,15,21);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+45,ch.dy+33,2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawMonitor(ch.dx,ch.dy-4,act);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
