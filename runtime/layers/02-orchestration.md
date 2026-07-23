@@ -28,8 +28,8 @@ Với mỗi phase:
     ├─ Tạo Task contract
     ├─ Gửi đến Worker phù hợp (Tầng 3)
     ├─ Chờ Result
-    ├─ Áp dụng Chính sách thử lại nếu cần (xem `policies/retry.md`)
-    ├─ Áp dụng Chính sách phục hồi nếu thất bại (xem `policies/recovery.md`)
+    ├─ Áp dụng Chính sách thử lại nếu cần (xem `runtime/policies/retry.md`)
+    ├─ Áp dụng Chính sách phục hồi nếu thất bại (xem `runtime/policies/recovery.md`)
     └─ Gửi Event{phase_start/phase_end} đến Tầng 4
     │
     ▼
@@ -85,6 +85,6 @@ Review có issues → T2 → Expert fix (Task contract)
 - **Contracts:** `runtime/contracts/README.md` — Request (đầu vào), Task (đầu ra), Result (đầu vào), Response (đầu ra), Event (đầu ra), State (đầu vào)
 - **Workers:** `runtime/layers/03-worker.md` — Workers nhận Task routing
 - **Hạ tầng:** `runtime/layers/04-infrastructure.md` — Lưu trạng thái, checkpoint phục hồi
-- **Chính sách — Thử lại:** `policies/retry.md` — Áp dụng khi worker lỗi tạm thời
-- **Chính sách — Phục hồi:** `policies/recovery.md` — Áp dụng khi lỗi không thử lại được
-- **Chính sách — Phản ánh:** `policies/reflection.md` — Điều phối kích hoạt phản ánh sau mỗi phase
+- **Chính sách — Thử lại:** `runtime/policies/retry.md` — Áp dụng khi worker lỗi tạm thời
+- **Chính sách — Phục hồi:** `runtime/policies/recovery.md` — Áp dụng khi lỗi không thử lại được
+- **Chính sách — Phản ánh:** `runtime/policies/reflection.md` — Điều phối kích hoạt phản ánh sau mỗi phase

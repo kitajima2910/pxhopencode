@@ -21,7 +21,7 @@
 | **workflows/** | ✅ Tham chiếu | ✅ Luồng | — | ✅ Tham chiếu | ✅ Tham chiếu | ✅ Tham chiếu |
 | **skills/** | ✅ Agent dùng | ✅ Ngữ cảnh | ✅ Được gọi | — | ✅ Tham chiếu | — |
 | **runtime/contracts/** | ✅ | ✅ Hướng | ✅ Luồng | — | — | ✅ Tương tác |
-| **policies/** | ✅ Agent | ✅ Tầng thi hành | — | — | ✅ Tham chiếu | — |
+| **runtime/policies/** | ✅ Agent | ✅ Tầng thi hành | — | — | ✅ Tham chiếu | — |
 
 ## 📁 Cấu trúc
 

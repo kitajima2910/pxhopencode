@@ -71,6 +71,21 @@ curl -X POST http://localhost:2910/emit -H "Content-Type: application/json" \
 | `templates/emit-event.mjs` | Shared event emitter (CLI + module) |
 | `_shared/office-events.log` | Event log (append-only, auto-created) |
 
+## Anti-Rationalization
+
+| Excuse | Reality |
+|--------|---------|
+| "Chạy office.html trực tiếp, không cần server" | Thiếu SSE sync → webview tĩnh, không real-time |
+| "Không cần emit event, office tự animate" | Agent sẽ không hiển thị đúng trạng thái thực tế |
+| "Một chế độ là đủ" | Live/Real/Demo mỗi chế độ phục vụ mục đích khác nhau |
+
+## Red Flags
+
+- Server chạy nhưng webview trắng (check port 2910)
+- Event emitted nhưng webview không update (SSE connection?)
+- Bridge không watch được file (permission denied)
+- TUI không emit event (thiếu `--type` flag)
+
 ## Verification
 
 - [ ] `server.mjs` chạy → `http://localhost:2910` hiển thị office

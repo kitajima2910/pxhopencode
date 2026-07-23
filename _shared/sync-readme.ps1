@@ -26,7 +26,8 @@ Write-Output "  Agents: $agentCount | Workflows: $workflowCount | Commands: $com
 
 # --- Update badge line ---
 $badgePattern = '<b>v\d+</b> &nbsp;·&nbsp; \d+ commits[^<]*'
-$newBadge = "<b>v40</b> &nbsp;·&nbsp; ${commitCount} commits &nbsp;·&nbsp; ${agentCount} AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; ${workflowCount} workflows &nbsp;·&nbsp; ${skillCount} skills &nbsp;·&nbsp; ${templateCount} templates"
+$version = (Get-Content "$root\README.md" | Select-String '<b>v(\d+)</b>').Matches[0].Groups[1].Value
+$newBadge = "<b>v${version}</b> &nbsp;·&nbsp; ${commitCount} commits &nbsp;·&nbsp; ${agentCount} AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; ${workflowCount} workflows &nbsp;·&nbsp; ${skillCount} skills &nbsp;·&nbsp; ${templateCount} templates"
 if ($content -match $badgePattern) {
   $content = $content -replace $badgePattern, $newBadge
   Write-Output "  BADGE updated"
@@ -41,7 +42,7 @@ $content = $content -replace '^## \d+ Skills$', "## ${skillCount} Skills"
 $content = $content -replace '\(Web \d+, Game \d+, AI \d+, Tool \d+[^)]*\)', "(Web 8, Game 11, AI 5, Tool 5, Chuyên biệt 1)"
 
 # --- Update Verify badge (if present in changelog) ---
-$content = $content -replace 'v\d+ · \d+ commits', "v39 · ${commitCount} commits"
+$content = $content -replace 'v\d+ · \d+ commits', "v${version} · ${commitCount} commits"
 
 Set-Content $readme $content -NoNewline
 Write-Output "=== README synced ==="

@@ -48,8 +48,8 @@ Gửi Event phản ánh đến Tầng 4
 
 ## Tham chiếu chéo
 - **Contracts:** `runtime/contracts/README.md` — Task (đầu vào), Result (đầu ra), Event (phản ánh)
-- **Chính sách — Thử lại:** `policies/retry.md` — Điều phối thử lại, không phải worker
-- **Chính sách — Phục hồi:** `policies/recovery.md` — Điều phối phục hồi qua checkpoint
-- **Chính sách — Phản ánh:** `policies/reflection.md` — Worker gửi phản ánh nhẹ sau mỗi task
+- **Chính sách — Thử lại:** `runtime/policies/retry.md` — Điều phối thử lại, không phải worker
+- **Chính sách — Phục hồi:** `runtime/policies/recovery.md` — Điều phối phục hồi qua checkpoint
+- **Chính sách — Phản ánh:** `runtime/policies/reflection.md` — Worker gửi phản ánh nhẹ sau mỗi task
 - **Điều phối:** `runtime/layers/02-orchestration.md` — Gửi Task, nhận Result
 - **Hạ tầng:** `runtime/layers/04-infrastructure.md` — Nhận Event, lưu phản ánh
