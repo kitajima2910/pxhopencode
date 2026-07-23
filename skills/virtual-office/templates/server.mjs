@@ -220,7 +220,8 @@ const server = http.createServer((req, res) => {
   }
 
   let filePath = url.pathname === '/' ? '/office.html' : url.pathname
-  filePath = path.join(__dirname, filePath)
+  filePath = path.resolve(__dirname, '.' + filePath.replace(/\\/g,'/'))
+  if (!filePath.startsWith(__dirname)) { res.writeHead(403); res.end('Forbidden'); return }
 
   try {
     const ext = path.extname(filePath)
@@ -244,8 +245,7 @@ try {
 const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode-state.json')
 let stateWatcher = null
 try {
-  if(fs.existsSync(STATE_FILE) || true){
-    stateWatcher = fs.watch(path.dirname(STATE_FILE), (eventType, filename) => {
+  stateWatcher = fs.watch(path.dirname(STATE_FILE), (eventType, filename) => {
       if(filename !== 'opencode-state.json') return
       try {
         const raw = fs.readFileSync(STATE_FILE, 'utf-8')
@@ -261,7 +261,6 @@ try {
         }
       } catch {}
     })
-  }
 } catch {}
 
 server.listen(PORT, () => {

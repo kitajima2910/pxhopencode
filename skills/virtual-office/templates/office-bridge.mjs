@@ -63,12 +63,16 @@ const state = {
 const WORK_IDLE_MS = 8000
 
 function startAgentIdle(agent, delay) {
+  // T1 + T2 stay until global idle (don't leave individually)
+  const isCore = agent === 'pxh-help' || agent === 'pxh-pm'
+  const timeout = isCore ? WORK_IDLE_MS + 12000 : WORK_IDLE_MS + (delay||0)
   clearTimeout(state.idleTimers[agent])
   state.idleTimers[agent] = setTimeout(() => {
+    if(isCore) return // T1/T2 only leave via global idle
     emit({ type: 'agent_state', agent, tuiState: 'idle', message: '' })
     delete state.activeAgents[agent]
     delete state.idleTimers[agent]
-  }, WORK_IDLE_MS + (delay||0))
+  }, timeout)
 }
 
 function resetGlobalIdle() {
@@ -157,17 +161,17 @@ function canEmit() {
 }
 
 const WORKFLOW_PIPELINES = {
-  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-ui-ux','pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-devops','pxh-save-history'],
-  Test:  ['pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-save-history'],
-  Debug: ['pxh-help','pxh-pm','pxh-fix-bugs','pxh-ui-ux','pxh-qa','pxh-review-code','pxh-devops','pxh-save-history'],
-  Style: ['pxh-ui-ux'],
-  UI:    ['pxh-ui-ux','pxh-review-code'],
-  Doc:   ['pxh-save-history'],
-  Config:['pxh-devops','pxh-pm'],
-  Script:['pxh-devops'],
-  Agent: ['pxh-pm'],
-  Workflow:['pxh-pm','pxh-architect'],
-  Skill: ['pxh-expert','pxh-pm'],
+  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-ui-ux','pxh-qa','pxh-review-code','pxh-devops','pxh-save-history'],
+  Test:  ['__MAIN__'],
+  Debug: ['__MAIN__'],
+  Style: ['__MAIN__'],
+  UI:    ['__MAIN__'],
+  Doc:   ['__MAIN__'],
+  Config:['__MAIN__'],
+  Script:['__MAIN__'],
+  Agent: ['__MAIN__'],
+  Workflow:['__MAIN__'],
+  Skill: ['__MAIN__'],
 }
 const AGENT_ROLES = {
   'pxh-help':   { tuiState: 'Interface',  msg: '🔍 Validate & classify input' },
@@ -182,20 +186,40 @@ const AGENT_ROLES = {
   'pxh-ui-ux':  { tuiState: 'Design',      msg: '🎨 Layout & responsive design' },
 }
 
+// Signal connections: who sends dashed line to whom
+const SIGNALS = {
+  'pxh-help': ['pxh-pm'],
+  'pxh-pm': ['pxh-architect','pxh-expert','pxh-fix-bugs','pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'],
+  'pxh-architect': ['pxh-pm'],
+  'pxh-expert': ['pxh-pm'],
+  'pxh-fix-bugs': ['pxh-expert','pxh-qa','pxh-pm'],
+  'pxh-qa': ['pxh-expert','pxh-pm'],
+  'pxh-review-code': ['pxh-expert','pxh-pm'],
+  'pxh-devops': ['pxh-architect','pxh-pm'],
+  'pxh-ui-ux': ['pxh-expert'],
+  'pxh-save-history': ['pxh-pm'],
+}
+
 function createTaskSequence(cls) {
-  const agents = WORKFLOW_PIPELINES[cls.action] || ['pxh-help','pxh-pm','__MAIN__']
+  const agents = WORKFLOW_PIPELINES[cls.action] || ['__MAIN__']
   const seq = []
   let prev = null
   agents.forEach(ag => {
     const name = ag === '__MAIN__' ? cls.agent : ag
     const role = AGENT_ROLES[name] || { tuiState: cls.action, msg: `${cls.action}...` }
     const msg = name === cls.agent ? `${cls.action}: ${cls.file}` : role.msg
-    if(prev){
-      seq.push({ type: 'contract', from: prev, to: name, tier_from: 'T2', tier_to: 'T3' })
+    // Signal from previous agent to this one
+    if(prev && SIGNALS[prev] && SIGNALS[prev].includes(name)){
+      seq.push({ type: 'contract', from: prev, to: name })
     }
     seq.push({ type: 'agent_state', agent: name, tuiState: role.tuiState, message: msg })
     prev = name
   })
+  // Signal from last agent to their targets
+  const last = agents[agents.length-1]
+  const lastName = last === '__MAIN__' ? cls.agent : last
+  const targets = SIGNALS[lastName] || []
+  targets.forEach(t => { seq.push({ type: 'contract', from: lastName, to: t }) })
   return seq
 }
 
