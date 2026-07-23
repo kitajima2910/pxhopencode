@@ -486,14 +486,29 @@ function processEvent(event){
     addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
   }else if(event.type==='agent_state'){
     const ag=event.agent,ch=chars[ag];if(ch){
-      ch.ts=event.tuiState||event.state||'';ch.tsm=event.message||'';
+      const st=event.tuiState||event.state||''
+      // Map state to icon + friendly message
+      const SM={
+        explore:'🔍 Exploring...',thinking:'🧠 Thinking...',read:'📖 Reading...',
+        write:'✍️ Writing code...',edit:'✍️ Editing...',search:'🔎 Searching...',
+        execute:'⚙️ Executing...',delegating:'📋 Delegating...',preparing:'📝 Preparing...',
+        review:'🔍 Reviewing...',testing:'🧪 Testing...',test:'🧪 Testing...',
+        completed:'✅ Completed',failed:'❌ Failed',cancelled:'🚫 Cancelled',
+        Code:'✍️ Coding...',Test:'🧪 Testing...',Doc:'📝 Writing docs...',
+        Style:'🎨 Styling...',Config:'⚙️ Config...',UI:'🎨 Designing UI...',
+        Script:'⚙️ Running script...',Agent:'🤖 Configuring agent...',
+        Workflow:'📋 Setting workflow...',Skill:'🛠️ Loading skill...',
+        idle:'',update:ch.tsm
+      }
+      const msg=SM[st]||(event.message?event.message:st?`🔄 ${st}...`:'')
+      ch.ts=st;ch.tsm=msg
       ch._bcol=AGENTS[ag]?.c||'#888'
-      if(event.tuiState==='update'){/* just update bubble, don't restart typing */}
-      else if(event.tuiState==='idle'||!event.tuiState){clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}
-      if(event.tuiState==='idle'||!event.tuiState){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}}
+      if(st==='update'){}
+      else if(st==='idle'||!st){clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}
+      if(st==='idle'||!st){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}}
       else if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)}
-      state.agent=ag;if(event.tuiState)state.phase=event.tuiState;
-      addLog(`${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888',ag)
+      state.agent=ag;if(st)state.phase=st
+      addLog(`${ag}: ${msg||st}`,AGENTS[ag]?.c||'#888',ag)
     }
     updateStatus();return
   }else if(event.type==='task_end'){
