@@ -849,6 +849,7 @@ function startTyping(ch){
       const d = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
       if(d < 8 || ch.state !== 'walking'){
         clearInterval(check)
+        if(!ch.working) return // cancelled by stopTyping
         ch.state = 'typing'
         ch.x = deskTargetX; ch.y = deskTargetY
         ch.tx = ch.x; ch.ty = ch.y
