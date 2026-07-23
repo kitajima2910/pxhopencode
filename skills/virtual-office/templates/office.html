@@ -484,12 +484,11 @@ function animate(now){fc++;updateElapsed()
   ctx.clearRect(0,0,W,H)
   const r=chars._r
 
-  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#ffffff');bg.addColorStop(0.2,'#fdfdfd');bg.addColorStop(0.7,'#fcfcfc');bg.addColorStop(1,'#fafafa');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#1a2333');bg.addColorStop(0.2,'#1e2838');bg.addColorStop(0.7,'#1c2636');bg.addColorStop(1,'#182230');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
 
-  // Floor — solid light base
-  ctx.fillStyle='rgb(245,240,230)';ctx.fillRect(0,H*.18,W,H*.82)
-  // Tile grid lines
-  ctx.strokeStyle='rgba(180,175,165,0.15)';ctx.lineWidth=1
+  // Floor — warm wood tone
+  ctx.fillStyle='rgb(185,170,150)';ctx.fillRect(0,H*.18,W,H*.82)
+  ctx.strokeStyle='rgba(160,145,125,0.2)';ctx.lineWidth=1
   for(let fx=0;fx<W;fx+=60){ctx.beginPath();ctx.moveTo(fx,H*.18);ctx.lineTo(fx,H);ctx.stroke()}
   for(let fy=H*.18;fy<H;fy+=60){ctx.beginPath();ctx.moveTo(0,fy);ctx.lineTo(W,fy);ctx.stroke()}
 
