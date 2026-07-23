@@ -234,7 +234,7 @@ const server = http.createServer((req, res) => {
 })
 
 try {
-  fs.watchFile(EVENTS_FILE, { interval: 200 }, () => {
+  fs.watchFile(EVENTS_FILE, { interval: 100 }, () => {
     const events = readNewEvents()
     events.forEach(e => broadcast(e))
   })

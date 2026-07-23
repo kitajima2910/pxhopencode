@@ -11,7 +11,7 @@ const ROOT = process.env.PXH_ROOT || MODULE_ROOT
 const EVENTS_FILE = process.env.PXH_EVENTS || path.join(ROOT, '_shared', 'office-events.log')
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:2910'
 const BRIDGE_PORT = parseInt(process.env.BRIDGE_PORT || '2911', 10)
-const DEBOUNCE_MS = 200
+const DEBOUNCE_MS = 100
 const HEARTBEAT_MS = 25000
 const MAX_EVENTS_PER_MINUTE = 15
 
@@ -131,41 +131,13 @@ function canEmit() {
 }
 
 function createTaskSequence(cls) {
-  const idx = state.phaseIndex % PHASES.length
-  const phase = PHASES[idx]
-  state.phaseIndex++
-
-  const wf = WORKFLOWS[state.workflowIndex]
-  if (state.phaseIndex % 8 === 0) {
-    state.workflowIndex = (state.workflowIndex + 1) % WORKFLOWS.length
-  }
-
   const agentInfo = AGENTS[cls.agent] || AGENTS['pxh-expert']
-  const seq = []
-
-  seq.push({
-    type: 'phase_change',
-    phase,
-    workflow: wf,
-    tier_from: 'T1',
-    tier_to: 'T2',
-    from: 'pxh-help',
-    to: 'pxh-pm',
-    message: `>> ${phase} -- user requested work`,
-  })
-
-  seq.push({
-    type: 'task_start',
-    phase,
-    workflow: wf,
-    tier_from: 'T2',
-    tier_to: agentInfo.tier,
-    from: 'pxh-pm',
-    to: cls.agent,
-    message: `>> {${cls.action}} ${cls.file} -> ${cls.agent}`,
-  })
-
-  return seq
+  return [{
+    type: 'agent_state',
+    agent: cls.agent,
+    tuiState: cls.action,
+    message: `${cls.action}: ${cls.file}`,
+  }]
 }
 
 let watchTimer = null
@@ -194,22 +166,10 @@ function processBatch() {
 
   batch.forEach((c, idx) => {
     const seq = createTaskSequence(c)
-    const offset = idx * 3000 // stagger batches by 3s
-    for (const evt of seq) {
-      setTimeout(() => emit(evt), offset + 100)
-    }
+    for (const evt of seq) emit(evt)
     setTimeout(() => {
-      const info = AGENTS[c.agent] || AGENTS['pxh-expert']
-      emit({
-        type: 'task_end',
-        status: 'success',
-        tier_from: info.tier,
-        tier_to: 'T2',
-        from: c.agent,
-        to: 'pxh-pm',
-        message: `${c.action}: ${c.file}`,
-      })
-    }, offset + 2500)
+      emit({ type: 'agent_state', agent: c.agent, tuiState: 'idle', message: '' })
+    }, 3000 + idx * 300)
   })
 }
 
@@ -287,7 +247,7 @@ export function startBridge(opts = {}) {
 
         // Instant debounce: batch rapid changes within 200ms
         clearTimeout(watchTimer)
-        watchTimer = setTimeout(() => onFileChange('change', full), 200)
+        watchTimer = setTimeout(() => onFileChange('change', full), 100)
       })
       watchers.push(w)
     } catch {}
@@ -318,7 +278,7 @@ export function startBridge(opts = {}) {
   }
   for(const d of scanDirs) pollSnapshot(d)
   pollReady = true
-  setInterval(() => { for(const d of scanDirs) pollSnapshot(d) }, 5000)
+  setInterval(() => { for(const d of scanDirs) pollSnapshot(d) }, 1000)
 
   startHeartbeat()
 

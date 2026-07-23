@@ -276,22 +276,38 @@ function drawCharacter(ch){
     //bubble
     if(s==='walking'&&ch.w&&ch.tsm)drawComicBubble(0,hcy-34,ch.tsm,a.c)
   }else{
-    const bw=g==='female'?12:14
-    ctx.fillStyle='#282d38';ctx.fillRect(-14,0,24,7);ctx.fillStyle='#383e4e';ctx.fillRect(-9,-3,4,6);ctx.fillRect(5,-3,4,6)
-    ctx.fillStyle='#282d38';ctx.fillRect(-7,6,7,12);ctx.fillRect(2,6,7,12);ctx.fillStyle='#1a1d24';ctx.fillRect(-8,16,10,4);ctx.fillRect(1,16,10,4)
-    const bt=-42,bb=-6;ctx.fillStyle=a.bc;ctx.beginPath();ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb);ctx.lineTo(bw-1,bt);ctx.lineTo(-bw+1,bt);ctx.closePath();ctx.fill()
-    if(s==='typing'){const ta=Math.sin(ph*6)*4;ctx.fillStyle=a.bc;ctx.save();ctx.translate(-bw,bt+5);ctx.rotate(-.65);const lh=30+ta;ctx.fillRect(-3,0,6,lh);ctx.fillStyle=sk;for(let f=-1;f<=1;f++)ctx.fillRect(-1+f,lh,3,4+Math.abs(ta)*.5);ctx.restore();ctx.save();ctx.translate(bw,bt+5);ctx.rotate(.65);const rh=30-ta*.7;ctx.fillRect(-3,0,6,rh);ctx.fillStyle=sk;for(let f=-1;f<=1;f++)ctx.fillRect(-1+f,rh,3,4+Math.abs(ta)*.5);ctx.restore()}
-    else{ctx.fillStyle=a.bc;ctx.save();ctx.translate(-bw,bt+5);ctx.rotate(-.3);ctx.fillRect(-3,0,6,16);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,17,4,0,Math.PI*2);ctx.fill();ctx.restore();ctx.save();ctx.translate(bw,bt+5);ctx.rotate(.3);ctx.fillRect(-3,0,6,16);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,17,4,0,Math.PI*2);ctx.fill();ctx.restore()}
-    const hcy=bt-7+br;ctx.fillStyle=skd;ctx.fillRect(-4,bt,8,4);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
+    const bw=g==='female'?12:14,bt=-40,bb=-4
+    // Chair behind character
+    ctx.fillStyle='#282d38';ctx.fillRect(-14,4,28,7)
+    ctx.fillStyle='#222830';ctx.fillRect(-5,-20,10,24)
+    ctx.fillStyle='#303840';ctx.fillRect(-4,-23,8,4)
+    // Legs under desk
+    ctx.fillStyle='#282d38';ctx.fillRect(-8,-2,8,6);ctx.fillRect(1,-2,8,6)
+    ctx.fillStyle='#1a1d24';ctx.fillRect(-9,2,10,3);ctx.fillRect(0,2,10,3)
+    // Body — back view
+    ctx.fillStyle=a.bc;ctx.beginPath()
+    ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb)
+    ctx.lineTo(bw-2,bt);ctx.lineTo(-bw+2,bt)
+    ctx.closePath();ctx.fill()
+    // Arms reaching toward monitor
+    const ta=Math.sin(ph*6)*(s==='typing'?4:1)
+    ctx.fillStyle=a.bc
+    ctx.save();ctx.translate(-bw+2,bt+4);ctx.rotate(-.5+ta*.02)
+    ctx.fillRect(-3,0,6,ta>1?22:16)
+    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,ta>1?23:17,4,0,Math.PI*2);ctx.fill()
+    ctx.restore()
+    ctx.save();ctx.translate(bw-2,bt+4);ctx.rotate(.5-ta*.02)
+    ctx.fillRect(-3,0,6,ta>1?22:16)
+    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,ta>1?23:17,4,0,Math.PI*2);ctx.fill()
+    ctx.restore()
+    // Head from behind — no face, no eyes
+    const hcy=bt-6;ctx.fillStyle=skd;ctx.fillRect(-4,bt,8,4)
+    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,Math.PI,Math.PI*2);ctx.fill()
     drawHair(0,hcy,a,g)
-    ctx.fillStyle='#0d1117';ctx.beginPath();ctx.arc(-5,hcy-2,3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(5,hcy-2,3,0,Math.PI*2);ctx.fill()
-    if(Math.floor(ph/3)%4===0){ctx.fillStyle=sk;ctx.fillRect(-8,hcy-4,7,7);ctx.fillRect(1,hcy-4,7,7)}
-    ctx.strokeStyle='#c44';ctx.lineWidth=1.5;ctx.beginPath();if(s==='typing'){ctx.moveTo(-3,hcy+5);ctx.lineTo(3,hcy+5)}else ctx.arc(0,hcy+5,4,.1,Math.PI-.1);ctx.stroke()
-    //name
+    // Name label above head
     const ly=hcy-18;ctx.fillStyle='rgba(0,0,0,0.6)';const rw=a.role.length*5+6;ctx.fillRect(-rw/2,ly-10,rw,14);ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly)
-    //state badge
+    // State badge
     if(ch.ts&&ch.w){const sy=ly-22,st=ch.ts.toUpperCase(),sw=st.length*5+8;const p=Math.sin(ph*2)*.15+.85;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
-    //bubble
     if(s==='typing'&&ch.tsm)drawComicBubble(0,hcy-34,ch.tsm,a.c)
   }
   ctx.restore()
