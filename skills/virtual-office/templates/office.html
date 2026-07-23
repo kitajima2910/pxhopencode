@@ -308,7 +308,7 @@ function drawContract(cx,cy,alpha,emoji){
 // CORE LOGIC
 // ============================================================
 function moveChar(ch,tx,ty,sp){ch.tx=tx;ch.ty=ty;ch.ws=sp||1.5;if(ch.state!=='walking'){ch.state='walking';ch.wp=0}}
-function startTyping(ch){const dtx=ch.dx,dty=ch.dy+16;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
+function startTyping(ch){const dtx=ch.dx,dty=ch.dy+24;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
   if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;const ck=setInterval(()=>{if(!ch.w){clearInterval(ck);return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ck);if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
   else{ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;ch.w=true;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}}
 function stopTyping(ch){ch.state='idle';ch.w=false;ch.hrw=false;if(ch.ti){clearInterval(ch.ti);ch.ti=null};ch.it=performance.now()+2000;moveChar(ch,ch.ix,ch.iy,1)}
@@ -395,22 +395,22 @@ function animate(now){fc++;updateElapsed()
   ctx.fillStyle='#f5f5f0';ctx.beginPath();ctx.arc(W*.7,H*.06,11,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(W*.7-.5,H*.06-7,1,4);ctx.fillRect(W*.7-.5,H*.06+2,1,5);
 
   // Desks — monitor row
-  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+20,ch.dy+10,12,18);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+21,ch.dy+12,10,14);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+26,ch.dy+22,1.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-22,ch.dy+14,44,5);drawMonitor(ch.dx,ch.dy-2,act);drawKeyboard(ch.dx,ch.dy+16);drawMouse(ch.dx+14,ch.dy+21)})
+  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+30,ch.dy+15,18,27);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+31,ch.dy+18,15,21);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+39,ch.dy+33,2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-33,ch.dy+22,66,8);drawMonitor(ch.dx,ch.dy-4,act);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+22,ch.dy+32)})
 
   // Desks — laptop row
-  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-18,ch.dy+14,36,5);drawLaptop(ch.dx,ch.dy+6,act)})
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-27,ch.dy+22,54,8);drawLaptop(ch.dx,ch.dy+9,act)})
 
   // Chairs — all agents
-  ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+26;ctx.fillStyle='#282d38';ctx.fillRect(cx-9,cy,18,4);ctx.fillStyle='#222830';ctx.fillRect(cx-3,cy-14,6,14);ctx.fillStyle='#303840';ctx.fillRect(cx-2,cy-16,4,2)})
+  ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+40;ctx.fillStyle='#282d38';ctx.fillRect(cx-13,cy,27,6);ctx.fillStyle='#222830';ctx.fillRect(cx-4,cy-22,9,22);ctx.fillStyle='#303840';ctx.fillRect(cx-3,cy-25,6,3)})
 
   // PM corner desk
-  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-35,pm.dy+14,60,6);drawMonitor(pm.dx,pm.dy-2,pm.state==='typing');drawKeyboard(pm.dx,pm.dy+16);drawMouse(pm.dx+22,pm.dy+21);ctx.fillStyle='#1a1d24';ctx.fillRect(pm.dx+25,pm.dy+10,14,18)
+  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-52,pm.dy+22,90,9);drawMonitor(pm.dx,pm.dy-4,pm.state==='typing');drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+33,pm.dy+32);ctx.fillStyle='#1a1d24';ctx.fillRect(pm.dx+38,pm.dy+15,21,27)
 
   // Help desk
-  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-22,hh.dy+14,44,6);drawMonitor(hh.dx,hh.dy-2,hh.state==='typing');drawKeyboard(hh.dx,hh.dy+16);drawMouse(hh.dx+14,hh.dy+21)
+  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-33,hh.dy+22,66,9);drawMonitor(hh.dx,hh.dy-4,hh.state==='typing');drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+22,hh.dy+32)
 
   // Historian desk
-  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-22,sh.dy+14,44,6);drawMonitor(sh.dx,sh.dy-2,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+16);drawMouse(sh.dx+14,sh.dy+21)
+  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-33,sh.dy+22,66,9);drawMonitor(sh.dx,sh.dy-4,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+22,sh.dy+32)
 
   // Contracts + notifs
   contracts.forEach(ct=>drawContract(ct.x,ct.y,ct.alpha,ct.emoji))
