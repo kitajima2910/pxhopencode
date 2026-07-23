@@ -50,7 +50,7 @@ emit({ type: 'task_start', from: 'pxh-pm', to: 'pxh-expert', message: '...' })
 
 **HTTP POST** (từ script/skill khác):
 ```bash
-curl -X POST http://localhost:3000/emit \
+curl -X POST http://localhost:2910/emit \
   -H "Content-Type: application/json" \
   -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert","message":"..."}'
 ```
@@ -79,9 +79,9 @@ Mở qua server (khuyên dùng — có real-time sync):
 
 ```bash
 node skills/virtual-office/templates/server.mjs
-# Browser → http://localhost:3000
-# SSE events: http://localhost:3000/events
-# POST emit:  http://localhost:3000/emit
+# Browser → http://localhost:2910
+# SSE events: http://localhost:2910/events
+# POST emit:  http://localhost:2910/emit
 ```
 
 Hoặc mở trực tiếp (chỉ demo, không sync):

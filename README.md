@@ -207,7 +207,7 @@ Webview 2D IT Office — văn phòng mở với canvas animation + Web Audio pro
 node skills/virtual-office/templates/server.mjs
 
 # 2. Mở browser xem webview
-start http://localhost:3000
+start http://localhost:2910
 ```
 
 ### Thiết kế văn phòng IT
@@ -255,7 +255,7 @@ Khi TUI xử lý task, Bridge tự động phát hiện file thay đổi → emi
 
 ```powershell
 # Gửi 1 chu kỳ pipeline đầy đủ qua HTTP POST
-Invoke-RestMethod -Uri "http://localhost:3000/simulate" -Method Post -Body '{"count":1}' -ContentType "application/json"
+Invoke-RestMethod -Uri "http://localhost:2910/simulate" -Method Post -Body '{"count":1}' -ContentType "application/json"
 
 # Hoặc emit từng event CLI
 node skills/virtual-office/templates/emit-event.mjs --type task_start --from pxh-pm --to pxh-expert --message "Test"
@@ -265,11 +265,11 @@ node skills/virtual-office/templates/emit-event.mjs --type task_start --from pxh
 
 ```powershell
 # Kill process cũ
-taskkill /F /PID (Get-NetTCPConnection -LocalPort 3000 -ErrorAction Stop).OwningProcess
+taskkill /F /PID (Get-NetTCPConnection -LocalPort 2910 -ErrorAction Stop).OwningProcess
 
 # Hoặc dùng port khác
-$env:PORT=3001; node skills/virtual-office/templates/server.mjs
-start http://localhost:3001
+$env:PORT=2911; node skills/virtual-office/templates/server.mjs
+start http://localhost:2911
 ```
 
 ---

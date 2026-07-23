@@ -7,7 +7,7 @@
 ```bash
 # Server + Webview (real-time sync — khuyên dùng)
 node skills/virtual-office/templates/server.mjs
-# Browser → http://localhost:3000
+# Browser → http://localhost:2910
 
 # TUI (real-time sync với fs.watch)
 node skills/virtual-office/templates/office.mjs
@@ -39,7 +39,7 @@ emit({ type: 'phase_change', phase: 'Code', workflow: '/web' })
 
 Hoặc HTTP POST từ bất kỳ đâu:
 ```bash
-curl -X POST http://localhost:3000/emit -H "Content-Type: application/json" \
+curl -X POST http://localhost:2910/emit -H "Content-Type: application/json" \
   -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert","tier_from":"T2","tier_to":"T3","phase":"code","message":"→ Task routed"}'
 ```
 
@@ -73,7 +73,7 @@ curl -X POST http://localhost:3000/emit -H "Content-Type: application/json" \
 
 ## Verification
 
-- [ ] `server.mjs` chạy → `http://localhost:3000` hiển thị office
+- [ ] `server.mjs` chạy → `http://localhost:2910` hiển thị office
 - [ ] Emit event → webview update real-time
 - [ ] Emit event → TUI update real-time
 - [ ] 3 chế độ (live/real/demo) đều hoạt động

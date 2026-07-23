@@ -47,6 +47,13 @@ canvas{display:block;width:100%;height:100%}
 </div>
 
 <script>
+// Polyfill roundRect for older browsers
+if(!CanvasRenderingContext2D.prototype.roundRect){CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){if(typeof r==='number')r={tl:r,tr:r,br:r,bl:r};this.beginPath();this.moveTo(x+r.tl,y);this.lineTo(x+w-r.tr,y);this.quadraticCurveTo(x+w,y,x+w,y+r.tr);this.lineTo(x+w,y+h-r.br);this.quadraticCurveTo(x+w,y+h,x+w-r.br,y+h);this.lineTo(x+r.bl,y+h);this.quadraticCurveTo(x,y+h,x,y+h-r.bl);this.lineTo(x,y+r.tl);this.quadraticCurveTo(x,y,x+r.tl,y);this.closePath()}}
+
+var _dbg=document.createElement('div');_dbg.id='_pxhDebug';_dbg.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#111;color:#0f0;font:11px monospace;padding:6px 10px;max-height:120px;overflow-y:auto;user-select:text;cursor:text;display:none';document.body.appendChild(_dbg)
+function _log(m,c){_dbg.style.display='block';_dbg.innerHTML+='<span style="color:'+(c||'#0f0')+'">'+m+'</span><br>'}
+window.onerror=function(m,u,l,c,e){_log('ERR: '+m+' @ '+l+':'+c,'#f44');if(e&&e.stack)_log(e.stack.split('\n').slice(0,3).join(' | '),'#f88');return false}
+
 // ============================================================
 // SOUND
 // ============================================================
@@ -76,7 +83,7 @@ const AGENTS={
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*8e3+4e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*8e3+4e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
 const contracts=[],POI=[],plants=[],doneNotifs=[]
 
 // ============================================================
@@ -286,7 +293,7 @@ function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=c
 // ============================================================
 const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0}
 function addLog(msg,color){const ct=document.getElementById('logOverlay');const d=document.createElement('div');d.className='log-item';d.style.borderLeftColor=color||'#888';const t=new Date();d.textContent=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')} ${msg}`;ct.insertBefore(d,ct.firstChild);if(ct.children.length>8)ct.removeChild(ct.lastChild)}
-function updateStatus(){document.getElementById('wfVal').textContent=state.workflow;document.getElementById('phVal').textContent=state.phase;document.getElementById('agVal').textContent=state.agent||'—';document.getElementById('rtVal').textContent=state.retry}
+function updateStatus(){document.getElementById('wfVal').textContent=state.workflow;document.getElementById('phVal').textContent=state.phase;document.getElementById('agVal').textContent=state.agent||'—';const el=document.getElementById('rtVal');if(el)el.textContent=state.retry}
 function updateElapsed(){const ms=Date.now()-state.startTime;const h=String(Math.floor(ms/3600000)).padStart(2,'0'),m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0'),s=String(Math.floor((ms%60000)/1000)).padStart(2,'0');document.getElementById('elVal').textContent=`${h}:${m}:${s}`}
 
 function processEvent(event){
@@ -317,6 +324,7 @@ function connectSSE(){const es=new EventSource('/events');es.onopen=()=>{state.s
 // MAIN LOOP
 // ============================================================
 function animate(now){fc++;updateElapsed()
+  if(!chars)return
   if(state.mode==='sse'&&state.sseConnected&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
@@ -342,11 +350,11 @@ function animate(now){fc++;updateElapsed()
   drawFloor(r.t1t,r.t1b,'T1 — GIAO DIỆN','#58a6ff')
 
   plants.forEach(p=>drawPlant(p.x,p.y,p.s))
-  drawServerRack(W*.12,r.t4t+12,28,50);drawServerRack(W*.2,r.t4t+8,28,55);drawServerRack(W*.76,r.t4t+12,28,50);drawServerRack(W*.84,r.t4t+8,28,55)
+  drawServerRack(W*.12,r.t4t+12,28,50);drawServerRack(W*.2,r.t4t+8,28,55);drawServerRack(W*.76,r.t4t+12,28,50);drawServerRack(W*.84,r.t4t+8,28,55);
 
   // Desks
-  ['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n],act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+20,ch.dy+10,12,18);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+21,ch.dy+12,10,14);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+26,ch.dy+22,1.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-22,ch.dy+14,44,5);drawMonitor(ch.dx,ch.dy-2,act);drawKeyboard(ch.dx,ch.dy+16);drawMouse(ch.dx+14,ch.dy+21)})
-  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n],act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-18,ch.dy+14,36,5);drawLaptop(ch.dx,ch.dy+6,act)})
+  ['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+20,ch.dy+10,12,18);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+21,ch.dy+12,10,14);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+26,ch.dy+22,1.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-22,ch.dy+14,44,5);drawMonitor(ch.dx,ch.dy-2,act);drawKeyboard(ch.dx,ch.dy+16);drawMouse(ch.dx+14,ch.dy+21)})
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-18,ch.dy+14,36,5);drawLaptop(ch.dx,ch.dy+6,act)})
   // Chairs
   ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+26;ctx.fillStyle='#282d38';ctx.fillRect(cx-9,cy,18,4);ctx.fillStyle='#222830';ctx.fillRect(cx-3,cy-14,6,14);ctx.fillStyle='#303840';ctx.fillRect(cx-2,cy-16,4,2)})
   // PM desk

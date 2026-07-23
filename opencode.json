@@ -56,7 +56,7 @@
     },
     "office": {
       "description": "Open Virtual Office — real-time 4-tier visualization with bridge auto-detect",
-      "template": "Load `skills/virtual-office/SKILL.md`. Live + Bridge: `node skills/virtual-office/templates/server.mjs` (auto-detect workspace activity). TUI: `node skills/virtual-office/templates/office.mjs`. Webview: http://localhost:3000"
+      "template": "Load `skills/virtual-office/SKILL.md`. Live + Bridge: `node skills/virtual-office/templates/server.mjs` (auto-detect workspace activity). TUI: `node skills/virtual-office/templates/office.mjs`. Webview: http://localhost:2910"
     }
   }
 }

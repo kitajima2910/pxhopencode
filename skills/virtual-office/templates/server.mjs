@@ -9,7 +9,7 @@ import { emit } from './emit-event.mjs'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..', '..', '..')
 const EVENTS_FILE = process.env.PXH_EVENTS || path.join(ROOT, '_shared', 'office-events.log')
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 2910
 const NO_BRIDGE = process.argv.includes('--no-bridge')
 
 let clients = []
@@ -61,6 +61,9 @@ const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`)
 
   res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate')
+  res.setHeader('Pragma', 'no-cache')
+  res.setHeader('Expires', '0')
 
   if (url.pathname === '/events') {
     res.writeHead(200, {

@@ -3,7 +3,7 @@
 # Or:    .\hook-opencode.ps1 -Prompt "build a todo app"
 param([string]$Prompt)
 
-$STATE_URL = "http://localhost:3000/state"
+$STATE_URL = "http://localhost:2910/state"
 $STATE_FILE = "$PSScriptRoot\..\..\..\_shared\opencode-state.json"
 
 $STATE_MAP = @{
@@ -29,7 +29,7 @@ function Send-State($state, $agent, $msg) {
 function Finish-All {
   Send-State 'done' 'pxh-pm' 'Hoàn thành tất cả tasks'
   $finish = @{ type='agent_status'; from='pxh-office'; message='🏁 OpenCode session kết thúc' } | ConvertTo-Json
-  try { Invoke-RestMethod -Uri "http://localhost:3000/emit" -Method Post -Body $finish -ContentType "application/json" -TimeoutSec 2 | Out-Null } catch {}
+  try { Invoke-RestMethod -Uri "http://localhost:2910/emit" -Method Post -Body $finish -ContentType "application/json" -TimeoutSec 2 | Out-Null } catch {}
 }
 
 Write-Host "🔌 Hook active — watching TUI states..." -ForegroundColor Cyan

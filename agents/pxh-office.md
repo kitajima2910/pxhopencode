@@ -42,7 +42,7 @@ Hoặc chạy tay:
 **Webview + Bridge (khuyên dùng)** — real-time sync với workspace activity:
 ```bash
 node skills/virtual-office/templates/server.mjs
-# Browser → http://localhost:3000
+# Browser → http://localhost:2910
 # Tự động detect file changes → emit event → webview animation
 ```
 
@@ -84,7 +84,7 @@ node skills/virtual-office/templates/emit-event.mjs --type task_start --from pxh
 
 Hoặc HTTP POST:
 ```bash
-curl -X POST http://localhost:3000/emit -H "Content-Type: application/json" -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert"}'
+curl -X POST http://localhost:2910/emit -H "Content-Type: application/json" -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert"}'
 ```
 
 ## Anti-Rationalization
@@ -104,7 +104,7 @@ curl -X POST http://localhost:3000/emit -H "Content-Type: application/json" -d '
 ## Verification
 
 - [ ] `node server.mjs` → Bridge: ✓ Active
-- [ ] Webview http://localhost:3000 hiển thị 4 tầng
+- [ ] Webview http://localhost:2910 hiển thị 4 tầng
 - [ ] Tạo/sửa file .ts/.md/.css → webview animate real-time
 - [ ] Activity log cập nhật
 - [ ] Status bar hiển thị workflow + phase + agent
