@@ -169,10 +169,13 @@ function processBatch() {
 
   batch.forEach((c) => {
     activeNow[c.agent] = true
-    // Only emit if agent wasn't already working
     if (!state.activeAgents[c.agent]) {
+      // First time — start working
       const seq = createTaskSequence(c)
       for (const evt of seq) emit(evt)
+    } else {
+      // Already working — update log details
+      emit({ type: 'agent_state', agent: c.agent, tuiState: 'update', message: `${c.action}: ${c.file}` })
     }
   })
 
