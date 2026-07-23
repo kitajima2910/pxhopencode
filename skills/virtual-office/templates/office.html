@@ -593,10 +593,6 @@ function stopTyping(ch){
   ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[]
   if(ch.ti){clearInterval(ch.ti);ch.ti=null}
   ch.it=performance.now()+2000
-  if(ch.a.n==='pxh-opencode'){
-    ch.it=performance.now()+500
-    return
-  }
   if(ch.a.n==='pxh-help'||ch.a.n==='pxh-pm'){
     moveChar(ch,ch.dx,ch.dy+42,.8)
     ch.it=performance.now()+500
@@ -700,7 +696,7 @@ function processEvent(event){
       if(!oc._mirrorLog)oc._mirrorLog=[]
       oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
       if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
-      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts='';oc.state='sitting';oc.w=false;oc.hrw=false;oc.it=performance.now()+500},2500)
+      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts='';oc.state='idle';oc.w=false;oc.hrw=false;oc.it=performance.now()+500;oc.ws=1;oc.tx=oc.ix;oc.ty=oc.iy},3000)
     }
     addLog(event.message||'','#00e5ff')
   }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
@@ -722,7 +718,6 @@ function animate(now){fc++;updateElapsed()
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+1000+Math.random()*2000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
     if(ch.state==='idle'&&now>ch.it&&!ch.w){
-      if(a.n==='pxh-opencode'){return}
       if(a.n==='pxh-help'||a.n==='pxh-pm'){
         if(Math.random()<.0015)randomWander(ch)
         else if(Math.random()<.001){
