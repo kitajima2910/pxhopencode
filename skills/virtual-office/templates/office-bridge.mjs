@@ -143,8 +143,9 @@ function canEmit() {
 }
 
 const WORKFLOW_PIPELINES = {
-  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-qa','pxh-review-code','pxh-devops','pxh-save-history'],
-  Test:  ['pxh-qa','pxh-fix-bugs','pxh-review-code'],
+  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-devops','pxh-save-history'],
+  Test:  ['pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-save-history'],
+  Debug: ['pxh-help','pxh-pm','pxh-fix-bugs','pxh-ui-ux','pxh-qa','pxh-review-code','pxh-devops','pxh-save-history'],
   Style: ['pxh-ui-ux'],
   UI:    ['pxh-ui-ux','pxh-review-code'],
   Doc:   ['pxh-save-history'],
@@ -154,17 +155,17 @@ const WORKFLOW_PIPELINES = {
   Workflow:['pxh-pm','pxh-architect'],
   Skill: ['pxh-expert','pxh-pm'],
 }
-const WF_MESSAGES = {
-  'pxh-help':'Classify: analyzing request...',
-  'pxh-pm':'Route: selecting workflow...',
-  'pxh-architect':'Design: planning architecture...',
-  'pxh-qa':'Test: verifying changes...',
-  'pxh-fix-bugs':'Fix: checking for issues...',
-  'pxh-review-code':'Review: auditing quality...',
-  'pxh-devops':'Build: preparing output...',
-  'pxh-save-history':'Persist: saving session...',
-  'pxh-ui-ux':'Design: styling interface...',
-  'pxh-expert':'Code: implementing...',
+const AGENT_ROLES = {
+  'pxh-help':   { tuiState: 'explore',   msg: '🔍 Classifying request...' },
+  'pxh-pm':     { tuiState: 'delegating', msg: '📋 Routing workflow...' },
+  'pxh-architect': { tuiState: 'explore', msg: '🏗️ Designing architecture...' },
+  'pxh-qa':     { tuiState: 'testing',   msg: '🧪 Running tests...' },
+  'pxh-fix-bugs': { tuiState: 'explore', msg: '🐛 Hunting bugs...' },
+  'pxh-review-code': { tuiState: 'review', msg: '🔍 Reviewing code...' },
+  'pxh-devops': { tuiState: 'execute',   msg: '⚙️ Building & deploying...' },
+  'pxh-save-history': { tuiState: 'write', msg: '💾 Saving checkpoint...' },
+  'pxh-ui-ux':  { tuiState: 'edit',      msg: '🎨 Designing interface...' },
+  'pxh-expert': { tuiState: 'write',     msg: '✍️ Coding...' },
 }
 
 function createTaskSequence(cls) {
@@ -172,8 +173,9 @@ function createTaskSequence(cls) {
   const seq = []
   agents.forEach(ag => {
     const name = ag === '__MAIN__' ? cls.agent : ag
-    const msg = name === cls.agent ? `${cls.action}: ${cls.file}` : (WF_MESSAGES[name] || `${cls.action}...`)
-    seq.push({ type: 'agent_state', agent: name, tuiState: cls.action, message: msg })
+    const role = AGENT_ROLES[name] || { tuiState: cls.action, msg: `${cls.action}...` }
+    const msg = name === cls.agent ? `${cls.action}: ${cls.file}` : role.msg
+    seq.push({ type: 'agent_state', agent: name, tuiState: role.tuiState, message: msg })
   })
   return seq
 }
@@ -203,20 +205,27 @@ function processBatch() {
   const activeNow = {}
 
   batch.forEach((c, idx) => {
-    activeNow[c.agent] = true
     if (!state.activeAgents[c.agent]) {
       const seq = createTaskSequence(c)
       seq.forEach((evt, i) => {
         setTimeout(() => emit(evt), idx*600 + i*400)
       })
+      // Track all agents in the pipeline
+      seq.forEach(evt => {
+        activeNow[evt.agent] = true
+      })
     } else {
       setTimeout(() => {
         emit({ type: 'agent_state', agent: c.agent, tuiState: 'update', message: `${c.action}: ${c.file}` })
       }, idx*300)
+      activeNow[c.agent] = true
     }
-    startIdleTimer(c.agent)
   })
 
+  // Start/reset idle timers for all active agents
+  for (const ag of Object.keys(activeNow)) {
+    startIdleTimer(ag)
+  }
   state.activeAgents = activeNow
 }
 
