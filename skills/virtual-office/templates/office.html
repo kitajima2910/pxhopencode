@@ -583,7 +583,17 @@ function moveChar(ch,tx,ty,sp){ch.tx=tx;ch.ty=ty;ch.ws=sp||1.5;if(ch.state!=='wa
 function startTyping(ch){const dtx=ch.dx,dty=ch.dy+40;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
   if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;const ck=setInterval(()=>{if(!ch.w){clearInterval(ck);return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ck);if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
   else{ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;ch.w=true;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}}
-function stopTyping(ch){ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[];if(ch.ti){clearInterval(ch.ti);ch.ti=null};ch.it=performance.now()+2000;moveChar(ch,ch.ix,ch.iy,1)}
+function stopTyping(ch){
+  ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[]
+  if(ch.ti){clearInterval(ch.ti);ch.ti=null}
+  ch.it=performance.now()+2000
+  if(ch.a.n==='pxh-help'||ch.a.n==='pxh-pm'){
+    moveChar(ch,ch.dx,ch.dy+42,.8)
+    ch.it=performance.now()+500
+  }else{
+    moveChar(ch,ch.ix,ch.iy,1)
+  }
+}
 function highlightAgent(name){const ch=chars[name];if(!ch)return;ch.hrw=true;if(ch.state!=='typing')startTyping(ch)}
 function showDoneNotif(x,y,agentName,color){doneNotifs.push({x,y,agentName,color,life:70,sy:y})}
 function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=ch.a;let wx,wy;const roll=Math.random()
@@ -680,9 +690,16 @@ function animate(now){fc++;updateElapsed()
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+1000+Math.random()*2000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
-    if(ch.state==='idle'&&now>ch.it&&!ch.w){if(Math.random()<.015)randomWander(ch)}
-    // Random desk check — occasionally sit briefly
-    if(ch.state==='idle'&&!ch.w&&Math.random()<.00015&&now-state.lastRealEvent>15000){
+    if(ch.state==='idle'&&now>ch.it&&!ch.w){
+      if(a.n==='pxh-help'||a.n==='pxh-pm'){
+        if(Math.random()<.005){
+          ch.hrw=true;startTyping(ch);ch._msgs=['📋 Monitoring...'];ch.tsm=ch._msgs
+          setTimeout(()=>{if(ch.w)stopTyping(ch)},2000+Math.random()*1500)
+        }
+      }else if(Math.random()<.015)randomWander(ch)
+    }
+    // Random desk check — occasionally sit briefly (T3/T4 only)
+    if(ch.state==='idle'&&!ch.w&&Math.random()<.00015&&now-state.lastRealEvent>15000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'){
       ch.hrw=true;startTyping(ch);ch._msgs=['🔍 Checking...'];ch.tsm=ch._msgs
       setTimeout(()=>{if(ch.w)stopTyping(ch)},800+Math.random()*1200)
     }
