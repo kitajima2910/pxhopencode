@@ -36,6 +36,7 @@ canvas{display:block;width:100%;height:100%}
   </div>
   <div id="canvasWrap"><canvas id="c"></canvas><div id="logOverlay"></div></div>
   <div class="status-bar" id="statusBar">
+    <div class="st-item"><span class="lbl">Workflow</span><span class="val" id="wfVal">—</span></div>
     <div class="st-item"><span class="lbl">Phase</span><span class="val" id="phVal">—</span></div>
     <div class="st-item"><span class="lbl">Elapsed</span><span class="val" id="elVal">00:00:00</span></div>
     <div style="flex:1"></div>
@@ -476,8 +477,9 @@ const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTi
 function addLog(msg,color,agentName){
   if(agentName&&chars[agentName]){
     const ch=chars[agentName];if(!ch._msgs)ch._msgs=[]
-    const s=msg.length>42?msg.slice(0,39)+'...':msg
-    if(ch._msgs.length&&ch._msgs[ch._msgs.length-1]===s)ch._msgs.pop()
+    const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
+    const s=(ts+' '+msg).length>44?(ts+' '+msg).slice(0,41)+'...':ts+' '+msg
+    if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===s.slice(9))ch._msgs.pop()
     ch._msgs.push(s);if(ch._msgs.length>2)ch._msgs.shift()
     ch.tsm=ch._msgs;ch._bcol=color||'#888'
     return
@@ -514,14 +516,16 @@ function processEvent(event){
         idle:'',update:ch.tsm
       }
       const msg=SM[st]||(event.message?event.message:st?`🔄 ${st}...`:'')
-      const short=msg.length>42?msg.slice(0,39)+'...':msg
+      const short=msg.length>32?msg.slice(0,29)+'...':msg
+      const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
+      const line=ts+' '+short
       ch.ts=st
       if(!ch._msgs)ch._msgs=[]
       if(st==='idle'||!st){ch._msgs=[]}
-      else if(st!=='update'&&!ch.w){ch._msgs=[short]}
-      else if(short){
-        if(ch._msgs.length&&ch._msgs[ch._msgs.length-1]===short)ch._msgs.pop()
-        ch._msgs.push(short);if(ch._msgs.length>2)ch._msgs.shift()
+      else if(st!=='update'&&!ch.w){ch._msgs=[line]}
+      else if(line){
+        if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===line.slice(9))ch._msgs.pop()
+        ch._msgs.push(line);if(ch._msgs.length>2)ch._msgs.shift()
       }
       ch.tsm=ch._msgs.length?ch._msgs:''
       ch._bcol=AGENTS[ag]?.c||'#888'
