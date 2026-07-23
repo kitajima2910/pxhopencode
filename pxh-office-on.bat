@@ -11,5 +11,4 @@ for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%PORT% " ^| findstr "LISTEN
 echo [*] Dang start Virtual Office tren port %PORT%...
 start "VirtualOffice" /min cmd /c "set PORT=%PORT% && node "%SERVER%""
 timeout /t 2 /nobreak >nul
-start http://localhost:%PORT%
 echo [+] Da start: http://localhost:%PORT%
