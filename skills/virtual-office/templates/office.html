@@ -81,7 +81,7 @@ const AGENTS={
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:'',_monitorLog:[],_lastEvt:0}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now()}})
 const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 
 // ============================================================
@@ -689,29 +689,29 @@ function processEvent(event){
       }
       const msg=event.message||(st?`${st}...`:'')
       const isDefault=DEFMSG[ag]&&DEFMSG[ag].msg===msg
-      const timestamp=Date.now();ch._lastEvt=timestamp
+      const timestamp=performance.now();ch._lastEvt=timestamp
+      if(chars['pxh-opencode'])chars['pxh-opencode']._lastEvt=timestamp
       if(!ch._monitorLog)ch._monitorLog=[]
       if(st&&st!=='idle'){ch._monitorLog.push({t:timestamp,m:msg||st,s:st});if(ch._monitorLog.length>40)ch._monitorLog.shift()}
       const short=msg.length>32?msg.slice(0,29)+'...':msg
       const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
       const line=ts+' '+short
       ch.ts=st
-      if(!ch._msgs)ch._msgs=[]
-      if(st==='idle'||!st){ch._msgs=[]}
-      else if(st!=='update'&&!ch.w){ch._msgs=[line]}
-      else if(line){
-        if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===line.slice(9))ch._msgs.pop()
-        ch._msgs.push(line);if(ch._msgs.length>2)ch._msgs.shift()
+      if(!isDefault){
+        if(!ch._msgs)ch._msgs=[]
+        if(st==='idle'||!st){ch._msgs=[]}
+        else if(st!=='update'&&!ch.w){ch._msgs=[line]}
+        else if(line){
+          if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===line.slice(9))ch._msgs.pop()
+          ch._msgs.push(line);if(ch._msgs.length>2)ch._msgs.shift()
+        }
+        ch.tsm=ch._msgs.length?ch._msgs:''
+        ch._bcol=AGENTS[ag]?.c||'#888'
       }
-      ch.tsm=ch._msgs.length?ch._msgs:''
-      ch._bcol=AGENTS[ag]?.c||'#888'
       if(st==='update'){}
       else if(st==='idle'||!st){clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}
       if(st==='idle'||!st){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)}}
-      else if(!ch.w&&ch.state!=='typing'&&!isDefault){
-        // Only sit at desk for REAL TUI output (not agent default messages)
-        ch.hrw=true;startTyping(ch)
-      }
+      else if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)}
       state.agent=ag;if(st)state.phase=st
     }
     updateStatus();return
@@ -731,7 +731,7 @@ function processEvent(event){
       if(!oc._mirrorLog)oc._mirrorLog=[]
       oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
       if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
-      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts='';oc.state='idle';oc.w=false;oc.hrw=false;oc.it=performance.now()+500;oc.ws=1;oc.tx=oc.ix;oc.ty=oc.iy},3000)
+      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},5000)
     }
     addLog(event.message||'','#00e5ff')
   }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
@@ -752,21 +752,25 @@ function animate(now){fc++;updateElapsed()
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w){ch.it=now+2000+Math.random()*3000;ch._wanderScheduled=false}}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
-    // Event-driven idle timeout: leave desk after 10s of no events
-    if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>10000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'){stopTyping(ch)}
+    // Event-driven idle timeout: leave desk after 5s of no events
+    if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>5000){stopTyping(ch)}
+    // PXHOpenCode: stays working as long as ANY agent is active (physical visualization)
+    const oc=chars['pxh-opencode'];if(oc){
+      const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
+      if(anyWorking&&!oc.w){oc.hrw=true;startTyping(oc);oc._msgs=['Watching all agents...'];oc.tsm=oc._msgs}
+      else if(!anyWorking&&oc.w&&now-oc._lastEvt>5000){stopTyping(oc)}
+    }
     // Wander when idle (after returning from desk)
     if(ch.state==='idle'&&!ch.w&&now>ch.it&&!ch._wanderScheduled){
-      if(a.n!=='pxh-help'&&a.n!=='pxh-pm'){
-        ch._wanderScheduled=true
-        const r=chars._r;let wx=ch.ix+(Math.random()-.5)*120,wy=ch.iy+(Math.random()-.5)*40
-        if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20)
-        else if(a.tier==='T2')wy=Math.min(Math.max(wy,r.t2t+20),r.t2b-20)
+      ch._wanderScheduled=true
+      const r=chars._r;let wx=ch.ix+(Math.random()-.5)*120,wy=ch.iy+(Math.random()-.5)*40
+      if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20)
+      else if(a.tier==='T2')wy=Math.min(Math.max(wy,r.t2t+20),r.t2b-20)
         else if(a.tier==='T3')wy=Math.min(Math.max(wy,r.t3t+30),r.t3b-30)
         else wy=Math.min(Math.max(wy,r.t4t+20),r.t4b-20)
         wx=Math.max(60,Math.min(W-60,wx))
         moveChar(ch,wx,wy,.6+Math.random()*.4)
         setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+2000+Math.random()*4000;ch._wanderScheduled=false;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w){moveChar(ch,ch.ix,ch.iy,.8);ch._wanderScheduled=true}},2000)}},1200+Math.random()*1800)
-      }
     }
   })
 
@@ -888,9 +892,9 @@ function animate(now){fc++;updateElapsed()
   // Header bg
   ctx.fillStyle='rgba(210,153,34,0.15)';ctx.beginPath();ctx.roundRect(dX+2,dY+2,86,dHead-2,[7,7,0,0]);ctx.fill()
   ctx.fillStyle='#f0d060';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('CEO DASHBOARD',W-57,dY+16)
-  ctx.strokeStyle='rgba(210,153,34,0.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(dX+6,dY+dHead);ctx.lineTo(dX+84,dY+dHead);ctx.stroke()
+  ctx.strokeStyle='rgba(210,153,34,0.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(dX+6,dY+dHead+2);ctx.lineTo(dX+84,dY+dHead+2);ctx.stroke()
   dashboardAgents.forEach((a,i)=>{
-    const ch=chars[a.n],ly=dY+dHead+6+i*rowH
+    const ch=chars[a.n],ly=dY+dHead+12+i*rowH
     const act=ch&&(ch.w||ch.state==='typing');let st='idle',sc='#555'
     if(act&&ch.ts){st=ch.ts;if(st.match(/interface/i))sc='#58a6ff';else if(st.match(/orchestration/i))sc='#d29922';else if(st.match(/design/i))sc='#bc8cff';else if(st.match(/code|write|read|edit/i))sc='#3fb950';else if(st.match(/debug|fix/i))sc='#f85149';else if(st.match(/test/i))sc='#3fb950';else if(st.match(/review/i))sc='#d29922';else if(st.match(/build/i))sc='#d29922';else if(st.match(/infrastructure/i))sc='#bc8cff';else sc='#aaa'}
     // Row background alternating
