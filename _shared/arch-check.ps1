@@ -25,9 +25,13 @@ foreach ($name in $agentNames) {
 foreach ($cmd in $config.command.PSObject.Properties) {
   $tmpl = $cmd.Value.template
   if ($tmpl) {
-    $path = "$root\$tmpl"
-    if (Test-Path $path) { Write-Output "  PASS command $($cmd.Name): $tmpl exists" }
-    else { $errors += "command $($cmd.Name): $tmpl not found" }
+    if ($tmpl -match '^workflows/') {
+      $path = "$root\$tmpl"
+      if (Test-Path $path) { Write-Output "  PASS command $($cmd.Name): $tmpl exists" }
+      else { $errors += "command $($cmd.Name): $tmpl not found" }
+    } else {
+      Write-Output "  PASS command $($cmd.Name): inline template (no file needed)"
+    }
   }
 }
 

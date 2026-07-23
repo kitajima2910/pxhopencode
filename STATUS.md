@@ -56,6 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-24 | v46 | Open Office & Real-time Agent Sync — single-floor open space, 11 pixel-art agents, cat+dog pets, speech bubbles, dashed signals, state badges, T1+T2 stay/T3+T4 leave, pxh-office-on.bat, hook-opencode.ps1, port 2910, README vibe code guide |
 | 2026-07-23 | v45 | Virtual Office TUI — pxh-office agent, virtual-office skill, /office command, pixel-art agents, contract flow animation |
 | 2026-06-23 | v44 | Context budget, skill quickref, agent slim (-39%), contracts concise, tiered loading, build script thật, workflow, favicon, fix cross-refs |
 
