@@ -36,9 +36,7 @@ canvas{display:block;width:100%;height:100%}
   </div>
   <div id="canvasWrap"><canvas id="c"></canvas><div id="logOverlay"></div></div>
   <div class="status-bar" id="statusBar">
-    <div class="st-item"><span class="lbl">Workflow</span><span class="val" id="wfVal">—</span></div>
     <div class="st-item"><span class="lbl">Phase</span><span class="val" id="phVal">—</span></div>
-    <div class="st-item"><span class="lbl">Agent</span><span class="val" id="agVal">—</span></div>
     <div class="st-item"><span class="lbl">Elapsed</span><span class="val" id="elVal">00:00:00</span></div>
     <div style="flex:1"></div>
     <div class="st-item"><span id="modeTxt" style="opacity:0.8">⚪ Idle</span></div>
@@ -272,11 +270,16 @@ function drawHair(hx,hy,a,g){
   }
 }
 
-function drawComicBubble(cx,cy,msg,accent){
-  ctx.save();const mw=msg.length*6+20,bh=22;ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=2
-  ctx.beginPath();ctx.roundRect(cx-mw/2,cy-bh/2,mw,bh,8);ctx.fill();ctx.stroke()
-  ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.beginPath();ctx.moveTo(cx-6,cy+bh/2-2);ctx.lineTo(cx,cy+bh/2+8);ctx.lineTo(cx+6,cy+bh/2-2);ctx.closePath();ctx.fill();ctx.stroke()
-  ctx.fillStyle='#222';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(msg,cx,cy+3)
+function drawComicBubble(cx,cy,msgs,accent){
+  if(!msgs)return
+  const lines=Array.isArray(msgs)?msgs.slice(-2):[msgs]
+  if(!lines.length)return
+  ctx.save()
+  const maxW=Math.max(...lines.map(m=>m.length))*5.5+24,bh=lines.length*14+16
+  ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=2
+  ctx.beginPath();ctx.roundRect(cx-maxW/2,cy-bh,maxW,bh,8);ctx.fill();ctx.stroke()
+  ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.beginPath();ctx.moveTo(cx-6,cy-2);ctx.lineTo(cx,cy+8);ctx.lineTo(cx+6,cy-2);ctx.closePath();ctx.fill();ctx.stroke()
+  lines.forEach((m,i)=>{ctx.fillStyle='#222';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(m,cx,cy-bh+16+i*14)})
   ctx.restore()
 }
 
@@ -431,13 +434,19 @@ function drawCharacter(ch){
   ctx.restore()
 }
 
-function drawContract(cx,cy,alpha,emoji){
-  ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy);ctx.rotate(Math.sin(fc*.05)*.08)
-  ctx.fillStyle='#faf5e8';ctx.beginPath();ctx.roundRect(-14,-10,28,20,2);ctx.fill()
-  ctx.strokeStyle='#d4a574';ctx.lineWidth=1.2;ctx.stroke()
-  ctx.strokeStyle='#e8d8c0';ctx.lineWidth=.6
-  for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(-10,-4+i*5);ctx.lineTo(10,-4+i*5);ctx.stroke()}
-  ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#c44';ctx.fillText(emoji||'📋',0,3)
+function drawContract(ct){
+  if(ct.life<=0)return
+  ctx.save();ctx.globalAlpha=Math.min(1,ct.life/30)
+  // Dashed line from start to end
+  ctx.strokeStyle='rgba(88,166,255,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4])
+  ctx.beginPath();ctx.moveTo(ct.x,ct.y);ctx.lineTo(ct.tx,ct.ty);ctx.stroke()
+  ctx.setLineDash([])
+  // Traveling data dot
+  const px=ct.x+(ct.tx-ct.x)*ct.progress,py=ct.y+(ct.ty-ct.y)*ct.progress
+  const glow=ctx.createRadialGradient(px,py,0,px,py,6)
+  glow.addColorStop(0,'rgba(88,166,255,1)');glow.addColorStop(.4,'rgba(88,166,255,0.6)');glow.addColorStop(1,'rgba(88,166,255,0)')
+  ctx.fillStyle=glow;ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill()
+  ctx.fillStyle='#58a6ff';ctx.beginPath();ctx.arc(px,py,2.5,0,Math.PI*2);ctx.fill()
   ctx.restore()
 }
 
@@ -448,8 +457,8 @@ function moveChar(ch,tx,ty,sp){ch.tx=tx;ch.ty=ty;ch.ws=sp||1.5;if(ch.state!=='wa
 function startTyping(ch){const dtx=ch.dx,dty=ch.dy+40;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
   if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;const ck=setInterval(()=>{if(!ch.w){clearInterval(ck);return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ck);if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
   else{ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;ch.w=true;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}}
-function stopTyping(ch){ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';if(ch.ti){clearInterval(ch.ti);ch.ti=null};ch.it=performance.now()+2000;moveChar(ch,ch.ix,ch.iy,1)}
-function highlightAgent(name){const now=performance.now();if(!state._lt||(now-state._lt)>1000){AL.forEach(a=>{if(a.n!==name){const oc=chars[a.n];if(oc&&oc.w)stopTyping(oc)}})};state._lt=now;const ch=chars[name];if(!ch)return;ch.hrw=true;if(ch.state!=='typing')startTyping(ch)}
+function stopTyping(ch){ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[];if(ch.ti){clearInterval(ch.ti);ch.ti=null};ch.it=performance.now()+2000;moveChar(ch,ch.ix,ch.iy,1)}
+function highlightAgent(name){const ch=chars[name];if(!ch)return;ch.hrw=true;if(ch.state!=='typing')startTyping(ch)}
 function showDoneNotif(x,y,agentName,color){doneNotifs.push({x,y,agentName,color,life:70,sy:y})}
 function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=ch.a;let wx,wy;const roll=Math.random()
   if(roll<.3&&POI.length>0){const p=POI[Math.floor(Math.random()*POI.length)];wx=p.x+(Math.random()-.5)*20;wy=p.y+(Math.random()-.5)*10}
@@ -466,7 +475,11 @@ function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=c
 const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0}
 function addLog(msg,color,agentName){
   if(agentName&&chars[agentName]){
-    chars[agentName].tsm=msg;chars[agentName]._bcol=color||'#888'
+    const ch=chars[agentName];if(!ch._msgs)ch._msgs=[]
+    const s=msg.length>42?msg.slice(0,39)+'...':msg
+    if(ch._msgs.length&&ch._msgs[ch._msgs.length-1]===s)ch._msgs.pop()
+    ch._msgs.push(s);if(ch._msgs.length>2)ch._msgs.shift()
+    ch.tsm=ch._msgs;ch._bcol=color||'#888'
     return
   }
   sysLogs.unshift({msg,color:color||'#888',ts:Date.now()})
@@ -482,7 +495,7 @@ function processEvent(event){
   if(event.type==='task_start'||event.type==='phase_change'){
     state.agent=event.to||event.from||state.agent;if(event.phase)state.phase=event.phase;if(event.workflow)state.workflow=event.workflow;if(event.retry)state.retry=event.retry
     if(state.agent)highlightAgent(state.agent)
-    if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,alpha:1,emoji:'📋',life:80});sfx('contract')}
+    if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}
     addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
   }else if(event.type==='agent_state'){
     const ag=event.agent,ch=chars[ag];if(ch){
@@ -501,7 +514,16 @@ function processEvent(event){
         idle:'',update:ch.tsm
       }
       const msg=SM[st]||(event.message?event.message:st?`🔄 ${st}...`:'')
-      ch.ts=st;ch.tsm=msg
+      const short=msg.length>42?msg.slice(0,39)+'...':msg
+      ch.ts=st
+      if(!ch._msgs)ch._msgs=[]
+      if(st==='idle'||!st){ch._msgs=[]}
+      else if(st!=='update'&&!ch.w){ch._msgs=[short]}
+      else if(short){
+        if(ch._msgs.length&&ch._msgs[ch._msgs.length-1]===short)ch._msgs.pop()
+        ch._msgs.push(short);if(ch._msgs.length>2)ch._msgs.shift()
+      }
+      ch.tsm=ch._msgs.length?ch._msgs:''
       ch._bcol=AGENTS[ag]?.c||'#888'
       if(st==='update'){}
       else if(st==='idle'||!st){clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}
@@ -514,7 +536,7 @@ function processEvent(event){
   }else if(event.type==='task_end'){
     const ch=chars[event.from||event.to];if(ch){const wasWorking=ch.w;stopTyping(ch);if(event.status!=='fail'&&wasWorking)showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}
     addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Đã làm xong')}`,event.status==='fail'?'#f85149':color)
-  }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,alpha:1,emoji:'📋',life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
+  }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
   updateStatus()
 }
 
@@ -535,7 +557,7 @@ function animate(now){fc++;updateElapsed()
     if(ch.state==='idle'&&now>ch.it&&!ch.w){if(Math.random()<.015)randomWander(ch)}
   })
 
-  for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.x+=(ct.tx-ct.x)*.05;ct.y+=(ct.ty-ct.y)*.05;ct.life--;ct.alpha=Math.min(1,ct.life/40);if(ct.life<=0)contracts.splice(i,1)}
+  for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
   for(let i=doneNotifs.length-1;i>=0;i--){const dn=doneNotifs[i];dn.life--;dn.y=dn.sy-(70-dn.life)*.5;if(dn.life<=0){doneNotifs.splice(i,1);continue}}
 
   // RENDER
@@ -585,7 +607,7 @@ function animate(now){fc++;updateElapsed()
   const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawMonitor(sh.dx,sh.dy-4,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
   // Contracts + notifs
-  contracts.forEach(ct=>drawContract(ct.x,ct.y,ct.alpha,ct.emoji))
+  contracts.forEach(ct=>drawContract(ct))
   doneNotifs.forEach(dn=>{if(dn.life<=0)return;const a=Math.min(1,dn.life/25);ctx.save();ctx.globalAlpha=a;const t='✓ Đã làm xong',tw=t.length*5+10;ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(dn.x-tw/2,dn.y-7,tw,16,5);ctx.fill();ctx.stroke();ctx.fillStyle='#111';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(t,dn.x,dn.y+3);ctx.restore()})
 
   // Characters
