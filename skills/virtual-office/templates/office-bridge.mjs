@@ -32,7 +32,7 @@ const EXT_MAP = [
   { re: /\.(ts|tsx|js|jsx)$/,          agent: 'pxh-expert',      action: 'Code',      tier_from: 'T2', tier_to: 'T3' },
   { re: /\.(test|spec)\.(ts|js)$/,      agent: 'pxh-qa',          action: 'Test',      tier_from: 'T3', tier_to: 'T3' },
   { re: /\.(css|scss|less)$/,           agent: 'pxh-ui-ux',       action: 'Style',     tier_from: 'T3', tier_to: 'T3' },
-  { re: /\.html$/,                      agent: 'pxh-ui-ux',       action: 'UI',        tier_from: 'T3', tier_to: 'T3' },
+  { re: /\.html$/,                      agent: 'pxh-expert',      action: 'Code',      tier_from: 'T3', tier_to: 'T3' },
   { re: /\.md$/,                        agent: 'pxh-save-history',action: 'Doc',       tier_from: 'T3', tier_to: 'T4' },
   { re: /\.(json|yaml|yml)$/,           agent: 'pxh-devops',      action: 'Config',    tier_from: 'T3', tier_to: 'T3' },
   { re: /\.(ps1|sh|bat)$/,              agent: 'pxh-devops',      action: 'Script',    tier_from: 'T3', tier_to: 'T3' },
@@ -142,14 +142,40 @@ function canEmit() {
   return state.emitCount < MAX_EVENTS_PER_MINUTE
 }
 
+const WORKFLOW_PIPELINES = {
+  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-qa','pxh-review-code','pxh-devops','pxh-save-history'],
+  Test:  ['pxh-qa','pxh-fix-bugs','pxh-review-code'],
+  Style: ['pxh-ui-ux'],
+  UI:    ['pxh-ui-ux','pxh-review-code'],
+  Doc:   ['pxh-save-history'],
+  Config:['pxh-devops','pxh-pm'],
+  Script:['pxh-devops'],
+  Agent: ['pxh-pm'],
+  Workflow:['pxh-pm','pxh-architect'],
+  Skill: ['pxh-expert','pxh-pm'],
+}
+const WF_MESSAGES = {
+  'pxh-help':'Classify: analyzing request...',
+  'pxh-pm':'Route: selecting workflow...',
+  'pxh-architect':'Design: planning architecture...',
+  'pxh-qa':'Test: verifying changes...',
+  'pxh-fix-bugs':'Fix: checking for issues...',
+  'pxh-review-code':'Review: auditing quality...',
+  'pxh-devops':'Build: preparing output...',
+  'pxh-save-history':'Persist: saving session...',
+  'pxh-ui-ux':'Design: styling interface...',
+  'pxh-expert':'Code: implementing...',
+}
+
 function createTaskSequence(cls) {
-  const agentInfo = AGENTS[cls.agent] || AGENTS['pxh-expert']
-  return [{
-    type: 'agent_state',
-    agent: cls.agent,
-    tuiState: cls.action,
-    message: `${cls.action}: ${cls.file}`,
-  }]
+  const agents = WORKFLOW_PIPELINES[cls.action] || ['pxh-help','pxh-pm','__MAIN__']
+  const seq = []
+  agents.forEach(ag => {
+    const name = ag === '__MAIN__' ? cls.agent : ag
+    const msg = name === cls.agent ? `${cls.action}: ${cls.file}` : (WF_MESSAGES[name] || `${cls.action}...`)
+    seq.push({ type: 'agent_state', agent: name, tuiState: cls.action, message: msg })
+  })
+  return seq
 }
 
 let watchTimer = null
@@ -176,18 +202,21 @@ function processBatch() {
   const batch = state.pending.splice(0, Math.min(5, state.pending.length))
   const activeNow = {}
 
-  batch.forEach((c) => {
+  batch.forEach((c, idx) => {
     activeNow[c.agent] = true
     if (!state.activeAgents[c.agent]) {
       const seq = createTaskSequence(c)
-      for (const evt of seq) emit(evt)
+      seq.forEach((evt, i) => {
+        setTimeout(() => emit(evt), idx*600 + i*400)
+      })
     } else {
-      emit({ type: 'agent_state', agent: c.agent, tuiState: 'update', message: `${c.action}: ${c.file}` })
+      setTimeout(() => {
+        emit({ type: 'agent_state', agent: c.agent, tuiState: 'update', message: `${c.action}: ${c.file}` })
+      }, idx*300)
     }
     startIdleTimer(c.agent)
   })
 
-  // Remove agents not in this batch from activeAgents (they'll idle via their own timer)
   state.activeAgents = activeNow
 }
 
