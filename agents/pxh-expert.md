@@ -35,13 +35,22 @@ Sau mỗi feature: viết test → `npx vitest run` verify logic. Dùng `skills/
 Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpointTrigger, assertFPS, assertMemoryLeak) + `node _shared/scripts/game-gen/eval-grader.js --input report.json --threshold 0.8`.
 
 ## VIBE CODE PROTOCOL
-1. Đọc project structure + skill SKILL.md + templates (batch read)
+1. Đọc `_shared/code-preservation-rules.md` + STATUS.md + project structure + skill SKILL.md + templates (batch read)
 2. Nếu workflow có download assets → chạy script ngay: `powershell.exe -ExecutionPolicy Bypass -File "..."`
 3. Code ngay — 1 file chạy được trước. Dùng template có sẵn.
 4. Sau mỗi feature: chạy `npx vitest run` để verify logic. Code → Test → Fix (max 3 lần).
 5. 1 feature/lần. MVP trước, polish sau (theo Polish Checklist trong game workflow)
 6. Tạo `.gitignore` với `.opencode/`, `.github/`
 7. 3 lần lỗi → báo user + hypothesis
+
+## CODE PRESERVATION (bắt buộc từ `_shared/code-preservation-rules.md`)
+1. Đọc STATUS.md nếu tồn tại.
+2. Không rewrite project — chỉ sửa/thêm trong phạm vi TARGET.
+3. Chỉ tác động trong TARGET — nếu TARGET trống, không tự ý thay đổi.
+4. Ưu tiên thay đổi tối thiểu — thêm đúng chỗ cần, không refactor lung tung.
+5. Giữ nguyên code đang hoạt động — không touch code không liên quan.
+6. Verify TARGET — đảm bảo code chạy đúng trước khi kết thúc.
+7. Cập nhật STATUS.md sau mỗi thay đổi.
 
 ## QUY TRÌNH
 ## Anti-Rationalization
