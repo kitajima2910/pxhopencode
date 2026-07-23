@@ -232,7 +232,7 @@ document.getElementById('sndToggle').addEventListener('click', toggleSound)
 // ============================================================
 const AGENTS = {
   'pxh-help':        { id:'help', name:'pxh-help', role:'Help Desk',    tier:'T1', color:'#58a6ff', gender:'female', skin:'#f5d5c0', hairColor:'#3a2a1a', hairStyle:'pony',    bodyC:'#1a5c8a' },
-  'pxh-pm':          { id:'pm', name:'pxh-pm', role:'CEO',             tier:'T2', color:'#d29922', gender:'male',   skin:'#e8c8a0', hairColor:'#1a1a2e', hairStyle:'short',   bodyC:'#8b6914' },
+  'pxh-pm':          { id:'pm', name:'pxh-pm', role:'CEO - PXH', tier:'T2', color:'#d29922', gender:'male', skin:'#e8c8a0', hairColor:'#1a1a2e', hairStyle:'short', bodyC:'#8b6914' },
   'pxh-architect':   { id:'arch', name:'pxh-architect', role:'Architect', tier:'T3', color:'#bc8cff', gender:'female', skin:'#f0c8b0', hairColor:'#4a3020', hairStyle:'long',    bodyC:'#6b3fa0' },
   'pxh-expert':      { id:'expert', name:'pxh-expert', role:'Developer', tier:'T3', color:'#3fb950', gender:'male',   skin:'#edc8a8', hairColor:'#2a2a3a', hairStyle:'spiky',   bodyC:'#2a7a3f' },
   'pxh-fix-bugs':    { id:'fix', name:'pxh-fix-bugs', role:'Bug Hunter', tier:'T3', color:'#f85149', gender:'male',   skin:'#d4a580', hairColor:'#cc3333', hairStyle:'buzz',    bodyC:'#9b2d2d' },
@@ -267,7 +267,9 @@ AGENT_LIST.forEach(a => {
     typingInterval: null,
     working: false,
     bobY: 0,
-    hasRealWork: false, // only true when there's an actual task
+    hasRealWork: false,
+    tuiState: '',
+    tuiStateMsg: '',
   }
 })
 
@@ -499,62 +501,63 @@ function drawServerRack(x, y, w, h){
 
 function drawMonitor(x, y, isActive){
   ctx.save()
-  const mw = 36, mh = 22 // 16:10 screen
+  const mw = 38, mh = 23
 
-  // === Stand ===
-  // Base plate
-  ctx.fillStyle = '#383e4e'
+  // === Stand neck ===
+  ctx.fillStyle = '#3a3d44'
+  ctx.fillRect(x - 2, y + mh, 4, 5)
+  // Stand base
+  ctx.fillStyle = '#2a2d34'
   ctx.beginPath()
-  ctx.ellipse(x, y + mh + 4, 12, 4, 0, 0, Math.PI*2)
+  ctx.roundRect(x - 14, y + mh + 4, 28, 4, 2)
   ctx.fill()
-  // Neck
-  ctx.fillStyle = '#484f58'
-  ctx.fillRect(x - 3, y + mh - 2, 6, 8)
 
   // === Monitor body ===
-  // Outer bezel (dark gray)
+  // Outer frame
   ctx.fillStyle = '#1a1d24'
-  ctx.fillRect(x - mw/2 - 1, y - 1, mw + 2, mh + 2)
-  // Bottom bezel (thicker)
-  ctx.fillStyle = '#21262d'
-  ctx.fillRect(x - mw/2 - 1, y + mh - 5, mw + 2, 8)
-  // Brand logo area
-  ctx.fillStyle = '#383e4e'
-  ctx.fillRect(x - 4, y + mh, 8, 2)
+  ctx.beginPath()
+  ctx.roundRect(x - mw/2 - 1, y - 1, mw + 2, mh + 2, 2)
+  ctx.fill()
+  // Bottom chin (thicker bezel)
+  ctx.fillStyle = '#252830'
+  ctx.fillRect(x - mw/2 - 1, y + mh - 6, mw + 2, 7)
+  // Brand dot
+  ctx.fillStyle = '#484f58'
+  ctx.beginPath()
+  ctx.arc(x, y + mh - 1, 1.5, 0, Math.PI*2)
+  ctx.fill()
 
   // === Screen ===
   if(isActive){
     ctx.fillStyle = '#0a1628'
-    ctx.fillRect(x - mw/2 + 2, y + 2, mw - 4, mh - 8)
-    // Code lines
+    ctx.fillRect(x - mw/2 + 3, y + 3, mw - 6, mh - 10)
+    // Code lines (green for PC)
     ctx.strokeStyle = '#3fb950'
     ctx.lineWidth = 0.8
-    const codeY = y + 4
+    const cY = y + 5
     for(let i = 0; i < 5; i++){
-      const ly = codeY + i * 3
-      const indent = (i % 2) * 4
+      const ly = cY + i * 2.5
+      const indent = (i % 3) * 3
       ctx.beginPath()
-      ctx.moveTo(x - mw/2 + 4 + indent, ly)
-      ctx.lineTo(x - mw/2 + 4 + indent + Math.sin(frameCount*0.1 + i)*4 + 12, ly)
+      ctx.moveTo(x - mw/2 + 5 + indent, ly)
+      ctx.lineTo(x - mw/2 + 5 + indent + Math.sin(frameCount*0.08 + i)*3 + 12, ly)
       ctx.stroke()
     }
-    // Cursor
     if(Math.floor(frameCount/15) % 2){
       ctx.fillStyle = '#3fb950'
-      ctx.fillRect(x - mw/2 + 4 + 12, codeY, 5, 2)
+      ctx.fillRect(x - mw/2 + 5 + 12, cY, 5, 2)
     }
-    // Power LED (green)
+    // Power LED
     ctx.fillStyle = '#3fb950'
     ctx.beginPath()
-    ctx.arc(x + mw/2 - 5, y + mh + 2, 1.5, 0, Math.PI*2)
+    ctx.arc(x + mw/2 - 6, y + mh - 2, 1.5, 0, Math.PI*2)
     ctx.fill()
   } else {
     ctx.fillStyle = '#0d1117'
-    ctx.fillRect(x - mw/2 + 2, y + 2, mw - 4, mh - 8)
-    // LED (dim)
+    ctx.fillRect(x - mw/2 + 3, y + 3, mw - 6, mh - 10)
     ctx.fillStyle = '#1a2a1a'
     ctx.beginPath()
-    ctx.arc(x + mw/2 - 5, y + mh + 2, 1.5, 0, Math.PI*2)
+    ctx.arc(x + mw/2 - 6, y + mh - 2, 1.5, 0, Math.PI*2)
     ctx.fill()
   }
 
@@ -599,75 +602,72 @@ function drawMouse(x, y){
 
 function drawLaptop(x, y, isActive){
   ctx.save()
-  const lw = 30, screenH = 20, baseH = 6
+  const lw = 30, screenH = 19, baseH = 6
   const hingeY = y
 
-  // === Screen lid (aluminum silver) ===
-  // Main body
-  ctx.fillStyle = '#c0c4cc'
-  ctx.fillRect(x - lw/2, hingeY - screenH, lw, screenH)
-  // Border
-  ctx.strokeStyle = '#9a9ea6'; ctx.lineWidth = 0.8
-  ctx.strokeRect(x - lw/2, hingeY - screenH, lw, screenH)
-  // Inner bezel (black)
-  ctx.fillStyle = '#1a1d24'
-  ctx.fillRect(x - lw/2 + 2, hingeY - screenH + 2, lw - 4, screenH - 4)
-  // Camera notch
-  ctx.fillStyle = '#3a3d44'
-  ctx.fillRect(x - 3, hingeY - screenH + 1, 6, 2)
+  // === Screen lid (aluminum) ===
+  ctx.fillStyle = '#a8acb4'
+  ctx.beginPath()
+  ctx.roundRect(x - lw/2, hingeY - screenH, lw, screenH, 2)
+  ctx.fill()
+  // Inner display bezel
+  ctx.fillStyle = '#161a20'
+  ctx.fillRect(x - lw/2 + 2, hingeY - screenH + 3, lw - 4, screenH - 6)
+  // Camera dot
   ctx.fillStyle = '#0d1117'
   ctx.beginPath()
-  ctx.arc(x, hingeY - screenH + 2.5, 1, 0, Math.PI*2)
+  ctx.arc(x, hingeY - screenH + 2, 1, 0, Math.PI*2)
   ctx.fill()
 
   // Screen
   if(isActive){
     ctx.fillStyle = '#0a1628'
-    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 8)
-    // Code lines
+    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 9)
     ctx.strokeStyle = '#58a6ff'
     ctx.lineWidth = 0.8
     for(let i = 0; i < 4; i++){
-      const ly = hingeY - screenH + 7 + i*4
+      const ly = hingeY - screenH + 7 + i*3.5
       ctx.beginPath()
       ctx.moveTo(x - lw/2 + 5, ly)
-      ctx.lineTo(x - lw/2 + 5 + Math.sin(frameCount*0.08 + i)*4 + 10, ly)
+      ctx.lineTo(x - lw/2 + 5 + Math.sin(frameCount*0.07 + i)*3 + 10, ly)
       ctx.stroke()
     }
     if(Math.floor(frameCount/12) % 2){
       ctx.fillStyle = '#58a6ff'
-      ctx.fillRect(x - lw/2 + 5 + 10, hingeY - screenH + 7, 5, 2)
+      ctx.fillRect(x - lw/2 + 5 + 10, hingeY - screenH + 7, 4, 2)
     }
   } else {
     ctx.fillStyle = '#0d1117'
-    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 8)
+    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 9)
   }
 
   // === Hinge ===
-  ctx.fillStyle = '#9a9ea6'
-  ctx.fillRect(x - lw/2, hingeY, lw, 2)
+  ctx.fillStyle = '#80848c'
+  ctx.fillRect(x - lw/2, hingeY - 0.5, lw, 1.5)
 
-  // === Base (keyboard area) ===
-  ctx.fillStyle = '#c0c4cc'
-  ctx.fillRect(x - lw/2, hingeY + 2, lw, baseH)
-  ctx.strokeStyle = '#9a9ea6'; ctx.lineWidth = 0.8
-  ctx.strokeRect(x - lw/2, hingeY + 2, lw, baseH)
-  // Keyboard recess
+  // === Base (keyboard deck) ===
+  ctx.fillStyle = '#a8acb4'
+  ctx.beginPath()
+  ctx.roundRect(x - lw/2, hingeY + 1, lw, baseH, 1)
+  ctx.fill()
+  // Speaker grill (top edge)
+  ctx.fillStyle = '#3a3d44'
+  for(let i = 0; i < 8; i++){
+    ctx.fillRect(x - lw/2 + 3 + i*3, hingeY + 1.5, 2, 0.4)
+  }
+  // Keyboard area
   ctx.fillStyle = '#2a2d34'
-  ctx.fillRect(x - lw/2 + 3, hingeY + 3.5, lw - 6, 3)
+  ctx.fillRect(x - lw/2 + 2.5, hingeY + 2.5, lw - 5, 3)
   // Key rows
   ctx.fillStyle = '#3a3d44'
-  for(let row = 0; row < 4; row++){
-    ctx.fillRect(x - lw/2 + 4, hingeY + 3.7 + row*0.6, lw - 8, 0.4)
+  for(let row = 0; row < 5; row++){
+    ctx.fillRect(x - lw/2 + 3.5, hingeY + 2.7 + row*0.5, lw - 7, 0.3)
   }
   // Trackpad
-  ctx.fillStyle = '#888c94'
-  ctx.fillRect(x - 6, hingeY + 6.8, 12, 1.5)
-
-  // Rubber feet
-  ctx.fillStyle = '#3a3d44'
-  ctx.fillRect(x - lw/2 + 3, hingeY + baseH + 1, 3, 1)
-  ctx.fillRect(x + lw/2 - 6, hingeY + baseH + 1, 3, 1)
+  ctx.fillStyle = '#787c84'
+  ctx.beginPath()
+  ctx.roundRect(x - 5, hingeY + 5.3, 10, 1.5, 0.5)
+  ctx.fill()
 
   ctx.restore()
 }
@@ -813,9 +813,6 @@ function drawCharacter(ch){
   ctx.save()
   ctx.translate(x, y + ch.bobY)
 
-  // When typing: tilt upward to face the monitor
-  if(s === 'typing') ctx.rotate(-0.12)
-
   const isStanding = s === 'idle' || s === 'walking'
 
   // ── Shadow ──
@@ -930,6 +927,21 @@ function drawCharacter(ch){
     ctx.textAlign = 'center'
     ctx.fillText(a.role, 0, labelY)
 
+    // TUI State label
+    if(ch.tuiState && ch.working){
+      const stateY = labelY - 16
+      const st = ch.tuiState.toUpperCase()
+      const sw = st.length * 3 + 8
+      const pulse = Math.sin(phase * 2) * 0.15 + 0.85
+      ctx.fillStyle = `rgba(${hexToRgb(a.color)},${pulse})`
+      ctx.beginPath()
+      ctx.roundRect(-sw / 2, stateY - 7, sw, 11, 3)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.font = 'bold 6px "Segoe UI",sans-serif'
+      ctx.fillText(st, 0, stateY + 1)
+    }
+
     // ── Comic-style speech bubble ──
     if(s === 'walking' && ch.working){
       drawComicBubble(0, headCY - 24, PREP_MSGS[Math.floor(ch.walkPhase / 2) % PREP_MSGS.length], a.color)
@@ -969,11 +981,11 @@ function drawCharacter(ch){
     if(s === 'typing'){
       const typeAnim = Math.sin(phase * 6) * 3
       ctx.fillStyle = a.bodyC
-      // Left arm to keyboard
+      // Left arm to keyboard - longer reach
       ctx.save()
       ctx.translate(-bw, bodyTop + 4)
-      ctx.rotate(-0.5)
-      const leftHandY = 14 + typeAnim
+      ctx.rotate(-0.65)
+      const leftHandY = 20 + typeAnim
       ctx.fillRect(-2, 0, 4, leftHandY)
       ctx.fillStyle = skin
       for(let f = -1; f <= 1; f++){
@@ -983,8 +995,8 @@ function drawCharacter(ch){
       // Right arm to keyboard
       ctx.save()
       ctx.translate(bw, bodyTop + 4)
-      ctx.rotate(0.5)
-      const rightHandY = 14 - typeAnim * 0.7
+      ctx.rotate(0.65)
+      const rightHandY = 20 - typeAnim * 0.7
       ctx.fillRect(-2, 0, 4, rightHandY)
       ctx.fillStyle = skin
       for(let f = -1; f <= 1; f++){
@@ -1054,6 +1066,21 @@ function drawCharacter(ch){
     ctx.textAlign = 'center'
     ctx.fillText(a.role, 0, labelY)
 
+    // TUI State label
+    if(ch.tuiState && ch.working){
+      const stateY = labelY - 16
+      const st = ch.tuiState.toUpperCase()
+      const sw = st.length * 3 + 8
+      const pulse = Math.sin(phase * 2) * 0.15 + 0.85
+      ctx.fillStyle = `rgba(${hexToRgb(a.color)},${pulse})`
+      ctx.beginPath()
+      ctx.roundRect(-sw / 2, stateY - 7, sw, 11, 3)
+      ctx.fill()
+      ctx.fillStyle = '#fff'
+      ctx.font = 'bold 6px "Segoe UI",sans-serif'
+      ctx.fillText(st, 0, stateY + 1)
+    }
+
     // ── Comic speech bubble for typing ──
     if(s === 'typing'){
       const msg = PREP_MSGS[Math.floor(phase / 2) % PREP_MSGS.length]
@@ -1115,31 +1142,34 @@ function startTyping(ch){
   const deskTargetY = ch.deskY + 16
   const dist = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
   if(dist > 25){
-    // Walk to desk first
     moveChar(ch, deskTargetX, deskTargetY, 2)
     ch.working = true
     const check = setInterval(() => {
+      if(!ch.working){ clearInterval(check); return }
       const d = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
       if(d < 8 || ch.state !== 'walking'){
         clearInterval(check)
-        if(!ch.working) return // cancelled by stopTyping
+        if(!ch.working) return
         ch.state = 'typing'
         ch.x = deskTargetX; ch.y = deskTargetY
         ch.tx = ch.x; ch.ty = ch.y
         if(ch.typingInterval) clearInterval(ch.typingInterval)
         ch.typingInterval = setInterval(() => {
-          if(ch.state === 'typing') playKeyboardSound(ch.agent.name)
+          if(ch.state !== 'typing' || !ch.working){ clearInterval(ch.typingInterval); ch.typingInterval = null; return }
+          playKeyboardSound(ch.agent.name)
         }, 150 + Math.random() * 250)
       }
     }, 100)
   } else {
+    if(!ch.working) return
     ch.state = 'typing'
     ch.x = deskTargetX; ch.y = deskTargetY
     ch.tx = ch.x; ch.ty = ch.y
     ch.working = true
     if(ch.typingInterval) clearInterval(ch.typingInterval)
     ch.typingInterval = setInterval(() => {
-      if(ch.state === 'typing') sfx('keyboard')
+      if(ch.state !== 'typing' || !ch.working){ clearInterval(ch.typingInterval); ch.typingInterval = null; return }
+      playKeyboardSound(ch.agent.name)
     }, 150 + Math.random() * 250)
   }
 }
@@ -1191,12 +1221,6 @@ function updateElapsed(){
 }
 
 function highlightAgent(name){
-  AGENT_LIST.forEach(a => {
-    if(a.name !== name){
-      const oc = chars[a.name]
-      if(oc && oc.working) stopTyping(oc)
-    }
-  })
   const ch = chars[name]
   if(!ch) return
   ch.hasRealWork = true
@@ -1236,6 +1260,23 @@ function processEvent(event){
     const msg = event.message || `${event.type} event`
     addLog(`[${ac}] ${msg}`, color)
     if(isRealEvent) sfx('notification')
+  } else if(event.type === 'agent_state'){
+    // TUI state update: show on agent's head, make them work
+    const ag = event.agent
+    const ch = chars[ag]
+    if(ch){
+      ch.tuiState = event.tuiState || event.state || ''
+      ch.tuiStateMsg = event.message || ''
+      if(!ch.working && ch.state !== 'typing'){
+        ch.hasRealWork = true
+        startTyping(ch)
+      }
+      state.agent = ag
+      if(event.tuiState) state.phase = event.tuiState
+      addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState}`, AGENTS[ag]?.color||'#888')
+    }
+    updateStatus()
+    return
   } else if(event.type === 'task_end'){
     if(event.to && event.status === 'success'){
       const ch = chars[event.from || event.to]

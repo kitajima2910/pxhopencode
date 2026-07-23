@@ -189,25 +189,28 @@ function processBatch() {
   if (state.pending.length === 0) return
   if (!canEmit()) return
 
-  const c = state.pending.shift()
-  state.pending = []
+  // Process up to 5 events per batch
+  const batch = state.pending.splice(0, Math.min(5, state.pending.length))
 
-  const seq = createTaskSequence(c)
-  for (const evt of seq) {
-    setTimeout(() => emit(evt), 100)
-  }
-  setTimeout(() => {
-    const info = AGENTS[c.agent] || AGENTS['pxh-expert']
-    emit({
-      type: 'task_end',
-      status: 'success',
-      tier_from: info.tier,
-      tier_to: 'T2',
-      from: c.agent,
-      to: 'pxh-pm',
-      message: `${c.action}: ${c.file}`,
-    })
-  }, 2500)
+  batch.forEach((c, idx) => {
+    const seq = createTaskSequence(c)
+    const offset = idx * 3000 // stagger batches by 3s
+    for (const evt of seq) {
+      setTimeout(() => emit(evt), offset + 100)
+    }
+    setTimeout(() => {
+      const info = AGENTS[c.agent] || AGENTS['pxh-expert']
+      emit({
+        type: 'task_end',
+        status: 'success',
+        tier_from: info.tier,
+        tier_to: 'T2',
+        from: c.agent,
+        to: 'pxh-pm',
+        message: `${c.action}: ${c.file}`,
+      })
+    }, offset + 2500)
+  })
 }
 
 function startHeartbeat() {
@@ -259,7 +262,7 @@ export function startBridge(opts = {}) {
   if (onEvent) state.directBroadcast = onEvent
 
   const POLL_EXT = new Set(['.ts','.tsx','.js','.jsx','.css','.md','.html','.json','.mjs'])
-  const POLL_INTERVAL = 3000
+  const POLL_INTERVAL = 1000
   let pollState = {}
   let pollReady = false
 
