@@ -3,216 +3,242 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PXH2910 — AI Company Architecture</title>
+<title>PXH2910 — AI Company Architecture Docs</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
 :root{
   --bg:#0a0e17;--surface:#111620;--border:rgba(255,255,255,0.06);
   --t1:#58a6ff;--t2:#d29922;--t3:#3fb950;--t4:#bc8cff;
-  --text:#c9d1d9;--muted:#8b949e;
+  --text:#c9d1d9;--muted:#8b949e;--code-bg:rgba(255,255,255,0.04);
 }
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
-.container{max-width:1000px;margin:0 auto;padding:40px 20px}
-header{text-align:center;padding:60px 0 40px;border-bottom:1px solid var(--border)}
-header h1{font-size:2.2em;font-weight:700;background:linear-gradient(90deg,var(--t1),var(--t4));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-header .sub{color:var(--muted);font-size:1.1em}
-.badge{display:inline-block;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:.85em;color:var(--muted);margin:4px}
-.badge span{color:var(--text);font-weight:600}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
+nav{position:fixed;top:0;left:0;width:240px;height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:20px;overflow-y:auto;z-index:100}
+nav h2{font-size:1em;margin-bottom:16px;background:linear-gradient(90deg,var(--t1),var(--t4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+nav a{display:block;color:var(--muted);text-decoration:none;padding:6px 0;font-size:.85em;transition:color .2s}
+nav a:hover,nav a.active{color:var(--t1)}
+nav .section{margin-top:12px}
+main{margin-left:240px;padding:40px 60px;max-width:900px}
 section{margin:40px 0}
-h2{font-size:1.4em;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-h3{font-size:1.1em;margin:16px 0 8px;color:var(--t1)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;transition:border-color .2s}
-.card:hover{border-color:var(--t1)}
-.card h4{font-size:1em;margin-bottom:4px}
-.card .role{font-size:.8em;color:var(--muted);margin-bottom:6px}
-.card .tag{display:inline-block;font-size:.75em;padding:2px 8px;border-radius:4px;margin:2px}
+h1{font-size:2em;margin-bottom:8px;background:linear-gradient(90deg,var(--t1),var(--t4));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+h2{font-size:1.3em;margin:32px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+h3{font-size:1.05em;margin:20px 0 8px;color:var(--t1)}
+p{margin:8px 0;font-size:.95em}
+code{background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:.88em}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px;overflow-x:auto;font-size:.85em;line-height:1.5;margin:10px 0}
+.badge-row{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.badge{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:.85em}
+.badge b{color:var(--t1)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:12px 0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px}
+.card h4{font-size:.95em;margin-bottom:4px}
+.card .tag{display:inline-block;font-size:.7em;padding:1px 7px;border-radius:3px;margin-right:4px}
 .tag-t1{background:rgba(88,166,255,.15);color:var(--t1)}
 .tag-t2{background:rgba(210,153,34,.15);color:var(--t2)}
 .tag-t3{background:rgba(63,185,80,.15);color:var(--t3)}
 .tag-t4{background:rgba(188,140,255,.15);color:var(--t4)}
-.tier-section{padding:16px;border-radius:8px;margin:12px 0;border-left:3px solid}
-.tier-t1{border-color:var(--t1);background:rgba(88,166,255,.04)}
-.tier-t2{border-color:var(--t2);background:rgba(210,153,34,.04)}
-.tier-t3{border-color:var(--t3);background:rgba(63,185,80,.04)}
-.tier-t4{border-color:var(--t4);background:rgba(188,140,255,.04)}
-.tier-label{font-weight:700;font-size:1.1em;margin-bottom:8px}
-table{width:100%;border-collapse:collapse;margin:12px 0}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.9em}
 th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
-th{color:var(--muted);font-size:.85em;text-transform:uppercase;letter-spacing:.5px}
-td{font-size:.9em}
-code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:3px;font-size:.85em}
-.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 0}
-.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 14px;font-size:.85em;text-align:center}
-.flow-arrow{color:var(--muted);font-size:1.2em}
-.policy{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.policy-card{background:var(--surface);border-radius:8px;padding:14px;text-align:center}
-.policy-card .icon{font-size:1.5em;margin-bottom:4px}
-.policy-card .name{font-weight:600;font-size:.9em}
-.policy-card .desc{font-size:.8em;color:var(--muted);margin-top:4px}
-footer{text-align:center;padding:30px;color:var(--muted);font-size:.85em;border-top:1px solid var(--border);margin-top:40px}
-@media(max-width:600px){header h1{font-size:1.5em}.grid{grid-template-columns:1fr}}
+th{color:var(--muted);font-size:.8em;text-transform:uppercase;letter-spacing:.5px}
+.tier-box{padding:14px;border-radius:8px;margin:10px 0;border-left:3px solid}
+.t1{border-color:var(--t1);background:rgba(88,166,255,.04)}
+.t2{border-color:var(--t2);background:rgba(210,153,34,.04)}
+.t3{border-color:var(--t3);background:rgba(63,185,80,.04)}
+.t4{border-color:var(--t4);background:rgba(188,140,255,.04)}
+.flow-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:10px 0;font-size:.85em}
+.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:6px 10px;text-align:center}
+.flow-arrow{color:var(--muted);font-weight:bold}
+footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-top:1px solid var(--border);margin-top:60px}
+@media(max-width:768px){nav{display:none}main{margin-left:0;padding:20px}}
 </style>
 </head>
 <body>
-<div class="container">
 
-<header>
+<nav>
+  <h2>PXH2910 Docs</h2>
+  <a href="#architecture">Kiến trúc 4 Tầng</a>
+  <a href="#agents">10 AI Agents</a>
+  <a href="#workflows">Workflows</a>
+  <a href="#office">Văn Phòng Ảo</a>
+  <a href="#sync">Real-time Sync</a>
+  <a href="#install">Cài đặt</a>
+  <a href="#policies">Chính sách</a>
+  <div class="section">
+    <a href="galaga.html" style="color:var(--t3)">🎮 Galaga Pixel</a>
+  </div>
+</nav>
+
+<main>
+
+<section id="hero">
   <h1>PXH2910 — AI Company</h1>
-  <p class="sub">Kiến trúc Runtime 4 Tầng · 10 AI Agents · 9 Workflows · 32 Skills</p>
-  <div style="margin-top:12px">
-    <span class="badge">Version <span>v45</span></span>
-    <span class="badge">Commits <span>71</span></span>
-    <span class="badge">Agents <span>10</span></span>
-    <span class="badge">Workflows <span>9</span></span>
-    <span class="badge">Skills <span>32</span></span>
-  </div>
-</header>
-
-<section>
-  <h2>🏗️ Kiến trúc 4 Tầng (4-Tier Runtime)</h2>
-  <p style="color:var(--muted);margin-bottom:16px">Kiến trúc phân tầng theo Microsoft Agent Mode. Giao tiếp qua contract, không gọi trực tiếp.</p>
-
-  <div class="tier-section tier-t1">
-    <div class="tier-label" style="color:var(--t1)">T1 — INTERFACE (Giao diện)</div>
-    <p style="color:var(--muted);font-size:.9em">Validate input, classify prompt, format output. Cửa tiếp nhận mọi yêu cầu từ người dùng.</p>
-    <div style="margin-top:8px"><strong>Agent:</strong> pxh-help</div>
-    <div style="color:var(--muted);font-size:.85em">Input: Prompt tự nhiên / Lệnh / / @mention → Output: Request contract → T2</div>
-  </div>
-
-  <div style="text-align:center;color:var(--muted);padding:4px">↓ Contract: Request</div>
-
-  <div class="tier-section tier-t2">
-    <div class="tier-label" style="color:var(--t2)">T2 — ORCHESTRATION (Điều phối)</div>
-    <p style="color:var(--muted);font-size:.9em">Auto-route task, track state, enforce retry/recovery/reflection. Bộ não trung tâm.</p>
-    <div style="margin-top:8px"><strong>Agent:</strong> pxh-pm (CEO)</div>
-    <div style="color:var(--muted);font-size:.85em">Input: Request → Route → Policy check → Output: Task contract → T3</div>
-  </div>
-
-  <div style="text-align:center;color:var(--muted);padding:4px">↓ Contract: Task</div>
-
-  <div class="tier-section tier-t3">
-    <div class="tier-label" style="color:var(--t3)">T3 — WORKERS (Nhân công)</div>
-    <p style="color:var(--muted);font-size:.9em">Thực thi domain: code, test, review, build, UI/UX. 7 agents chuyên biệt.</p>
-    <div style="color:var(--muted);font-size:.85em">Input: Task → Execute → Output: Result contract → T2</div>
-  </div>
-
-  <div style="text-align:center;color:var(--muted);padding:4px">↕ Event / State</div>
-
-  <div class="tier-section tier-t4">
-    <div class="tier-label" style="color:var(--t4)">T4 — INFRASTRUCTURE (Hạ tầng)</div>
-    <p style="color:var(--muted);font-size:.9em">Persist state, checkpoint, log, alerting. Ghi nhận mọi sự kiện, không quyết định.</p>
-    <div style="margin-top:8px"><strong>Agent:</strong> pxh-save-history (Historian)</div>
+  <p style="color:var(--muted);font-size:1.1em">Kiến trúc Runtime 4 Tầng cho Vibe Coding với OpenCode</p>
+  <div class="badge-row">
+    <div class="badge">Version <b>v46</b></div>
+    <div class="badge">Agents <b>10</b></div>
+    <div class="badge">Workflows <b>9</b></div>
+    <div class="badge">Skills <b>32</b></div>
+    <div class="badge">Commands <b>11</b></div>
   </div>
 </section>
 
-<section>
+<section id="architecture">
+  <h2>🏗️ Kiến trúc Runtime 4 Tầng</h2>
+  <p>Kiến trúc phân tầng theo Microsoft Agent Mode. Giao tiếp qua contract — không gọi trực tiếp giữa các tầng.</p>
+
+  <div class="tier-box t1">
+    <h3 style="color:var(--t1)">T1 — INTERFACE (Giao diện)</h3>
+    <p>Validate input, classify prompt, format output. Cửa tiếp nhận mọi yêu cầu từ người dùng.</p>
+    <p><strong>Agent:</strong> <code>pxh-help</code> — State: <span class="tag tag-t1">INTERFACE</span></p>
+    <p style="color:var(--muted);font-size:.85em">Ở lại bàn làm việc cho đến khi TUI kết thúc. Truyền tín hiệu dashed → CEO PXH.</p>
+  </div>
+
+  <div class="tier-box t2">
+    <h3 style="color:var(--t2)">T2 — ORCHESTRATION (Điều phối)</h3>
+    <p>Auto-route task, track state, enforce retry/recovery/reflection. Bộ não trung tâm.</p>
+    <p><strong>Agent:</strong> <code>pxh-pm</code> — State: <span class="tag tag-t2">ORCHESTRATION</span></p>
+    <p style="color:var(--muted);font-size:.85em">Ở lại bàn làm việc cho đến khi TUI kết thúc. Truyền tín hiệu dashed → tất cả T3 agents.</p>
+  </div>
+
+  <div class="tier-box t3">
+    <h3 style="color:var(--t3)">T3 — WORKERS (Nhân công)</h3>
+    <p>Thực thi domain: code, test, fix bug, review, build, UI/UX. 7 agents chuyên biệt.</p>
+    <p style="color:var(--muted);font-size:.85em">Ngồi vào bàn khi được gọi, rời bàn khi xong việc (8s idle). Truyền tín hiệu dashed về CEO + đồng nghiệp.</p>
+  </div>
+
+  <div class="tier-box t4">
+    <h3 style="color:var(--t4)">T4 — INFRASTRUCTURE (Hạ tầng)</h3>
+    <p>Persist state, checkpoint, log, alerting. Ghi nhận mọi sự kiện, không quyết định.</p>
+    <p><strong>Agent:</strong> <code>pxh-save-history</code> — State: <span class="tag tag-t4">INFRASTRUCTURE</span></p>
+    <p style="color:var(--muted);font-size:.85em">Rời bàn khi xong việc. Truyền tín hiệu dashed → CEO PXH.</p>
+  </div>
+
+  <h3>Flow xử lý</h3>
+  <div class="flow-row">
+    <div class="flow-step">👤<br>Prompt</div><div class="flow-arrow">→</div>
+    <div class="flow-step">T1<br>Classify</div><div class="flow-arrow">→</div>
+    <div class="flow-step">T2<br>Route</div><div class="flow-arrow">→</div>
+    <div class="flow-step">T3<br>Work</div><div class="flow-arrow">→</div>
+    <div class="flow-step">T4<br>Persist</div><div class="flow-arrow">→</div>
+    <div class="flow-step">✅<br>Response</div>
+  </div>
+</section>
+
+<section id="agents">
   <h2>🤖 10 AI Agents</h2>
-  <div class="grid">
-    <div class="card"><h4>pxh-help</h4><div class="role">T1 — Help Desk</div><span class="tag tag-t1">Interface</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Validate & classify input, hướng dẫn workflow</p></div>
-    <div class="card"><h4>pxh-pm</h4><div class="role">T2 — CEO PXH</div><span class="tag tag-t2">Orchestration</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Điều phối, routing, policy enforcement</p></div>
-    <div class="card"><h4>pxh-architect</h4><div class="role">T3 — Architect</div><span class="tag tag-t3">Design</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Thiết kế tech stack, DB schema, API</p></div>
-    <div class="card"><h4>pxh-expert</h4><div class="role">T3 — Developer</div><span class="tag tag-t3">Code</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Vibe code, workflow + skill, production code</p></div>
-    <div class="card"><h4>pxh-fix-bugs</h4><div class="role">T3 — Bug Hunter</div><span class="tag tag-t3">Debug</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Root cause → fix bug, crash, behavior sai</p></div>
-    <div class="card"><h4>pxh-qa</h4><div class="role">T3 — QA Engineer</div><span class="tag tag-t3">Test</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Viết & chạy test, verify chất lượng</p></div>
-    <div class="card"><h4>pxh-review-code</h4><div class="role">T3 — Reviewer</div><span class="tag tag-t3">Review</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Security, performance, convention audit</p></div>
-    <div class="card"><h4>pxh-devops</h4><div class="role">T3 — DevOps</div><span class="tag tag-t3">Build</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Lint → typecheck → test → build pipeline</p></div>
-    <div class="card"><h4>pxh-ui-ux</h4><div class="role">T3 — UI/UX Designer</div><span class="tag tag-t3">Design</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">Layout, responsive, accessibility</p></div>
-    <div class="card"><h4>pxh-save-history</h4><div class="role">T4 — Historian</div><span class="tag tag-t4">Infrastructure</span><p style="font-size:.85em;color:var(--muted);margin-top:6px">State, checkpoint, recovery, logging</p></div>
+  <div class="card-grid">
+    <div class="card"><h4>pxh-help <span class="tag tag-t1">T1</span></h4><p style="color:var(--muted);font-size:.85em">Help Desk — Validate & classify input. Huy hiệu ★, váy xanh dương.</p></div>
+    <div class="card"><h4>pxh-pm <span class="tag tag-t2">T2</span></h4><p style="color:var(--muted);font-size:.85em">CEO PXH — Route, policy enforcement. Suit đen + vest kem, cà vạt vàng.</p></div>
+    <div class="card"><h4>pxh-architect <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Architect — Thiết kế tech stack, DB, API. Váy tím A-line, kính tròn.</p></div>
+    <div class="card"><h4>pxh-expert <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Developer — Vibe code production. Hoodie xanh lá, kính tròn.</p></div>
+    <div class="card"><h4>pxh-fix-bugs <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Bug Hunter — Root cause → fix. Jacket đỏ sọc, huy hiệu ★.</p></div>
+    <div class="card"><h4>pxh-qa <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">QA Engineer — Viết & chạy test. Váy xanh ngọc chấm bi.</p></div>
+    <div class="card"><h4>pxh-review-code <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Reviewer — Security, perf audit. Áo sơ mi vàng, cà vạt đỏ.</p></div>
+    <div class="card"><h4>pxh-devops <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">DevOps — Lint → build pipeline. Hoodie xanh navy, kính tròn.</p></div>
+    <div class="card"><h4>pxh-ui-ux <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">UI/UX Designer — Layout, responsive. Váy hồng, khăn quàng.</p></div>
+    <div class="card"><h4>pxh-save-history <span class="tag tag-t4">T4</span></h4><p style="color:var(--muted);font-size:.85em">Historian — State, checkpoint. Cardigan tím, kính tròn.</p></div>
   </div>
 </section>
 
-<section>
+<section id="workflows">
   <h2>📋 9 Workflows</h2>
   <table>
     <tr><th>Lệnh</th><th>Mục đích</th><th>Pipeline</th></tr>
-    <tr><td><code>/vibe</code></td><td>Toàn bộ quy trình</td><td>Phân tích → Code → Test → Fix → Review → Build → Persist</td></tr>
-    <tr><td><code>/web</code></td><td>Web app (React, Next.js, Express)</td><td>Design → Code → Style → Test → Deploy</td></tr>
-    <tr><td><code>/game</code></td><td>Game HTML5 (Phaser, Three.js)</td><td>Design → Code → Preview → Polish → Deploy</td></tr>
-    <tr><td><code>/ai</code></td><td>Chatbot, RAG, Agent, LLM</td><td>Design → Code → Test → Deploy</td></tr>
-    <tr><td><code>/tool</code></td><td>CLI, Extension, Automation</td><td>Design → Code → Package → Test</td></tr>
-    <tr><td><code>/debug</code></td><td>Debug + Fix bug</td><td>Reproduce → Root Cause → Fix → Verify</td></tr>
-    <tr><td><code>/ui-ux</code></td><td>UI/UX Design & Debug</td><td>Audit → Design → Implement → Verify</td></tr>
+    <tr><td><code>/vibe</code></td><td>Toàn bộ quy trình</td><td>Classify → Route → Design → Code → Test → Review → Build → Persist</td></tr>
+    <tr><td><code>/web</code></td><td>Web app</td><td>Design → Code → Style → Test → Deploy</td></tr>
+    <tr><td><code>/game</code></td><td>Game HTML5</td><td>Design → Code → Preview → Polish → Deploy</td></tr>
+    <tr><td><code>/ai</code></td><td>Chatbot, RAG, Agent</td><td>Design → Code → Test → Deploy</td></tr>
+    <tr><td><code>/tool</code></td><td>CLI, Extension</td><td>Design → Code → Package → Test</td></tr>
+    <tr><td><code>/debug</code></td><td>Debug + Fix</td><td>Reproduce → Root Cause → Fix → Verify</td></tr>
+    <tr><td><code>/ui-ux</code></td><td>UI/UX Design</td><td>Audit → Design → Implement → Verify</td></tr>
     <tr><td><code>/release</code></td><td>Build Pipeline</td><td>Lint → Typecheck → Test → Build → Deploy</td></tr>
-    <tr><td><code>/meeting</code></td><td>Họp agents thảo luận</td><td>Agenda → Discuss → Decision → Action Items</td></tr>
+    <tr><td><code>/meeting</code></td><td>Họp agents</td><td>Agenda → Discuss → Decision → Action</td></tr>
   </table>
 </section>
 
-<section>
-  <h2>🛡️ Chính sách (Policies)</h2>
-  <div class="policy">
-    <div class="policy-card">
-      <div class="icon">🔄</div>
-      <div class="name">Retry</div>
-      <div class="desc">Exponential backoff 1s→2s→4s<br>Max 3 lần, lỗi tạm thời</div>
-    </div>
-    <div class="policy-card">
-      <div class="icon">💾</div>
-      <div class="name">Recovery</div>
-      <div class="desc">Checkpoint-based resume<br>Rollback khi lỗi permanent</div>
-    </div>
-    <div class="policy-card">
-      <div class="icon">🪞</div>
-      <div class="name">Reflection</div>
-      <div class="desc">4 mức: Task → Phase → Workflow → Incident<br>Ghi vào session log</div>
-    </div>
-  </div>
-</section>
+<section id="office">
+  <h2>🏢 Văn Phòng Ảo</h2>
+  <p>Webview 2D Open Office — 10 nhân vật pixel-art trong văn phòng mở single-floor, real-time sync với TUI qua SSE.</p>
 
-<section>
-  <h2>🔗 Contracts — Giao thức giao tiếp</h2>
+  <h3>Khởi động</h3>
+  <pre># ON — Start server + mở browser
+.\pxh-office-on.bat
+
+# OFF — Tắt server
+.\pxh-office-on.bat off
+
+# RESTART — Tắt + start mới
+.\pxh-office-on.bat restart
+
+# Hoặc chạy tay
+node skills/virtual-office/templates/server.mjs
+start http://localhost:2910</pre>
+
+  <h3>Sync real-time với TUI</h3>
+  <pre>.\skills\virtual-office\templates\hook-opencode.ps1 "your prompt"</pre>
+
+  <h3>Tính năng</h3>
   <table>
-    <tr><th>Contract</th><th>Hướng</th><th>Fields</th></tr>
-    <tr><td>Request</td><td>T1 → T2</td><td><code>version, type, target, context</code></td></tr>
-    <tr><td>Task</td><td>T2 → T3</td><td><code>version, phase, target, skills, workflow</code></td></tr>
-    <tr><td>Result</td><td>T3 → T2</td><td><code>version, status, artifacts[]</code></td></tr>
-    <tr><td>Response</td><td>T2 → T1</td><td><code>version, status, summary</code></td></tr>
-    <tr><td>Event</td><td>any → T4</td><td><code>version, type, phase, reflection</code></td></tr>
-    <tr><td>State</td><td>T4 → T2</td><td><code>version, checkpoint, session_id</code></td></tr>
+    <tr><th>Tính năng</th><th>Mô tả</th></tr>
+    <tr><td>Walking</td><td>Agent đi 4 hướng, body nảy theo nhịp bước</td></tr>
+    <tr><td>Typing</td><td>Ngồi vào bàn, quay lưng gõ phím, tay rung</td></tr>
+    <tr><td>Idle breathing</td><td>Đứng thở + nháy mắt định kỳ</td></tr>
+    <tr><td>Dashed signals</td><td>Tín hiệu xanh nối giữa các agent theo kiến trúc</td></tr>
+    <tr><td>Speech bubbles</td><td>Log real-time multi-dòng với timestamp</td></tr>
+    <tr><td>State badges</td><td>Nhấp nháy bên phải tên chức danh</td></tr>
+    <tr><td>Done notification</td><td>"✓ Đã làm xong" bay lên từ agent</td></tr>
+    <tr><td>Pets</td><td>🐱 Mèo + 🐕 Chó đi dạo tự do</td></tr>
   </table>
 </section>
 
-<section>
-  <h2>⚡ Workflow /vibe — Toàn bộ Pipeline</h2>
-  <div class="flow">
-    <div class="flow-step">👤 Prompt</div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">🔍 Classify<br><small>T1: pxh-help</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">📋 Route<br><small>T2: pxh-pm</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">🏗️ Design<br><small>T3: architect</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">✍️ Code<br><small>T3: expert</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">🧪 Test<br><small>T3: qa</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">🐛 Fix<br><small>T3: fix-bugs</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">🔍 Review<br><small>T3: review-code</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">🚀 Build<br><small>T3: devops</small></div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step">💾 Persist<br><small>T4: save-history</small></div>
-  </div>
+<section id="sync">
+  <h2>⚡ Real-time Sync</h2>
+  <p>Cơ chế đồng bộ thời gian thực giữa TUI (terminal) và webview (browser):</p>
+
+  <h3>Event Flow</h3>
+  <pre>TUI (opencode)
+  │
+  ├── hook-opencode.ps1 ──→ _shared/opencode-state.json ──→ server.mjs (watchFile)
+  │                                                              │
+  ├── file changes ──→ office-bridge.mjs ──→ emit() ──→ broadcast() (SSE)
+  │                                                              │
+  └── HTTP POST /emit /state ─────────────────────────────→ SSE → browser</pre>
+
+  <h3>Bridge — Auto-detect workspace activity</h3>
+  <table>
+    <tr><th>File type</th><th>Agent được gọi</th><th>Pipeline</th></tr>
+    <tr><td><code>.ts .js .html</code></td><td>Developer</td><td>Help → PM → Architect → Developer → QA → Review → DevOps → History</td></tr>
+    <tr><td><code>.css</code></td><td>UI/UX Designer</td><td>UI/UX (làm 1 mình)</td></tr>
+    <tr><td><code>.test.ts</code></td><td>QA Engineer</td><td>QA (làm 1 mình)</td></tr>
+    <tr><td><code>.md</code></td><td>Historian</td><td>Historian (làm 1 mình)</td></tr>
+    <tr><td><code>.json</code></td><td>DevOps</td><td>DevOps (làm 1 mình)</td></tr>
+  </table>
 </section>
 
-<section>
-  <h2>📦 32 Skills</h2>
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;font-size:.85em">
-    <div>🎮 <strong>Game (12):</strong> 2D, 3D, Isometric, Core, Physics, Audio, Assets, Optimization, PWA, Testing, Deploy, Preview</div>
-    <div>🌐 <strong>Web (8):</strong> Frontend, Backend, Database, Auth, Styling, Security, Testing, Deployment</div>
-    <div>🤖 <strong>AI (5):</strong> Agents, LLM, RAG, Prompts, Production</div>
-    <div>🛠️ <strong>Tool (5):</strong> CLI, Automation, Codegen, Extensions, Packaging</div>
-    <div>🎨 <strong>UI/UX (1):</strong> Design production</div>
-    <div>🏢 <strong>Office (1):</strong> Virtual Office TUI</div>
-  </div>
+<section id="install">
+  <h2>📦 Cài đặt</h2>
+  <pre># Clone vào project, đổi tên thành .opencode
+git clone &lt;repo-url&gt; .opencode
+
+# Dùng opencode mở project → tự động load config từ .opencode/opencode.json
+opencode</pre>
+
+  <p style="color:var(--muted);font-size:.85em">Portable: copy toàn bộ folder <code>.opencode</code> vào bất kỳ project nào — hoạt động ngay lập tức.</p>
+</section>
+
+<section id="policies">
+  <h2>🛡️ Chính sách</h2>
+  <table>
+    <tr><th>Policy</th><th>Cơ chế</th><th>Giới hạn</th></tr>
+    <tr><td>Retry</td><td>Exponential backoff 1s→2s→4s</td><td>Max 3 lần</td></tr>
+    <tr><td>Recovery</td><td>Checkpoint-based resume / rollback</td><td>Lỗi permanent</td></tr>
+    <tr><td>Reflection</td><td>4 mức: Task → Phase → Workflow → Incident</td><td>Ghi session log</td></tr>
+  </table>
 </section>
 
 <footer>
-  <p>PXH2910 · AI Company for Vibe Coding · v45 · 71 commits · <a href="https://github.com/anomalyco/opencode" style="color:var(--t1)">opencode</a></p>
+  PXH2910 v46 · AI Company for Vibe Coding · <a href="https://github.com/anomalyco/opencode" style="color:var(--t1)">opencode</a>
 </footer>
 
-</div>
+</main>
 </body>
 </html>

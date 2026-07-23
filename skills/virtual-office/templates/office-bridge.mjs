@@ -82,8 +82,8 @@ function resetGlobalIdle() {
       clearTimeout(state.idleTimers[ag])
       emit({ type: 'agent_state', agent: ag, tuiState: 'idle', message: '' })
       delete state.idleTimers[ag]
+      delete state.activeAgents[ag]
     }
-    state.activeAgents = {}
   }, WORK_IDLE_MS + 5000)
 }
 
@@ -267,7 +267,8 @@ function processBatch() {
     }
   })
 
-  state.activeAgents = activeNow
+  // Merge into activeAgents (don't replace — keep T1/T2 from prior batches)
+  Object.assign(state.activeAgents, activeNow)
 }
 
 function startHeartbeat() {

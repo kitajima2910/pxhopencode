@@ -622,7 +622,7 @@ function processEvent(event){
   if(event.type==='task_start'||event.type==='phase_change'){
     state.agent=event.to||event.from||state.agent;if(event.phase)state.phase=event.phase;if(event.workflow)state.workflow=event.workflow;if(event.retry)state.retry=event.retry
     if(state.agent)highlightAgent(state.agent)
-    if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}
+    if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}
     addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
   }else if(event.type==='agent_state'){
     const ag=event.agent,ch=chars[ag];if(ch){
@@ -662,7 +662,7 @@ function processEvent(event){
   }else if(event.type==='task_end'){
     const ch=chars[event.from||event.to];if(ch){const wasWorking=ch.w;stopTyping(ch);if(event.status!=='fail'&&wasWorking)showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)}
     addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Đã làm xong')}`,event.status==='fail'?'#f85149':color)
-  }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
+  }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
   updateStatus()
 }
 

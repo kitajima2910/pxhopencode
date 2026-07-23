@@ -19,6 +19,8 @@ git clone <repo-url> .opencode
 
 Sau đó dùng opencode mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
 
+> 📖 **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html) — kiến trúc, agents, workflows, virtual office, real-time sync.
+
 ---
 
 ## Văn Phòng Ảo — Khởi động nhanh
