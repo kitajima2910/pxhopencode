@@ -749,9 +749,23 @@ function animate(now){fc++;updateElapsed()
   if(state.mode==='sse'&&state.sseConnected&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
-    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w)ch.it=now+1000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
+    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w){ch.it=now+2000+Math.random()*3000;ch._wanderScheduled=false}}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
     // Event-driven idle timeout: leave desk after 10s of no events
     if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>10000&&a.n!=='pxh-help'&&a.n!=='pxh-pm'){stopTyping(ch)}
+    // Wander when idle (after returning from desk)
+    if(ch.state==='idle'&&!ch.w&&now>ch.it&&!ch._wanderScheduled){
+      if(a.n!=='pxh-help'&&a.n!=='pxh-pm'){
+        ch._wanderScheduled=true
+        const r=chars._r;let wx=ch.ix+(Math.random()-.5)*120,wy=ch.iy+(Math.random()-.5)*40
+        if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20)
+        else if(a.tier==='T2')wy=Math.min(Math.max(wy,r.t2t+20),r.t2b-20)
+        else if(a.tier==='T3')wy=Math.min(Math.max(wy,r.t3t+30),r.t3b-30)
+        else wy=Math.min(Math.max(wy,r.t4t+20),r.t4b-20)
+        wx=Math.max(60,Math.min(W-60,wx))
+        moveChar(ch,wx,wy,.6+Math.random()*.4)
+        setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+2000+Math.random()*4000;ch._wanderScheduled=false;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w){moveChar(ch,ch.ix,ch.iy,.8);ch._wanderScheduled=true}},2000)}},1200+Math.random()*1800)
+      }
+    }
   })
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
