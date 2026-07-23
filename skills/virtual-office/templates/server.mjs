@@ -97,6 +97,11 @@ const server = http.createServer((req, res) => {
           review: 'pxh-review-code', test: 'pxh-qa', build: 'pxh-devops',
           design: 'pxh-architect', save: 'pxh-save-history',
           classify: 'pxh-help', route: 'pxh-pm',
+          planning: 'pxh-pm', plan: 'pxh-pm', prepare: 'pxh-expert',
+          todos: 'pxh-pm', todo: 'pxh-pm', outline: 'pxh-architect',
+          fix: 'pxh-fix-bugs', debug: 'pxh-fix-bugs',
+          deploy: 'pxh-devops', polish: 'pxh-ui-ux',
+          monitoring: 'pxh-pm',
         }
         const agent = explicitAgent || STATE_MAP[tuiState] || 'pxh-expert'
         // Auto-trigger T1+T2 on first activity

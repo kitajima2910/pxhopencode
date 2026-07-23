@@ -646,6 +646,11 @@ function processEvent(event){
         write:'✍️ Writing...',edit:'✍️ Editing...',search:'🔎 Searching...',
         execute:'⚙️ Executing...',delegating:'📋 Delegating...',preparing:'📝 Preparing...',
         Style:'🎨 Styling...',Config:'⚙️ Config...',Script:'⚙️ Running...',
+        planning:'📋 Planning...',plan:'📋 Planning...',todos:'📋 Organizing tasks...',
+        todo:'📋 Organizing tasks...',outline:'🏗️ Outlining...',
+        fix:'🐛 Fixing...',debug:'🐛 Debugging...',
+        deploy:'🚀 Deploying...',polish:'🎨 Polishing...',
+        monitoring:'📡 Monitoring...',checking:'🔍 Checking...',
         completed:'✅ Completed',failed:'❌ Failed',idle:'',update:''
       }
       const msg=event.message||SM[st]||(st?`🔄 ${st}...`:'')

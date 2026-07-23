@@ -26,6 +26,7 @@ const AGENTS = {
   'pxh-devops':      { tier: 'T3', color: '#3498db' },
   'pxh-ui-ux':       { tier: 'T3', color: '#e91e63' },
   'pxh-save-history':{ tier: 'T4', color: '#663399' },
+  'pxh-office':      { tier: 'Virtual', color: '#8b949e' },
 }
 
 const EXT_MAP = [
@@ -184,6 +185,7 @@ const AGENT_ROLES = {
   'pxh-devops': { tuiState: 'Build',   msg: '⚙️ Lint → test → build' },
   'pxh-save-history': { tuiState: 'Infrastructure', msg: '💾 Save state & checkpoint' },
   'pxh-ui-ux':  { tuiState: 'Design',      msg: '🎨 Layout & responsive design' },
+  'pxh-office': { tuiState: 'Virtual Office', msg: '🏢 Virtual Office' },
 }
 
 // Signal connections: who sends dashed line to whom
