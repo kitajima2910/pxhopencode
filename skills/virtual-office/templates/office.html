@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Văn Phòng Ảo — pxhopencode</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --wall:#e8ddd0; --floor-wood:#c49464; --floor-dark:#a07040;
+  --desk:#d4a060; --monitor:#2a2a2a; --screen:#1a2a3a;
+  --glass:rgba(135,206,235,0.15); --plant:#4a7c3f;
+  --bg:#0d1117; --cyan:#58a6ff; --yellow:#d29922;
+  --green:#3fb950; --red:#f85149; --magenta:#bc8cff;
+  --white:#c9d1d9; --subtle:#8b949e;
+  --t1:#58a6ff; --t2:#d29922; --t3:#3fb950; --t4:#bc8cff;
+}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--bg); color:var(--white);
+  overflow:hidden; height:100vh; user-select:none;
+}
+#app{
+  width:100vw; height:100vh;
+  display:flex; flex-direction:column;
+}
+/* TITLE BAR */
+.title-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:6px 16px; background:rgba(255,255,255,0.03);
+  border-bottom:1px solid rgba(255,255,255,0.06); flex-shrink:0;
+}
+.title-bar h1{font-size:14px;font-weight:700;letter-spacing:0.5px}
+.title-bar .ver{font-size:10px;opacity:0.3}
+
+/* CANVAS AREA */
+#canvasWrap{
+  flex:1; position:relative; overflow:hidden;
+  background:radial-gradient(ellipse at 50% 30%, #1a2030 0%, #0d1117 70%);
+}
+canvas{display:block;width:100%;height:100%}
+
+/* STATUS BAR */
+.status-bar{
+  display:flex; align-items:center; gap:16px;
+  padding:6px 16px; background:rgba(0,0,0,0.5);
+  border-top:1px solid rgba(255,255,255,0.06); flex-shrink:0; font-size:12px;
+}
+.st-item{display:flex;align-items:center;gap:4px;opacity:0.7}
+.st-item .lbl{font-size:10px;opacity:0.5;text-transform:uppercase}
+.st-item .val{font-weight:600}
+.st-item .val.t1{color:var(--t1)} .st-item .val.t2{color:var(--t2)}
+.st-item .val.t3{color:var(--t3)} .st-item .val.t4{color:var(--t4)}
+
+/* ACTIVITY LOG OVERLAY */
+#logOverlay{
+  position:absolute; right:8px; bottom:8px; z-index:30;
+  max-width:240px; pointer-events:none;
+}
+.log-item{
+  font-size:9px; padding:2px 8px; margin:1px 0;
+  background:rgba(0,0,0,0.7); border-radius:3px;
+  border-left:2px solid rgba(255,255,255,0.2);
+  animation:slideIn 0.3s ease-out;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+@keyframes slideIn{0%{opacity:0;transform:translateX(20px)}100%{opacity:1;transform:translateX(0)}}
+
+/* SPEECH BUBBLE (positioned absolutely by JS) */
+.speech-bubble{
+  position:absolute; padding:3px 8px; font-size:9px;
+  background:rgba(0,0,0,0.85); color:var(--white);
+  border-radius:6px; white-space:nowrap; pointer-events:none;
+  opacity:0; transition:opacity 0.3s; z-index:40;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="title-bar">
+    <h1>🏢 Văn Phòng Ảo — IT Office</h1>
+    <span class="ver">pxhopencode v45 · 4-tier Runtime</span>
+  </div>
+  <div id="canvasWrap">
+    <canvas id="c"></canvas>
+    <div id="logOverlay"></div>
+  </div>
+  <div class="status-bar" id="statusBar">
+    <div class="st-item"><span class="lbl">Workflow</span><span class="val" id="wfVal">—</span></div>
+    <div class="st-item"><span class="lbl">Phase</span><span class="val" id="phVal">—</span></div>
+    <div class="st-item"><span class="lbl">Agent</span><span class="val" id="agVal">—</span></div>
+    <div class="st-item"><span class="lbl">Elapsed</span><span class="val" id="elVal">00:00:00</span></div>
+    <div class="st-item"><span class="lbl">Retry</span><span class="val" id="rtVal">0/3</span></div>
+    <div style="flex:1"></div>
+    <div class="st-item"><span id="modeTxt" style="opacity:0.8">🔴 Live</span></div>
+    <div class="st-item"><span class="lbl">Sound</span><span id="sndToggle" style="cursor:pointer" title="Toggle sound">🔊</span></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// SOUND ENGINE (procedural — no external files)
+// ============================================================
+const AudioCtx = window.AudioContext || window.webkitAudioContext
+let audioCtx = null
+let soundOn = true
+
+function ensureAudio(){ if(!audioCtx) audioCtx = new AudioCtx() }
+
+let ambientNode = null
+function playAmbient(){
+  if(!soundOn) return
+  ensureAudio()
+  if(ambientNode) return
+  const ctx = audioCtx
+  ambientNode = { stop:()=>{} }
+  const gain = ctx.createGain()
+  gain.gain.value = 0.03
+  gain.connect(ctx.destination)
+
+  function addHum(freq, mod){
+    const o = ctx.createOscillator()
+    const g = ctx.createGain()
+    o.type = 'sine'; o.frequency.value = freq
+    g.gain.value = mod * 0.1
+    o.connect(g); g.connect(gain)
+    o.start()
+    ambientNode._nodes = ambientNode._nodes || []
+    ambientNode._nodes.push(o)
+    return o
+  }
+  addHum(60, 0.5)
+  addHum(90, 0.3)
+  addHum(120, 0.2)
+  const lfo = ctx.createOscillator()
+  const lfoG = ctx.createGain()
+  lfo.frequency.value = 0.1; lfo.type = 'sine'
+  lfoG.gain.value = 0.01
+  lfo.connect(lfoG); lfoG.connect(gain.gain)
+  lfo.start()
+  ambientNode._nodes.push(lfo)
+  ambientNode.stop = ()=>{
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5)
+    setTimeout(()=>{
+      ambientNode._nodes.forEach(n=>{try{n.stop()}catch{}})
+      ambientNode = null
+    }, 600)
+  }
+}
+
+function sfx(type){
+  if(!soundOn) return
+  ensureAudio()
+  const ctx = audioCtx
+  const t = ctx.currentTime
+  const master = ctx.createGain()
+  master.connect(ctx.destination)
+
+  if(type === 'keyboard'){
+    master.gain.setValueAtTime(0.08, t)
+    master.gain.exponentialRampToValueAtTime(0.001, t + 0.04)
+    const o = ctx.createOscillator()
+    o.type = 'square'; o.frequency.setValueAtTime(800 + Math.random()*400, t)
+    o.connect(master); o.start(t); o.stop(t + 0.04)
+  } else if(type === 'footstep'){
+    master.gain.setValueAtTime(0.04, t)
+    master.gain.exponentialRampToValueAtTime(0.001, t + 0.06)
+    const o = ctx.createOscillator()
+    o.type = 'triangle'; o.frequency.setValueAtTime(100 + Math.random()*50, t)
+    o.connect(master); o.start(t); o.stop(t + 0.06)
+  } else if(type === 'notification'){
+    master.gain.setValueAtTime(0.1, t)
+    master.gain.exponentialRampToValueAtTime(0.001, t + 0.2)
+    const o1 = ctx.createOscillator(); o1.type = 'sine'
+    o1.frequency.setValueAtTime(880, t); o1.frequency.setValueAtTime(1100, t + 0.08)
+    o1.connect(master); o1.start(t); o1.stop(t + 0.2)
+  } else if(type === 'task_start'){
+    master.gain.setValueAtTime(0.12, t)
+    master.gain.exponentialRampToValueAtTime(0.001, t + 0.3)
+    const o1 = ctx.createOscillator(); o1.type = 'sine'
+    o1.frequency.setValueAtTime(523, t); o1.frequency.setValueAtTime(659, t + 0.08)
+    o1.frequency.setValueAtTime(784, t + 0.16)
+    o1.connect(master); o1.start(t); o1.stop(t + 0.3)
+  } else if(type === 'contract'){
+    master.gain.setValueAtTime(0.06, t)
+    const o = ctx.createOscillator(); o.type = 'triangle'
+    o.frequency.setValueAtTime(300, t); o.frequency.linearRampToValueAtTime(600, t + 0.4)
+    o.connect(master); o.start(t); o.stop(t + 0.5)
+  } else if(type === 'door'){
+    master.gain.setValueAtTime(0.06, t)
+    master.gain.exponentialRampToValueAtTime(0.001, t + 0.15)
+    const o = ctx.createOscillator(); o.type = 'triangle'
+    o.frequency.setValueAtTime(200, t); o.frequency.linearRampToValueAtTime(100, t + 0.15)
+    o.connect(master); o.start(t); o.stop(t + 0.15)
+  }
+}
+
+function toggleSound(){
+  soundOn = !soundOn
+  document.getElementById('sndToggle').textContent = soundOn ? '🔊' : '🔇'
+  if(soundOn){ playAmbient() } else {
+    if(ambientNode){ ambientNode.stop(); ambientNode = null }
+  }
+}
+document.getElementById('sndToggle').addEventListener('click', toggleSound)
+
+// ============================================================
+// DATA
+// ============================================================
+const AGENTS = {
+  'pxh-help':        { id:'help', name:'pxh-help', role:'Help Desk', tier:'T1', color:'#58a6ff', hair:'#006699', body:'#1a5c8a', eyes:true },
+  'pxh-pm':          { id:'pm', name:'pxh-pm', role:'CEO', tier:'T2', color:'#d29922', hair:'#1a1a2e', body:'#8b6914', eyes:true },
+  'pxh-architect':   { id:'architect', name:'pxh-architect', role:'Architect', tier:'T3', color:'#bc8cff', hair:'#4a3520', body:'#6b3fa0', eyes:true },
+  'pxh-expert':      { id:'expert', name:'pxh-expert', role:'Developer', tier:'T3', color:'#3fb950', hair:'#2a2a3a', body:'#2a7a3f', eyes:true },
+  'pxh-fix-bugs':    { id:'fix-bugs', name:'pxh-fix-bugs', role:'Bug Hunter', tier:'T3', color:'#f85149', hair:'#cc3333', body:'#9b2d2d', eyes:true },
+  'pxh-qa':          { id:'qa', name:'pxh-qa', role:'QA Engineer', tier:'T3', color:'#3fb950', hair:'#8B4513', body:'#1a6b5a', eyes:true },
+  'pxh-review-code': { id:'review-code', name:'pxh-review-code', role:'Reviewer', tier:'T3', color:'#d29922', hair:'#444', body:'#7a5a10', eyes:true },
+  'pxh-devops':      { id:'devops', name:'pxh-devops', role:'DevOps', tier:'T3', color:'#58a6ff', hair:'#2c3e50', body:'#1a5080', eyes:true },
+  'pxh-ui-ux':       { id:'ui-ux', name:'pxh-ui-ux', role:'Designer', tier:'T3', color:'#f85149', hair:'#6a1b9a', body:'#8b2550', eyes:true },
+  'pxh-save-history':{ id:'save-history', name:'pxh-save-history', role:'Historian', tier:'T4', color:'#bc8cff', hair:'#555', body:'#4a2a6b', eyes:true },
+}
+const AGENT_LIST = Object.values(AGENTS)
+
+// LAYOUT: pixel positions based on canvas size
+let W, H
+
+// ============================================================
+// CHARACTER STATE MACHINE
+// ============================================================
+// States: 'idle' | 'walking' | 'sitting' | 'typing' | 'wandering'
+const chars = {}
+AGENT_LIST.forEach(a => {
+  chars[a.name] = {
+    agent: a,
+    state: 'idle',
+    x: 0, y: 0,        // current position
+    tx: 0, ty: 0,      // target position
+    deskX: 0, deskY: 0, // assigned desk position
+    idleX: 0, idleY: 0, // idle standing position (near desk)
+    walkSpeed: 0,
+    animTimer: 0,
+    idleActionTimer: Math.random() * 5000 + 3000,
+    typingTimer: 0,
+    typingInterval: 0,
+    working: false,
+    focusTimer: 0,
+    bobY: 0,
+  }
+})
+
+// Contract flying objects
+const contracts = []
+
+// Office plants
+const plants = []
+
+// ============================================================
+// LAYOUT ENGINE
+// ============================================================
+function calcLayout(){
+  W = c.width; H = c.height
+
+  // Define floor regions
+  const margin = 60
+  const headerH = 0
+  const footerH = 0
+  const availH = H - headerH - footerH
+
+  // Floor heights (proportional)
+  const t4H = availH * 0.18
+  const t3H = availH * 0.40
+  const t2H = availH * 0.18
+  const t1H = availH * 0.16
+  const gapH = availH * 0.02
+  const floorGap = availH * 0.02
+
+  let y = headerH
+
+  // T4 - Server Room
+  const t4Top = y
+  const t4Bot = t4Top + t4H
+  y = t4Bot + floorGap
+
+  // T3 - Open Workspace (biggest)
+  const t3Top = y
+  const t3Bot = t3Top + t3H
+  y = t3Bot + floorGap
+
+  // T2 - PM Office
+  const t2Top = y
+  const t2Bot = t2Top + t2H
+  y = t2Bot + floorGap
+
+  // T1 - Reception
+  const t1Top = y
+  const t1Bot = t1Top + t1H
+
+  // Desk positions for T3 (7 workers in 2 rows)
+  // Top row: architect, expert, fix-bugs
+  // Bottom row: qa, review-code, devops, ui-ux
+  const t3Desks = ['pxh-architect','pxh-expert','pxh-fix-bugs','pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
+  const topRow = ['pxh-architect','pxh-expert','pxh-fix-bugs']
+  const botRow = ['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
+
+  const topRowY = t3Top + t3H * 0.25
+  const botRowY = t3Top + t3H * 0.7
+  const deskW = (W - margin * 2) / 4
+
+  topRow.forEach((name, i) => {
+    const cx = margin + deskW * (i + 0.5) + deskW * 0.25
+    const a = chars[name]
+    a.deskX = cx; a.deskY = topRowY
+    a.idleX = cx + 20; a.idleY = topRowY + 20
+    a.x = a.idleX; a.y = a.idleY
+    a.tx = a.idleX; a.ty = a.idleY
+  })
+  botRow.forEach((name, i) => {
+    const cx = margin + deskW * (i + 0.5) + deskW * 0.125
+    const a = chars[name]
+    a.deskX = cx; a.deskY = botRowY
+    a.idleX = cx + 25; a.idleY = botRowY + 30
+    a.x = a.idleX; a.y = a.idleY
+    a.tx = a.idleX; a.ty = a.idleY
+  })
+
+  // T2 - PM desk (center)
+  const pm = chars['pxh-pm']
+  pm.deskX = W * 0.5; pm.deskY = t2Top + t2H * 0.4
+  pm.idleX = W * 0.5 + 30; pm.idleY = t2Top + t2H * 0.4 + 20
+  pm.x = pm.idleX; pm.y = pm.idleY
+  pm.tx = pm.idleX; pm.ty = pm.idleY
+
+  // T1 - Help desk (left)
+  const help = chars['pxh-help']
+  help.deskX = W * 0.25; help.deskY = t1Top + t1H * 0.4
+  help.idleX = W * 0.25 + 30; help.idleY = t1Top + t1H * 0.4 + 20
+  help.x = help.idleX; help.y = help.idleY
+  help.tx = help.idleX; help.ty = help.idleY
+
+  // T4 - Server room (right side)
+  const sh = chars['pxh-save-history']
+  sh.deskX = W * 0.5; sh.deskY = t4Top + t4H * 0.5
+  sh.idleX = W * 0.5 + 25; sh.idleY = t4Top + t4H * 0.5 + 10
+  sh.x = sh.idleX; sh.y = sh.idleY
+  sh.tx = sh.idleX; sh.ty = sh.idleY
+
+  // Plants
+  plants.length = 0
+  plants.push({ x: margin * 0.3, y: t1Top + t1H * 0.3, size: 18 })
+  plants.push({ x: W - margin * 0.3, y: t1Top + t1H * 0.6, size: 14 })
+  plants.push({ x: margin * 0.6, y: t3Top + t3H * 0.5, size: 22 })
+  plants.push({ x: W - margin * 0.6, y: t3Top + t3H * 0.5, size: 16 })
+  plants.push({ x: W - margin * 0.5, y: t4Top + t4H * 0.7, size: 12 })
+
+  // Store regions for rendering
+  chars._regions = { t1Top, t1Bot, t2Top, t2Bot, t3Top, t3Bot, t4Top, t4Bot, gapH, floorGap }
+}
+
+// ============================================================
+// RENDERING
+// ============================================================
+const c = document.getElementById('c')
+const ctx = c.getContext('2d')
+
+function resize(){
+  const wrap = document.getElementById('canvasWrap')
+  const dpr = window.devicePixelRatio || 1
+  c.width = wrap.clientWidth * dpr
+  c.height = wrap.clientHeight * dpr
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+  W = wrap.clientWidth; H = wrap.clientHeight
+  calcLayout()
+}
+window.addEventListener('resize', resize)
+resize()
+
+let frameCount = 0
+
+function drawFloor(y0, y1, label, color, alpha){
+  // Floor background
+  const grad = ctx.createLinearGradient(0, y0, 0, y1)
+  grad.addColorStop(0, `rgba(${hexToRgb(color)},${alpha*0.08})`)
+  grad.addColorStop(1, `rgba(${hexToRgb(color)},${alpha*0.04})`)
+  ctx.fillStyle = grad
+  ctx.fillRect(0, y0, W, y1 - y0)
+
+  // Floor line at bottom
+  ctx.strokeStyle = `rgba(${hexToRgb(color)},${alpha*0.3})`
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(40, y1)
+  ctx.lineTo(W - 40, y1)
+  ctx.stroke()
+
+  // Floor label
+  ctx.fillStyle = color
+  ctx.globalAlpha = alpha * 0.7
+  ctx.font = 'bold 11px "Segoe UI",sans-serif'
+  ctx.textAlign = 'left'
+  ctx.fillText(label, 12, y0 + 16)
+  ctx.globalAlpha = 1
+}
+
+function hexToRgb(hex){
+  const r = parseInt(hex.slice(1,3), 16)
+  const g = parseInt(hex.slice(3,5), 16)
+  const b = parseInt(hex.slice(5,7), 16)
+  return `${r},${g},${b}`
+}
+
+function drawPlant(x, y, size){
+  ctx.save()
+  // Pot
+  ctx.fillStyle = '#5a3a1a'
+  ctx.beginPath()
+  ctx.moveTo(x - size*0.3, y)
+  ctx.lineTo(x + size*0.3, y)
+  ctx.lineTo(x + size*0.25, y + size*0.4)
+  ctx.lineTo(x - size*0.25, y + size*0.4)
+  ctx.closePath()
+  ctx.fill()
+
+  // Leaves
+  const sway = Math.sin(frameCount * 0.02 + x) * 2
+  ctx.fillStyle = '#4a7c3f'
+  ctx.beginPath()
+  ctx.arc(x + sway, y - size*0.15, size*0.4, 0, Math.PI*2)
+  ctx.fill()
+  ctx.fillStyle = '#5a9a4f'
+  ctx.beginPath()
+  ctx.arc(x + sway + 3, y - size*0.25, size*0.25, 0, Math.PI*2)
+  ctx.fill()
+  ctx.fillStyle = '#3a6a2f'
+  ctx.beginPath()
+  ctx.arc(x + sway - 2, y - size*0.3, size*0.2, 0, Math.PI*2)
+  ctx.fill()
+  ctx.restore()
+}
+
+function drawServerRack(x, y, w, h){
+  ctx.save()
+  ctx.fillStyle = '#161b22'
+  ctx.strokeStyle = '#30363d'
+  ctx.lineWidth = 1
+  ctx.fillRect(x, y, w, h)
+  ctx.strokeRect(x, y, w, h)
+
+  for(let i = 0; i < 5; i++){
+    const uy = y + 4 + i * (h - 8) / 5
+    const blink = Math.sin(frameCount * 0.05 + i * 1.2) > 0
+    ctx.fillStyle = blink ? (i%2 ? '#0d4a3a':'#0a3a5a') : '#0a1a1a'
+    ctx.fillRect(x + 3, uy, w - 6, (h - 8) / 5 - 2)
+
+    // LED
+    ctx.fillStyle = blink ? (i%2 ? '#3fb950':'#58a6ff') : '#30363d'
+    ctx.beginPath()
+    ctx.arc(x + w - 6, uy + 3, 1.5, 0, Math.PI*2)
+    ctx.fill()
+  }
+  ctx.restore()
+}
+
+function drawMonitor(x, y, isActive){
+  ctx.save()
+  const w = 28, h = 20
+  // Stand
+  ctx.fillStyle = '#484f58'
+  ctx.fillRect(x - 3, y + h, 6, 5)
+  ctx.fillRect(x - 8, y + h + 4, 16, 3)
+  // Monitor frame
+  ctx.fillStyle = '#21262d'
+  ctx.fillRect(x - w/2, y, w, h)
+  ctx.strokeStyle = '#30363d'
+  ctx.lineWidth = 1
+  ctx.strokeRect(x - w/2, y, w, h)
+  // Screen
+  if(isActive){
+    ctx.fillStyle = '#0d2137'
+    ctx.fillRect(x - w/2 + 2, y + 2, w - 4, h - 4)
+    // Code lines
+    ctx.strokeStyle = '#3fb950'
+    ctx.lineWidth = 1
+    for(let i = 0; i < 4; i++){
+      const ly = y + 5 + i * 3
+      ctx.beginPath()
+      ctx.moveTo(x - w/2 + 4, ly)
+      ctx.lineTo(x - w/2 + 4 + (Math.sin(frameCount*0.1 + i)*5 + 15), ly)
+      ctx.stroke()
+    }
+    // Cursor blink
+    if(Math.floor(frameCount/15) % 2){
+      ctx.fillStyle = '#3fb950'
+      ctx.fillRect(x - w/2 + 4 + 15, y + 5, 6, 2)
+    }
+  } else {
+    ctx.fillStyle = '#0d1117'
+    ctx.fillRect(x - w/2 + 2, y + 2, w - 4, h - 4)
+  }
+  ctx.restore()
+}
+
+function drawLaptop(x, y, isActive){
+  ctx.save()
+  // Base
+  ctx.fillStyle = '#30363d'
+  ctx.fillRect(x - 14, y + 4, 28, 8)
+  // Screen
+  ctx.fillStyle = '#21262d'
+  ctx.fillRect(x - 14, y - 16, 28, 20)
+  ctx.strokeStyle = '#484f58'
+  ctx.lineWidth = 1
+  ctx.strokeRect(x - 14, y - 16, 28, 20)
+  if(isActive){
+    ctx.fillStyle = '#0d2137'
+    ctx.fillRect(x - 12, y - 14, 24, 16)
+    ctx.strokeStyle = '#58a6ff'
+    ctx.lineWidth = 1
+    for(let i = 0; i < 3; i++){
+      ctx.beginPath()
+      ctx.moveTo(x - 10, y - 12 + i*5)
+      ctx.lineTo(x - 10 + Math.sin(frameCount*0.08 + i)*6 + 10, y - 12 + i*5)
+      ctx.stroke()
+    }
+    if(Math.floor(frameCount/12) % 2){
+      ctx.fillStyle = '#58a6ff'
+      ctx.fillRect(x - 10 + 10, y - 12, 6, 2)
+    }
+  } else {
+    ctx.fillStyle = '#0d1117'
+    ctx.fillRect(x - 12, y - 14, 24, 16)
+  }
+  ctx.restore()
+}
+
+function drawCharacter(ch){
+  const a = ch.agent
+  const x = ch.x, y = ch.y
+  const s = ch.state
+  const bob = Math.sin(frameCount * 0.06 + ch.animTimer) * (s === 'idle' ? 1.5 : (s === 'typing' ? 2 : 0))
+
+  ctx.save()
+  ctx.translate(x, y + ch.bobY)
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.3)'
+  ctx.beginPath()
+  ctx.ellipse(0, 14, 10, 4, 0, 0, Math.PI*2)
+  ctx.fill()
+
+  // Legs (if standing/walking)
+  if(s !== 'sitting' && s !== 'typing'){
+    const walkLeg = (s === 'walking') ? Math.sin(frameCount * 0.2) * 8 : 0
+    ctx.fillStyle = '#30363d'
+    ctx.fillRect(-4, 5, 5, 10)
+    ctx.fillRect(1, 5 + walkLeg * 0.5, 5, 10)
+    // Shoes
+    ctx.fillStyle = '#21262d'
+    ctx.fillRect(-5, 14, 7, 3)
+    ctx.fillRect(0, 14 + walkLeg * 0.3, 7, 3)
+  }
+
+  // Body
+  ctx.fillStyle = a.body
+  ctx.beginPath()
+  if(s === 'sitting' || s === 'typing'){
+    // Sitting: shorter, wider body
+    ctx.roundRect(-8, -2, 16, 16, 4)
+  } else {
+    ctx.roundRect(-8, -4, 16, 20, 4)
+  }
+  ctx.fill()
+
+  // Arms
+  ctx.fillStyle = a.body
+  const armY = (s === 'sitting' || s === 'typing') ? 2 : 1
+  if(s === 'typing'){
+    // Typing arms - moving up and down quickly
+    const typeY = Math.sin(frameCount * 0.5 + ch.typingTimer) * 3
+    ctx.fillRect(-13, armY + typeY, 5, 10)
+    ctx.fillRect(10, armY - typeY, 5, 10)
+
+    // Hands on keyboard area
+    ctx.fillStyle = '#e8c090'
+    ctx.beginPath()
+    ctx.arc(-11, armY + 10 + typeY, 3, 0, Math.PI*2)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.arc(12, armY + 10 - typeY, 3, 0, Math.PI*2)
+    ctx.fill()
+  } else if(s === 'sitting'){
+    ctx.fillRect(-12, armY, 5, 10)
+    ctx.fillRect(9, armY, 5, 10)
+  } else if(s === 'walking'){
+    const armSwing = Math.sin(frameCount * 0.2) * 15
+    ctx.fillRect(-12, armY, 5, 10)
+    ctx.fillRect(9, armY, 5, 12)
+  } else {
+    ctx.fillRect(-12, armY, 5, 11)
+    ctx.fillRect(9, armY, 5, 11)
+  }
+
+  // Collar
+  const collarY = (s === 'sitting' || s === 'typing') ? -2 : -4
+  ctx.fillStyle = 'rgba(255,255,255,0.12)'
+  ctx.fillRect(-4, collarY, 8, 3)
+
+  // Head
+  const headY = (s === 'sitting' || s === 'typing') ? -16 : -20
+  ctx.fillStyle = '#e8c090'
+  ctx.beginPath()
+  ctx.arc(0, headY + bob, 10, 0, Math.PI*2)
+  ctx.fill()
+
+  // Hair
+  ctx.fillStyle = a.hair
+  ctx.beginPath()
+  ctx.arc(0, headY + bob - 3, 11, Math.PI, Math.PI*2)
+  ctx.fill()
+
+  // Eyes
+  ctx.fillStyle = '#0d1117'
+  ctx.beginPath()
+  ctx.arc(-3, headY + bob, 2, 0, Math.PI*2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(3, headY + bob, 2, 0, Math.PI*2)
+  ctx.fill()
+
+  // Eye blink
+  if(Math.floor(frameCount / 60) % 7 === 0){
+    // blinks handled via CSS before, skip in canvas for simplicity
+  }
+
+  // Mouth
+  const mouthY = headY + bob + 3
+  ctx.strokeStyle = '#c44'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  if(s === 'typing'){
+    // Focused
+    ctx.moveTo(-2, mouthY)
+    ctx.lineTo(2, mouthY)
+  } else {
+    // Slight smile
+    ctx.arc(0, mouthY, 3, 0.1, Math.PI - 0.1)
+  }
+  ctx.stroke()
+
+  // Badge
+  const badgeY = (s === 'sitting' || s === 'typing') ? -10 : -12
+  ctx.fillStyle = `rgba(${hexToRgb(a.color)},0.2)`
+  ctx.fillRect(-10, badgeY + bob - 2, 20, 8)
+  ctx.fillStyle = a.color
+  ctx.font = '6px "Segoe UI",sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(a.role.toUpperCase(), 0, badgeY + bob + 4)
+
+  ctx.restore()
+}
+
+function drawContract(cx, cy, alpha, emoji){
+  ctx.save()
+  ctx.globalAlpha = alpha
+  ctx.translate(cx, cy)
+  ctx.rotate(Math.sin(frameCount * 0.05) * 0.1)
+  // Paper
+  ctx.fillStyle = '#f0e6d3'
+  ctx.fillRect(-10, -7, 20, 14)
+  ctx.strokeStyle = '#d4a574'
+  ctx.lineWidth = 1
+  ctx.strokeRect(-10, -7, 20, 14)
+  // Lines
+  ctx.strokeStyle = '#ccc'
+  ctx.lineWidth = 0.5
+  for(let i = 0; i < 3; i++){
+    ctx.beginPath()
+    ctx.moveTo(-7, -3 + i * 4)
+    ctx.lineTo(7, -3 + i * 4)
+    ctx.stroke()
+  }
+  ctx.font = '10px sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(emoji || '📄', 0, 2)
+  ctx.restore()
+}
+
+// ============================================================
+// ANIMATION + SIMULATION
+// ============================================================
+function moveChar(ch, tx, ty, speed){
+  ch.tx = tx; ch.ty = ty
+  ch.walkSpeed = speed || 1.5
+  ch.state = 'walking'
+}
+
+function sitAtDesk(ch){
+  ch.state = 'sitting'
+  ch.x = ch.deskX
+  ch.y = ch.deskY + 16
+  ch.tx = ch.x; ch.ty = ch.y
+  ch.working = false
+}
+
+function startTyping(ch){
+  ch.state = 'typing'
+  ch.x = ch.deskX
+  ch.y = ch.deskY + 16
+  ch.tx = ch.x; ch.ty = ch.y
+  ch.working = true
+  ch.typingTimer = 0
+  ch.typingInterval = setInterval(() => {
+    if(ch.state === 'typing') sfx('keyboard')
+  }, 150 + Math.random() * 200)
+}
+
+function stopTyping(ch){
+  ch.state = 'idle'
+  ch.working = false
+  if(ch.typingInterval){ clearInterval(ch.typingInterval); ch.typingInterval = null }
+  ch.idleActionTimer = performance.now() + 2000
+  // Walk back to idle position
+  moveChar(ch, ch.idleX, ch.idleY, 1)
+}
+
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  workflow: '—', phase: '—', agent: null, retry: '0/3',
+  elapsed: 0, startTime: Date.now(),
+  mode: location.protocol === 'http:' || location.protocol === 'https:' ? 'sse' : 'demo',
+  sseConnected: false, lastRealEvent: 0,
+  idleSimActive: false, idleSimPhase: 0,
+  lastTick: -1,
+}
+
+const WORKFLOWS = ['/vibe','/web','/game','/ai','/tool']
+const PIPELINE = [
+  { phase:'Tiếp nhận', agent:'pxh-help', from:'T0', to:'T1', msg:'✓ Prompt validated', emoji:'💬' },
+  { phase:'Điều phối', agent:'pxh-pm', from:'T1', to:'T2', msg:'→ Route to workflow', emoji:'📋' },
+  { phase:'Thiết kế', agent:'pxh-architect', from:'T2', to:'T3', msg:'✓ Schema designed', emoji:'📐' },
+  { phase:'Code', agent:'pxh-expert', from:'T2', to:'T3', msg:'✓ Implementation done', emoji:'💻' },
+  { phase:'Kiểm thử', agent:'pxh-qa', from:'T3', to:'T3', msg:'✓ Tests pass', emoji:'✅' },
+  { phase:'Sửa lỗi', agent:'pxh-fix-bugs', from:'T3', to:'T3', msg:'→ Root cause fixed', emoji:'🐛' },
+  { phase:'Rà soát', agent:'pxh-review-code', from:'T3', to:'T3', msg:'✓ Review OK', emoji:'🔍' },
+  { phase:'Phát hành', agent:'pxh-devops', from:'T3', to:'T4', msg:'✓ Build success', emoji:'⚙️' },
+  { phase:'Lưu trữ', agent:'pxh-save-history', from:'T3', to:'T4', msg:'✓ Session saved', emoji:'📦' },
+]
+
+function addLog(msg, color){
+  const ct = document.getElementById('logOverlay')
+  const d = document.createElement('div')
+  d.className = 'log-item'
+  d.style.borderLeftColor = color || '#888'
+  const now = new Date()
+  d.textContent = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} ${msg}`
+  ct.insertBefore(d, ct.firstChild)
+  if(ct.children.length > 8) ct.removeChild(ct.lastChild)
+}
+
+function updateStatus(){
+  document.getElementById('wfVal').textContent = state.workflow
+  document.getElementById('phVal').textContent = state.phase
+  document.getElementById('agVal').textContent = state.agent || '—'
+  document.getElementById('rtVal').textContent = state.retry
+}
+
+function updateElapsed(){
+  const ms = Date.now() - state.startTime
+  const h = String(Math.floor(ms/3600000)).padStart(2,'0')
+  const m = String(Math.floor((ms%3600000)/60000)).padStart(2,'0')
+  const s = String(Math.floor((ms%60000)/1000)).padStart(2,'0')
+  document.getElementById('elVal').textContent = `${h}:${m}:${s}`
+}
+
+function highlightAgent(name){
+  // Stop previous typing
+  AGENT_LIST.forEach(a => {
+    const ch = chars[a.name]
+    if(ch.working && a.name !== name){
+      stopTyping(ch)
+    }
+  })
+  // Start typing for target
+  const ch = chars[name]
+  if(ch && ch.state !== 'typing'){
+    startTyping(ch)
+  }
+}
+
+function simulatePipeline(){
+  const tick = state.idleSimPhase % PIPELINE.length
+  const step = PIPELINE[tick]
+  const prev = PIPELINE[(tick - 1 + PIPELINE.length) % PIPELINE.length]
+
+  state.phase = step.phase
+  state.agent = step.agent
+  state.workflow = WORKFLOWS[tick % WORKFLOWS.length]
+
+  highlightAgent(step.agent)
+  sfx('task_start')
+
+  const tc = { T0:'#8b949e', T1:'#58a6ff', T2:'#d29922', T3:'#3fb950', T4:'#bc8cff' }
+  addLog(`[${step.from}→${step.to}] ${step.emoji} ${step.msg}`, tc[step.to])
+
+  // Contract fly between tiers
+  if(step.from !== step.to){
+    const regs = chars._regions
+    const tierMap = { T0: regs.t1Top + 10, T1: (regs.t1Top + regs.t1Bot)/2, T2: (regs.t2Top + regs.t2Bot)/2, T3: (regs.t3Top + regs.t3Bot)/2, T4: (regs.t4Top + regs.t4Bot)/2 }
+    contracts.push({
+      x: W * 0.5, y: tierMap[step.from] || 0,
+      ty: tierMap[step.to] || 0,
+      alpha: 1,
+      emoji: step.emoji,
+      life: 80,
+    })
+    sfx('contract')
+  }
+
+  state.idleSimPhase++
+  updateStatus()
+}
+
+function processEvent(event){
+  const isRealEvent = event.type !== 'agent_status' && event.type !== 'connected'
+  if(isRealEvent){
+    state.lastRealEvent = performance.now()
+    if(state.idleSimActive){
+      state.idleSimActive = false
+      document.getElementById('modeTxt').textContent = '🔴 Live'
+      document.getElementById('modeTxt').style.opacity = '0.8'
+    }
+  }
+
+  const tc = { T0:'#8b949e', T1:'#58a6ff', T2:'#d29922', T3:'#3fb950', T4:'#bc8cff' }
+  const ac = event.tier_from || event.tier_to || 'T1'
+  const color = tc[ac] || '#888'
+
+  if(event.type === 'task_start' || event.type === 'phase_change'){
+    state.agent = event.to || event.from || state.agent
+    if(event.phase) state.phase = event.phase
+    if(event.workflow) state.workflow = event.workflow
+    if(event.retry) state.retry = event.retry
+    if(state.agent) highlightAgent(state.agent)
+    if(event.tier_from && event.tier_to){
+      const regs = chars._regions
+      const tierMap = { T0: regs.t1Top + 10, T1: (regs.t1Top + regs.t1Bot)/2, T2: (regs.t2Top + regs.t2Bot)/2, T3: (regs.t3Top + regs.t3Bot)/2, T4: (regs.t4Top + regs.t4Bot)/2 }
+      contracts.push({
+        x: W * 0.5, y: tierMap[event.tier_from] || 0,
+        ty: tierMap[event.tier_to] || 0,
+        alpha: 1,
+        emoji: '📄',
+        life: 80,
+      })
+      sfx('contract')
+    }
+    const msg = event.message || `${event.type} event`
+    addLog(`[${ac}] ${msg}`, color)
+    if(isRealEvent) sfx('notification')
+  } else if(event.type === 'task_end'){
+    if(event.to && event.status === 'success'){
+      // Agent can relax
+      const ch = chars[event.from || event.to]
+      if(ch && ch.working) stopTyping(ch)
+    }
+    addLog(`[${ac}] ${event.message || (event.status==='fail'?'✗ Failed':'✓ Done')}`, event.status==='fail'?'#f85149':color)
+  } else if(event.type === 'contract'){
+    if(event.tier_from && event.tier_to){
+      const regs = chars._regions
+      const tierMap = { T0: regs.t1Top + 10, T1: (regs.t1Top + regs.t1Bot)/2, T2: (regs.t2Top + regs.t2Bot)/2, T3: (regs.t3Top + regs.t3Bot)/2, T4: (regs.t4Top + regs.t4Bot)/2 }
+      contracts.push({
+        x: W * 0.5, y: tierMap[event.tier_from] || 0,
+        ty: tierMap[event.tier_to] || 0,
+        alpha: 1,
+        emoji: '📄',
+        life: 80,
+      })
+      sfx('contract')
+    }
+  } else if(!isRealEvent){
+    // heartbeat — ignore visually
+    return
+  } else {
+    addLog(event.message || '', '#8b949e')
+  }
+  updateStatus()
+}
+
+// ============================================================
+// SSE
+// ============================================================
+function connectSSE(){
+  const evtSource = new EventSource('/events')
+  evtSource.onopen = () => {
+    state.sseConnected = true
+    state.lastRealEvent = performance.now()
+    document.getElementById('modeTxt').textContent = '🔴 Live'
+    document.getElementById('modeTxt').style.opacity = '0.8'
+    addLog('🔴 SSE — real-time sync', '#58a6ff')
+    playAmbient()
+    sfx('door')
+  }
+  evtSource.onmessage = (e) => {
+    try {
+      const event = JSON.parse(e.data)
+      if(event.type === 'connected') return
+      processEvent(event)
+    } catch {}
+  }
+  evtSource.onerror = () => {
+    state.sseConnected = false
+    document.getElementById('modeTxt').textContent = '⚠️ Reconnecting...'
+    document.getElementById('modeTxt').style.opacity = '0.4'
+    setTimeout(connectSSE, 3000)
+  }
+}
+
+// ============================================================
+// IDLE BEHAVIOR
+// ============================================================
+function randomWander(ch){
+  if(ch.state !== 'idle') return
+  const regs = chars._regions
+  let wx = ch.idleX + (Math.random() - 0.5) * 80
+  let wy = ch.idleY + (Math.random() - 0.5) * 40
+  // Clamp to floor
+  const a = ch.agent
+  if(a.tier === 'T1'){ wy = Math.min(Math.max(wy, regs.t1Top + 20), regs.t1Bot - 20) }
+  else if(a.tier === 'T2'){ wy = Math.min(Math.max(wy, regs.t2Top + 20), regs.t2Bot - 20) }
+  else if(a.tier === 'T3'){ wy = Math.min(Math.max(wy, regs.t3Top + 30), regs.t3Bot - 30) }
+  else { wy = Math.min(Math.max(wy, regs.t4Top + 20), regs.t4Bot - 20) }
+  wx = Math.max(60, Math.min(W - 60, wx))
+  moveChar(ch, wx, wy, 0.8 + Math.random() * 0.5)
+  sfx('footstep')
+  // Return to idle after arriving
+  setTimeout(() => {
+    if(ch.state === 'walking'){
+      ch.state = 'idle'
+      ch.idleActionTimer = performance.now() + 3000 + Math.random() * 6000
+    }
+  }, 1500)
+}
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+function animate(now){
+  frameCount++
+  updateElapsed()
+
+  // Auto-simulation
+  if(state.mode === 'sse'){
+    if(now - state.lastRealEvent > 10000 && state.sseConnected){
+      if(!state.idleSimActive){
+        state.idleSimActive = true
+        state.idleSimPhase = 0
+        document.getElementById('modeTxt').textContent = '🟡 Mô phỏng'
+        document.getElementById('modeTxt').style.opacity = '0.6'
+        addLog('🟡 Tự động mô phỏng pipeline TUI', '#d29922')
+      }
+      const tick = Math.floor(now / 3500)
+      if(tick !== state.lastTick){
+        state.lastTick = tick
+        simulatePipeline()
+      }
+    }
+  } else if(state.mode === 'demo'){
+    const tick = Math.floor(now / 4000)
+    if(tick !== state.lastTick){
+      state.lastTick = tick
+      simulatePipeline()
+    }
+  }
+
+  // Character animation updates
+  AGENT_LIST.forEach(a => {
+    const ch = chars[a.name]
+    ch.animTimer += 0.05
+
+    // Move toward target
+    if(ch.state === 'walking'){
+      const dx = ch.tx - ch.x
+      const dy = ch.ty - ch.y
+      const dist = Math.sqrt(dx*dx + dy*dy)
+      if(dist < 2){
+        ch.x = ch.tx; ch.y = ch.ty
+        ch.state = 'idle'
+        ch.idleActionTimer = now + 3000 + Math.random() * 5000
+      } else {
+        ch.x += (dx / dist) * ch.walkSpeed * 1.5
+        ch.y += (dy / dist) * ch.walkSpeed * 1.5
+        if(frameCount % 20 === 0) sfx('footstep')
+      }
+    }
+
+    // Idle wander
+    if(ch.state === 'idle' && now > ch.idleActionTimer && !ch.working){
+      if(Math.random() < 0.01){
+        randomWander(ch)
+      }
+    }
+
+    // Bob animation
+    if(ch.state === 'idle'){
+      ch.bobY = Math.sin(now * 0.002 + ch.animTimer) * 0.8
+    } else if(ch.state === 'typing'){
+      ch.bobY = Math.sin(now * 0.005 + ch.animTimer) * 1.2
+      ch.typingTimer += 0.05
+    } else {
+      ch.bobY *= 0.9
+    }
+  })
+
+  // Update contracts
+  for(let i = contracts.length - 1; i >= 0; i--){
+    const ct = contracts[i]
+    ct.y += (ct.ty - ct.y) * 0.06
+    ct.life--
+    ct.alpha = Math.min(1, ct.life / 40)
+    if(ct.life <= 0) contracts.splice(i, 1)
+  }
+
+  // === RENDER ===
+  ctx.clearRect(0, 0, W, H)
+  const regs = chars._regions
+
+  // Draw floors
+  drawFloor(regs.t4Top, regs.t4Bot, 'T4 — HẠ TẦNG', '#bc8cff', 0.5)
+  drawFloor(regs.t3Top, regs.t3Bot, 'T3 — NHÂN CÔNG (7 agents)', '#3fb950', 0.6)
+  drawFloor(regs.t2Top, regs.t2Bot, 'T2 — ĐIỀU PHỐI (CEO)', '#d29922', 0.5)
+  drawFloor(regs.t1Top, regs.t1Bot, 'T1 — GIAO DIỆN', '#58a6ff', 0.5)
+
+  // Draw decorations
+  plants.forEach(p => drawPlant(p.x, p.y, p.size))
+
+  // Draw server racks (T4)
+  drawServerRack(W * 0.15, regs.t4Top + 15, 30, 55)
+  drawServerRack(W * 0.22, regs.t4Top + 10, 30, 60)
+  drawServerRack(W * 0.75, regs.t4Top + 15, 30, 55)
+  drawServerRack(W * 0.82, regs.t4Top + 10, 30, 60)
+
+  // Draw desks (T3 - top row: monitors, bottom row: laptops)
+  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(name => {
+    const ch = chars[name]
+    const active = ch.state === 'typing'
+    // Desk surface
+    ctx.fillStyle = '#4a3520'
+    ctx.fillRect(ch.deskX - 22, ch.deskY + 16, 44, 6)
+    drawMonitor(ch.deskX, ch.deskY, active)
+  })
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(name => {
+    const ch = chars[name]
+    const active = ch.state === 'typing'
+    ctx.fillStyle = '#4a3520'
+    ctx.fillRect(ch.deskX - 18, ch.deskY + 16, 36, 5)
+    drawLaptop(ch.deskX, ch.deskY, active)
+  })
+
+  // T2 PM desk (big desk with monitor)
+  const pm = chars['pxh-pm']
+  ctx.fillStyle = '#5a4020'
+  ctx.fillRect(pm.deskX - 30, pm.deskY + 16, 60, 7)
+  drawMonitor(pm.deskX, pm.deskY, pm.state === 'typing')
+
+  // T1 Help desk
+  const help = chars['pxh-help']
+  ctx.fillStyle = '#4a3520'
+  ctx.fillRect(help.deskX - 22, help.deskY + 16, 44, 6)
+  drawMonitor(help.deskX, help.deskY, help.state === 'typing')
+
+  // T4 historian desk
+  const sh = chars['pxh-save-history']
+  ctx.fillStyle = '#4a3520'
+  ctx.fillRect(sh.deskX - 22, sh.deskY + 16, 44, 6)
+  drawMonitor(sh.deskX, sh.deskY, sh.state === 'typing')
+
+  // Draw contracts (behind characters)
+  contracts.forEach(ct => drawContract(ct.x, ct.y, ct.alpha, ct.emoji))
+
+  // Draw characters (walking ones first, then sitting/typing ones)
+  const walkers = AGENT_LIST.filter(a => chars[a.name].state === 'walking' || chars[a.name].state === 'idle')
+  const workers = AGENT_LIST.filter(a => chars[a.name].state === 'sitting' || chars[a.name].state === 'typing')
+
+  walkers.forEach(a => drawCharacter(chars[a.name]))
+  workers.forEach(a => drawCharacter(chars[a.name]))
+
+  // Water cooler (T2)
+  const wcX = W * 0.82, wcY = regs.t2Top + regs.t2Bot * 0.1
+  ctx.fillStyle = '#1a5080'
+  ctx.fillRect(wcX - 5, wcY, 10, 22)
+  ctx.fillStyle = '#58a6ff'
+  ctx.fillRect(wcX - 4, wcY - 4, 8, 5)
+  ctx.fillStyle = 'rgba(88,166,255,0.3)'
+  ctx.fillRect(wcX - 3, wcY + 2, 6, 12)
+
+  // Meeting table (T2)
+  const mtX = W * 0.28, mtY = regs.t2Top + (regs.t2Bot - regs.t2Top) * 0.5
+  ctx.fillStyle = '#5a4020'
+  ctx.fillRect(mtX - 25, mtY, 50, 8)
+  ctx.fillStyle = '#4a3520'
+  ctx.fillRect(mtX - 23, mtY + 8, 4, 8)
+  ctx.fillRect(mtX + 19, mtY + 8, 4, 8)
+
+  // Door (T1 right)
+  ctx.fillStyle = '#4a3520'
+  ctx.fillRect(W - 40, regs.t1Top + 8, 28, regs.t1Bot - regs.t1Top - 16)
+  ctx.strokeStyle = '#5a4020'
+  ctx.lineWidth = 2
+  ctx.strokeRect(W - 40, regs.t1Top + 8, 28, regs.t1Bot - regs.t1Top - 16)
+  ctx.fillStyle = '#d4a574'
+  ctx.beginPath()
+  ctx.arc(W - 18, regs.t1Top + (regs.t1Bot - regs.t1Top) * 0.5, 2.5, 0, Math.PI*2)
+  ctx.fill()
+
+  // Flow arrows between tiers
+  const tiers = [
+    { y: (regs.t3Bot + regs.t2Top) / 2, label: '↓' },
+    { y: (regs.t2Bot + regs.t1Top) / 2, label: '↓' },
+  ]
+  tiers.forEach(t => {
+    ctx.fillStyle = 'rgba(255,255,255,0.15)'
+    ctx.font = '14px sans-serif'
+    ctx.textAlign = 'center'
+    const pulse = Math.sin(frameCount * 0.03) * 0.1 + 0.2
+    ctx.globalAlpha = pulse
+    ctx.fillText(t.label, W * 0.5, t.y)
+    ctx.globalAlpha = 1
+  })
+
+  // T3→T4 arrow
+  const t3t4y = (regs.t4Bot + regs.t3Top) / 2
+  ctx.globalAlpha = Math.sin(frameCount * 0.03) * 0.1 + 0.2
+  ctx.fillText('↑', W * 0.5, t3t4y)
+  ctx.globalAlpha = 1
+
+  requestAnimationFrame(animate)
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  resize()
+  addLog('🏢 Văn Phòng Ảo IT Office khởi động', '#58a6ff')
+
+  if(state.mode === 'sse'){
+    addLog('⚡ Chế độ: SSE — real-time sync', '#8b949e')
+    addLog('💡 Tự mô phỏng pipeline TUI sau 10s idle', '#8b949e')
+    connectSSE()
+  } else {
+    addLog('⚡ Chế độ: Demo — tự động mô phỏng', '#8b949e')
+    playAmbient()
+  }
+
+  state.startTime = Date.now()
+  requestAnimationFrame(animate)
+}
+
+// Click on canvas → find nearest agent
+c.addEventListener('click', (e) => {
+  const rect = c.getBoundingClientRect()
+  const mx = e.clientX - rect.left
+  const my = e.clientY - rect.top
+
+  let closest = null, closestDist = 40
+  AGENT_LIST.forEach(a => {
+    const ch = chars[a.name]
+    const dx = ch.x - mx, dy = ch.y - my
+    const dist = Math.sqrt(dx*dx + dy*dy)
+    if(dist < closestDist){ closestDist = dist; closest = a }
+  })
+  if(closest){
+    state.agent = closest.name
+    updateStatus()
+    addLog(`👤 Click: ${closest.role} (${closest.name})`, closest.color)
+    sfx('notification')
+    // Wiggle
+    const ch = chars[closest.name]
+    ch.bobY = -8
+    setTimeout(() => { ch.bobY = 0 }, 300)
+  }
+})
+
+window.addEventListener('resize', resize)
+document.addEventListener('DOMContentLoaded', init)
+</script>
+</body>
+</html>

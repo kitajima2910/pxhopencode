@@ -12,5 +12,6 @@
 | `@pxh-devops` | Build | Tầng 3 — Nhân công |
 | `@pxh-ui-ux` | UI/UX design (web, game HUD, CLI) | Tầng 3 — Nhân công |
 | `@pxh-save-history` | Lưu trạng thái | Tầng 4 — Hạ tầng |
+| `@pxh-office` | Virtual Office TUI | Virtual — Trực quan hoá |
 
 **Luồng:** User Prompt → Tầng 1 → Tầng 2 (pxh-pm) → Tầng 3 (workers) → Tầng 4 (save-history) → Tầng 2 → Tầng 1 → User

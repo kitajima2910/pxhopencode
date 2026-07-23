@@ -1,6 +1,8 @@
 # Skill Quick Reference — Consolidated Index
 
-Dùng để chọn skill NHANH mà không cần đọc 28 SKILL.md. Mỗi skill 1 dòng.
+Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 dòng.
+
+## Tổng quan: Web(7) + Game(12) + AI(5) + Tool(5) + UI/UX(1) + Virtual Office(1) = 31 skills (+1 built-in = 32 total)
 
 ## Web Skills (7)
 | Skill | Use when | Deps | Path |
@@ -47,6 +49,11 @@ Dùng để chọn skill NHANH mà không cần đọc 28 SKILL.md. Mỗi skill 
 | `tools-codegen` | Code scaffold, component generator, Plop.js | Plop | skills/tools-codegen/ |
 | `tools-extensions` | VS Code extension, commands, views, providers | VS Code API | skills/tools-extensions/ |
 | `tools-packaging` | npm/Cargo/PyPI/Docker/Homebrew packaging | — | skills/tools-packaging/ |
+
+## Virtual Office Skill (1)
+| Skill | Use when | Deps | Path |
+|-------|----------|------|------|
+| `virtual-office` + Bridge | Visualize 4-tier architecture real-time; auto-detect workspace activity via bridge (polling 3s) + SSE broadcast to webview | Node.js 18+ | skills/virtual-office/ |
 
 ## Templates per Skill
 Chi tiết template trong `skills/<skill>/templates/`. Chỉ đọc khi cần code feature cụ thể — lazy load.

@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v44</b> &nbsp;·&nbsp; 70 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 10 commands &nbsp;·&nbsp; 31 skills &nbsp;·&nbsp; 159 templates</p>
+  <b>v45</b> &nbsp;·&nbsp; 71 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 159 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -115,7 +115,7 @@ flowchart LR
 
 ---
 
-## 10 Agents
+## 11 Agents
 
 | Agent | Tầng | Role | Dùng khi |
 |-------|------|------|----------|
@@ -129,10 +129,11 @@ flowchart LR
 | `pxh-ui-ux` | T3 | UI/UX design (web, game HUD, CLI) | Layout, responsive, accessibility |
 | `pxh-save-history` | T4 | State, checkpoint, recovery | Lưu session, phục hồi lỗi |
 | `pxh-help` | T1 | Hướng dẫn workflow | Cần trợ giúp, chưa biết bắt đầu |
+| `pxh-office` | Virtual | Virtual Office TUI | Visualize 4-tier architecture với pixel-art agents |
 
 ---
 
-## 8 Workflows · 10 Commands
+## 9 Workflows · 11 Commands
 
 | Lệnh | Mục đích |
 |------|----------|
@@ -146,10 +147,11 @@ flowchart LR
 | `/meeting` | Họp agents thảo luận |
 | `/release` | Build pipeline: lint → test → build |
 | `/preview` | Live preview game (Vite HMR + browser auto-open) |
+| `/office` | Virtual Office TUI — real-time 4-tier visualization |
 
 ---
 
-## 31 Skills
+## 32 Skills
 
 Xem danh sách đầy đủ: [`_shared/skill-quickref.md`](_shared/skill-quickref.md) (Web 8, Game 12, AI 5, Tool 5, UI/UX 1)
 
@@ -196,6 +198,81 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 
 ---
 
+## Văn Phòng Ảo — Test Nhanh
+
+Webview 2D IT Office — văn phòng mở với canvas animation + Web Audio procedural sound:
+
+```powershell
+# 1. Start server (nếu chưa chạy)
+node skills/virtual-office/templates/server.mjs
+
+# 2. Mở browser xem webview
+start http://localhost:3000
+```
+
+### Thiết kế văn phòng IT
+
+| Khu vực | Mô tả |
+|---------|-------|
+| **T4 — Server Room** | 4 server rack với LED nhấp nháy, Historian làm việc |
+| **T3 — Open Workspace** | 7 bàn làm việc (4 laptop + 3 monitor), cây cảnh |
+| **T2 — PM Office** | Bàn CEO + bàn họp + water cooler |
+| **T1 — Reception** | Help desk + cây cảnh + cửa ra vào |
+
+### Tính năng animation
+
+| Animation | Mô tả |
+|-----------|-------|
+| **Walking** | Nhân vật đi lại trong văn phòng khi idle |
+| **Typing** | Ngồi vào bàn, tay gõ phím, màn hình hiện code |
+| **Contract fly** | Giấy tờ 📄 bay giữa các tầng |
+| **Idle breathing** | Nhân vật thở + đung đưa nhẹ |
+| **Click agent** | Focus + bounce animation |
+
+### Âm thanh procedural (Web Audio API)
+
+| Sound | Khi nào |
+|-------|---------|
+| 🎵 Ambient hum | Luôn phát khi server chạy |
+| ⌨️ Keyboard clicks | Khi agent đang typing |
+| 👣 Footsteps | Khi agent walking |
+| 🔔 Notification | Khi nhận event thật |
+| 📄 Contract swish | Khi giấy tờ bay |
+| 🚪 Door | Khi kết nối SSE |
+
+Tắt/mở âm thanh: click nút 🔊/🔇 góc phải status bar.
+
+### Cơ chế mô phỏng
+
+| Chế độ | Indicator | Khi nào |
+|--------|-----------|---------|
+| **🔴 Live** | Đang nhận event thật từ Bridge/SSE | Agent làm việc theo event |
+| **🟡 Mô phỏng** | Sau 10s không có event thật | Tự động chạy pipeline TUI (9 bước) |
+| **⚡ Demo** | Mở file trực tiếp (file://) | Luôn tự mô phỏng |
+
+### Gửi event mô phỏng pipeline TUI
+
+```powershell
+# Gửi 1 chu kỳ pipeline đầy đủ qua HTTP POST
+Invoke-RestMethod -Uri "http://localhost:3000/simulate" -Method Post -Body '{"count":1}' -ContentType "application/json"
+
+# Hoặc emit từng event CLI
+node skills/virtual-office/templates/emit-event.mjs --type task_start --from pxh-pm --to pxh-expert --message "Test"
+```
+
+### Nếu báo lỗi port
+
+```powershell
+# Kill process cũ
+taskkill /F /PID (Get-NetTCPConnection -LocalPort 3000 -ErrorAction Stop).OwningProcess
+
+# Hoặc dùng port khác
+$env:PORT=3001; node skills/virtual-office/templates/server.mjs
+start http://localhost:3001
+```
+
+---
+
 ## Key Concepts
 
 - **Context Budget**: T0→T3 loading, lazy skill/template, batch ops
@@ -212,7 +289,23 @@ Có 3 cách tương tác với AI Company — tất cả đều tự động rou
 ## Changelog
 
 <details>
-<summary><b>v44 — Context Compaction & AI Studio Live Preview</b> (Latest)</summary>
+<summary><b>v45 — Virtual Office TUI (Latest)</b></summary>
+
+- **Add:** `pxh-office` agent — Virtual Office TUI với pixel-art agents, contract flow animation
+- **Add:** `virtual-office` skill — zero-dependency Node.js TUI, demo + real mode
+- **Add:** **Webview 2D Cartoon** — văn phòng hoạt hình 4 tầng trên browser (server.mjs + office.html)
+- **Add:** `/office` command — mở Văn Phòng Ảo real-time 4-tier visualization (TUI + Webview)
+- **Add:** Pixel-art agent cards: mỗi agent có Unicode icon riêng, highlight active agent
+- **Add:** Contract flow visualization — mũi tên ↓ giữa các tầng, progress bar T3
+- **Add:** Activity log với timestamp, real-time status bar (workflow, phase, elapsed)
+- **Add:** SSE event sync — emit-event.mjs CLI/Module/HTTP bridge cho real-time đồng bộ
+- **Update:** README counts — 11 agents, 9 workflows, 11 commands, 32 skills
+- **Update:** `opencode.json` — `/office` command + `pxh-office` agent
+- **Update:** `_shared/skill-quickref.md` — +1 Virtual Office skill
+</details>
+
+<details>
+<summary><b>v44 — Context Compaction & AI Studio Live Preview</b></summary>
 
 - **Add:** Context compaction — `opencode.json` compaction config với `strategy: summary`, `min_turns: 2`, `tail_turns: 3`. Kéo session từ ~8 lên ~40-50 request
 - **Add:** Tool output truncation — `max_lines: 50, max_bytes: 4096` tiết kiệm ~30% token/turn

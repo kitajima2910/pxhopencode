@@ -5,10 +5,10 @@
 | Trường | Giá trị |
 |--------|---------|
 | Giai đoạn | PHÁT HÀNH ✅ |
-| Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Agents | 10 chuyên biệt (Tầng 1-4) |
-| Workflows | 8 theo lĩnh vực |
-| Skills | 30 skills (4 lĩnh vực) |
+| Mô hình | AI Company — 4-Tầng Enterprise AI Runtime + Virtual Office |
+| Agents | 11 chuyên biệt (Tầng 1-4 + Virtual) |
+| Workflows | 9 theo lĩnh vực |
+| Skills | 32 skills (4 lĩnh vực + Virtual Office) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 
@@ -29,10 +29,10 @@
 .opencode/
 ├── opencode.json           # Config: agents, commands, skills
 ├── README.md / STATUS.md   # Tổng quan + Dashboard
-├── agents/                 # 10 agents (Tầng 1-4)
+├── agents/                 # 11 agents (Tầng 1-4 + Virtual)
 ├── runtime/                # 4 tầng, contracts, policies
-├── workflows/              # 8 workflow templates
-├── skills/                 # 4 lĩnh vực, 29 skills + templates/
+├── workflows/              # 9 workflow templates
+├── skills/                 # 5 lĩnh vực, 32 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
 
@@ -56,14 +56,15 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-06-23 | v2.0 | Context budget, skill quickref, agent slim (-39%), contracts concise, tiered loading, build script thật, tool workflow, favicon cho 8 workflow, fix cross-refs |
+| 2026-07-23 | v45 | Virtual Office TUI — pxh-office agent, virtual-office skill, /office command, pixel-art agents, contract flow animation |
+| 2026-06-23 | v44 | Context budget, skill quickref, agent slim (-39%), contracts concise, tiered loading, build script thật, workflow, favicon, fix cross-refs |
 
 ## ✅ Điều kiện hoàn thành
 
-- [x] 10 agents với thẻ layer + tham chiếu chéo
+- [x] 11 agents với thẻ layer + tham chiếu chéo
 - [x] Runtime 4 layer, 6 contracts, 3 policies
-- [x] 8 workflows theo lĩnh vực
-- [x] 30 skills với templates/ riêng
+- [x] 9 workflows theo lĩnh vực
+- [x] 32 skills với templates/ riêng
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
 - [x] Chrome DevTools MCP tích hợp (--autoConnect)
 - [x] README hướng dẫn copy vào `.opencode/`

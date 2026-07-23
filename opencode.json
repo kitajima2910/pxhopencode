@@ -33,7 +33,11 @@
       "mode": "subagent"
     },
     "pxh-save-history": { "description": "T4 Historian", "mode": "subagent" },
-    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent" }
+    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent" },
+    "pxh-office": {
+      "description": "Virtual Office TUI — real-time 4-tier visualization with pixel-art agents",
+      "mode": "subagent"
+    }
   },
 
   "command": {
@@ -49,6 +53,10 @@
     "preview": {
       "description": "Start game live preview dev server (Vite HMR + browser auto-open)",
       "template": "Load `skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
+    },
+    "office": {
+      "description": "Open Virtual Office — real-time 4-tier visualization with bridge auto-detect",
+      "template": "Load `skills/virtual-office/SKILL.md`. Live + Bridge: `node skills/virtual-office/templates/server.mjs` (auto-detect workspace activity). TUI: `node skills/virtual-office/templates/office.mjs`. Webview: http://localhost:3000"
     }
   }
 }
