@@ -81,7 +81,7 @@ const AGENTS={
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*8e3+4e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:''}})
 const contracts=[],POI=[],plants=[],doneNotifs=[]
 
 // ============================================================
@@ -93,17 +93,17 @@ function calcLayout(){
 
   const r1y=H*.10, r2y=H*.32, r3y=H*.54, r4y=H*.78
 
-  const pm=chars['pxh-pm'];pm.dx=W*.75;pm.dy=r1y;pm.ix=W*.75+30;pm.iy=r1y-30;pm.x=pm.ix;pm.y=pm.iy;pm.tx=pm.ix;pm.ty=pm.iy
+  const pm=chars['pxh-pm'];pm.dx=W*.75;pm.dy=r1y;pm.ix=W*.75+30;pm.iy=r1y+60;pm.x=pm.ix;pm.y=pm.iy;pm.tx=pm.ix;pm.ty=pm.iy
 
   const mon=['pxh-architect','pxh-expert','pxh-fix-bugs']
-  mon.forEach((n,i)=>{const cx=W*.25+i*W*.22,cc=chars[n];cc.dx=cx;cc.dy=r2y;cc.ix=cx+20;cc.iy=r2y-30;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
+  mon.forEach((n,i)=>{const cx=W*.25+i*W*.22,cc=chars[n];cc.dx=cx;cc.dy=r2y;cc.ix=cx+20;cc.iy=r2y+70;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
 
   const lap=['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
-  lap.forEach((n,i)=>{const cx=W*.16+i*W*.2,cc=chars[n];cc.dx=cx;cc.dy=r3y;cc.ix=cx+25;cc.iy=r3y-30;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
+  lap.forEach((n,i)=>{const cx=W*.16+i*W*.2,cc=chars[n];cc.dx=cx;cc.dy=r3y;cc.ix=cx+25;cc.iy=r3y+70;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
 
-  const sh=chars['pxh-save-history'];sh.dx=W*.22;sh.dy=r4y;sh.ix=W*.22+30;sh.iy=r4y-30;sh.x=sh.ix;sh.y=sh.iy;sh.tx=sh.ix;sh.ty=sh.iy
+  const sh=chars['pxh-save-history'];sh.dx=W*.22;sh.dy=r4y;sh.ix=W*.22+30;sh.iy=r4y+60;sh.x=sh.ix;sh.y=sh.iy;sh.tx=sh.ix;sh.ty=sh.iy
 
-  const hh=chars['pxh-help'];hh.dx=W*.72;hh.dy=r4y;hh.ix=W*.72+30;hh.iy=r4y-30;hh.x=hh.ix;hh.y=hh.iy;hh.tx=hh.ix;hh.ty=hh.iy
+  const hh=chars['pxh-help'];hh.dx=W*.72;hh.dy=r4y;hh.ix=W*.72+30;hh.iy=r4y+60;hh.x=hh.ix;hh.y=hh.iy;hh.tx=hh.ix;hh.ty=hh.iy
 
   plants.length=0
   plants.push({x:W*.18,y:H*.23,s:22},{x:W*.93,y:H*.22,s:16},{x:W*.15,y:H*.6,s:20})
@@ -323,7 +323,7 @@ function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=c
   else{wx=ch.ix+(Math.random()-.5)*80;wy=ch.iy+(Math.random()-.5)*30}
   if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20);else if(a.tier==='T2')wy=Math.min(Math.max(wy,r.t2t+20),r.t2b-20);else if(a.tier==='T3')wy=Math.min(Math.max(wy,r.t3t+30),r.t3b-30);else wy=Math.min(Math.max(wy,r.t4t+20),r.t4b-20)
   wx=Math.max(60,Math.min(W-60,wx));moveChar(ch,wx,wy,.8+Math.random()*.5);sfx('footstep')
-  setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+4000+Math.random()*6000;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w)moveChar(ch,ch.ix,ch.iy,1)},3000)}},1500)
+  setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+1500+Math.random()*3000;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w)moveChar(ch,ch.ix,ch.iy,1)},2000)}},1500)
 }
 
 // ============================================================
@@ -366,8 +366,8 @@ function animate(now){fc++;updateElapsed()
   if(state.mode==='sse'&&state.sseConnected&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
-    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+3000+Math.random()*5000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
-    if(ch.state==='idle'&&now>ch.it&&!ch.w){if(Math.random()<.006)randomWander(ch)}
+    if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+1000+Math.random()*2000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
+    if(ch.state==='idle'&&now>ch.it&&!ch.w){if(Math.random()<.015)randomWander(ch)}
   })
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.x+=(ct.tx-ct.x)*.05;ct.y+=(ct.ty-ct.y)*.05;ct.life--;ct.alpha=Math.min(1,ct.life/40);if(ct.life<=0)contracts.splice(i,1)}
