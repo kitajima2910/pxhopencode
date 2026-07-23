@@ -483,12 +483,14 @@ function animate(now){fc++;updateElapsed()
   ctx.clearRect(0,0,W,H)
   const r=chars._r
 
-  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#141c28');bg.addColorStop(0.2,'#192233');bg.addColorStop(0.7,'#161e2a');bg.addColorStop(1,'#101720');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
+  const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#ffffff');bg.addColorStop(0.2,'#fdfdfd');bg.addColorStop(0.7,'#fcfcfc');bg.addColorStop(1,'#fafafa');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H)
 
-  // Wooden floor
-  for(let fx=0;fx<W;fx+=60){ctx.fillStyle='rgba(90,45,25,'+(.04+Math.sin(fx*.02)*.01)+')';ctx.fillRect(fx,H*.18,58,H*.82)}
-  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H*.18);ctx.lineTo(W,H*.18);ctx.stroke()
-  ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,H*.96);ctx.lineTo(W,H*.96);ctx.stroke()
+  // Floor — solid light base
+  ctx.fillStyle='rgb(245,240,230)';ctx.fillRect(0,H*.18,W,H*.82)
+  // Tile grid lines
+  ctx.strokeStyle='rgba(180,175,165,0.15)';ctx.lineWidth=1
+  for(let fx=0;fx<W;fx+=60){ctx.beginPath();ctx.moveTo(fx,H*.18);ctx.lineTo(fx,H);ctx.stroke()}
+  for(let fy=H*.18;fy<H;fy+=60){ctx.beginPath();ctx.moveTo(0,fy);ctx.lineTo(W,fy);ctx.stroke()}
 
   // Server racks — left wall
   drawServerRack(W*.05,H*.22,32,58);drawServerRack(W*.05,H*.22+60,32,58);drawServerRack(W*.12,H*.25+3,30,54);drawServerRack(W*.12,H*.25+58,30,54);
