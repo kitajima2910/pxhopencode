@@ -106,8 +106,8 @@ const server = http.createServer((req, res) => {
         const agent = explicitAgent || STATE_MAP[tuiState] || 'pxh-expert'
         // Auto-trigger T1+T2 on first activity
         if((prevState === null || prevState === 'idle') && tuiState !== 'idle' && tuiState){
-          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Classifying input...' })
-          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Routing tasks...' })
+          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Validate & classify input' })
+          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Route & enforce policy' })
           prevState = tuiState
         }
         const event = {
@@ -202,8 +202,8 @@ try {
       if(st.state && st.state !== prevState){
         // Detect initial activity: T1+T2 sit at desk immediately
         if(prevState === null || prevState === 'idle' || !prevState){
-          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Classifying input...' })
-          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Routing tasks...' })
+          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Validate & classify input' })
+          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Route & enforce policy' })
         }
         broadcast({
           type: 'agent_state',

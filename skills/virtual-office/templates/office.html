@@ -107,8 +107,8 @@ function calcLayout(){
   const oc=chars['pxh-opencode'];oc.dx=W*.40;oc.dy=H*.60;oc.ix=W*.40+25;oc.iy=H*.66+65;oc.x=oc.ix;oc.y=oc.iy;oc.tx=oc.ix;oc.ty=oc.iy;oc.mirror=true
 
   plants.length=0
-  plants.push({x:W*.18,y:H*.23,s:22},{x:W*.93,y:H*.22,s:16},{x:W*.15,y:H*.6,s:20})
-  plants.push({x:W*.94,y:H*.55,s:14},{x:W*.5,y:H*.94,s:13},{x:W*.82,y:H*.9,s:11})
+  plants.push({x:W*.18,y:H*.23,s:22},{x:W*.86,y:H*.22,s:16},{x:W*.15,y:H*.6,s:20})
+  plants.push({x:W*.86,y:H*.58,s:14},{x:W*.5,y:H*.94,s:13},{x:W*.82,y:H*.9,s:11})
 
   POI.length=0
   POI.push({x:W*.48,y:H*.7,ti:'T3'},{x:W*.3,y:H*.85,ti:'T4'},{x:W*.65,y:H*.85,ti:'T1'},{x:W*.5,y:H*.4,ti:'T3'})
@@ -673,23 +673,22 @@ function processEvent(event){
   }else if(event.type==='agent_state'){
     const ag=event.agent,ch=chars[ag];if(ch){
       const st=event.tuiState||event.state||''
-      // Map state to icon + friendly message
-      const SM={
-        Interface:'🔍 Classifying...',Orchestration:'📋 Routing...',Design:'🏗️ Designing...',
-        Code:'✍️ Coding...',Debug:'🐛 Debugging...',Test:'🧪 Testing...',
-        Review:'🔍 Reviewing...',Build:'⚙️ Building...',Infrastructure:'💾 Persisting...',
-        explore:'🔍 Exploring...',thinking:'🧠 Thinking...',read:'📖 Reading...',
-        write:'✍️ Writing...',edit:'✍️ Editing...',search:'🔎 Searching...',
-        execute:'⚙️ Executing...',delegating:'📋 Delegating...',preparing:'📝 Preparing...',
-        Style:'🎨 Styling...',Config:'⚙️ Config...',Script:'⚙️ Running...',
-        planning:'📋 Planning...',plan:'📋 Planning...',todos:'📋 Organizing tasks...',
-        todo:'📋 Organizing tasks...',outline:'🏗️ Outlining...',
-        fix:'🐛 Fixing...',debug:'🐛 Debugging...',
-        deploy:'🚀 Deploying...',polish:'🎨 Polishing...',
-        monitoring:'📡 Monitoring...',checking:'🔍 Checking...',
-        completed:'✅ Completed',failed:'❌ Failed',idle:'',update:''
+      // Agent default messages — agents only sit for REAL TUI output, not these defaults
+      const DEFMSG={
+        'pxh-help':{tuiState:'Interface',msg:'🔍 Validate & classify input'},
+        'pxh-pm':{tuiState:'Orchestration',msg:'📋 Route & enforce policy'},
+        'pxh-architect':{tuiState:'Design',msg:'🏗️ Design tech stack & schema'},
+        'pxh-expert':{tuiState:'Code',msg:'✍️ Vibe code & production'},
+        'pxh-fix-bugs':{tuiState:'Debug',msg:'🐛 Root cause → fix bug'},
+        'pxh-qa':{tuiState:'Test',msg:'🧪 Write & run tests'},
+        'pxh-review-code':{tuiState:'Review',msg:'🔍 Security & perf audit'},
+        'pxh-devops':{tuiState:'Build',msg:'⚙️ Lint → test → build'},
+        'pxh-save-history':{tuiState:'Infrastructure',msg:'💾 Save state & checkpoint'},
+        'pxh-ui-ux':{tuiState:'Design',msg:'🎨 Layout & responsive design'},
+        'pxh-office':{tuiState:'Virtual Office',msg:'🏢 Virtual Office'},
       }
-      const msg=event.message||SM[st]||(st?`🔄 ${st}...`:'')
+      const msg=event.message||(st?`${st}...`:'')
+      const isDefault=DEFMSG[ag]&&DEFMSG[ag].msg===msg
       const timestamp=Date.now();ch._lastEvt=timestamp
       if(!ch._monitorLog)ch._monitorLog=[]
       if(st&&st!=='idle'){ch._monitorLog.push({t:timestamp,m:msg||st,s:st});if(ch._monitorLog.length>40)ch._monitorLog.shift()}
@@ -709,7 +708,10 @@ function processEvent(event){
       if(st==='update'){}
       else if(st==='idle'||!st){clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}
       if(st==='idle'||!st){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)}}
-      else if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)}
+      else if(!ch.w&&ch.state!=='typing'&&!isDefault){
+        // Only sit at desk for REAL TUI output (not agent default messages)
+        ch.hrw=true;startTyping(ch)
+      }
       state.agent=ag;if(st)state.phase=st
     }
     updateStatus();return
@@ -878,22 +880,35 @@ function animate(now){fc++;updateElapsed()
   // Meeting table — top left
   const mtx=W*.26,mty=H*.12;ctx.fillStyle='#4a3520';ctx.fillRect(mtx-25,mty+4,50,7);ctx.fillStyle='#3a2a18';ctx.fillRect(mtx-23,mty+11,3,8);ctx.fillRect(mtx+20,mty+11,3,8)
 
-  // CEO Dashboard — right wall
-  ctx.fillStyle='rgba(0,0,0,0.65)';ctx.beginPath();ctx.roundRect(W-62,H*.26,52,52,5);ctx.fill()
-  ctx.strokeStyle='#d29922';ctx.lineWidth=1.5;ctx.stroke()
-  ctx.fillStyle='#d29922';ctx.font='bold 7px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('CEO DASHBOARD',W-36,H*.28+8)
-  ctx.strokeStyle='rgba(210,153,34,0.3)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(W-58,H*.28+11);ctx.lineTo(W-14,H*.28+11);ctx.stroke()
-  AL.filter(a=>a.n!=='pxh-opencode').forEach((a,i)=>{
-    const ch=chars[a.n],ly=H*.30+i*8.5
+  // CEO Dashboard — right wall (big & clear)
+  const dashboardAgents=AL.filter(a=>a.n!=='pxh-opencode'),dLen=dashboardAgents.length
+  const dX=W-102,dY=H*.28,rowH=13,dHead=24,dFoot=15,dH=dHead+dLen*rowH+dFoot+10
+  ctx.fillStyle='rgba(0,0,0,0.84)';ctx.beginPath();ctx.roundRect(dX,dY,90,dH,7);ctx.fill()
+  ctx.strokeStyle='#d29922';ctx.lineWidth=2.5;ctx.stroke()
+  // Header bg
+  ctx.fillStyle='rgba(210,153,34,0.15)';ctx.beginPath();ctx.roundRect(dX+2,dY+2,86,dHead-2,[7,7,0,0]);ctx.fill()
+  ctx.fillStyle='#f0d060';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('CEO DASHBOARD',W-57,dY+16)
+  ctx.strokeStyle='rgba(210,153,34,0.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(dX+6,dY+dHead);ctx.lineTo(dX+84,dY+dHead);ctx.stroke()
+  dashboardAgents.forEach((a,i)=>{
+    const ch=chars[a.n],ly=dY+dHead+6+i*rowH
     const act=ch&&(ch.w||ch.state==='typing');let st='idle',sc='#555'
     if(act&&ch.ts){st=ch.ts;if(st.match(/interface/i))sc='#58a6ff';else if(st.match(/orchestration/i))sc='#d29922';else if(st.match(/design/i))sc='#bc8cff';else if(st.match(/code|write|read|edit/i))sc='#3fb950';else if(st.match(/debug|fix/i))sc='#f85149';else if(st.match(/test/i))sc='#3fb950';else if(st.match(/review/i))sc='#d29922';else if(st.match(/build/i))sc='#d29922';else if(st.match(/infrastructure/i))sc='#bc8cff';else sc='#aaa'}
-    ctx.fillStyle='#aaa';ctx.font='6px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.fillText(a.role.slice(0,12),W-58,ly)
-    ctx.fillStyle=sc;ctx.beginPath();ctx.arc(W-15,ly-2,2.5,0,Math.PI*2);ctx.fill()
-    const sn=st.length>8?st.slice(0,7):st;ctx.fillStyle=sc;ctx.font='5px "Consolas",monospace';ctx.textAlign='right';ctx.fillText(act?sn:'idle',W-12,ly)
+    // Row background alternating
+    if(i%2===0){ctx.fillStyle='rgba(255,255,255,0.03)';ctx.fillRect(dX+2,ly-7,86,rowH)}
+    // Agent name
+    ctx.fillStyle=act?'#fff':'#999';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.fillText(a.role,dX+10,ly+1)
+    // Status dot — blinking when active
+    const blink=act&&Math.sin(fc*0.05+i)>0
+    if(act&&blink){ctx.fillStyle=sc;ctx.shadowColor=sc;ctx.shadowBlur=4}
+    else{ctx.fillStyle=act?sc:'#555';ctx.shadowColor='transparent';ctx.shadowBlur=0}
+    ctx.beginPath();ctx.arc(dX+78,ly-2,3.5,0,Math.PI*2);ctx.fill()
+    ctx.shadowBlur=0
   })
-  // Summary
+  // Footer
   const totalWorking=AL.filter(a=>chars[a.n]&&chars[a.n].w).length
-  ctx.fillStyle='#aaa';ctx.font='bold 6px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('Active: '+totalWorking+'/'+AL.length,W-36,H*.30+AL.length*8.5+5)
+  const footY=dY+dHead+dLen*rowH+6
+  ctx.fillStyle='rgba(210,153,34,0.2)';ctx.fillRect(dX+2,footY,86,17)
+  ctx.fillStyle='#d29922';ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('Active: '+totalWorking+' / '+(dLen+1),W-57,footY+12)
 
   // Door — right bottom
   ctx.fillStyle='#3a2a18';ctx.fillRect(W-30,H*.78,22,H*.16);ctx.strokeStyle='#4a3a28';ctx.lineWidth=1.5;ctx.strokeRect(W-30,H*.78,22,H*.16);ctx.fillStyle='#c8a050';ctx.beginPath();ctx.arc(W-18,H*.86,2,0,Math.PI*2);ctx.fill()
