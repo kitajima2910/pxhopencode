@@ -40,6 +40,7 @@ function Idle-All {
 Write-Host "🔌 Hook active — watching TUI for agent mentions..." -ForegroundColor Cyan
 
 if($Prompt) {
+  Send-Agent 'pxh-help' 'Interface' "🔍 Classifying: $Prompt"
   Send-Agent 'pxh-pm' 'Orchestration' "📋 Processing: $Prompt"
 }
 

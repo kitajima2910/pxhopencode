@@ -99,6 +99,12 @@ const server = http.createServer((req, res) => {
           classify: 'pxh-help', route: 'pxh-pm',
         }
         const agent = explicitAgent || STATE_MAP[tuiState] || 'pxh-expert'
+        // Auto-trigger T1+T2 on first activity
+        if((prevState === null || prevState === 'idle') && tuiState !== 'idle' && tuiState){
+          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Classifying input...' })
+          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Routing tasks...' })
+          prevState = tuiState
+        }
         const event = {
           type: 'agent_state',
           agent, tuiState,
@@ -107,6 +113,7 @@ const server = http.createServer((req, res) => {
         emit(event)
         // Also direct broadcast for instant update
         broadcast(event)
+        if(tuiState === 'idle') prevState = 'idle'
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ status:'ok', agent, state: tuiState }))
       } catch(e) {
@@ -243,19 +250,31 @@ try {
 
 // Watch state file for real-time opencode state sync (polling for Windows compat)
 const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode-state.json')
+let prevState = null
+let prevAgent = null
 try {
   fs.watchFile(STATE_FILE, { interval: 200 }, () => {
     try {
       if(!fs.existsSync(STATE_FILE)) return
       const raw = fs.readFileSync(STATE_FILE, 'utf-8')
       const st = JSON.parse(raw)
-      if(st.state){
+      if(st.state && st.state !== prevState){
+        // Detect initial activity: T1+T2 sit at desk immediately
+        if(prevState === null || prevState === 'idle' || !prevState){
+          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Classifying input...' })
+          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Routing tasks...' })
+        }
         broadcast({
           type: 'agent_state',
           agent: st.agent || 'pxh-expert',
           tuiState: st.state,
           message: st.message || `${st.state}...`,
         })
+        prevState = st.state
+        prevAgent = st.agent
+      } else if(!st.state || st.state === 'idle'){
+        prevState = 'idle'
+        prevAgent = null
       }
     } catch {}
   })

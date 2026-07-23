@@ -692,9 +692,10 @@ function animate(now){fc++;updateElapsed()
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;ch.state=ch.w?'typing':'idle';if(!ch.w)ch.it=now+1000+Math.random()*2000}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
     if(ch.state==='idle'&&now>ch.it&&!ch.w){
       if(a.n==='pxh-help'||a.n==='pxh-pm'){
-        if(Math.random()<.005){
+        if(Math.random()<.0015)randomWander(ch)
+        else if(Math.random()<.001){
           ch.hrw=true;startTyping(ch);ch._msgs=['📋 Monitoring...'];ch.tsm=ch._msgs
-          setTimeout(()=>{if(ch.w)stopTyping(ch)},2000+Math.random()*1500)
+          setTimeout(()=>{if(ch.w)stopTyping(ch)},2500+Math.random()*2000)
         }
       }else if(Math.random()<.015)randomWander(ch)
     }
