@@ -122,13 +122,113 @@ flowchart TD
 
 ---
 
-## Cách dùng
+## Cách dùng — Vibe Code thực chiến
 
-| Cách | Cú pháp | Luồng |
-|------|---------|-------|
-| **Prompt tự nhiên** | Gõ thẳng mô tả công việc | `pxh-pm` classify → chọn workflow → route → code → test → review → build |
-| **Lệnh `/`** | `/workflow` + mô tả | Load workflow template → route thẳng T3 |
-| **@mention** | `@agent` + task contract | Gọi agent cụ thể, bỏ qua classify |
+Có 3 cách gọi agent để vibe code. Agent tự động phân tích, code, test, fix, review, build — bạn chỉ cần mô tả ý tưởng.
+
+### Cách 1: Prompt tự nhiên (khuyên dùng)
+
+Gõ thẳng mô tả công việc bằng tiếng Việt. Hệ thống tự phân loại → chọn workflow → route → thực thi.
+
+```
+"Xây dựng web blog cá nhân với React, có dark mode"
+"Làm game platformer 2D, nhân vật nhảy qua chướng ngại vật"
+"Tạo chatbot RAG trả lời từ tài liệu PDF"
+```
+
+**Luồng tự động:**
+```
+Prompt → pxh-help (T1) phân loại workflow + skill
+       → pxh-pm (T2) chọn worker, tạo Task contract
+       → pxh-expert (T3) code trong TARGET
+       → pxh-qa (T3) viết & chạy test
+       → pxh-fix-bugs (T3) sửa nếu fail
+       → pxh-review-code (T3) audit security + perf
+       → pxh-devops (T3) build: lint → typecheck → test → build
+       → pxh-save-history (T4) lưu session log, STATUS.md
+```
+
+### Cách 2: Lệnh `/` — đi thẳng vào workflow
+
+Bỏ qua bước phân loại, route thẳng T3 theo workflow tương ứng.
+
+| Lệnh | Ví dụ | Khi dùng |
+|------|-------|----------|
+| `/vibe` | `/vibe xây dựng app quản lý công việc` | Full pipeline 11 bước (phân tích → code → test → review → build) |
+| `/web` | `/web làm landing page cho startup` | Web app: React, Next.js, Express, FastAPI |
+| `/game` | `/game game bắn súng không gian 2D` | Game HTML5: Phaser 2D, Isometric, Three.js 3D |
+| `/ai` | `/ai tạo chatbot hỗ trợ khách hàng` | Chatbot, RAG, AI agent, LLM |
+| `/tool` | `/tool CLI tool đổi tên file hàng loạt` | CLI, extension, automation, package |
+| `/debug` | `/debug game bị giật FPS khi nhiều enemy` | Debug + fix bug (có root cause analysis) |
+| `/ui-ux` | `/ui-ux thiết kế responsive navbar` | UI/UX design & responsive layout |
+| `/meeting` | `/meeting chọn tech stack cho dự án mới` | Họp agents thảo luận kiến trúc |
+| `/release` | `/release` | Build pipeline: lint → test → build |
+| `/preview` | `/preview` | Live preview game (Vite HMR, browser auto-open) |
+| `/office` | `/office` | Virtual Office — real-time 4-tier visualization |
+
+### Cách 3: @mention — gọi thẳng agent
+
+Gọi agent cụ thể, bỏ qua classify và routing. Dùng khi bạn biết chính xác cần agent nào.
+
+```
+@pxh-expert viết API endpoint /api/users với CRUD
+@pxh-qa chạy test coverage cho thư mục src/
+@pxh-fix-bugs sửa lỗi crash khi click nút Login
+@pxh-review-code audit bảo mật toàn bộ codebase
+@pxh-architect thiết kế database schema cho app e-commerce
+@pxh-devops build và deploy lên Vercel
+@pxh-ui-ux làm responsive navbar với dark mode
+```
+
+### Quy trình `/vibe` đầy đủ (11 bước)
+
+Pipeline hoàn chỉnh cho dự án từ ý tưởng đến production:
+
+| # | Phase | Agent | Công việc |
+|---|-------|-------|-----------|
+| 1 | NHẬN | T1→T2 | Phân loại prompt, xác định loại dự án |
+| 2 | PHÂN TÍCH | T2 | Chọn tech stack, đánh giá quy mô |
+| 3 | HỌP | @meeting | Agent council đồng thuận kiến trúc |
+| 4 | KẾ HOẠCH | T2 | Feature list, milestones, acceptance criteria |
+| 5 | THIẾT KẾ | @pxh-architect | Schema DB, API contract, component tree |
+| 6 | CODE | @pxh-expert | Code trong TARGET, setup .gitignore + favicon |
+| 7 | KIỂM TRA | @pxh-qa | Viết test, chạy coverage ≥ 85% |
+| 8 | SỬA | @pxh-fix-bugs | Root cause → fix → verify |
+| 9 | RÀ SOÁT | @pxh-review-code | Security audit, perf review, quality gate |
+| 10 | PHÁT HÀNH | @pxh-devops | Lint → typecheck → test → build |
+| 11 | LƯU | @pxh-save-history | Session log, ADR, cập nhật STATUS.md |
+
+**Loop mechanism:**
+- Code → Test → Fix: nếu test fail → quay lại Bước 6 (max 3 lần)
+- Review → Fix → Test: nếu critical issue → quay lại Bước 8 (max 3 lần)
+- Build fail → quay lại Bước 6 (max 3 lần)
+
+### Ví dụ thực tế
+
+**Ví dụ 1: Làm web app**
+```
+/vibe Xây dựng ứng dụng quản lý chi tiêu cá nhân với React + Express + PostgreSQL.
+Cho phép thêm/sửa/xóa giao dịch, phân loại thu/chi, xem biểu đồ thống kê theo tháng.
+```
+→ Hệ thống tự động: phân tích → thiết kế schema → code frontend + backend → test → review → build.
+
+**Ví dụ 2: Làm game**
+```
+/game Làm game platformer 2D. Nhân vật mèo chạy nhảy qua chướng ngại vật,
+thu thập coin, có 3 mạng. Enemy là chó bay qua lại. Background parallax rừng cây.
+```
+→ Hệ thống tự động: tải assets → scaffold Phaser 3 → code game loop → test headless → polish → build.
+
+**Ví dụ 3: Debug**
+```
+/debug Game bị crash khi spawn enemy thứ 50. Console báo "pool exhausted".
+```
+→ `pxh-fix-bugs`: root cause analysis → fix object pool → verify → polish.
+
+**Ví dụ 4: Gọi thẳng agent**
+```
+@pxh-review-code Kiểm tra bảo mật file src/api/auth.ts, đặc biệt phần JWT verification.
+```
 
 ---
 

@@ -693,6 +693,8 @@ function processEvent(event){
       if(chars['pxh-opencode'])chars['pxh-opencode']._lastEvt=timestamp
       if(!ch._monitorLog)ch._monitorLog=[]
       if(st&&st!=='idle'){ch._monitorLog.push({t:timestamp,m:msg||st,s:st});if(ch._monitorLog.length>40)ch._monitorLog.shift()}
+      // Also mirror all agent activity to PXHOpenCode terminal
+      const poc2=chars['pxh-opencode'];if(poc2&&st&&st!=='idle'){if(!poc2._mirrorLog)poc2._mirrorLog=[];poc2._mirrorLog.push(`[${ag}] ${msg||st}`);if(poc2._mirrorLog.length>6)poc2._mirrorLog.shift()}
       const short=msg.length>32?msg.slice(0,29)+'...':msg
       const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
       const line=ts+' '+short
@@ -724,9 +726,9 @@ function processEvent(event){
       if(!raw)return
       const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
       if(!line)return
-      oc.ts='Typing';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now()
+      oc.ts='Typing';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now();oc._forceIdle=false
       oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
-      if(line.match(/\[TUI STOP\]/i)){oc._lastEvt=0}
+      if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
       if(!oc._msgs)oc._msgs=[]
       oc._msgs=[line]
       oc.tsm=oc._msgs;oc._bcol='#00e5ff'
@@ -775,6 +777,7 @@ function animate(now){fc++;updateElapsed()
     const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
     if(anyWorking&&poc.state!=='typing'){poc.hrw=true;poc.ts='Synced';startTyping(poc);if(!poc._mirrorLog||!poc._mirrorLog.length){poc._mirrorLog=['Synced with TUI agents...']}}
     if(!anyWorking&&poc.w&&now-poc._lastEvt>30000){stopTyping(poc)}
+    if(poc._forceIdle){stopTyping(poc);poc._forceIdle=false}
   }
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
