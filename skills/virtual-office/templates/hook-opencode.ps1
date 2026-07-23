@@ -52,32 +52,69 @@ if(-not $proc) {
 }
 
 $activeAgents = @{}
+$agentCooldown = @{}  # per-agent cooldown in ms
 $lastCheck = Get-Date
 
+# Strip ANSI escape codes
+function Clean-Line($raw) {
+  $s = $raw -replace '\e\[[0-9;]*[a-zA-Z]','' -replace '\e\][0-9;]*[a-zA-Z]',''
+  $s = $s -replace '^\s+|\s+$',''
+  return $s
+}
+
+# Extract content after agent name mention for readable message
+function Extract-Msg($line, $agentName) {
+  $clean = Clean-Line $line
+  # Try to get content after agent name: "...pxh-expert... ✍️ Editing src/foo.ts"
+  $idx = $clean.IndexOf($agentName)
+  if($idx -ge 0) {
+    $after = $clean.Substring($idx + $agentName.Length).Trim()
+    $after = $after -replace '^[:>\]]+\s*',''
+    if($after.Length -gt 44) { $after = $after.Substring(0,41) + '...' }
+    if($after.Length -gt 0) { return $after }
+  }
+  # Fallback: use last meaningful part of line
+  $parts = $clean -split '\s{2,}'
+  $last = $parts[-1].Trim()
+  if($last.Length -gt 44) { $last = $last.Substring(0,41) + '...' }
+  return $last
+}
+
 while(!$proc.HasExited) {
-  Start-Sleep -Milliseconds 300
+  Start-Sleep -Milliseconds 200
   if(-not (Test-Path "$env:TEMP\opencode-out.txt")) { continue }
 
-  $lines = Get-Content "$env:TEMP\opencode-out.txt" -Tail 10 -ErrorAction SilentlyContinue
+  $lines = Get-Content "$env:TEMP\opencode-out.txt" -Tail 15 -ErrorAction SilentlyContinue
   $foundAny = $false
+  $now = Get-Date
 
   foreach($line in $lines) {
+    $clean = Clean-Line $line
+    if([string]::IsNullOrWhiteSpace($clean)) { continue }
+
     foreach($p in $AGENT_PATTERNS) {
-      if($line -match $p.re) {
+      if($clean -match $p.re) {
+        # Extract real message from the actual TUI line
+        $realMsg = Extract-Msg $line $p.agent
+        $displayMsg = if($realMsg) { $realMsg } else { $p.msg }
+
         if(-not $activeAgents[$p.agent]) {
-          Write-Host "  → $($p.agent): $($p.msg)" -ForegroundColor Green
-          Send-Agent $p.agent $p.state $p.msg
+          Write-Host "  → $($p.agent): $displayMsg" -ForegroundColor Green
+          Send-Agent $p.agent $p.state $displayMsg
+          $agentCooldown[$p.agent] = $now
+        } elseif(($now - $agentCooldown[$p.agent]).TotalMilliseconds -ge 2500) {
+          Send-Agent $p.agent $p.state $displayMsg
+          $agentCooldown[$p.agent] = $now
         }
-        $activeAgents[$p.agent] = (Get-Date)
+        $activeAgents[$p.agent] = $now
         $foundAny = $true
       }
     }
   }
 
-  # Idle agents not seen for 30 seconds (agent stays while TUI is working on it)
-  $now = Get-Date
+  # Idle agents not seen for 60 seconds (agent stays while TUI is working on it)
   foreach($ag in $activeAgents.Keys.Clone()) {
-    if(($now - $activeAgents[$ag]).TotalSeconds -gt 30) {
+    if(($now - $activeAgents[$ag]).TotalSeconds -gt 60) {
       Write-Host "  ← $ag done" -ForegroundColor DarkGray
       $body = @{ state='idle'; agent=$ag; message='' } | ConvertTo-Json -Compress
       try { Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null } catch {}
