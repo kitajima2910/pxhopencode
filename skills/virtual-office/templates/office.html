@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Error404Labs - PXH2910</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%231a2030'/><stop offset='100%' stop-color='%230d1117'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)' stroke='%2330363d' stroke-width='2'/><rect x='14' y='10' width='36' height='10' rx='3' fill='%23bc8cff' opacity='0.9'/><rect x='14' y='22' width='36' height='10' rx='3' fill='%233fb950' opacity='0.9'/><rect x='14' y='34' width='36' height='10' rx='3' fill='%23d29922' opacity='0.9'/><rect x='14' y='46' width='36' height='10' rx='3' fill='%2358a6ff' opacity='0.9'/><circle cx='10' cy='15' r='3' fill='%23bc8cff'/><circle cx='10' cy='27' r='3' fill='%233fb950'/><circle cx='10' cy='39' r='3' fill='%23d29922'/><circle cx='10' cy='51' r='3' fill='%2358a6ff'/></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -105,35 +106,7 @@ const AudioCtx = window.AudioContext || window.webkitAudioContext
 let audioCtx = null
 let soundOn = true
 
-// Pre-load keyboard MP3 sounds
-const kbSounds = {
-  macbook: null,
-  pc: null,
-}
-function preloadKeyboardSounds(){
-  kbSounds.macbook = new Audio('sound/go-phim-macbook.mp3')
-  kbSounds.macbook.volume = 0.25
-  kbSounds.macbook.preload = 'auto'
-  kbSounds.pc = new Audio('sound/go-phim-van-phong.mp3')
-  kbSounds.pc.volume = 0.25
-  kbSounds.pc.preload = 'auto'
-}
-// Laptop agents (T3 bottom row) = macbook sound, others = PC sound
-const HAS_LAPTOP = new Set(['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'])
-
-function playKeyboardSound(agentName){
-  if(!soundOn) return
-  const isLaptop = HAS_LAPTOP.has(agentName)
-  const audio = isLaptop ? kbSounds.macbook : kbSounds.pc
-  if(!audio) return
-  try {
-    const clone = audio.cloneNode()
-    clone.volume = 0.25
-    clone.play().catch(() => {})
-    setTimeout(() => { clone.remove() }, 300)
-  } catch {}
-}
-
+// Keep ambient procedural sounds (footstep, notification, etc.)
 function ensureAudio(){ if(!audioCtx) audioCtx = new AudioCtx() }
 
 let ambientNode = null
@@ -1156,7 +1129,6 @@ function startTyping(ch){
         if(ch.typingInterval) clearInterval(ch.typingInterval)
         ch.typingInterval = setInterval(() => {
           if(ch.state !== 'typing' || !ch.working){ clearInterval(ch.typingInterval); ch.typingInterval = null; return }
-          playKeyboardSound(ch.agent.name)
         }, 150 + Math.random() * 250)
       }
     }, 100)
@@ -1169,7 +1141,6 @@ function startTyping(ch){
     if(ch.typingInterval) clearInterval(ch.typingInterval)
     ch.typingInterval = setInterval(() => {
       if(ch.state !== 'typing' || !ch.working){ clearInterval(ch.typingInterval); ch.typingInterval = null; return }
-      playKeyboardSound(ch.agent.name)
     }, 150 + Math.random() * 250)
   }
 }
@@ -1645,7 +1616,6 @@ function animate(now){
 // ============================================================
 function init(){
   resize()
-  preloadKeyboardSounds()
   addLog('🏢 Error404Labs - PXH2910', '#58a6ff')
 
   if(state.mode === 'sse'){
