@@ -93,21 +93,21 @@ function calcLayout(){
 
   const r1y=H*.10, r2y=H*.32, r3y=H*.54, r4y=H*.78
 
-  const pm=chars['pxh-pm'];pm.dx=W*.75;pm.dy=r1y;pm.ix=W*.75+30;pm.iy=r1y+25;pm.x=pm.ix;pm.y=pm.iy;pm.tx=pm.ix;pm.ty=pm.iy
+  const pm=chars['pxh-pm'];pm.dx=W*.75;pm.dy=r1y;pm.ix=W*.75+30;pm.iy=r1y-30;pm.x=pm.ix;pm.y=pm.iy;pm.tx=pm.ix;pm.ty=pm.iy
 
   const mon=['pxh-architect','pxh-expert','pxh-fix-bugs']
-  mon.forEach((n,i)=>{const cx=W*.25+i*W*.22,cc=chars[n];cc.dx=cx;cc.dy=r2y;cc.ix=cx+20;cc.iy=r2y+25;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
+  mon.forEach((n,i)=>{const cx=W*.25+i*W*.22,cc=chars[n];cc.dx=cx;cc.dy=r2y;cc.ix=cx+20;cc.iy=r2y-30;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
 
   const lap=['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux']
-  lap.forEach((n,i)=>{const cx=W*.16+i*W*.2,cc=chars[n];cc.dx=cx;cc.dy=r3y;cc.ix=cx+25;cc.iy=r3y+35;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
+  lap.forEach((n,i)=>{const cx=W*.16+i*W*.2,cc=chars[n];cc.dx=cx;cc.dy=r3y;cc.ix=cx+25;cc.iy=r3y-30;cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.ix;cc.ty=cc.iy})
 
-  const sh=chars['pxh-save-history'];sh.dx=W*.22;sh.dy=r4y;sh.ix=W*.22+30;sh.iy=r4y+20;sh.x=sh.ix;sh.y=sh.iy;sh.tx=sh.ix;sh.ty=sh.iy
+  const sh=chars['pxh-save-history'];sh.dx=W*.22;sh.dy=r4y;sh.ix=W*.22+30;sh.iy=r4y-30;sh.x=sh.ix;sh.y=sh.iy;sh.tx=sh.ix;sh.ty=sh.iy
 
-  const hh=chars['pxh-help'];hh.dx=W*.72;hh.dy=r4y;hh.ix=W*.72+30;hh.iy=r4y+25;hh.x=hh.ix;hh.y=hh.iy;hh.tx=hh.ix;hh.ty=hh.iy
+  const hh=chars['pxh-help'];hh.dx=W*.72;hh.dy=r4y;hh.ix=W*.72+30;hh.iy=r4y-30;hh.x=hh.ix;hh.y=hh.iy;hh.tx=hh.ix;hh.ty=hh.iy
 
   plants.length=0
-  plants.push({x:W*.2,y:H*.26,s:22},{x:W*.92,y:H*.22,s:16},{x:W*.18,y:H*.6,s:20})
-  plants.push({x:W*.93,y:H*.58,s:14},{x:W*.48,y:H*.92,s:13},{x:W*.8,y:H*.93,s:11})
+  plants.push({x:W*.18,y:H*.23,s:22},{x:W*.93,y:H*.22,s:16},{x:W*.15,y:H*.6,s:20})
+  plants.push({x:W*.94,y:H*.55,s:14},{x:W*.5,y:H*.94,s:13},{x:W*.82,y:H*.9,s:11})
 
   POI.length=0
   POI.push({x:W*.48,y:H*.7,ti:'T3'},{x:W*.3,y:H*.85,ti:'T4'},{x:W*.65,y:H*.85,ti:'T1'},{x:W*.5,y:H*.4,ti:'T3'})
@@ -308,7 +308,7 @@ function drawContract(cx,cy,alpha,emoji){
 // CORE LOGIC
 // ============================================================
 function moveChar(ch,tx,ty,sp){ch.tx=tx;ch.ty=ty;ch.ws=sp||1.5;if(ch.state!=='walking'){ch.state='walking';ch.wp=0}}
-function startTyping(ch){const dtx=ch.dx,dty=ch.dy+24;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
+function startTyping(ch){const dtx=ch.dx,dty=ch.dy+40;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
   if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;const ck=setInterval(()=>{if(!ch.w){clearInterval(ck);return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ck);if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
   else{ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;ch.w=true;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}}
 function stopTyping(ch){ch.state='idle';ch.w=false;ch.hrw=false;if(ch.ti){clearInterval(ch.ti);ch.ti=null};ch.it=performance.now()+2000;moveChar(ch,ch.ix,ch.iy,1)}
@@ -395,22 +395,22 @@ function animate(now){fc++;updateElapsed()
   ctx.fillStyle='#f5f5f0';ctx.beginPath();ctx.arc(W*.7,H*.06,11,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();ctx.fillStyle='#111';ctx.fillRect(W*.7-.5,H*.06-7,1,4);ctx.fillRect(W*.7-.5,H*.06+2,1,5);
 
   // Desks — monitor row
-  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+30,ch.dy+15,18,27);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+31,ch.dy+18,15,21);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+39,ch.dy+33,2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-33,ch.dy+22,66,8);drawMonitor(ch.dx,ch.dy-4,act);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+22,ch.dy+32)})
+  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#1a1d24';ctx.fillRect(ch.dx+36,ch.dy+15,18,27);ctx.fillStyle='#252830';ctx.fillRect(ch.dx+37,ch.dy+18,15,21);ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(ch.dx+45,ch.dy+33,2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawMonitor(ch.dx,ch.dy-4,act);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
 
   // Desks — laptop row
-  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-27,ch.dy+22,54,8);drawLaptop(ch.dx,ch.dy+9,act)})
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;const act=ch.state==='typing';ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-32,ch.dy+22,65,8);drawLaptop(ch.dx,ch.dy+9,act)})
 
   // Chairs — all agents
   ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+40;ctx.fillStyle='#282d38';ctx.fillRect(cx-13,cy,27,6);ctx.fillStyle='#222830';ctx.fillRect(cx-4,cy-22,9,22);ctx.fillStyle='#303840';ctx.fillRect(cx-3,cy-25,6,3)})
 
   // PM corner desk
-  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-52,pm.dy+22,90,9);drawMonitor(pm.dx,pm.dy-4,pm.state==='typing');drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+33,pm.dy+32);ctx.fillStyle='#1a1d24';ctx.fillRect(pm.dx+38,pm.dy+15,21,27)
+  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-60,pm.dy+22,100,9);drawMonitor(pm.dx,pm.dy-4,pm.state==='typing');drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+40,pm.dy+32);ctx.fillStyle='#1a1d24';ctx.fillRect(pm.dx+44,pm.dy+15,21,27)
 
   // Help desk
-  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-33,hh.dy+22,66,9);drawMonitor(hh.dx,hh.dy-4,hh.state==='typing');drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+22,hh.dy+32)
+  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-40,hh.dy+22,80,9);drawMonitor(hh.dx,hh.dy-4,hh.state==='typing');drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+28,hh.dy+32)
 
   // Historian desk
-  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-33,sh.dy+22,66,9);drawMonitor(sh.dx,sh.dy-4,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+22,sh.dy+32)
+  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawMonitor(sh.dx,sh.dy-4,sh.state==='typing');drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
   // Contracts + notifs
   contracts.forEach(ct=>drawContract(ct.x,ct.y,ct.alpha,ct.emoji))
