@@ -76,7 +76,7 @@ const AGENTS={
   'pxh-devops':{n:'pxh-devops',role:'DevOps',tier:'T3',c:'#58a6ff',g:'male',sk:'#dcc0a0',hc:'#2c3e50',hs:'short',bc:'#1a5080',outfit:'hoodie',oc:'#0a3060',acc:'glasses',pat:'solid'},
   'pxh-ui-ux':{n:'pxh-ui-ux',role:'UI/UX Designer',tier:'T3',c:'#f85149',g:'female',sk:'#f8dcc8',hc:'#6a1b9a',hs:'long',bc:'#8b2550',outfit:'dress',oc:'#b03060',acc:'scarf',pat:'solid'},
   'pxh-save-history':{n:'pxh-save-history',role:'Historian',tier:'T4',c:'#bc8cff',g:'male',sk:'#f0e0c8',hc:'#2a2a3a',hs:'short',bc:'#3a2a5a',outfit:'cardigan',oc:'#5a4a7a',acc:'glasses',pat:'solid'},
-  'pxh-opencode':{n:'pxh-opencode',role:'TUI Mirror',tier:'T3',c:'#00e5ff',g:'male',sk:'#e8dcc8',hc:'#1a1a2a',hs:'short',bc:'#0a2a3a',outfit:'hoodie',oc:'#0d4a5a',acc:'glasses',pat:'solid'},
+  'pxh-opencode':{n:'pxh-opencode',role:'PXHOpenCode',tier:'T3',c:'#00e5ff',g:'male',sk:'#e8dcc8',hc:'#1a1a2a',hs:'short',bc:'#0a2a3a',outfit:'hoodie',oc:'#0d4a5a',acc:'glasses',pat:'solid'},
 }
 const AL=Object.values(AGENTS)
 let W,H
@@ -398,6 +398,8 @@ function drawCharacter(ch){
     }
     ctx.fillStyle='rgba(255,120,120,0.35)';ctx.beginPath();ctx.ellipse(-9,hcy+3,3,2,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(9,hcy+3,3,2,0,0,Math.PI*2);ctx.fill()
     ctx.strokeStyle='#d44';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(0,hcy+5,3,.15,Math.PI-.15);ctx.stroke()
+    //glasses — drawn after head so they appear on top of face
+    if(a.acc==='glasses'){ctx.strokeStyle='#333';ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(-5,hcy-1,4.5,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(5,hcy-1,4.5,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(-0.5,hcy-1);ctx.lineTo(0.5,hcy-1);ctx.stroke()}
     //name label
     const ly=hcy-28;ctx.fillStyle='#1a1a2a';const rw=a.role.length*5+7;ctx.beginPath();ctx.roundRect(-rw/2,ly-10,rw,15,5);ctx.fill();ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly+1)
     //state badge — right of name, blinking
@@ -434,6 +436,7 @@ function drawCharacter(ch){
     const hcy=bt-7;ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
     ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
     ctx.fillStyle=a.hc;ctx.beginPath();ctx.arc(0,hcy-2,14.5,0,Math.PI*2);ctx.fill()
+    if(a.acc==='glasses'){ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-13,hcy);ctx.lineTo(-18,hcy-5);ctx.stroke();ctx.beginPath();ctx.moveTo(13,hcy);ctx.lineTo(18,hcy-5);ctx.stroke();ctx.strokeStyle='#555';ctx.lineWidth=1;ctx.beginPath();ctx.arc(0,hcy-2,14,1.2,1.9);ctx.stroke()}
     // Name above
     const ly=hcy-28;ctx.fillStyle='#1a1a2a';const rw=a.role.length*5+7;ctx.beginPath();ctx.roundRect(-rw/2,ly-10,rw,15,5);ctx.fill();ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly+1)
     // State badge — right of name, blinking
