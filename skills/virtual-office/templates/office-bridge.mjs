@@ -58,16 +58,29 @@ const state = {
   directBroadcast: null,
   activeAgents: {},
   idleTimers: {},
+  idleTimer: null,
 }
 const WORK_IDLE_MS = 8000
 
-function startIdleTimer(agent) {
+function startAgentIdle(agent, delay) {
   clearTimeout(state.idleTimers[agent])
   state.idleTimers[agent] = setTimeout(() => {
     emit({ type: 'agent_state', agent, tuiState: 'idle', message: '' })
     delete state.activeAgents[agent]
     delete state.idleTimers[agent]
-  }, WORK_IDLE_MS)
+  }, WORK_IDLE_MS + (delay||0))
+}
+
+function resetGlobalIdle() {
+  clearTimeout(state.idleTimer)
+  state.idleTimer = setTimeout(() => {
+    for (const ag of Object.keys(state.activeAgents)) {
+      clearTimeout(state.idleTimers[ag])
+      emit({ type: 'agent_state', agent: ag, tuiState: 'idle', message: '' })
+      delete state.idleTimers[ag]
+    }
+    state.activeAgents = {}
+  }, WORK_IDLE_MS + 5000)
 }
 
 function getRelative(filePath) {
@@ -131,6 +144,7 @@ function emit(event) {
   }
   state.lastEmit = Date.now()
   state.emitCount++
+  resetGlobalIdle()
 }
 
 function canEmit() {
@@ -143,7 +157,7 @@ function canEmit() {
 }
 
 const WORKFLOW_PIPELINES = {
-  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-devops','pxh-save-history'],
+  Code:  ['pxh-help','pxh-pm','pxh-architect','__MAIN__','pxh-ui-ux','pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-devops','pxh-save-history'],
   Test:  ['pxh-qa','pxh-fix-bugs','pxh-review-code','pxh-save-history'],
   Debug: ['pxh-help','pxh-pm','pxh-fix-bugs','pxh-ui-ux','pxh-qa','pxh-review-code','pxh-devops','pxh-save-history'],
   Style: ['pxh-ui-ux'],
@@ -156,26 +170,31 @@ const WORKFLOW_PIPELINES = {
   Skill: ['pxh-expert','pxh-pm'],
 }
 const AGENT_ROLES = {
-  'pxh-help':   { tuiState: 'explore',   msg: '🔍 Classifying request...' },
-  'pxh-pm':     { tuiState: 'delegating', msg: '📋 Routing workflow...' },
-  'pxh-architect': { tuiState: 'explore', msg: '🏗️ Designing architecture...' },
-  'pxh-qa':     { tuiState: 'testing',   msg: '🧪 Running tests...' },
-  'pxh-fix-bugs': { tuiState: 'explore', msg: '🐛 Hunting bugs...' },
-  'pxh-review-code': { tuiState: 'review', msg: '🔍 Reviewing code...' },
-  'pxh-devops': { tuiState: 'execute',   msg: '⚙️ Building & deploying...' },
-  'pxh-save-history': { tuiState: 'write', msg: '💾 Saving checkpoint...' },
-  'pxh-ui-ux':  { tuiState: 'edit',      msg: '🎨 Designing interface...' },
-  'pxh-expert': { tuiState: 'write',     msg: '✍️ Coding...' },
+  'pxh-help':   { tuiState: 'Interface',  msg: '🔍 Validate & classify input' },
+  'pxh-pm':     { tuiState: 'Orchestration', msg: '📋 Route & enforce policy' },
+  'pxh-architect': { tuiState: 'Design', msg: '🏗️ Design tech stack & schema' },
+  'pxh-expert': { tuiState: 'Code',     msg: '✍️ Vibe code & production' },
+  'pxh-fix-bugs': { tuiState: 'Debug', msg: '🐛 Root cause → fix bug' },
+  'pxh-qa':     { tuiState: 'Test',   msg: '🧪 Write & run tests' },
+  'pxh-review-code': { tuiState: 'Review', msg: '🔍 Security & perf audit' },
+  'pxh-devops': { tuiState: 'Build',   msg: '⚙️ Lint → test → build' },
+  'pxh-save-history': { tuiState: 'Infrastructure', msg: '💾 Save state & checkpoint' },
+  'pxh-ui-ux':  { tuiState: 'Design',      msg: '🎨 Layout & responsive design' },
 }
 
 function createTaskSequence(cls) {
   const agents = WORKFLOW_PIPELINES[cls.action] || ['pxh-help','pxh-pm','__MAIN__']
   const seq = []
+  let prev = null
   agents.forEach(ag => {
     const name = ag === '__MAIN__' ? cls.agent : ag
     const role = AGENT_ROLES[name] || { tuiState: cls.action, msg: `${cls.action}...` }
     const msg = name === cls.agent ? `${cls.action}: ${cls.file}` : role.msg
+    if(prev){
+      seq.push({ type: 'contract', from: prev, to: name, tier_from: 'T2', tier_to: 'T3' })
+    }
     seq.push({ type: 'agent_state', agent: name, tuiState: role.tuiState, message: msg })
+    prev = name
   })
   return seq
 }
@@ -210,22 +229,20 @@ function processBatch() {
       seq.forEach((evt, i) => {
         setTimeout(() => emit(evt), idx*600 + i*400)
       })
-      // Track all agents in the pipeline
-      seq.forEach(evt => {
+      // Track all agents in the pipeline with staggered idle
+      seq.forEach((evt, i) => {
         activeNow[evt.agent] = true
+        startAgentIdle(evt.agent, i * 1500)
       })
     } else {
       setTimeout(() => {
         emit({ type: 'agent_state', agent: c.agent, tuiState: 'update', message: `${c.action}: ${c.file}` })
       }, idx*300)
       activeNow[c.agent] = true
+      startAgentIdle(c.agent, 0)
     }
   })
 
-  // Start/reset idle timers for all active agents
-  for (const ag of Object.keys(activeNow)) {
-    startIdleTimer(ag)
-  }
   state.activeAgents = activeNow
 }
 
