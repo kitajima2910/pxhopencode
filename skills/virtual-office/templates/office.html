@@ -68,9 +68,9 @@ document.getElementById('sndToggle').addEventListener('click',toggleSound)
 // ============================================================
 const AGENTS={
   'pxh-help':{n:'pxh-help',role:'Help Desk',tier:'T1',c:'#58a6ff',g:'female',sk:'#f5d5c0',hc:'#3a2a1a',hs:'pony',bc:'#1a5c8a',outfit:'dress',oc:'#2a7ac0',acc:'badge',pat:'solid'},
-  'pxh-pm':{n:'pxh-pm',role:'CEO - PXH',tier:'T2',c:'#d29922',g:'male',sk:'#e8c8a0',hc:'#1a1a2e',hs:'short',bc:'#8b6914',outfit:'suit',oc:'#c9a020',acc:'tie',pat:'solid'},
+  'pxh-pm':{n:'pxh-pm',role:'CEO PXH',tier:'T2',c:'#f0c040',g:'male',sk:'#f0d8b8',hc:'#3a3a50',hs:'slick',bc:'#1a1a30',outfit:'suit',oc:'#c9a020',acc:'tie',pat:'solid'},
   'pxh-architect':{n:'pxh-architect',role:'Architect',tier:'T3',c:'#bc8cff',g:'female',sk:'#f0c8b0',hc:'#4a3020',hs:'long',bc:'#6b3fa0',outfit:'dress',oc:'#8050c0',acc:'glasses',pat:'solid'},
-  'pxh-expert':{n:'pxh-expert',role:'Developer',tier:'T3',c:'#3fb950',g:'male',sk:'#edc8a8',hc:'#2a2a3a',hs:'spiky',bc:'#2a7a3f',outfit:'hoodie',oc:'#1a5a2f',acc:'none',pat:'solid'},
+  'pxh-expert':{n:'pxh-expert',role:'Developer',tier:'T3',c:'#3fb950',g:'male',sk:'#edc8a8',hc:'#2a2a3a',hs:'messy',bc:'#2a5a3f',outfit:'hoodie',oc:'#1a4a2f',acc:'glasses',pat:'solid'},
   'pxh-fix-bugs':{n:'pxh-fix-bugs',role:'Bug Hunter',tier:'T3',c:'#f85149',g:'male',sk:'#d4a580',hc:'#cc3333',hs:'buzz',bc:'#9b2d2d',outfit:'jacket',oc:'#c04040',acc:'badge',pat:'striped'},
   'pxh-qa':{n:'pxh-qa',role:'QA Engineer',tier:'T3',c:'#3fb950',g:'female',sk:'#eed0b8',hc:'#6b3510',hs:'curly',bc:'#1a6b5a',outfit:'dress',oc:'#2a8a6a',acc:'none',pat:'dotted'},
   'pxh-review-code':{n:'pxh-review-code',role:'Reviewer',tier:'T3',c:'#d29922',g:'male',sk:'#e0c098',hc:'#555',hs:'short',bc:'#7a5a10',outfit:'shirt',oc:'#a07820',acc:'tie',pat:'solid'},
@@ -242,6 +242,19 @@ function drawHair(hx,hy,a,g){
   }else if(hs==='curly'){
     ctx.beginPath();ctx.arc(hx,hy,hr,Math.PI,Math.PI*2);ctx.fill()
     for(let i=-3;i<=4;i++){ctx.beginPath();ctx.arc(hx+i*5,hy-4,4.5,0,Math.PI*2);ctx.fill()}
+  }else if(hs==='slick'){
+    // CEO slicked back hair
+    ctx.beginPath();ctx.arc(hx,hy,hr,Math.PI,Math.PI*2);ctx.fill()
+    ctx.fillRect(hx-hr,hy-hr*.1,hr*2,hr*.3)
+    for(let i=0;i<4;i++){ctx.fillStyle=dc(a.hc,.7);ctx.fillRect(hx-hr*.6+i*3,hy-hr*.4-i*2,hr*.3,hr*.15)}
+    ctx.fillStyle=a.hc
+  }else if(hs==='messy'){
+    // Developer messy/tousled hair
+    ctx.beginPath();ctx.arc(hx,hy,hr,Math.PI,Math.PI*2);ctx.fill()
+    for(let i=-3;i<=4;i++){
+      const mx=hx+i*4+Math.sin(i*2)*3,my=hy-6-Math.abs(i)*2.5
+      ctx.beginPath();ctx.moveTo(mx-2.5,my+3);ctx.lineTo(mx,my-3-Math.random()*5);ctx.lineTo(mx+2.5,my+3);ctx.fill()
+    }
   }else{
     ctx.beginPath();ctx.arc(hx,hy,hr,Math.PI,Math.PI*2);ctx.fill()
     ctx.fillRect(hx-hr*.7,hy-2,hr*1.4,5)
@@ -261,11 +274,11 @@ function drawOutfit(a,bt,bb,bw,g){
   // Outfit details
   if(a.outfit==='polo'){
     ctx.fillStyle=oc;ctx.fillRect(-bw+2,bt+4,bw*2-4,3)
-    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(0,bt+12,1.5,0,Math.PI*2);ctx.fill()
+    ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(0,bt+12,1.5,0,Math.PI*2);ctx.fill()
   }else if(a.outfit==='suit'){
     ctx.fillStyle=oc;ctx.beginPath();ctx.moveTo(-bw+1,bt);ctx.lineTo(-bw+4,bt+8);ctx.lineTo(-bw+1,bt+16);ctx.lineTo(-bw+1,bt);ctx.fill()
     ctx.beginPath();ctx.moveTo(bw-1,bt);ctx.lineTo(bw-4,bt+8);ctx.lineTo(bw-1,bt+16);ctx.lineTo(bw-1,bt);ctx.fill()
-    ctx.fillStyle='#fff';ctx.fillRect(-2,bt+2,4,bt+12)
+    ctx.fillStyle=a.sk;ctx.fillRect(-2,bt+2,4,bt+12)
   }else if(a.outfit==='blazer'){
     ctx.fillStyle=oc;ctx.beginPath();ctx.moveTo(-bw+1,bt);ctx.lineTo(-bw+5,bt+10);ctx.lineTo(-bw+1,bt+18);ctx.lineTo(-bw+1,bt);ctx.fill()
     ctx.beginPath();ctx.moveTo(bw-1,bt);ctx.lineTo(bw-5,bt+10);ctx.lineTo(bw-1,bt+18);ctx.lineTo(bw-1,bt);ctx.fill()
@@ -302,7 +315,7 @@ function drawOutfit(a,bt,bb,bw,g){
     }
   }else if(a.outfit==='shirt'){
     ctx.fillStyle=oc;ctx.fillRect(-bw+2,bt+3,bw*2-4,2)
-    ctx.fillStyle='#fff';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(0,bt+8+i*6,1.2,0,Math.PI*2);ctx.fill()}
+    ctx.fillStyle='#ddd';for(let i=0;i<3;i++){ctx.beginPath();ctx.arc(0,bt+8+i*6,1.2,0,Math.PI*2);ctx.fill()}
   }
   // Accessories
   if(a.acc==='tie'){
@@ -356,9 +369,9 @@ function drawCharacter(ch){
     //name label
     const ly=hcy-19;ctx.fillStyle='rgba(0,0,0,0.65)';const rw=a.role.length*5+7;ctx.beginPath();ctx.roundRect(-rw/2,ly-10,rw,15,5);ctx.fill();ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly+1)
     //state badge
-    if(ch.ts&&ch.w){const sy=ly-22,st=ch.ts.toUpperCase(),sw=st.length*5+10;const p=Math.sin(ph*2)*.2+.8;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
+    if(ch.ts&&ch.w){const sy=ly-28,st=ch.ts.toUpperCase(),sw=st.length*5+10;const p=Math.sin(ph*2)*.2+.8;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
     //bubble
-    if(ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,ch._bcol||a.c)
+    if(ch.tsm)drawComicBubble(0,hcy-46,ch.tsm,ch._bcol||a.c)
   }else{
     const bw=g==='female'?12:14,bt=-40,bb=-3
     // Legs under desk
@@ -392,8 +405,8 @@ function drawCharacter(ch){
     // Name above
     const ly=hcy-19;ctx.fillStyle='rgba(0,0,0,0.65)';const rw=a.role.length*5+7;ctx.beginPath();ctx.roundRect(-rw/2,ly-10,rw,15,5);ctx.fill();ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly+1)
     // State badge
-    if(ch.ts&&ch.w){const sy=ly-22,st=ch.ts.toUpperCase(),sw=st.length*5+10;const p=Math.sin(ph*2)*.2+.8;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
-    if(ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,ch._bcol||a.c)
+    if(ch.ts&&ch.w){const sy=ly-28,st=ch.ts.toUpperCase(),sw=st.length*5+10;const p=Math.sin(ph*2)*.2+.8;ctx.fillStyle=`rgba(${hr(a.c)},${p})`;ctx.beginPath();ctx.roundRect(-sw/2,sy-8,sw,14,4);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.fillText(st,0,sy+1)}
+    if(ch.tsm)drawComicBubble(0,hcy-46,ch.tsm,ch._bcol||a.c)
   }
   ctx.restore()
 }
