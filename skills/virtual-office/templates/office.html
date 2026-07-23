@@ -23,9 +23,9 @@ canvas{display:block;width:100%;height:100%}
 .st-item{display:flex;align-items:center;gap:3px;opacity:0.7}
 .st-item .lbl{font-size:9px;opacity:0.4;text-transform:uppercase;letter-spacing:0.5px}
 .st-item .val{font-weight:600;font-size:11px}
-#logOverlay{position:absolute;right:8px;top:8px;z-index:30;max-width:260px;pointer-events:none}
-.log-item{font-size:9px;padding:3px 10px;margin:2px 0;background:rgba(0,0,0,0.75);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideIn 0.25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
-@keyframes slideIn{0%{opacity:0;transform:translateX(15px)}100%{opacity:1;transform:translateX(0)}}
+#logOverlay{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);z-index:30;max-width:320px;pointer-events:none;text-align:center}
+.log-item{font-size:10px;padding:3px 12px;margin:2px 0;background:rgba(0,0,0,0.8);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideUp .25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
+@keyframes slideUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -298,10 +298,13 @@ function drawCharacter(ch){
 }
 
 function drawContract(cx,cy,alpha,emoji){
-  ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy);ctx.rotate(Math.sin(fc*.05)*.1)
-  ctx.fillStyle='#f0e6d3';ctx.fillRect(-10,-7,20,14);ctx.strokeStyle='#d4a574';ctx.lineWidth=1;ctx.strokeRect(-10,-7,20,14)
-  ctx.strokeStyle='#ccc';ctx.lineWidth=.5;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(-7,-3+i*4);ctx.lineTo(7,-3+i*4);ctx.stroke()}
-  ctx.font='10px sans-serif';ctx.textAlign='center';ctx.fillText(emoji||'📄',0,2);ctx.restore()
+  ctx.save();ctx.globalAlpha=alpha;ctx.translate(cx,cy);ctx.rotate(Math.sin(fc*.05)*.08)
+  ctx.fillStyle='#faf5e8';ctx.beginPath();ctx.roundRect(-14,-10,28,20,2);ctx.fill()
+  ctx.strokeStyle='#d4a574';ctx.lineWidth=1.2;ctx.stroke()
+  ctx.strokeStyle='#e8d8c0';ctx.lineWidth=.6
+  for(let i=0;i<4;i++){ctx.beginPath();ctx.moveTo(-10,-4+i*5);ctx.lineTo(10,-4+i*5);ctx.stroke()}
+  ctx.font='bold 12px sans-serif';ctx.textAlign='center';ctx.fillStyle='#c44';ctx.fillText(emoji||'📋',0,3)
+  ctx.restore()
 }
 
 // ============================================================
@@ -338,7 +341,7 @@ function processEvent(event){
   if(event.type==='task_start'||event.type==='phase_change'){
     state.agent=event.to||event.from||state.agent;if(event.phase)state.phase=event.phase;if(event.workflow)state.workflow=event.workflow;if(event.retry)state.retry=event.retry
     if(state.agent)highlightAgent(state.agent)
-    if(event.tier_from&&event.tier_to){const r=chars._r,tm={T0:r.t1t+10,T1:(r.t1t+r.t1b)/2,T2:(r.t2t+r.t2b)/2,T3:(r.t3t+r.t3b)/2,T4:(r.t4t+r.t4b)/2};contracts.push({x:W*.5,y:tm[event.tier_from]||0,ty:tm[event.tier_to]||0,alpha:1,emoji:'📄',life:70});sfx('contract')}
+    if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,alpha:1,emoji:'📋',life:80});sfx('contract')}
     addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
   }else if(event.type==='agent_state'){
     const ag=event.agent,ch=chars[ag];if(ch){ch.ts=event.tuiState||event.state||'';ch.tsm=event.message||'';if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)};state.agent=ag;if(event.tuiState)state.phase=event.tuiState;addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888')}
@@ -346,7 +349,7 @@ function processEvent(event){
   }else if(event.type==='task_end'){
     const ch=chars[event.from||event.to];if(ch){stopTyping(ch);if(event.status!=='fail')showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}
     addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Done')}`,event.status==='fail'?'#f85149':color)
-  }else if(event.type==='contract'){if(event.tier_from&&event.tier_to){const r=chars._r,tm={T0:r.t1t+10,T1:(r.t1t+r.t1b)/2,T2:(r.t2t+r.t2b)/2,T3:(r.t3t+r.t3b)/2,T4:(r.t4t+r.t4b)/2};contracts.push({x:W*.5,y:tm[event.tier_from]||0,ty:tm[event.tier_to]||0,alpha:1,emoji:'📄',life:70});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
+  }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,alpha:1,emoji:'📋',life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
   updateStatus()
 }
 
@@ -367,7 +370,7 @@ function animate(now){fc++;updateElapsed()
     if(ch.state==='idle'&&now>ch.it&&!ch.w){if(Math.random()<.006)randomWander(ch)}
   })
 
-  for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.y+=(ct.ty-ct.y)*.06;ct.life--;ct.alpha=Math.min(1,ct.life/35);if(ct.life<=0)contracts.splice(i,1)}
+  for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.x+=(ct.tx-ct.x)*.05;ct.y+=(ct.ty-ct.y)*.05;ct.life--;ct.alpha=Math.min(1,ct.life/40);if(ct.life<=0)contracts.splice(i,1)}
   for(let i=doneNotifs.length-1;i>=0;i--){const dn=doneNotifs[i];dn.life--;dn.y=dn.sy-(70-dn.life)*.5;if(dn.life<=0){doneNotifs.splice(i,1);continue}}
 
   // RENDER
