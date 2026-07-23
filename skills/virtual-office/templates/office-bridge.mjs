@@ -253,8 +253,8 @@ function processBatch() {
       seq.forEach((evt, i) => {
         setTimeout(() => emit(evt), idx*600 + i*400)
       })
-      // Track all agents in the pipeline with staggered idle
-      seq.forEach((evt, i) => {
+      // Track agents in pipeline with staggered idle (skip contract events)
+      seq.filter(e=>e.type==='agent_state').forEach((evt, i) => {
         activeNow[evt.agent] = true
         startAgentIdle(evt.agent, i * 1500)
       })

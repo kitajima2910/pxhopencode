@@ -241,26 +241,24 @@ try {
   })
 } catch {}
 
-// Watch state file for real-time opencode state sync
+// Watch state file for real-time opencode state sync (polling for Windows compat)
 const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode-state.json')
-let stateWatcher = null
 try {
-  stateWatcher = fs.watch(path.dirname(STATE_FILE), (eventType, filename) => {
-      if(filename !== 'opencode-state.json') return
-      try {
-        const raw = fs.readFileSync(STATE_FILE, 'utf-8')
-        const st = JSON.parse(raw)
-        if(st.state){
-          const event = {
-            type: 'agent_state',
-            agent: st.agent || 'pxh-expert',
-            tuiState: st.state,
-            message: st.message || `${st.state}...`,
-          }
-          broadcast(event)
-        }
-      } catch {}
-    })
+  fs.watchFile(STATE_FILE, { interval: 200 }, () => {
+    try {
+      if(!fs.existsSync(STATE_FILE)) return
+      const raw = fs.readFileSync(STATE_FILE, 'utf-8')
+      const st = JSON.parse(raw)
+      if(st.state){
+        broadcast({
+          type: 'agent_state',
+          agent: st.agent || 'pxh-expert',
+          tuiState: st.state,
+          message: st.message || `${st.state}...`,
+        })
+      }
+    } catch {}
+  })
 } catch {}
 
 server.listen(PORT, () => {
