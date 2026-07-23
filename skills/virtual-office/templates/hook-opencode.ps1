@@ -1,4 +1,4 @@
-# Hook opencode TUI → webview real-time state sync
+# Hook opencode TUI -> webview real-time state sync
 # Usage: .\hook-opencode.ps1 "your prompt here"
 param([string]$Prompt)
 
@@ -7,28 +7,28 @@ $STATE_FILE = "$PSScriptRoot\..\..\..\_shared\opencode-state.json"
 $EMIT_URL = "http://localhost:2910/emit"
 $MIRROR_URL = "http://localhost:2910/emit"
 
-# Tool action patterns detected from TUI output (emoji or keyword)
+# Tool action patterns detected from TUI output (keyword)
 $TOOL_RX = @{}
-$TOOL_RX['planning']   = '(?:📋|plan|planning|prepare|preparing|outline|outlining|todos|organize)'
-$TOOL_RX['thinking']   = '(?:🧠|thinking|think|analyze|analyzing|reason|reasoning)'
-$TOOL_RX['explore']    = '(?:🔍|explore|exploring|investigate)'
-$TOOL_RX['read']       = '(?:📖|read|reading|load|loading)'
-$TOOL_RX['write']      = '(?:✍️|write|writing|create|creating|generate)'
-$TOOL_RX['edit']       = '(?:✍️|edit|editing|modify|update|modifying|updating)'
-$TOOL_RX['search']     = '(?:🔎|search|searching|find|grep|glob|lookup)'
-$TOOL_RX['execute']    = '(?:⚙️|execute|executing|run|running|bash|command|install|build)'
-$TOOL_RX['delegating'] = '(?:📋|delegate|delegating|subagent|assign|routing)'
-$TOOL_RX['test']       = '(?:🧪|test|testing|verify|verifying)'
+$TOOL_RX['planning']   = '(?:plan|planning|prepare|preparing|outline|outlining|todos|organize)'
+$TOOL_RX['thinking']   = '(?:thinking|think|analyze|analyzing|reason|reasoning)'
+$TOOL_RX['explore']    = '(?:explore|exploring|investigate)'
+$TOOL_RX['read']       = '(?:read|reading|load|loading)'
+$TOOL_RX['write']      = '(?:write|writing|create|creating|generate)'
+$TOOL_RX['edit']       = '(?:edit|editing|modify|update|modifying|updating)'
+$TOOL_RX['search']     = '(?:search|searching|find|grep|glob|lookup)'
+$TOOL_RX['execute']    = '(?:execute|executing|run|running|bash|command|install|build)'
+$TOOL_RX['delegating'] = '(?:delegate|delegating|subagent|assign|routing)'
+$TOOL_RX['test']       = '(?:test|testing|verify|verifying)'
 $TOOL_RX['review']     = '(?:review|reviewing|audit|inspect)'
-$TOOL_RX['fix']        = '(?:🐛|fix|fixing|debug|debugging|patch|repair)'
-$TOOL_RX['design']     = '(?:🎨|design|designing|ui|ux|layout|style)'
-$TOOL_RX['save']       = '(?:💾|save|saving|persist|persisting|checkpoint)'
-$TOOL_RX['question']   = '(?:❓|question|ask|asking|clarify)'
-$TOOL_RX['build']      = '(?:⚙️|build|building|compile|deploy|lint)'
+$TOOL_RX['fix']        = '(?:fix|fixing|debug|debugging|patch|repair)'
+$TOOL_RX['design']     = '(?:design|designing|ui|ux|layout|style)'
+$TOOL_RX['save']       = '(?:save|saving|persist|persisting|checkpoint)'
+$TOOL_RX['question']   = '(?:question|ask|asking|clarify)'
+$TOOL_RX['build']      = '(?:build|building|compile|deploy|lint)'
 $TOOL_RX['idle']       = '(?:idle|done|completed|finish|finished|waiting)'
 $TOOL_RX['classify']   = '(?:classify|classifying|validate|parsing)'
 
-# Map detected tool state → agent for TUI output
+# Map detected tool state -> agent for TUI output
 $TOOL_AGENT_MAP = @{
   'planning'   = 'pxh-pm'
   'thinking'   = 'pxh-pm'
@@ -49,7 +49,7 @@ $TOOL_AGENT_MAP = @{
   'classify'   = 'pxh-help'
 }
 
-# Tool state → TUI display state mapping
+# Tool state -> TUI display state mapping
 $TOOL_STATE_MAP = @{
   'planning'   = 'Orchestration'
   'thinking'   = 'thinking'
@@ -70,28 +70,19 @@ $TOOL_STATE_MAP = @{
   'classify'   = 'Interface'
 }
 
-# Agent name patterns — fallback when no tool detected
+# Agent name patterns - fallback when no tool detected
 $AGENT_PATTERNS = @(
-  @{ re='pxh-architect';  agent='pxh-architect';  state='Design';      msg='🏗️ Designing architecture' }
-  @{ re='pxh-expert';     agent='pxh-expert';     state='Code';        msg='✍️ Coding' }
-  @{ re='pxh-fix-bugs';   agent='pxh-fix-bugs';   state='Debug';       msg='🐛 Fixing bugs' }
-  @{ re='pxh-qa';         agent='pxh-qa';         state='Test';        msg='🧪 Running tests' }
-  @{ re='pxh-review-code';agent='pxh-review-code';state='Review';      msg='🔍 Reviewing' }
-  @{ re='pxh-devops';     agent='pxh-devops';     state='Build';       msg='⚙️ Building' }
-  @{ re='pxh-ui-ux';      agent='pxh-ui-ux';      state='Design';      msg='🎨 Designing UI' }
-  @{ re='pxh-save-history';agent='pxh-save-history';state='Infrastructure';msg='💾 Saving state' }
-  @{ re='pxh-help';       agent='pxh-help';       state='Interface';   msg='🔍 Classifying' }
-  @{ re='pxh-pm';         agent='pxh-pm';         state='Orchestration';msg='📋 Routing' }
+  @{ re='pxh-architect';  agent='pxh-architect';  state='Design';      msg='Designing architecture' }
+  @{ re='pxh-expert';     agent='pxh-expert';     state='Code';        msg='Coding' }
+  @{ re='pxh-fix-bugs';   agent='pxh-fix-bugs';   state='Debug';       msg='Fixing bugs' }
+  @{ re='pxh-qa';         agent='pxh-qa';         state='Test';        msg='Running tests' }
+  @{ re='pxh-review-code';agent='pxh-review-code';state='Review';      msg='Reviewing' }
+  @{ re='pxh-devops';     agent='pxh-devops';     state='Build';       msg='Building' }
+  @{ re='pxh-ui-ux';      agent='pxh-ui-ux';      state='Design';      msg='Designing UI' }
+  @{ re='pxh-save-history';agent='pxh-save-history';state='Infrastructure';msg='Saving state' }
+  @{ re='pxh-help';       agent='pxh-help';       state='Interface';   msg='Classifying' }
+  @{ re='pxh-pm';         agent='pxh-pm';         state='Orchestration';msg='Routing' }
 )
-
-# Emoji → agent mapping for short detection
-$EMOJI_AGENT = @{
-  '🧠' = 'pxh-pm'; '📋' = 'pxh-pm'; '🏗️' = 'pxh-architect'
-  '✍️' = 'pxh-expert'; '📖' = 'pxh-expert'; '🐛' = 'pxh-fix-bugs'
-  '🧪' = 'pxh-qa'; '🔍' = 'pxh-review-code'; '⚙️' = 'pxh-devops'
-  '🎨' = 'pxh-ui-ux'; '💾' = 'pxh-save-history'; '🔍' = 'pxh-help'
-  '❓' = 'pxh-pm'; '📝' = 'pxh-expert'
-}
 
 function Send-Agent($agent, $state, $msg) {
   $body = @{ state=$state; agent=$agent; message=$msg } | ConvertTo-Json -Compress
@@ -122,21 +113,6 @@ function Clean-Line($raw) {
   return $s
 }
 
-function Extract-Msg($line, $agentName) {
-  $clean = Clean-Line $line
-  $idx = $clean.IndexOf($agentName)
-  if($idx -ge 0) {
-    $after = $clean.Substring($idx + $agentName.Length).Trim()
-    $after = $after -replace '^[:>\]]+\s*',''
-    if($after.Length -gt 44) { $after = $after.Substring(0,41) + '...' }
-    if($after.Length -gt 0) { return $after }
-  }
-  $parts = $clean -split '\s{2,}'
-  $last = $parts[-1].Trim()
-  if($last.Length -gt 44) { $last = $last.Substring(0,41) + '...' }
-  return $last
-}
-
 # Detect tool state from a cleaned TUI line
 function Detect-Tool {
   param([string]$Line)
@@ -155,17 +131,17 @@ function Detect-Agent {
   return $null
 }
 
-Write-Host "🔌 Hook active — watching TUI for agent states..." -ForegroundColor Cyan
+Write-Host "Hook active - watching TUI for agent states..." -ForegroundColor Cyan
 
 if($Prompt) {
-  Send-Agent 'pxh-help' 'Interface' "🔍 Classifying: $Prompt"
-  Send-Agent 'pxh-pm' 'Orchestration' "📋 Processing: $Prompt"
+  Send-Agent 'pxh-help' 'Interface' "Classifying: $Prompt"
+  Send-Agent 'pxh-pm' 'Orchestration' "Processing: $Prompt"
 }
 
-$proc = Start-Process -FilePath "opencode" -ArgumentList $Prompt -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\opencode-out.txt" -RedirectStandardError "$env:TEMP\opencode-err.txt"
+$proc = Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -Command opencode '$Prompt'" -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\opencode-out.txt" -RedirectStandardError "$env:TEMP\opencode-err.txt"
 
 if(-not $proc) {
-  Write-Host "❌ opencode not found in PATH" -ForegroundColor Red
+  Write-Host "ERROR: opencode not found in PATH" -ForegroundColor Red
   exit 1
 }
 
@@ -219,41 +195,42 @@ while(!$proc.HasExited) {
     $targetState = $null
     $targetMsg = $null
 
+    # Format actual TUI line for speech bubble (truncate to 50 chars)
+    $lineMsg = $clean; if($lineMsg.Length -gt 50) { $lineMsg = $lineMsg.Substring(0,47) + '...' }
+
     if($detectedTool) {
-      # Map tool → agent using TOOL_AGENT_MAP
+      # Map tool -> agent using TOOL_AGENT_MAP
       $toolAgent = $TOOL_AGENT_MAP[$detectedTool]
       $toolState = $TOOL_STATE_MAP[$detectedTool]
 
       if($detectedAgent) {
-        # Both tool AND agent detected: use agent from line, state from tool
+        # Both tool AND agent detected
         $targetAgent = $detectedAgent.agent
         $targetState = $toolState
-        $targetMsg = Extract-Msg $line $detectedAgent.agent
-        if(-not $targetMsg) { $targetMsg = $detectedAgent.msg }
+        $targetMsg = $lineMsg
       }
       elseif($toolAgent) {
-        # Only tool detected: use mapped agent + state
+        # Only tool detected: use mapped agent + actual line
         $targetAgent = $toolAgent
         $targetState = $toolState
-        $targetMsg = "$detectedTool..."
+        $targetMsg = $lineMsg
       }
     }
 
-    # Step 2: Fallback — only agent detected, no tool
+    # Step 2: Fallback - only agent detected, no tool
     if(-not $targetAgent -and $detectedAgent) {
       $targetAgent = $detectedAgent.agent
       $targetState = $detectedAgent.state
-      $realMsg = Extract-Msg $line $detectedAgent.agent
-      $targetMsg = if($realMsg) { $realMsg } else { $detectedAgent.msg }
+      $targetMsg = $lineMsg
     }
 
     # Step 3: Send if we have a target
     if($targetAgent -and $targetState) {
       if(-not $activeAgents[$targetAgent]) {
-        Write-Host "  → $targetAgent [$targetState]: $targetMsg" -ForegroundColor Green
+        Write-Host "  -> $targetAgent [$targetState]: $targetMsg" -ForegroundColor Green
         Send-Agent $targetAgent $targetState $targetMsg
         $agentCooldown[$targetAgent] = $now
-      } elseif(($now - $agentCooldown[$targetAgent]).TotalMilliseconds -ge 2500) {
+      } elseif(($now - $agentCooldown[$targetAgent]).TotalMilliseconds -ge 800) {
         Send-Agent $targetAgent $targetState $targetMsg
         $agentCooldown[$targetAgent] = $now
       }
@@ -265,7 +242,7 @@ while(!$proc.HasExited) {
   # Idle agents not seen for 60 seconds
   foreach($ag in $activeAgents.Keys.Clone()) {
     if(($now - $activeAgents[$ag]).TotalSeconds -gt 60) {
-      Write-Host "  ← $ag done" -ForegroundColor DarkGray
+      Write-Host "  <- $ag done" -ForegroundColor DarkGray
       $body = @{ state='idle'; agent=$ag; message='' } | ConvertTo-Json -Compress
       try { Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null } catch {}
       $activeAgents.Remove($ag)
@@ -275,4 +252,4 @@ while(!$proc.HasExited) {
 
 $proc.WaitForExit()
 Idle-All
-Write-Host "✅ Session kết thúc" -ForegroundColor Green
+Write-Host "Session ended" -ForegroundColor Green

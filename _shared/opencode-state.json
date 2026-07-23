@@ -1,1 +1,1 @@
-﻿{"agent":"system","message":"Idle — ready for next session","state":"idle"}
+{"agent":"pxh-opencode","message":"--replay-limit  cap visible mini replay to the newest N messages                      [number]","state":"Mirror"}
