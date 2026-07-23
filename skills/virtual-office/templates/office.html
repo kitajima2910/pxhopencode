@@ -238,18 +238,21 @@ AGENT_LIST.forEach(a => {
     deskX: 0, deskY: 0, // assigned desk position
     idleX: 0, idleY: 0, // idle standing position (near desk)
     walkSpeed: 0,
-    animTimer: 0,
-    idleActionTimer: Math.random() * 5000 + 3000,
-    typingTimer: 0,
-    typingInterval: 0,
+    walkPhase: Math.random() * Math.PI * 2, // random starting phase for walk cycle
+    animPhase: Math.random() * Math.PI * 2,
+    idleTimer: Math.random() * 8000 + 4000,
+    typingInterval: null,
     working: false,
-    focusTimer: 0,
     bobY: 0,
+    hasRealWork: false, // only true when there's an actual task
   }
 })
 
 // Contract flying objects
 const contracts = []
+
+// Points of interest for idle wandering
+const POI = []
 
 // Office plants
 const plants = []
@@ -354,6 +357,17 @@ function calcLayout(){
 
   // Store regions for rendering
   chars._regions = { t1Top, t1Bot, t2Top, t2Bot, t3Top, t3Bot, t4Top, t4Bot, gapH, floorGap }
+
+  // Points of interest for idle wandering
+  POI.length = 0
+  POI.push({ x: W * 0.82, y: t2Top + t2H * 0.5, tier: 'T2', name: 'water-cooler' })
+  POI.push({ x: W * 0.28, y: t2Top + t2H * 0.6, tier: 'T2', name: 'meeting-table' })
+  POI.push({ x: margin * 0.6, y: t3Top + t3H * 0.5, tier: 'T3', name: 'plant-left' })
+  POI.push({ x: W - margin * 0.6, y: t3Top + t3H * 0.5, tier: 'T3', name: 'plant-right' })
+  POI.push({ x: margin * 0.3, y: t1Top + t1H * 0.5, tier: 'T1', name: 'plant-lobby' })
+  POI.push({ x: W - 40, y: t1Top + t1H * 0.5, tier: 'T1', name: 'door' })
+  POI.push({ x: W * 0.3, y: t3Top + t3H * 0.45, tier: 'T3', name: 't3-center' })
+  POI.push({ x: W * 0.7, y: t3Top + t3H * 0.45, tier: 'T3', name: 't3-right' })
 }
 
 // ============================================================
@@ -536,124 +550,243 @@ function drawCharacter(ch){
   const a = ch.agent
   const x = ch.x, y = ch.y
   const s = ch.state
-  const bob = Math.sin(frameCount * 0.06 + ch.animTimer) * (s === 'idle' ? 1.5 : (s === 'typing' ? 2 : 0))
+  const phase = frameCount * 0.05 + ch.animPhase
+  const breath = Math.sin(phase * 0.7) * (s === 'idle' ? 1 : 0)
 
   ctx.save()
   ctx.translate(x, y + ch.bobY)
 
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.3)'
+  const isStanding = s === 'idle' || s === 'walking'
+  const isAtDesk = s === 'sitting' || s === 'typing'
+
+  // ── Shadow ──
+  ctx.fillStyle = 'rgba(0,0,0,0.25)'
   ctx.beginPath()
-  ctx.ellipse(0, 14, 10, 4, 0, 0, Math.PI*2)
+  ctx.ellipse(0, isStanding ? 0 : -6, isStanding ? 8 : 12, 3, 0, 0, Math.PI*2)
   ctx.fill()
 
-  // Legs (if standing/walking)
-  if(s !== 'sitting' && s !== 'typing'){
-    const walkLeg = (s === 'walking') ? Math.sin(frameCount * 0.2) * 8 : 0
+  if(isStanding){
+    // ===== STANDING / WALKING =====
+    const walkCycle = Math.sin(phase * 3) 
+    const walkStr = s === 'walking' ? Math.abs(walkCycle) : 0
+    const legSpread = s === 'walking' ? walkCycle * 6 : 0
+
+    // Left leg
     ctx.fillStyle = '#30363d'
-    ctx.fillRect(-4, 5, 5, 10)
-    ctx.fillRect(1, 5 + walkLeg * 0.5, 5, 10)
-    // Shoes
+    ctx.save()
+    ctx.translate(-3, -14)
+    if(s === 'walking') ctx.rotate(legSpread * 0.04)
+    ctx.fillRect(-2, 0, 5, 14)
+    // Shoe
     ctx.fillStyle = '#21262d'
-    ctx.fillRect(-5, 14, 7, 3)
-    ctx.fillRect(0, 14 + walkLeg * 0.3, 7, 3)
-  }
+    ctx.fillRect(-3, 12, 7, 3)
+    ctx.restore()
 
-  // Body
-  ctx.fillStyle = a.body
-  ctx.beginPath()
-  if(s === 'sitting' || s === 'typing'){
-    // Sitting: shorter, wider body
-    ctx.roundRect(-8, -2, 16, 16, 4)
-  } else {
-    ctx.roundRect(-8, -4, 16, 20, 4)
-  }
-  ctx.fill()
+    // Right leg
+    ctx.save()
+    ctx.translate(3, -14)
+    if(s === 'walking') ctx.rotate(-legSpread * 0.04)
+    ctx.fillRect(-3, 0, 5, 14)
+    ctx.fillStyle = '#21262d'
+    ctx.fillRect(-4, 12, 7, 3)
+    ctx.restore()
 
-  // Arms
-  ctx.fillStyle = a.body
-  const armY = (s === 'sitting' || s === 'typing') ? 2 : 1
-  if(s === 'typing'){
-    // Typing arms - moving up and down quickly
-    const typeY = Math.sin(frameCount * 0.5 + ch.typingTimer) * 3
-    ctx.fillRect(-13, armY + typeY, 5, 10)
-    ctx.fillRect(10, armY - typeY, 5, 10)
+    // Body (connects directly from legs up)
+    const bodyTop = -32
+    const bodyBot = -14
+    ctx.fillStyle = a.body
+    ctx.beginPath()
+    ctx.moveTo(-8, bodyBot)
+    ctx.lineTo(8, bodyBot)
+    ctx.lineTo(7, bodyTop)
+    ctx.lineTo(-7, bodyTop)
+    ctx.closePath()
+    ctx.fill()
 
-    // Hands on keyboard area
+    // Arms
+    const armSwing = s === 'walking' ? walkCycle * 10 : 0
+    ctx.fillStyle = a.body
+    // Left arm
+    ctx.save()
+    ctx.translate(-8, bodyTop + 4)
+    ctx.rotate(-0.2 + armSwing * 0.03)
+    ctx.fillRect(-2, 0, 4, 14)
+    // Hand
+    ctx.fillStyle = '#e8c090'
+    ctx.beginPath(); ctx.arc(0, 15, 3, 0, Math.PI*2); ctx.fill()
+    ctx.restore()
+    // Right arm
+    ctx.save()
+    ctx.translate(8, bodyTop + 4)
+    ctx.rotate(0.2 - armSwing * 0.03)
+    ctx.fillRect(-2, 0, 4, 14)
+    ctx.fillStyle = '#e8c090'
+    ctx.beginPath(); ctx.arc(0, 15, 3, 0, Math.PI*2); ctx.fill()
+    ctx.restore()
+
+    // Head (on top of body, overlapping)
+    const headCY = bodyTop - 5 + breath
+    // Neck
+    ctx.fillStyle = '#d4a574'
+    ctx.fillRect(-3, bodyTop, 6, 3)
+
     ctx.fillStyle = '#e8c090'
     ctx.beginPath()
-    ctx.arc(-11, armY + 10 + typeY, 3, 0, Math.PI*2)
+    ctx.arc(0, headCY, 9, 0, Math.PI*2)
     ctx.fill()
+
+    // Hair
+    ctx.fillStyle = a.hair
     ctx.beginPath()
-    ctx.arc(12, armY + 10 - typeY, 3, 0, Math.PI*2)
+    ctx.arc(0, headCY - 1, 9.5, Math.PI, Math.PI*2)
     ctx.fill()
-  } else if(s === 'sitting'){
-    ctx.fillRect(-12, armY, 5, 10)
-    ctx.fillRect(9, armY, 5, 10)
-  } else if(s === 'walking'){
-    const armSwing = Math.sin(frameCount * 0.2) * 15
-    ctx.fillRect(-12, armY, 5, 10)
-    ctx.fillRect(9, armY, 5, 12)
+
+    // Eyes
+    ctx.fillStyle = '#0d1117'
+    ctx.beginPath(); ctx.arc(-3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
+    ctx.beginPath(); ctx.arc(3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
+
+    // Blink (every ~3s)
+    if(Math.floor(phase / 3) % 4 === 0){
+      ctx.fillStyle = '#e8c090'
+      ctx.fillRect(-6, headCY - 3, 5, 5)
+      ctx.fillRect(1, headCY - 3, 5, 5)
+    }
+
+    // Mouth
+    ctx.strokeStyle = '#c44'; ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.arc(0, headCY + 4, 2.5, 0.1, Math.PI - 0.1)
+    ctx.stroke()
+
+    // Badge below body
+    ctx.fillStyle = `rgba(${hexToRgb(a.color)},0.25)`
+    ctx.fillRect(-8, bodyBot, 16, 7)
+    ctx.fillStyle = a.color
+    ctx.font = '5.5px "Segoe UI",sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(a.role.toUpperCase(), 0, bodyBot + 5.5)
+
   } else {
-    ctx.fillRect(-12, armY, 5, 11)
-    ctx.fillRect(9, armY, 5, 11)
+    // ===== SITTING / TYPING AT DESK =====
+    // Chair
+    ctx.fillStyle = '#30363d'
+    ctx.fillRect(-10, 0, 20, 6)
+    ctx.fillStyle = '#484f58'
+    ctx.fillRect(-8, -2, 4, 4)
+    ctx.fillRect(4, -2, 4, 4)
+
+    // Legs (bent on chair)
+    ctx.fillStyle = '#30363d'
+    ctx.fillRect(-5, 4, 5, 8)
+    ctx.fillRect(2, 4, 5, 8)
+    ctx.fillStyle = '#21262d'
+    ctx.fillRect(-6, 11, 7, 3)
+    ctx.fillRect(1, 11, 7, 3)
+
+    // Body (sitting, slightly tilted forward)
+    const bodyTop = -28
+    const bodyBot = -4
+    ctx.fillStyle = a.body
+    ctx.beginPath()
+    ctx.moveTo(-9, bodyBot)
+    ctx.lineTo(9, bodyBot)
+    ctx.lineTo(7, bodyTop)
+    ctx.lineTo(-7, bodyTop)
+    ctx.closePath()
+    ctx.fill()
+
+    if(s === 'typing'){
+      // Typing arms: hands on desk/keyboard, rapid movement
+      const typeAnim = Math.sin(phase * 6) * 3
+      ctx.fillStyle = a.body
+      // Left arm to keyboard
+      ctx.save()
+      ctx.translate(-9, bodyTop + 4)
+      ctx.rotate(-0.5)
+      const leftHandY = 14 + typeAnim
+      ctx.fillRect(-2, 0, 4, leftHandY)
+      // Fingers
+      ctx.fillStyle = '#e8c090'
+      for(let f = -1; f <= 1; f++){
+        ctx.fillRect(-1 + f, leftHandY, 2, 3 + Math.abs(typeAnim) * 0.5)
+      }
+      ctx.restore()
+      // Right arm to keyboard
+      ctx.save()
+      ctx.translate(9, bodyTop + 4)
+      ctx.rotate(0.5)
+      const rightHandY = 14 - typeAnim * 0.7
+      ctx.fillRect(-2, 0, 4, rightHandY)
+      ctx.fillStyle = '#e8c090'
+      for(let f = -1; f <= 1; f++){
+        ctx.fillRect(-1 + f, rightHandY, 2, 3 + Math.abs(typeAnim) * 0.5)
+      }
+      ctx.restore()
+    } else {
+      // Sitting: arms resting on lap
+      ctx.fillStyle = a.body
+      ctx.save()
+      ctx.translate(-9, bodyTop + 4)
+      ctx.rotate(-0.3)
+      ctx.fillRect(-2, 0, 4, 12)
+      ctx.fillStyle = '#e8c090'
+      ctx.beginPath(); ctx.arc(0, 13, 3, 0, Math.PI*2); ctx.fill()
+      ctx.restore()
+      ctx.save()
+      ctx.translate(9, bodyTop + 4)
+      ctx.rotate(0.3)
+      ctx.fillRect(-2, 0, 4, 12)
+      ctx.fillStyle = '#e8c090'
+      ctx.beginPath(); ctx.arc(0, 13, 3, 0, Math.PI*2); ctx.fill()
+      ctx.restore()
+    }
+
+    // Head (connected to body top)
+    const headCY = bodyTop - 5 + breath
+    ctx.fillStyle = '#d4a574'
+    ctx.fillRect(-3, bodyTop, 6, 3)
+
+    ctx.fillStyle = '#e8c090'
+    ctx.beginPath()
+    ctx.arc(0, headCY, 9, 0, Math.PI*2)
+    ctx.fill()
+
+    // Hair
+    ctx.fillStyle = a.hair
+    ctx.beginPath()
+    ctx.arc(0, headCY - 1, 9.5, Math.PI, Math.PI*2)
+    ctx.fill()
+
+    // Eyes
+    ctx.fillStyle = '#0d1117'
+    ctx.beginPath(); ctx.arc(-3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
+    ctx.beginPath(); ctx.arc(3.5, headCY - 1, 2, 0, Math.PI*2); ctx.fill()
+
+    if(Math.floor(phase / 3) % 4 === 0){
+      ctx.fillStyle = '#e8c090'
+      ctx.fillRect(-6, headCY - 3, 5, 5)
+      ctx.fillRect(1, headCY - 3, 5, 5)
+    }
+
+    // Mouth
+    ctx.strokeStyle = '#c44'; ctx.lineWidth = 1
+    ctx.beginPath()
+    if(s === 'typing'){
+      ctx.moveTo(-2, headCY + 4); ctx.lineTo(2, headCY + 4) // focused
+    } else {
+      ctx.arc(0, headCY + 4, 2.5, 0.1, Math.PI - 0.1)
+    }
+    ctx.stroke()
+
+    // Badge
+    ctx.fillStyle = `rgba(${hexToRgb(a.color)},0.25)`
+    ctx.fillRect(-8, bodyBot, 16, 7)
+    ctx.fillStyle = a.color
+    ctx.font = '5.5px "Segoe UI",sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(a.role.toUpperCase(), 0, bodyBot + 5.5)
   }
-
-  // Collar
-  const collarY = (s === 'sitting' || s === 'typing') ? -2 : -4
-  ctx.fillStyle = 'rgba(255,255,255,0.12)'
-  ctx.fillRect(-4, collarY, 8, 3)
-
-  // Head
-  const headY = (s === 'sitting' || s === 'typing') ? -16 : -20
-  ctx.fillStyle = '#e8c090'
-  ctx.beginPath()
-  ctx.arc(0, headY + bob, 10, 0, Math.PI*2)
-  ctx.fill()
-
-  // Hair
-  ctx.fillStyle = a.hair
-  ctx.beginPath()
-  ctx.arc(0, headY + bob - 3, 11, Math.PI, Math.PI*2)
-  ctx.fill()
-
-  // Eyes
-  ctx.fillStyle = '#0d1117'
-  ctx.beginPath()
-  ctx.arc(-3, headY + bob, 2, 0, Math.PI*2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(3, headY + bob, 2, 0, Math.PI*2)
-  ctx.fill()
-
-  // Eye blink
-  if(Math.floor(frameCount / 60) % 7 === 0){
-    // blinks handled via CSS before, skip in canvas for simplicity
-  }
-
-  // Mouth
-  const mouthY = headY + bob + 3
-  ctx.strokeStyle = '#c44'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  if(s === 'typing'){
-    // Focused
-    ctx.moveTo(-2, mouthY)
-    ctx.lineTo(2, mouthY)
-  } else {
-    // Slight smile
-    ctx.arc(0, mouthY, 3, 0.1, Math.PI - 0.1)
-  }
-  ctx.stroke()
-
-  // Badge
-  const badgeY = (s === 'sitting' || s === 'typing') ? -10 : -12
-  ctx.fillStyle = `rgba(${hexToRgb(a.color)},0.2)`
-  ctx.fillRect(-10, badgeY + bob - 2, 20, 8)
-  ctx.fillStyle = a.color
-  ctx.font = '6px "Segoe UI",sans-serif'
-  ctx.textAlign = 'center'
-  ctx.fillText(a.role.toUpperCase(), 0, badgeY + bob + 4)
 
   ctx.restore()
 }
@@ -690,7 +823,10 @@ function drawContract(cx, cy, alpha, emoji){
 function moveChar(ch, tx, ty, speed){
   ch.tx = tx; ch.ty = ty
   ch.walkSpeed = speed || 1.5
-  ch.state = 'walking'
+  if(ch.state !== 'walking'){
+    ch.state = 'walking'
+    ch.walkPhase = 0
+  }
 }
 
 function sitAtDesk(ch){
@@ -702,23 +838,44 @@ function sitAtDesk(ch){
 }
 
 function startTyping(ch){
-  ch.state = 'typing'
-  ch.x = ch.deskX
-  ch.y = ch.deskY + 16
-  ch.tx = ch.x; ch.ty = ch.y
-  ch.working = true
-  ch.typingTimer = 0
-  ch.typingInterval = setInterval(() => {
-    if(ch.state === 'typing') sfx('keyboard')
-  }, 150 + Math.random() * 200)
+  const deskTargetX = ch.deskX
+  const deskTargetY = ch.deskY + 16
+  const dist = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
+  if(dist > 25){
+    // Walk to desk first
+    moveChar(ch, deskTargetX, deskTargetY, 2)
+    ch.working = true
+    const check = setInterval(() => {
+      const d = Math.sqrt((ch.x - deskTargetX)**2 + (ch.y - deskTargetY)**2)
+      if(d < 8 || ch.state !== 'walking'){
+        clearInterval(check)
+        ch.state = 'typing'
+        ch.x = deskTargetX; ch.y = deskTargetY
+        ch.tx = ch.x; ch.ty = ch.y
+        if(ch.typingInterval) clearInterval(ch.typingInterval)
+        ch.typingInterval = setInterval(() => {
+          if(ch.state === 'typing') sfx('keyboard')
+        }, 150 + Math.random() * 250)
+      }
+    }, 100)
+  } else {
+    ch.state = 'typing'
+    ch.x = deskTargetX; ch.y = deskTargetY
+    ch.tx = ch.x; ch.ty = ch.y
+    ch.working = true
+    if(ch.typingInterval) clearInterval(ch.typingInterval)
+    ch.typingInterval = setInterval(() => {
+      if(ch.state === 'typing') sfx('keyboard')
+    }, 150 + Math.random() * 250)
+  }
 }
 
 function stopTyping(ch){
   ch.state = 'idle'
   ch.working = false
+  ch.hasRealWork = false
   if(ch.typingInterval){ clearInterval(ch.typingInterval); ch.typingInterval = null }
-  ch.idleActionTimer = performance.now() + 2000
-  // Walk back to idle position
+  ch.idleTimer = performance.now() + 2000
   moveChar(ch, ch.idleX, ch.idleY, 1)
 }
 
@@ -730,22 +887,8 @@ const state = {
   elapsed: 0, startTime: Date.now(),
   mode: location.protocol === 'http:' || location.protocol === 'https:' ? 'sse' : 'demo',
   sseConnected: false, lastRealEvent: 0,
-  idleSimActive: false, idleSimPhase: 0,
   lastTick: -1,
 }
-
-const WORKFLOWS = ['/vibe','/web','/game','/ai','/tool']
-const PIPELINE = [
-  { phase:'Tiếp nhận', agent:'pxh-help', from:'T0', to:'T1', msg:'✓ Prompt validated', emoji:'💬' },
-  { phase:'Điều phối', agent:'pxh-pm', from:'T1', to:'T2', msg:'→ Route to workflow', emoji:'📋' },
-  { phase:'Thiết kế', agent:'pxh-architect', from:'T2', to:'T3', msg:'✓ Schema designed', emoji:'📐' },
-  { phase:'Code', agent:'pxh-expert', from:'T2', to:'T3', msg:'✓ Implementation done', emoji:'💻' },
-  { phase:'Kiểm thử', agent:'pxh-qa', from:'T3', to:'T3', msg:'✓ Tests pass', emoji:'✅' },
-  { phase:'Sửa lỗi', agent:'pxh-fix-bugs', from:'T3', to:'T3', msg:'→ Root cause fixed', emoji:'🐛' },
-  { phase:'Rà soát', agent:'pxh-review-code', from:'T3', to:'T3', msg:'✓ Review OK', emoji:'🔍' },
-  { phase:'Phát hành', agent:'pxh-devops', from:'T3', to:'T4', msg:'✓ Build success', emoji:'⚙️' },
-  { phase:'Lưu trữ', agent:'pxh-save-history', from:'T3', to:'T4', msg:'✓ Session saved', emoji:'📦' },
-]
 
 function addLog(msg, color){
   const ct = document.getElementById('logOverlay')
@@ -774,62 +917,24 @@ function updateElapsed(){
 }
 
 function highlightAgent(name){
-  // Stop previous typing
   AGENT_LIST.forEach(a => {
-    const ch = chars[a.name]
-    if(ch.working && a.name !== name){
-      stopTyping(ch)
+    if(a.name !== name){
+      const oc = chars[a.name]
+      if(oc && oc.working) stopTyping(oc)
     }
   })
-  // Start typing for target
   const ch = chars[name]
-  if(ch && ch.state !== 'typing'){
-    startTyping(ch)
-  }
-}
-
-function simulatePipeline(){
-  const tick = state.idleSimPhase % PIPELINE.length
-  const step = PIPELINE[tick]
-  const prev = PIPELINE[(tick - 1 + PIPELINE.length) % PIPELINE.length]
-
-  state.phase = step.phase
-  state.agent = step.agent
-  state.workflow = WORKFLOWS[tick % WORKFLOWS.length]
-
-  highlightAgent(step.agent)
-  sfx('task_start')
-
-  const tc = { T0:'#8b949e', T1:'#58a6ff', T2:'#d29922', T3:'#3fb950', T4:'#bc8cff' }
-  addLog(`[${step.from}→${step.to}] ${step.emoji} ${step.msg}`, tc[step.to])
-
-  // Contract fly between tiers
-  if(step.from !== step.to){
-    const regs = chars._regions
-    const tierMap = { T0: regs.t1Top + 10, T1: (regs.t1Top + regs.t1Bot)/2, T2: (regs.t2Top + regs.t2Bot)/2, T3: (regs.t3Top + regs.t3Bot)/2, T4: (regs.t4Top + regs.t4Bot)/2 }
-    contracts.push({
-      x: W * 0.5, y: tierMap[step.from] || 0,
-      ty: tierMap[step.to] || 0,
-      alpha: 1,
-      emoji: step.emoji,
-      life: 80,
-    })
-    sfx('contract')
-  }
-
-  state.idleSimPhase++
-  updateStatus()
+  if(!ch) return
+  ch.hasRealWork = true
+  if(ch.state !== 'typing') startTyping(ch)
 }
 
 function processEvent(event){
   const isRealEvent = event.type !== 'agent_status' && event.type !== 'connected'
   if(isRealEvent){
     state.lastRealEvent = performance.now()
-    if(state.idleSimActive){
-      state.idleSimActive = false
-      document.getElementById('modeTxt').textContent = '🔴 Live'
-      document.getElementById('modeTxt').style.opacity = '0.8'
-    }
+    document.getElementById('modeTxt').textContent = '🔴 Live'
+    document.getElementById('modeTxt').style.opacity = '0.8'
   }
 
   const tc = { T0:'#8b949e', T1:'#58a6ff', T2:'#d29922', T3:'#3fb950', T4:'#bc8cff' }
@@ -919,24 +1024,66 @@ function connectSSE(){
 // IDLE BEHAVIOR
 // ============================================================
 function randomWander(ch){
-  if(ch.state !== 'idle') return
+  if(ch.state !== 'idle' || ch.working) return
   const regs = chars._regions
-  let wx = ch.idleX + (Math.random() - 0.5) * 80
-  let wy = ch.idleY + (Math.random() - 0.5) * 40
-  // Clamp to floor
   const a = ch.agent
+
+  // 30% chance: walk to a point of interest (water cooler, meeting table, plant)
+  // 30% chance: walk near a colleague to "chat"
+  // 40% chance: random wander near idle position
+  const roll = Math.random()
+  let wx, wy
+
+  if(roll < 0.3 && POI.length > 0){
+    // Walk to a point of interest
+    const poi = POI[Math.floor(Math.random() * POI.length)]
+    // Only walk to POIs in same tier or adjacent
+    if(poi.tier === a.tier || Math.abs(
+      parseInt(poi.tier.slice(1)) - parseInt(a.tier.slice(1))
+    ) <= 1){
+      wx = poi.x + (Math.random() - 0.5) * 20
+      wy = poi.y + (Math.random() - 0.5) * 10
+    } else {
+      wx = ch.idleX + (Math.random() - 0.5) * 60
+      wy = ch.idleY + (Math.random() - 0.5) * 20
+    }
+  } else if(roll < 0.6){
+    // Walk near a colleague
+    const colleagues = AGENT_LIST.filter(c => c.tier === a.tier && c.name !== a.name)
+    if(colleagues.length > 0){
+      const col = colleagues[Math.floor(Math.random() * colleagues.length)]
+      const colCh = chars[col.name]
+      wx = colCh.x + (Math.random() - 0.5) * 30 + 20
+      wy = colCh.y + (Math.random() - 0.5) * 15
+    } else {
+      wx = ch.idleX + (Math.random() - 0.5) * 60
+      wy = ch.idleY + (Math.random() - 0.5) * 20
+    }
+  } else {
+    wx = ch.idleX + (Math.random() - 0.5) * 80
+    wy = ch.idleY + (Math.random() - 0.5) * 30
+  }
+
+  // Clamp to tier
   if(a.tier === 'T1'){ wy = Math.min(Math.max(wy, regs.t1Top + 20), regs.t1Bot - 20) }
   else if(a.tier === 'T2'){ wy = Math.min(Math.max(wy, regs.t2Top + 20), regs.t2Bot - 20) }
   else if(a.tier === 'T3'){ wy = Math.min(Math.max(wy, regs.t3Top + 30), regs.t3Bot - 30) }
   else { wy = Math.min(Math.max(wy, regs.t4Top + 20), regs.t4Bot - 20) }
   wx = Math.max(60, Math.min(W - 60, wx))
+
   moveChar(ch, wx, wy, 0.8 + Math.random() * 0.5)
   sfx('footstep')
-  // Return to idle after arriving
+
+  // Return to idle position after wandering
   setTimeout(() => {
-    if(ch.state === 'walking'){
+    if(ch && ch.state === 'walking' && !ch.working){
       ch.state = 'idle'
-      ch.idleActionTimer = performance.now() + 3000 + Math.random() * 6000
+      ch.idleTimer = performance.now() + 4000 + Math.random() * 6000
+      setTimeout(() => {
+        if(ch && ch.state === 'idle' && !ch.working){
+          moveChar(ch, ch.idleX, ch.idleY, 1)
+        }
+      }, 3000)
     }
   }, 1500)
 }
@@ -948,67 +1095,42 @@ function animate(now){
   frameCount++
   updateElapsed()
 
-  // Auto-simulation
-  if(state.mode === 'sse'){
-    if(now - state.lastRealEvent > 10000 && state.sseConnected){
-      if(!state.idleSimActive){
-        state.idleSimActive = true
-        state.idleSimPhase = 0
-        document.getElementById('modeTxt').textContent = '🟡 Mô phỏng'
-        document.getElementById('modeTxt').style.opacity = '0.6'
-        addLog('🟡 Tự động mô phỏng pipeline TUI', '#d29922')
-      }
-      const tick = Math.floor(now / 3500)
-      if(tick !== state.lastTick){
-        state.lastTick = tick
-        simulatePipeline()
-      }
-    }
-  } else if(state.mode === 'demo'){
-    const tick = Math.floor(now / 4000)
-    if(tick !== state.lastTick){
-      state.lastTick = tick
-      simulatePipeline()
-    }
+  // Show idle state when no real events for 15s
+  if(state.mode === 'sse' && state.sseConnected && now - state.lastRealEvent > 15000){
+    document.getElementById('modeTxt').textContent = '⚪ Chờ prompt'
+    document.getElementById('modeTxt').style.opacity = '0.5'
   }
 
   // Character animation updates
   AGENT_LIST.forEach(a => {
     const ch = chars[a.name]
-    ch.animTimer += 0.05
+    ch.animPhase += 0.03
 
-    // Move toward target
+    // Move toward target with step-based animation
     if(ch.state === 'walking'){
       const dx = ch.tx - ch.x
       const dy = ch.ty - ch.y
       const dist = Math.sqrt(dx*dx + dy*dy)
       if(dist < 2){
         ch.x = ch.tx; ch.y = ch.ty
-        ch.state = 'idle'
-        ch.idleActionTimer = now + 3000 + Math.random() * 5000
+        ch.state = ch.working ? 'typing' : 'idle'
+        if(!ch.working) ch.idleTimer = now + 3000 + Math.random() * 5000
       } else {
-        ch.x += (dx / dist) * ch.walkSpeed * 1.5
-        ch.y += (dy / dist) * ch.walkSpeed * 1.5
-        if(frameCount % 20 === 0) sfx('footstep')
+        const step = ch.walkSpeed * 1.5
+        ch.x += (dx / dist) * step
+        ch.y += (dy / dist) * step
+        ch.walkPhase += step * 0.3
+        if(frameCount % 15 === 0) sfx('footstep')
       }
     }
 
     // Idle wander
-    if(ch.state === 'idle' && now > ch.idleActionTimer && !ch.working){
-      if(Math.random() < 0.01){
+    if(ch.state === 'idle' && now > ch.idleTimer && !ch.working){
+      if(Math.random() < 0.008){
         randomWander(ch)
       }
     }
 
-    // Bob animation
-    if(ch.state === 'idle'){
-      ch.bobY = Math.sin(now * 0.002 + ch.animTimer) * 0.8
-    } else if(ch.state === 'typing'){
-      ch.bobY = Math.sin(now * 0.005 + ch.animTimer) * 1.2
-      ch.typingTimer += 0.05
-    } else {
-      ch.bobY *= 0.9
-    }
   })
 
   // Update contracts
@@ -1144,11 +1266,11 @@ function init(){
   addLog('🏢 Văn Phòng Ảo IT Office khởi động', '#58a6ff')
 
   if(state.mode === 'sse'){
-    addLog('⚡ Chế độ: SSE — real-time sync', '#8b949e')
-    addLog('💡 Tự mô phỏng pipeline TUI sau 10s idle', '#8b949e')
+    addLog('⚡ SSE — chờ TUI gửi prompt...', '#8b949e')
+    addLog('💡 Agents sẽ làm việc khi TUI xử lý task', '#8b949e')
     connectSSE()
   } else {
-    addLog('⚡ Chế độ: Demo — tự động mô phỏng', '#8b949e')
+    addLog('⚡ Demo mode — mở qua server để sync TUI', '#8b949e')
     playAmbient()
   }
 

@@ -242,13 +242,14 @@ start http://localhost:3000
 
 Tắt/mở âm thanh: click nút 🔊/🔇 góc phải status bar.
 
-### Cơ chế mô phỏng
+### Cơ chế hoạt động
 
-| Chế độ | Indicator | Khi nào |
-|--------|-----------|---------|
-| **🔴 Live** | Đang nhận event thật từ Bridge/SSE | Agent làm việc theo event |
-| **🟡 Mô phỏng** | Sau 10s không có event thật | Tự động chạy pipeline TUI (9 bước) |
-| **⚡ Demo** | Mở file trực tiếp (file://) | Luôn tự mô phỏng |
+| Trạng thái | Indicator | Khi nào |
+|------------|-----------|---------|
+| **⚪ Chờ prompt** | TUI chưa gửi prompt nào | Agents đi lại, uống nước, trò chuyện |
+| **🔴 Live** | TUI đang xử lý prompt | Agent được giao việc → đi đến bàn → ngồi gõ phím |
+
+Khi TUI xử lý task, Bridge tự động phát hiện file thay đổi → emit event → webview cập nhật real-time.
 
 ### Gửi event mô phỏng pipeline TUI
 
