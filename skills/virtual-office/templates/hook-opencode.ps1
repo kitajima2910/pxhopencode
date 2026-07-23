@@ -137,6 +137,7 @@ if($Prompt) {
   Send-Agent 'pxh-help' 'Interface' "Classifying: $Prompt"
   Send-Agent 'pxh-pm' 'Orchestration' "Processing: $Prompt"
   Send-Mirror "[TUI START] PXHOpenCode physical visualization active"
+  Send-Mirror "Thinking: initializing OpenCode session..."
 }
 
 $proc = Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -Command opencode '$Prompt'" -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\opencode-out.txt" -RedirectStandardError "$env:TEMP\opencode-err.txt"

@@ -725,7 +725,7 @@ function processEvent(event){
       const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
       if(!line)return
       oc.ts='Typing';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now()
-      if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
+      oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
       if(line.match(/\[TUI STOP\]/i)){oc._lastEvt=0}
       if(!oc._msgs)oc._msgs=[]
       oc._msgs=[line]
@@ -733,7 +733,7 @@ function processEvent(event){
       if(!oc._mirrorLog)oc._mirrorLog=[]
       oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
       if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
-      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},5000)
+      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},30000)
     }
     addLog(event.message||'','#00e5ff')
   }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
@@ -773,8 +773,8 @@ function animate(now){fc++;updateElapsed()
   // PXHOpenCode: always sits when any agent works or TUI is active
   const poc=chars['pxh-opencode'];if(poc){
     const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
-    if(anyWorking&&poc.state!=='typing'){poc.hrw=true;startTyping(poc)}
-    if(!anyWorking&&poc.w&&now-poc._lastEvt>5000){stopTyping(poc)}
+    if(anyWorking&&poc.state!=='typing'){poc.hrw=true;poc.ts='Synced';startTyping(poc);if(!poc._mirrorLog||!poc._mirrorLog.length){poc._mirrorLog=['Synced with TUI agents...']}}
+    if(!anyWorking&&poc.w&&now-poc._lastEvt>30000){stopTyping(poc)}
   }
 
   for(let i=contracts.length-1;i>=0;i--){const ct=contracts[i];ct.progress+=.015;ct.life--;if(ct.life<=0)contracts.splice(i,1)}
