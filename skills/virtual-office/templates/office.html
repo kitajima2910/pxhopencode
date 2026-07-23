@@ -361,21 +361,10 @@ function drawCharacter(ch){
     if(s==='walking'&&ch.w&&ch.tsm)drawComicBubble(0,hcy-36,ch.tsm,a.c)
   }else{
     const bw=g==='female'?12:14,bt=-40,bb=-3
-    // Chair behind
-    ctx.fillStyle='#282d38';ctx.fillRect(-15,5,30,7)
-    ctx.fillStyle='#222830';ctx.fillRect(-5,-18,10,23)
-    ctx.fillStyle='#303840';ctx.fillRect(-4,-21,8,4)
     // Legs under desk
     ctx.fillStyle='#282d38';ctx.fillRect(-9,-1,9,5);ctx.fillRect(1,-1,9,5)
     ctx.fillStyle='#1a1d24';ctx.fillRect(-10,2,10,3);ctx.fillRect(1,2,10,3)
-    // Body — back view
-    ctx.fillStyle=a.bc;ctx.beginPath()
-    ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb)
-    ctx.lineTo(bw-2,bt);ctx.lineTo(-bw+2,bt)
-    ctx.closePath();ctx.fill()
-    // Back clothing — waistline stripe
-    ctx.fillStyle=a.oc||dc(a.bc,.6);ctx.fillRect(-bw+1,(bt+bb)/2,bw*2-2,2)
-    // Arms — sleeves only when typing
+    // Arms — behind body (back view, reaching forward)
     if(s==='typing'){const ta=Math.sin(ph*6)*5
       ctx.fillStyle=a.bc
       ctx.save();ctx.translate(-bw+2,bt+6);ctx.rotate(-.45+ta*.015)
@@ -385,6 +374,17 @@ function drawCharacter(ch){
       ctx.fillRect(-3,0,6,22+ta)
       ctx.restore()
     }
+    // Body — back view
+    ctx.fillStyle=a.bc;ctx.beginPath()
+    ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb)
+    ctx.lineTo(bw-2,bt);ctx.lineTo(-bw+2,bt)
+    ctx.closePath();ctx.fill()
+    // Back clothing — waistline stripe
+    ctx.fillStyle=a.oc||dc(a.bc,.6);ctx.fillRect(-bw+1,(bt+bb)/2,bw*2-2,2)
+    // Chair behind body
+    ctx.fillStyle='#282d38';ctx.fillRect(-15,5,30,7)
+    ctx.fillStyle='#222830';ctx.fillRect(-6,-32,12,37)
+    ctx.fillStyle='#303840';ctx.fillRect(-5,-35,10,5)
     // Head from behind
     const hcy=bt-7;ctx.fillStyle=skd;ctx.fillRect(-5,bt,10,5)
     ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
