@@ -81,7 +81,7 @@ const server = http.createServer((req, res) => {
     req.on('data', c => body += c)
     req.on('end', () => {
       try {
-        const { state: tuiState, agent: explicitAgent } = JSON.parse(body || '{}')
+        const { state: tuiState, agent: explicitAgent, message: customMsg } = JSON.parse(body || '{}')
         if(!tuiState) throw new Error('Missing "state" field')
         // Map TUI state to agent
         const STATE_MAP = {
@@ -99,7 +99,7 @@ const server = http.createServer((req, res) => {
         const event = {
           type: 'agent_state',
           agent, tuiState,
-          message: `🔄 ${tuiState}...`,
+          message: customMsg || `${tuiState}...`,
         }
         emit(event)
         // Also direct broadcast for instant update

@@ -713,13 +713,6 @@ function drawHair(headCX, headCY, a, gender){
   }
 }
 
-// Speech bubbles for preparing/thinking
-const PREP_MSGS = [
-  '📋 Đang phân tích...', '🤔 Thinking...', '📐 Thiết kế...',
-  '💻 Chuẩn bị code...', '🔍 Đọc yêu cầu...', '⚙️ Đang setup...',
-  '📊 Đánh giá task...', '🎯 Xác định target...',
-]
-
 // Floating "Đã Làm Xong" notification
 const doneNotifs = []
 function showDoneNotif(x, y, agentName, color){
@@ -915,9 +908,9 @@ function drawCharacter(ch){
       ctx.fillText(st, 0, stateY + 1)
     }
 
-    // ── Comic-style speech bubble ──
-    if(s === 'walking' && ch.working){
-      drawComicBubble(0, headCY - 24, PREP_MSGS[Math.floor(ch.walkPhase / 2) % PREP_MSGS.length], a.color)
+    // ── Comic-style speech bubble (TUI state) ──
+    if(s === 'walking' && ch.working && ch.tuiState){
+      drawComicBubble(0, headCY - 24, ch.tuiStateMsg || ch.tuiState, a.color)
     }
 
   } else {
@@ -1054,10 +1047,9 @@ function drawCharacter(ch){
       ctx.fillText(st, 0, stateY + 1)
     }
 
-    // ── Comic speech bubble for typing ──
-    if(s === 'typing'){
-      const msg = PREP_MSGS[Math.floor(phase / 2) % PREP_MSGS.length]
-      drawComicBubble(0, headCY - 24, msg, a.color)
+    // ── Comic speech bubble (TUI state) ──
+    if(s === 'typing' && ch.tuiState){
+      drawComicBubble(0, headCY - 24, ch.tuiStateMsg || ch.tuiState, a.color)
     }
   }
 
@@ -1192,6 +1184,19 @@ function updateElapsed(){
 }
 
 function highlightAgent(name){
+  // Batch detection: if a task_start arrives within 1s of last one, it's batch mode — don't stop others
+  const now = performance.now()
+  if(!state._lastTaskStart || (now - state._lastTaskStart) > 1000){
+    // Sequential mode: stop all other agents
+    AGENT_LIST.forEach(a => {
+      if(a.name !== name){
+        const oc = chars[a.name]
+        if(oc && oc.working) stopTyping(oc)
+      }
+    })
+  }
+  state._lastTaskStart = now
+
   const ch = chars[name]
   if(!ch) return
   ch.hasRealWork = true
@@ -1249,12 +1254,10 @@ function processEvent(event){
     updateStatus()
     return
   } else if(event.type === 'task_end'){
-    if(event.to && event.status === 'success'){
-      const ch = chars[event.from || event.to]
-      if(ch && ch.working){
-        stopTyping(ch)
-        showDoneNotif(ch.x, ch.y - 30, ch.agent.role, ch.agent.color)
-      }
+    const ch = chars[event.from || event.to]
+    if(ch){
+      stopTyping(ch)
+      if(event.status !== 'fail') showDoneNotif(ch.x, ch.y - 30, ch.agent.role, ch.agent.color)
     }
     addLog(`[${ac}] ${event.message || (event.status==='fail'?'✗ Failed':'✓ Done')}`, event.status==='fail'?'#f85149':color)
   } else if(event.type === 'contract'){

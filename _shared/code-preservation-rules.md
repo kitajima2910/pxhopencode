@@ -9,3 +9,4 @@
 5. Giữ nguyên code đang hoạt động — không touch code không liên quan
 6. Verify TARGET — đảm bảo code chạy đúng trước khi kết thúc
 7. Cập nhật `.opencode/STATUS.md` sau mỗi thay đổi
+8. Không tự ý start server — không chạy `npm run dev`, `npx vite`, `npx serve`. Hướng dẫn user cách chạy, để user tự start.
