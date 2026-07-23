@@ -117,14 +117,14 @@ function playAmbient(){
   const ctx = audioCtx
   ambientNode = { stop:()=>{} }
   const gain = ctx.createGain()
-  gain.gain.value = 0.03
+  gain.gain.value = 0.015
   gain.connect(ctx.destination)
 
   function addHum(freq, mod){
     const o = ctx.createOscillator()
     const g = ctx.createGain()
     o.type = 'sine'; o.frequency.value = freq
-    g.gain.value = mod * 0.1
+    g.gain.value = mod * 0.05
     o.connect(g); g.connect(gain)
     o.start()
     ambientNode._nodes = ambientNode._nodes || []
@@ -137,7 +137,7 @@ function playAmbient(){
   const lfo = ctx.createOscillator()
   const lfoG = ctx.createGain()
   lfo.frequency.value = 0.1; lfo.type = 'sine'
-  lfoG.gain.value = 0.01
+  lfoG.gain.value = 0.005
   lfo.connect(lfoG); lfoG.connect(gain.gain)
   lfo.start()
   ambientNode._nodes.push(lfo)
@@ -159,31 +159,31 @@ function sfx(type){
   master.connect(ctx.destination)
 
   if(type === 'footstep'){
-    master.gain.setValueAtTime(0.04, t)
+    master.gain.setValueAtTime(0.02, t)
     master.gain.exponentialRampToValueAtTime(0.001, t + 0.06)
     const o = ctx.createOscillator()
     o.type = 'triangle'; o.frequency.setValueAtTime(100 + Math.random()*50, t)
     o.connect(master); o.start(t); o.stop(t + 0.06)
   } else if(type === 'notification'){
-    master.gain.setValueAtTime(0.1, t)
+    master.gain.setValueAtTime(0.05, t)
     master.gain.exponentialRampToValueAtTime(0.001, t + 0.2)
     const o1 = ctx.createOscillator(); o1.type = 'sine'
     o1.frequency.setValueAtTime(880, t); o1.frequency.setValueAtTime(1100, t + 0.08)
     o1.connect(master); o1.start(t); o1.stop(t + 0.2)
   } else if(type === 'task_start'){
-    master.gain.setValueAtTime(0.12, t)
+    master.gain.setValueAtTime(0.06, t)
     master.gain.exponentialRampToValueAtTime(0.001, t + 0.3)
     const o1 = ctx.createOscillator(); o1.type = 'sine'
     o1.frequency.setValueAtTime(523, t); o1.frequency.setValueAtTime(659, t + 0.08)
     o1.frequency.setValueAtTime(784, t + 0.16)
     o1.connect(master); o1.start(t); o1.stop(t + 0.3)
   } else if(type === 'contract'){
-    master.gain.setValueAtTime(0.06, t)
+    master.gain.setValueAtTime(0.03, t)
     const o = ctx.createOscillator(); o.type = 'triangle'
     o.frequency.setValueAtTime(300, t); o.frequency.linearRampToValueAtTime(600, t + 0.4)
     o.connect(master); o.start(t); o.stop(t + 0.5)
   } else if(type === 'door'){
-    master.gain.setValueAtTime(0.06, t)
+    master.gain.setValueAtTime(0.03, t)
     master.gain.exponentialRampToValueAtTime(0.001, t + 0.15)
     const o = ctx.createOscillator(); o.type = 'triangle'
     o.frequency.setValueAtTime(200, t); o.frequency.linearRampToValueAtTime(100, t + 0.15)

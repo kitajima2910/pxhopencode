@@ -11,7 +11,7 @@ const ROOT = process.env.PXH_ROOT || MODULE_ROOT
 const EVENTS_FILE = process.env.PXH_EVENTS || path.join(ROOT, '_shared', 'office-events.log')
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost:3000'
 const BRIDGE_PORT = parseInt(process.env.BRIDGE_PORT || '3001', 10)
-const DEBOUNCE_MS = 1500
+const DEBOUNCE_MS = 200
 const HEARTBEAT_MS = 25000
 const MAX_EVENTS_PER_MINUTE = 15
 
@@ -261,53 +261,75 @@ export function startBridge(opts = {}) {
   const onEvent = opts.onEvent || null
   if (onEvent) state.directBroadcast = onEvent
 
-  const POLL_EXT = new Set(['.ts','.tsx','.js','.jsx','.css','.md','.html','.json','.mjs'])
-  const POLL_INTERVAL = 1000
-  let pollState = {}
-  let pollReady = false
-
-  function pollSnapshot(dir) {
-    try {
-      const entries = fs.readdirSync(dir, { withFileTypes: true })
-      for (const e of entries) {
-        const full = path.join(dir, e.name)
-        if (e.name === '.' || e.name === '..') continue
-        if (EXCLUDE_DIRS.has(e.name)) continue
-        if (e.isDirectory()) pollSnapshot(full)
-        else if (e.isFile() && POLL_EXT.has(path.extname(e.name).toLowerCase())) {
-          const rel = path.relative(ROOT, full)
-          try {
-            const mtime = fs.statSync(full).mtimeMs
-            if (pollReady && pollState[rel] !== mtime) {
-              onFileChange('change', full)
-            }
-            pollState[rel] = mtime
-          } catch { }
-        }
-      }
-    } catch { }
-  }
-
-  const scanDirs = [
+  const WATCH_EXT = new Set(['.ts','.tsx','.js','.jsx','.css','.md','.html','.json','.mjs'])
+  const watchDirs = [
     rootDir, path.join(rootDir, 'skills'),
     path.join(rootDir, 'workflows'), path.join(rootDir, 'agents'),
     path.join(rootDir, '_shared'),
   ].filter(d => { try { return fs.statSync(d).isDirectory() } catch { return false } })
 
-  for (const d of scanDirs) pollSnapshot(d)
+  // Use fs.watch for instant OS-level file change notifications
+  const watchers = []
+  let watchTimer = null
+
+  watchDirs.forEach(dir => {
+    try {
+      const w = fs.watch(dir, { recursive: true }, (eventType, filename) => {
+        if(!filename) return
+        const ext = path.extname(filename).toLowerCase()
+        if(!WATCH_EXT.has(ext)) return
+        const full = path.join(dir, filename)
+        // Skip ignored dirs
+        const rel = path.relative(ROOT, full).replace(/\\/g, '/')
+        const parts = rel.split('/')
+        for(const p of parts){ if(EXCLUDE_DIRS.has(p)) return }
+        if(isIgnored(full)) return
+
+        // Instant debounce: batch rapid changes within 200ms
+        clearTimeout(watchTimer)
+        watchTimer = setTimeout(() => onFileChange('change', full), 200)
+      })
+      watchers.push(w)
+    } catch {}
+  })
+
+  // Fallback polling every 5s for dirs where fs.watch fails
+  let pollState = {}
+  let pollReady = false
+  const scanDirs = watchDirs
+  function pollSnapshot(dir) {
+    try {
+      const entries = fs.readdirSync(dir, { withFileTypes: true })
+      for(const e of entries){
+        const full = path.join(dir, e.name)
+        if(e.name === '.' || e.name === '..') continue
+        if(EXCLUDE_DIRS.has(e.name)) continue
+        if(e.isDirectory()) pollSnapshot(full)
+        else if(e.isFile() && WATCH_EXT.has(path.extname(e.name).toLowerCase())){
+          const rel = path.relative(ROOT, full)
+          try {
+            const mtime = fs.statSync(full).mtimeMs
+            if(pollReady && pollState[rel] !== mtime) onFileChange('change', full)
+            pollState[rel] = mtime
+          } catch {}
+        }
+      }
+    } catch {}
+  }
+  for(const d of scanDirs) pollSnapshot(d)
   pollReady = true
-  setInterval(() => { for (const d of scanDirs) pollSnapshot(d) }, POLL_INTERVAL)
+  setInterval(() => { for(const d of scanDirs) pollSnapshot(d) }, 5000)
 
   startHeartbeat()
 
   setTimeout(() => {
     emit({
       type: 'agent_status', from: 'pxh-office',
-      message: 'Bridge watching ' + scanDirs.length + ' dirs',
+      message: `Bridge watching ${watchDirs.length} dirs (fs.watch + poll fallback)`,
     })
   }, 500)
 
-  return { emit }
+  return { emit, watchers }
 }
 
 if (process.argv[1] && (process.argv[1].endsWith('office-bridge.mjs') || process.argv[1].endsWith('office-bridge.js'))) {
