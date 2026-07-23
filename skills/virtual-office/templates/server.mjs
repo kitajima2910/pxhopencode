@@ -168,7 +168,7 @@ try {
 } catch {}
 
 server.listen(PORT, () => {
-  console.log(`\n  \x1b[36m\u250C\u2500 V\u0103n Ph\xf2ng \u1ea2o Server \u2500\u2510\x1b[0m`)
+  console.log(`\n  \x1b[36m\u250C\u2500 Error404Labs - PXH2910 \u2500\u2510\x1b[0m`)
   console.log(`  \x1b[36m\u2502\x1b[0m  Web:  \x1b[1mhttp://localhost:${PORT}\x1b[0m`)
   console.log(`  \x1b[36m\u2502\x1b[0m  SSE:  \x1b[1mhttp://localhost:${PORT}/events\x1b[0m`)
   console.log(`  \x1b[36m\u2502\x1b[0m  POST: \x1b[1mhttp://localhost:${PORT}/emit\x1b[0m`)

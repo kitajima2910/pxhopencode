@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Văn Phòng Ảo — pxhopencode</title>
+<title>Error404Labs - PXH2910</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -78,8 +78,8 @@ canvas{display:block;width:100%;height:100%}
 <body>
 <div id="app">
   <div class="title-bar">
-    <h1>🏢 Văn Phòng Ảo — IT Office</h1>
-    <span class="ver">pxhopencode v45 · 4-tier Runtime</span>
+    <h1>🏢 Error404Labs - PXH2910</h1>
+    <span class="ver">AI Company · 4-tier Runtime</span>
   </div>
   <div id="canvasWrap">
     <canvas id="c"></canvas>
@@ -99,11 +99,40 @@ canvas{display:block;width:100%;height:100%}
 
 <script>
 // ============================================================
-// SOUND ENGINE (procedural — no external files)
+// SOUND ENGINE
 // ============================================================
 const AudioCtx = window.AudioContext || window.webkitAudioContext
 let audioCtx = null
 let soundOn = true
+
+// Pre-load keyboard MP3 sounds
+const kbSounds = {
+  macbook: null,
+  pc: null,
+}
+function preloadKeyboardSounds(){
+  kbSounds.macbook = new Audio('sound/go-phim-macbook.mp3')
+  kbSounds.macbook.volume = 0.25
+  kbSounds.macbook.preload = 'auto'
+  kbSounds.pc = new Audio('sound/go-phim-van-phong.mp3')
+  kbSounds.pc.volume = 0.25
+  kbSounds.pc.preload = 'auto'
+}
+// Laptop agents (T3 bottom row) = macbook sound, others = PC sound
+const HAS_LAPTOP = new Set(['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'])
+
+function playKeyboardSound(agentName){
+  if(!soundOn) return
+  const isLaptop = HAS_LAPTOP.has(agentName)
+  const audio = isLaptop ? kbSounds.macbook : kbSounds.pc
+  if(!audio) return
+  try {
+    const clone = audio.cloneNode()
+    clone.volume = 0.25
+    clone.play().catch(() => {})
+    setTimeout(() => { clone.remove() }, 300)
+  } catch {}
+}
 
 function ensureAudio(){ if(!audioCtx) audioCtx = new AudioCtx() }
 
@@ -156,13 +185,7 @@ function sfx(type){
   const master = ctx.createGain()
   master.connect(ctx.destination)
 
-  if(type === 'keyboard'){
-    master.gain.setValueAtTime(0.08, t)
-    master.gain.exponentialRampToValueAtTime(0.001, t + 0.04)
-    const o = ctx.createOscillator()
-    o.type = 'square'; o.frequency.setValueAtTime(800 + Math.random()*400, t)
-    o.connect(master); o.start(t); o.stop(t + 0.04)
-  } else if(type === 'footstep'){
+  if(type === 'footstep'){
     master.gain.setValueAtTime(0.04, t)
     master.gain.exponentialRampToValueAtTime(0.001, t + 0.06)
     const o = ctx.createOscillator()
@@ -476,73 +499,176 @@ function drawServerRack(x, y, w, h){
 
 function drawMonitor(x, y, isActive){
   ctx.save()
-  const w = 28, h = 20
-  // Stand
+  const mw = 36, mh = 22 // 16:10 screen
+
+  // === Stand ===
+  // Base plate
+  ctx.fillStyle = '#383e4e'
+  ctx.beginPath()
+  ctx.ellipse(x, y + mh + 4, 12, 4, 0, 0, Math.PI*2)
+  ctx.fill()
+  // Neck
   ctx.fillStyle = '#484f58'
-  ctx.fillRect(x - 3, y + h, 6, 5)
-  ctx.fillRect(x - 8, y + h + 4, 16, 3)
-  // Monitor frame
+  ctx.fillRect(x - 3, y + mh - 2, 6, 8)
+
+  // === Monitor body ===
+  // Outer bezel (dark gray)
+  ctx.fillStyle = '#1a1d24'
+  ctx.fillRect(x - mw/2 - 1, y - 1, mw + 2, mh + 2)
+  // Bottom bezel (thicker)
   ctx.fillStyle = '#21262d'
-  ctx.fillRect(x - w/2, y, w, h)
-  ctx.strokeStyle = '#30363d'
-  ctx.lineWidth = 1
-  ctx.strokeRect(x - w/2, y, w, h)
-  // Screen
+  ctx.fillRect(x - mw/2 - 1, y + mh - 5, mw + 2, 8)
+  // Brand logo area
+  ctx.fillStyle = '#383e4e'
+  ctx.fillRect(x - 4, y + mh, 8, 2)
+
+  // === Screen ===
   if(isActive){
-    ctx.fillStyle = '#0d2137'
-    ctx.fillRect(x - w/2 + 2, y + 2, w - 4, h - 4)
+    ctx.fillStyle = '#0a1628'
+    ctx.fillRect(x - mw/2 + 2, y + 2, mw - 4, mh - 8)
     // Code lines
     ctx.strokeStyle = '#3fb950'
-    ctx.lineWidth = 1
-    for(let i = 0; i < 4; i++){
-      const ly = y + 5 + i * 3
+    ctx.lineWidth = 0.8
+    const codeY = y + 4
+    for(let i = 0; i < 5; i++){
+      const ly = codeY + i * 3
+      const indent = (i % 2) * 4
       ctx.beginPath()
-      ctx.moveTo(x - w/2 + 4, ly)
-      ctx.lineTo(x - w/2 + 4 + (Math.sin(frameCount*0.1 + i)*5 + 15), ly)
+      ctx.moveTo(x - mw/2 + 4 + indent, ly)
+      ctx.lineTo(x - mw/2 + 4 + indent + Math.sin(frameCount*0.1 + i)*4 + 12, ly)
       ctx.stroke()
     }
-    // Cursor blink
+    // Cursor
     if(Math.floor(frameCount/15) % 2){
       ctx.fillStyle = '#3fb950'
-      ctx.fillRect(x - w/2 + 4 + 15, y + 5, 6, 2)
+      ctx.fillRect(x - mw/2 + 4 + 12, codeY, 5, 2)
     }
+    // Power LED (green)
+    ctx.fillStyle = '#3fb950'
+    ctx.beginPath()
+    ctx.arc(x + mw/2 - 5, y + mh + 2, 1.5, 0, Math.PI*2)
+    ctx.fill()
   } else {
     ctx.fillStyle = '#0d1117'
-    ctx.fillRect(x - w/2 + 2, y + 2, w - 4, h - 4)
+    ctx.fillRect(x - mw/2 + 2, y + 2, mw - 4, mh - 8)
+    // LED (dim)
+    ctx.fillStyle = '#1a2a1a'
+    ctx.beginPath()
+    ctx.arc(x + mw/2 - 5, y + mh + 2, 1.5, 0, Math.PI*2)
+    ctx.fill()
   }
+
+  ctx.restore()
+}
+
+function drawKeyboard(x, y){
+  ctx.save()
+  const kw = 32, kh = 10
+  // Keyboard body
+  ctx.fillStyle = '#1a1d24'
+  ctx.fillRect(x - kw/2, y, kw, kh)
+  ctx.strokeStyle = '#30363d'; ctx.lineWidth = 0.5
+  ctx.strokeRect(x - kw/2, y, kw, kh)
+  // Key rows
+  ctx.fillStyle = '#2a2d34'
+  for(let row = 0; row < 4; row++){
+    const ry = y + 2 + row * 2
+    ctx.fillRect(x - kw/2 + 2, ry, kw - 4, 1.5)
+  }
+  // Spacebar
+  ctx.fillStyle = '#2a2d34'
+  ctx.fillRect(x - 8, y + 7, 16, 1.5)
+  ctx.restore()
+}
+
+function drawMouse(x, y){
+  ctx.save()
+  ctx.fillStyle = '#1a1d24'
+  ctx.beginPath()
+  ctx.ellipse(x, y, 5, 6, 0, 0, Math.PI*2)
+  ctx.fill()
+  // Scroll wheel line
+  ctx.strokeStyle = '#383e4e'
+  ctx.lineWidth = 0.5
+  ctx.beginPath()
+  ctx.moveTo(x, y - 2)
+  ctx.lineTo(x, y + 2)
+  ctx.stroke()
   ctx.restore()
 }
 
 function drawLaptop(x, y, isActive){
   ctx.save()
-  // Base
-  ctx.fillStyle = '#30363d'
-  ctx.fillRect(x - 14, y + 4, 28, 8)
+  const lw = 30, screenH = 20, baseH = 6
+  const hingeY = y
+
+  // === Screen lid (aluminum silver) ===
+  // Main body
+  ctx.fillStyle = '#c0c4cc'
+  ctx.fillRect(x - lw/2, hingeY - screenH, lw, screenH)
+  // Border
+  ctx.strokeStyle = '#9a9ea6'; ctx.lineWidth = 0.8
+  ctx.strokeRect(x - lw/2, hingeY - screenH, lw, screenH)
+  // Inner bezel (black)
+  ctx.fillStyle = '#1a1d24'
+  ctx.fillRect(x - lw/2 + 2, hingeY - screenH + 2, lw - 4, screenH - 4)
+  // Camera notch
+  ctx.fillStyle = '#3a3d44'
+  ctx.fillRect(x - 3, hingeY - screenH + 1, 6, 2)
+  ctx.fillStyle = '#0d1117'
+  ctx.beginPath()
+  ctx.arc(x, hingeY - screenH + 2.5, 1, 0, Math.PI*2)
+  ctx.fill()
+
   // Screen
-  ctx.fillStyle = '#21262d'
-  ctx.fillRect(x - 14, y - 16, 28, 20)
-  ctx.strokeStyle = '#484f58'
-  ctx.lineWidth = 1
-  ctx.strokeRect(x - 14, y - 16, 28, 20)
   if(isActive){
-    ctx.fillStyle = '#0d2137'
-    ctx.fillRect(x - 12, y - 14, 24, 16)
+    ctx.fillStyle = '#0a1628'
+    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 8)
+    // Code lines
     ctx.strokeStyle = '#58a6ff'
-    ctx.lineWidth = 1
-    for(let i = 0; i < 3; i++){
+    ctx.lineWidth = 0.8
+    for(let i = 0; i < 4; i++){
+      const ly = hingeY - screenH + 7 + i*4
       ctx.beginPath()
-      ctx.moveTo(x - 10, y - 12 + i*5)
-      ctx.lineTo(x - 10 + Math.sin(frameCount*0.08 + i)*6 + 10, y - 12 + i*5)
+      ctx.moveTo(x - lw/2 + 5, ly)
+      ctx.lineTo(x - lw/2 + 5 + Math.sin(frameCount*0.08 + i)*4 + 10, ly)
       ctx.stroke()
     }
     if(Math.floor(frameCount/12) % 2){
       ctx.fillStyle = '#58a6ff'
-      ctx.fillRect(x - 10 + 10, y - 12, 6, 2)
+      ctx.fillRect(x - lw/2 + 5 + 10, hingeY - screenH + 7, 5, 2)
     }
   } else {
     ctx.fillStyle = '#0d1117'
-    ctx.fillRect(x - 12, y - 14, 24, 16)
+    ctx.fillRect(x - lw/2 + 3, hingeY - screenH + 5, lw - 6, screenH - 8)
   }
+
+  // === Hinge ===
+  ctx.fillStyle = '#9a9ea6'
+  ctx.fillRect(x - lw/2, hingeY, lw, 2)
+
+  // === Base (keyboard area) ===
+  ctx.fillStyle = '#c0c4cc'
+  ctx.fillRect(x - lw/2, hingeY + 2, lw, baseH)
+  ctx.strokeStyle = '#9a9ea6'; ctx.lineWidth = 0.8
+  ctx.strokeRect(x - lw/2, hingeY + 2, lw, baseH)
+  // Keyboard recess
+  ctx.fillStyle = '#2a2d34'
+  ctx.fillRect(x - lw/2 + 3, hingeY + 3.5, lw - 6, 3)
+  // Key rows
+  ctx.fillStyle = '#3a3d44'
+  for(let row = 0; row < 4; row++){
+    ctx.fillRect(x - lw/2 + 4, hingeY + 3.7 + row*0.6, lw - 8, 0.4)
+  }
+  // Trackpad
+  ctx.fillStyle = '#888c94'
+  ctx.fillRect(x - 6, hingeY + 6.8, 12, 1.5)
+
+  // Rubber feet
+  ctx.fillStyle = '#3a3d44'
+  ctx.fillRect(x - lw/2 + 3, hingeY + baseH + 1, 3, 1)
+  ctx.fillRect(x + lw/2 - 6, hingeY + baseH + 1, 3, 1)
+
   ctx.restore()
 }
 
@@ -620,6 +746,59 @@ const PREP_MSGS = [
   '💻 Chuẩn bị code...', '🔍 Đọc yêu cầu...', '⚙️ Đang setup...',
   '📊 Đánh giá task...', '🎯 Xác định target...',
 ]
+
+// Floating "Đã Làm Xong" notification
+const doneNotifs = []
+function showDoneNotif(x, y, agentName, color){
+  doneNotifs.push({
+    x, y, agentName, color,
+    life: 80, startY: y,
+  })
+}
+
+function drawComicBubble(cx, cy, msg, accentColor){
+  ctx.save()
+  const mw = msg.length * 4.5 + 12
+  const bh = 14
+  const bx = cx - mw / 2
+  const by = cy - bh / 2
+
+  // White background with border
+  ctx.fillStyle = '#ffffff'
+  ctx.strokeStyle = '#111111'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.roundRect(bx, by, mw, bh, 6)
+  ctx.fill()
+  ctx.stroke()
+
+  // Tail pointing down to character
+  ctx.fillStyle = '#ffffff'
+  ctx.strokeStyle = '#111111'
+  ctx.beginPath()
+  ctx.moveTo(cx - 4, by + bh - 1)
+  ctx.lineTo(cx, by + bh + 6)
+  ctx.lineTo(cx + 4, by + bh - 1)
+  ctx.closePath()
+  ctx.fill()
+  ctx.stroke()
+
+  // Text
+  ctx.fillStyle = '#111111'
+  ctx.font = 'bold 8px "Segoe UI",sans-serif'
+  ctx.textAlign = 'center'
+  ctx.fillText(msg, cx, cy + 3)
+
+  // Tiny accent line
+  ctx.strokeStyle = accentColor
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(bx + 6, by + bh - 1)
+  ctx.lineTo(bx + mw - 6, by + bh - 1)
+  ctx.stroke()
+
+  ctx.restore()
+}
 
 function drawCharacter(ch){
   const a = ch.agent
@@ -751,24 +930,9 @@ function drawCharacter(ch){
     ctx.textAlign = 'center'
     ctx.fillText(a.role, 0, labelY)
 
-    // Speech bubble for "preparing" state (walking to desk)
+    // ── Comic-style speech bubble ──
     if(s === 'walking' && ch.working){
-      const msg = PREP_MSGS[Math.floor(ch.walkPhase / 2) % PREP_MSGS.length]
-      const bubbleY = headCY - 24
-      ctx.fillStyle = 'rgba(0,0,0,0.85)'
-      const mw = msg.length * 4 + 8
-      ctx.beginPath()
-      ctx.roundRect(-mw / 2, bubbleY - 7, mw, 14, 4)
-      ctx.fill()
-      // Pointer
-      ctx.beginPath()
-      ctx.moveTo(-2, bubbleY + 7)
-      ctx.lineTo(0, bubbleY + 10)
-      ctx.lineTo(2, bubbleY + 7)
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = '8px "Segoe UI",sans-serif'
-      ctx.fillText(msg, 0, bubbleY + 2)
+      drawComicBubble(0, headCY - 24, PREP_MSGS[Math.floor(ch.walkPhase / 2) % PREP_MSGS.length], a.color)
     }
 
   } else {
@@ -890,23 +1054,10 @@ function drawCharacter(ch){
     ctx.textAlign = 'center'
     ctx.fillText(a.role, 0, labelY)
 
-    // Speech bubble for typing agent
+    // ── Comic speech bubble for typing ──
     if(s === 'typing'){
       const msg = PREP_MSGS[Math.floor(phase / 2) % PREP_MSGS.length]
-      const bubbleY = headCY - 24
-      ctx.fillStyle = 'rgba(0,0,0,0.85)'
-      const mw = msg.length * 4 + 8
-      ctx.beginPath()
-      ctx.roundRect(-mw / 2, bubbleY - 7, mw, 14, 4)
-      ctx.fill()
-      ctx.beginPath()
-      ctx.moveTo(-2, bubbleY + 7)
-      ctx.lineTo(0, bubbleY + 10)
-      ctx.lineTo(2, bubbleY + 7)
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = '8px "Segoe UI",sans-serif'
-      ctx.fillText(msg, 0, bubbleY + 2)
+      drawComicBubble(0, headCY - 24, msg, a.color)
     }
   }
 
@@ -977,7 +1128,7 @@ function startTyping(ch){
         ch.tx = ch.x; ch.ty = ch.y
         if(ch.typingInterval) clearInterval(ch.typingInterval)
         ch.typingInterval = setInterval(() => {
-          if(ch.state === 'typing') sfx('keyboard')
+          if(ch.state === 'typing') playKeyboardSound(ch.agent.name)
         }, 150 + Math.random() * 250)
       }
     }, 100)
@@ -1087,9 +1238,11 @@ function processEvent(event){
     if(isRealEvent) sfx('notification')
   } else if(event.type === 'task_end'){
     if(event.to && event.status === 'success'){
-      // Agent can relax
       const ch = chars[event.from || event.to]
-      if(ch && ch.working) stopTyping(ch)
+      if(ch && ch.working){
+        stopTyping(ch)
+        showDoneNotif(ch.x, ch.y - 30, ch.agent.role, ch.agent.color)
+      }
     }
     addLog(`[${ac}] ${event.message || (event.status==='fail'?'✗ Failed':'✓ Done')}`, event.status==='fail'?'#f85149':color)
   } else if(event.type === 'contract'){
@@ -1265,6 +1418,14 @@ function animate(now){
     if(ct.life <= 0) contracts.splice(i, 1)
   }
 
+  // Update done notifications
+  for(let i = doneNotifs.length - 1; i >= 0; i--){
+    const dn = doneNotifs[i]
+    dn.life--
+    dn.y = dn.startY - (80 - dn.life) * 0.6
+    if(dn.life <= 0){ doneNotifs.splice(i, 1); continue }
+  }
+
   // === RENDER ===
   ctx.clearRect(0, 0, W, H)
   const regs = chars._regions
@@ -1284,21 +1445,46 @@ function animate(now){
   drawServerRack(W * 0.75, regs.t4Top + 15, 30, 55)
   drawServerRack(W * 0.82, regs.t4Top + 10, 30, 60)
 
-  // Draw desks (T3 - top row: monitors, bottom row: laptops)
+  // Draw desks + chairs + CPU (T3 - top row: monitors, bottom row: laptops)
   ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(name => {
     const ch = chars[name]
     const active = ch.state === 'typing'
+    // CPU tower under desk
+    ctx.fillStyle = '#1a1d24'
+    ctx.fillRect(ch.deskX + 20, ch.deskY + 12, 14, 20)
+    ctx.fillStyle = '#2a2d34'
+    ctx.fillRect(ch.deskX + 22, ch.deskY + 14, 10, 16)
+    ctx.fillStyle = active ? '#3fb950' : '#1a2a1a'
+    ctx.beginPath(); ctx.arc(ch.deskX + 27, ch.deskY + 24, 1.5, 0, Math.PI*2); ctx.fill()
     // Desk surface
     ctx.fillStyle = '#4a3520'
     ctx.fillRect(ch.deskX - 22, ch.deskY + 16, 44, 6)
     drawMonitor(ch.deskX, ch.deskY, active)
+    drawKeyboard(ch.deskX, ch.deskY + 18)
+    drawMouse(ch.deskX + 14, ch.deskY + 22)
   })
   ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(name => {
     const ch = chars[name]
     const active = ch.state === 'typing'
+    // Desk surface
     ctx.fillStyle = '#4a3520'
     ctx.fillRect(ch.deskX - 18, ch.deskY + 16, 36, 5)
-    drawLaptop(ch.deskX, ch.deskY, active)
+    drawLaptop(ch.deskX, ch.deskY + 8, active)
+  })
+
+  // Draw chairs (behind characters, in front of desks)
+  ;['pxh-architect','pxh-expert','pxh-fix-bugs','pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux','pxh-pm','pxh-help','pxh-save-history'].forEach(name => {
+    const ch = chars[name]
+    const cx = ch.deskX
+    const cy = ch.deskY + 28
+    // Chair seat
+    ctx.fillStyle = '#30363d'
+    ctx.fillRect(cx - 10, cy, 20, 5)
+    // Chair back
+    ctx.fillStyle = '#2a3040'
+    ctx.fillRect(cx - 3, cy - 16, 6, 16)
+    ctx.fillStyle = '#383e4e'
+    ctx.fillRect(cx - 2, cy - 18, 4, 2)
   })
 
   // T2 PM desk (big desk with monitor)
@@ -1306,21 +1492,53 @@ function animate(now){
   ctx.fillStyle = '#5a4020'
   ctx.fillRect(pm.deskX - 30, pm.deskY + 16, 60, 7)
   drawMonitor(pm.deskX, pm.deskY, pm.state === 'typing')
+  drawKeyboard(pm.deskX, pm.deskY + 18)
+  drawMouse(pm.deskX + 18, pm.deskY + 22)
+  // CPU
+  ctx.fillStyle = '#1a1d24'
+  ctx.fillRect(pm.deskX + 24, pm.deskY + 12, 14, 20)
 
   // T1 Help desk
   const help = chars['pxh-help']
   ctx.fillStyle = '#4a3520'
   ctx.fillRect(help.deskX - 22, help.deskY + 16, 44, 6)
   drawMonitor(help.deskX, help.deskY, help.state === 'typing')
+  drawKeyboard(help.deskX, help.deskY + 18)
+  drawMouse(help.deskX + 14, help.deskY + 22)
 
   // T4 historian desk
   const sh = chars['pxh-save-history']
   ctx.fillStyle = '#4a3520'
   ctx.fillRect(sh.deskX - 22, sh.deskY + 16, 44, 6)
   drawMonitor(sh.deskX, sh.deskY, sh.state === 'typing')
+  drawKeyboard(sh.deskX, sh.deskY + 18)
+  drawMouse(sh.deskX + 14, sh.deskY + 22)
 
   // Draw contracts (behind characters)
   contracts.forEach(ct => drawContract(ct.x, ct.y, ct.alpha, ct.emoji))
+
+  // Draw "Đã Làm Xong" notifications
+  doneNotifs.forEach(dn => {
+    if(dn.life <= 0) return
+    const alpha = Math.min(1, dn.life / 30)
+    ctx.save()
+    ctx.globalAlpha = alpha
+    // Bubble
+    const text = `✓ Đã Làm Xong`
+    const tw = text.length * 4 + 10
+    ctx.fillStyle = '#ffffff'
+    ctx.strokeStyle = '#111111'
+    ctx.lineWidth = 1.5
+    ctx.beginPath()
+    ctx.roundRect(dn.x - tw/2, dn.y - 7, tw, 16, 5)
+    ctx.fill()
+    ctx.stroke()
+    ctx.fillStyle = '#111111'
+    ctx.font = 'bold 8px "Segoe UI",sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillText(text, dn.x, dn.y + 3)
+    ctx.restore()
+  })
 
   // Draw characters (walking ones first, then sitting/typing ones)
   const walkers = AGENT_LIST.filter(a => chars[a.name].state === 'walking' || chars[a.name].state === 'idle')
@@ -1386,7 +1604,8 @@ function animate(now){
 // ============================================================
 function init(){
   resize()
-  addLog('🏢 Văn Phòng Ảo IT Office khởi động', '#58a6ff')
+  preloadKeyboardSounds()
+  addLog('🏢 Error404Labs - PXH2910', '#58a6ff')
 
   if(state.mode === 'sse'){
     addLog('⚡ SSE — chờ TUI gửi prompt...', '#8b949e')

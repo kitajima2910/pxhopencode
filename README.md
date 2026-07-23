@@ -234,7 +234,7 @@ start http://localhost:3000
 | Sound | Khi nào |
 |-------|---------|
 | 🎵 Ambient hum | Luôn phát khi server chạy |
-| ⌨️ Keyboard clicks | Khi agent đang typing |
+| ⌨️ Keyboard clicks | Khi agent đang typing (MP3: MacBook / PC riêng biệt) |
 | 👣 Footsteps | Khi agent walking |
 | 🔔 Notification | Khi nhận event thật |
 | 📄 Contract swish | Khi giấy tờ bay |
