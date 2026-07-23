@@ -136,6 +136,7 @@ Write-Host "Hook active - watching TUI for agent states..." -ForegroundColor Cya
 if($Prompt) {
   Send-Agent 'pxh-help' 'Interface' "Classifying: $Prompt"
   Send-Agent 'pxh-pm' 'Orchestration' "Processing: $Prompt"
+  Send-Mirror "[TUI START] PXHOpenCode physical visualization active"
 }
 
 $proc = Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -Command opencode '$Prompt'" -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\opencode-out.txt" -RedirectStandardError "$env:TEMP\opencode-err.txt"
@@ -251,5 +252,6 @@ while(!$proc.HasExited) {
 }
 
 $proc.WaitForExit()
+Send-Mirror "[TUI STOP] Session ended"
 Idle-All
 Write-Host "Session ended" -ForegroundColor Green

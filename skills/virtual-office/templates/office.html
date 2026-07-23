@@ -725,6 +725,9 @@ function processEvent(event){
       const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
       if(!line)return
       oc.ts='Mirror';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now()
+      // Force sit on TUI START marker
+      if(line.match(/\[TUI START\]/i)&&oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
+      if(line.match(/\[TUI STOP\]/i)){oc._lastEvt=0}
       if(!oc._msgs)oc._msgs=[]
       oc._msgs=[line]
       oc.tsm=oc._msgs;oc._bcol='#00e5ff'
