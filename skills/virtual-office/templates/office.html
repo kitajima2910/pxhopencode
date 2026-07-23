@@ -289,21 +289,21 @@ function drawCharacter(ch){
     ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb)
     ctx.lineTo(bw-2,bt);ctx.lineTo(-bw+2,bt)
     ctx.closePath();ctx.fill()
-    // Arms reaching toward monitor
-    const ta=Math.sin(ph*6)*(s==='typing'?4:1)
-    ctx.fillStyle=a.bc
-    ctx.save();ctx.translate(-bw+2,bt+4);ctx.rotate(-.5+ta*.02)
-    ctx.fillRect(-3,0,6,ta>1?22:16)
-    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,ta>1?23:17,4,0,Math.PI*2);ctx.fill()
-    ctx.restore()
-    ctx.save();ctx.translate(bw-2,bt+4);ctx.rotate(.5-ta*.02)
-    ctx.fillRect(-3,0,6,ta>1?22:16)
-    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,ta>1?23:17,4,0,Math.PI*2);ctx.fill()
-    ctx.restore()
-    // Head from behind — no face, no eyes
+    // Arms — only when typing
+    if(s==='typing'){const ta=Math.sin(ph*6)*4
+      ctx.fillStyle=a.bc
+      ctx.save();ctx.translate(-bw+2,bt+5);ctx.rotate(-.5+ta*.02)
+      ctx.fillRect(-3,0,6,22+ta);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,23+ta,4,0,Math.PI*2);ctx.fill()
+      ctx.restore()
+      ctx.save();ctx.translate(bw-2,bt+5);ctx.rotate(.5-ta*.02)
+      ctx.fillRect(-3,0,6,22+ta);ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,23+ta,4,0,Math.PI*2);ctx.fill()
+      ctx.restore()
+    }
+    // Head from behind — just hair, no face
     const hcy=bt-6;ctx.fillStyle=skd;ctx.fillRect(-4,bt,8,4)
-    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,Math.PI,Math.PI*2);ctx.fill()
-    drawHair(0,hcy,a,g)
+    ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
+    // Hair — back view (full coverage)
+    ctx.fillStyle=a.hc;ctx.beginPath();ctx.arc(0,hcy-2,14,0,Math.PI*2);ctx.fill()
     // Name label above head
     const ly=hcy-18;ctx.fillStyle='rgba(0,0,0,0.6)';const rw=a.role.length*5+6;ctx.fillRect(-rw/2,ly-10,rw,14);ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly)
     // State badge
@@ -360,10 +360,16 @@ function processEvent(event){
     if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,alpha:1,emoji:'📋',life:80});sfx('contract')}
     addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
   }else if(event.type==='agent_state'){
-    const ag=event.agent,ch=chars[ag];if(ch){ch.ts=event.tuiState||event.state||'';ch.tsm=event.message||'';if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)};state.agent=ag;if(event.tuiState)state.phase=event.tuiState;addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888')}
+    const ag=event.agent,ch=chars[ag];if(ch){
+      ch.ts=event.tuiState||event.state||'';ch.tsm=event.message||'';
+      if(event.tuiState==='idle'||!event.tuiState){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}}
+      else if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)}
+      state.agent=ag;if(event.tuiState)state.phase=event.tuiState;
+      addLog(`[${AGENTS[ag]?.tier||'?'}] ${ag}: ${event.tuiState||''}`,AGENTS[ag]?.c||'#888')
+    }
     updateStatus();return
   }else if(event.type==='task_end'){
-    const ch=chars[event.from||event.to];if(ch){stopTyping(ch);if(event.status!=='fail')showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}
+    const ch=chars[event.from||event.to];if(ch){const wasWorking=ch.w;stopTyping(ch);if(event.status!=='fail'&&wasWorking)showDoneNotif(ch.x,ch.y-30,ch.a.role,ch.a.c)}
     addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Done')}`,event.status==='fail'?'#f85149':color)
   }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.x:W*.3,sy=fc?fc.y-20:H*.2;const tx=tc?tc.x:W*.7,ty=tc?tc.y-20:H*.5;contracts.push({x:sx,y:sy,tx,ty,alpha:1,emoji:'📋',life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
   updateStatus()
