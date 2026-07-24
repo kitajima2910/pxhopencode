@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v46</b> &nbsp;·&nbsp; 72 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 159 templates</p>
+  <b>v47</b> &nbsp;·&nbsp; 73 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 159 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -318,7 +318,15 @@ node skills/virtual-office/templates/emit-event.mjs --type agent_state --agent p
 ## Changelog
 
 <details>
-<summary><b>v46 — Open Office & Real-time Agent Sync (Latest)</b></summary>
+<summary><b>v47 — Bat Merge & README Sync (Latest)</b></summary>
+
+- **Merge:** `pxh-office-on.bat` + `pxh-office-off.bat` → `pxh-office.bat` (on/off/restart + help)
+- **Update:** README virtual office section references `pxh-office.bat`
+- **Remove:** `pxh-office-on.bat`, `pxh-office-off.bat`
+</details>
+
+<details>
+<summary><b>v46 — Open Office & Real-time Agent Sync</b></summary>
 
 - **Redesign:** Virtual Office thành văn phòng mở single-floor, 11 agent làm việc chung
 - **Add:** 11 agent với pixel-art character, trang phục riêng, phụ kiện
