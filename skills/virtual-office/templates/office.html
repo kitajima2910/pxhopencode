@@ -82,7 +82,7 @@ const AGENTS={
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now()}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now(),_sessionArchive:[]}})
 const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 
 // ============================================================
@@ -679,12 +679,22 @@ function applyStateDiff(diff){
       document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'
       addLog('▶ session started','#3fb950')
       sfx('task_start')
+      // Fresh mirror log for new session
+      const oc2=chars['pxh-opencode'];if(oc2){oc2._mirrorLog=[];oc2._sessionHasData=false}
     }else if(!sess.active&&wasActive){
       // Session ended
       state.phase='idle';state.workflow='—'
       document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
       document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'
       addLog('◼ session ended','#f85149')
+      // Archive pxh-opencode mirror log so it survives session end
+      const oc3=chars['pxh-opencode']
+      if(oc3&&oc3._mirrorLog&&oc3._mirrorLog.length){
+        const t=new Date();const ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')
+        oc3._sessionArchive.push({m:'── Session ended '+ts+' ──.',c:'#666',s:'separator'})
+        for(let i=0;i<oc3._mirrorLog.length;i++){oc3._sessionArchive.push({m:oc3._mirrorLog[i],c:null,s:null})}
+        if(oc3._sessionArchive.length>40)oc3._sessionArchive.splice(0,oc3._sessionArchive.length-40)
+      }
     }else if(sess.phase){
       state.phase=sess.phase
       state.workflow=sess.workflow||state.workflow
@@ -887,25 +897,35 @@ function animate(now){fc++;updateElapsed()
   // Agent count
   const activeCount=AL.filter(a=>chars[a.n]&&chars[a.n].w).length
   ctx.fillStyle='#0a8';ctx.font='7px "Consolas",monospace';ctx.textAlign='right';ctx.fillText('agents:'+activeCount,oc.dx+54,oc.dy-20)
-  // Output lines
-  const mirrorLines=oc._mirrorLog||oc._msgs||[]
-  if(mirrorLines.length){
+  // Output lines — prefer active mirror log, fallback to session archive
+  const activeMirror=oc._mirrorLog&&oc._mirrorLog.length?oc._mirrorLog:null
+  const showArchive=!activeMirror&&oc._sessionArchive&&oc._sessionArchive.length
+  let mirrorLines=activeMirror||(oc._msgs&&oc._msgs.length?oc._msgs:null)
+  if(!mirrorLines&&showArchive){
+    mirrorLines=oc._sessionArchive.slice(-4).map(function(e){return e.m})
+    // Show archive header
+    ctx.fillStyle='rgba(0,229,255,0.15)';ctx.font='bold 7px "Consolas",monospace';ctx.textAlign='center'
+    ctx.fillText('─ Last session ─',oc.dx,oc.dy-8)
+  }
+  if(mirrorLines&&mirrorLines.length){
     mirrorLines.slice(-4).forEach((l,i)=>{
+      const rawLine=typeof l==='string'?l:(l&&l.m||'')
       const t=new Date();const ts=String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0')
       let label='',color='#00e5ff'
-      if(l.match(/\b(read|reading|load|loading)\b/i)){label='READ';color='#58a6ff'}
-      else if(l.match(/\b(write|writing|create|edit|modify|generate|code)\b/i)){label='WRITE';color='#3fb950'}
-      else if(l.match(/\b(execute|run|bash|build|deploy|install|command)\b/i)){label='EXEC';color='#d29922'}
-      else if(l.match(/\b(test|testing|verify|spec)\b/i)){label='TEST';color='#3fb950'}
-      else if(l.match(/\b(review|audit|inspect)\b/i)){label='REVIEW';color='#d29922'}
-      else if(l.match(/\b(fix|debug|error|bug|fail)\b/i)){label='FIX';color='#f85149'}
-      else if(l.match(/\b(think|analyze|plan|route|architect)\b/i)){label='THINK';color='#bc8cff'}
-      else if(l.match(/\b(search|find|grep|glob|explore)\b/i)){label='FIND';color='#58a6ff'}
-      else if(l.match(/\b(classify|validate|help)\b/i)){label='HELP';color='#8b949e'}
+      if(rawLine.match(/\bSession (ended|started)\b/i)){label='────';color='#666'}
+      else if(rawLine.match(/\b(read|reading|load|loading)\b/i)){label='READ';color='#58a6ff'}
+      else if(rawLine.match(/\b(write|writing|create|edit|modify|generate|code)\b/i)){label='WRITE';color='#3fb950'}
+      else if(rawLine.match(/\b(execute|run|bash|build|deploy|install|command)\b/i)){label='EXEC';color='#d29922'}
+      else if(rawLine.match(/\b(test|testing|verify|spec)\b/i)){label='TEST';color='#3fb950'}
+      else if(rawLine.match(/\b(review|audit|inspect)\b/i)){label='REVIEW';color='#d29922'}
+      else if(rawLine.match(/\b(fix|debug|error|bug|fail)\b/i)){label='FIX';color='#f85149'}
+      else if(rawLine.match(/\b(think|analyze|plan|route|architect)\b/i)){label='THINK';color='#bc8cff'}
+      else if(rawLine.match(/\b(search|find|grep|glob|explore)\b/i)){label='FIND';color='#58a6ff'}
+      else if(rawLine.match(/\b(classify|validate|help)\b/i)){label='HELP';color='#8b949e'}
       else{label='INFO';color='#00e5ff'}
       const y=oc.dy-10+i*12
       ctx.fillStyle='#222';ctx.fillRect(oc.dx-55,y-5,30,10);ctx.fillStyle=color;ctx.font='bold 6px "Consolas",monospace';ctx.textAlign='center';ctx.fillText(label,oc.dx-40,y+2)
-      const txt=l.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,36)
+      const txt=rawLine.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,36)
       ctx.fillStyle='#aaa';ctx.textAlign='left';ctx.font='7px "Consolas",monospace';ctx.fillText(ts,oc.dx-20,y+2)
       ctx.fillStyle='#8cf';ctx.font='7px "Consolas",monospace';ctx.fillText(txt,oc.dx+4,y+2)
     })
