@@ -244,6 +244,7 @@ const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode
 // Clear stale state from previous session — office starts fresh
 try { fs.writeFileSync(EVENTS_FILE, ''); } catch {}
 try { fs.writeFileSync(STATE_FILE, JSON.stringify({ state: 'idle' })); } catch {}
+let startupGrace = true // suppress events until first stable poll
 let prevState = null
 let prevAgent = null
 try {
@@ -252,6 +253,12 @@ try {
       if(!fs.existsSync(STATE_FILE)) return
       const raw = fs.readFileSync(STATE_FILE, 'utf-8')
       const st = JSON.parse(raw)
+      // On first poll after startup, record baseline without emitting events
+      if (startupGrace) {
+        startupGrace = false
+        prevState = st.state || 'idle'
+        return
+      }
       if(st.state && st.state !== 'idle' && st.state !== prevState){
         // Detect initial activity: T1+T2+PXHOpenCode sit at desk immediately
         if(prevState === null || prevState === 'idle' || !prevState){

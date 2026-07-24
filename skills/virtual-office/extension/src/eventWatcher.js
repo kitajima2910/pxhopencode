@@ -59,6 +59,7 @@ function startWatcher(workspaceRoot, onEvent) {
   // Clear stale state from previous session — office starts fresh
   try { fs.writeFileSync(eventsFile, ""); } catch {}
   try { fs.writeFileSync(stateFile, JSON.stringify({ state: "idle" })); } catch {}
+  let startupGrace = true; // suppress events until first stable poll
 
   function readNewEvents() {
     try {
@@ -69,8 +70,8 @@ function startWatcher(workspaceRoot, onEvent) {
       const fd = fs.openSync(eventsFile, "r");
       const buf = Buffer.alloc(stats.size - eventsSize);
       fs.readSync(fd, buf, 0, buf.length, eventsSize);
-      fs.closeSync(fd);
       eventsSize = stats.size;
+      if (startupGrace) return; // skip replay during startup
       const lines = buf.toString().split("\n").filter(Boolean);
       lines.forEach((line) => {
         try {
@@ -86,6 +87,12 @@ function startWatcher(workspaceRoot, onEvent) {
       if (!fs.existsSync(stateFile)) return;
       const raw = fs.readFileSync(stateFile, "utf-8");
       const st = JSON.parse(raw);
+      // On first stable poll after startup, record baseline without emitting events
+      if (startupGrace) {
+        startupGrace = false;
+        prevState = st.state || "idle";
+        return;
+      }
       if (st.state === "workflow_start") {
         if (!workflowActive) {
           workflowActive = true;

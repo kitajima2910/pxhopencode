@@ -91,6 +91,16 @@ function startServer(context, workspaceRoot) {
     );
     if (!require("fs").existsSync(serverScript)) return;
 
+    // Kill stale server process from previous session
+    const { execSync } = require("child_process");
+    try {
+      execSync(`netstat -ano | findstr ":2910 " | findstr "LISTENING"`, { encoding: "utf-8" })
+        .split("\n").filter(Boolean).forEach(line => {
+          const pid = line.trim().split(/\s+/).pop();
+          if (pid) { try { execSync(`taskkill /F /PID ${pid}`); } catch {} }
+        });
+    } catch {}
+
     const { spawn } = require("child_process");
     serverProcess = spawn("node", [serverScript, "--no-bridge"], {
       cwd: workspaceRoot,

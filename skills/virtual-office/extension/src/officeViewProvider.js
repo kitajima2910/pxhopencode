@@ -78,7 +78,7 @@ class OfficeViewProvider {
     );
 
     html = html.replace(
-      /function connectSSE\(\)\{[\s\S]*?setTimeout\(connectSSE,3000\)\)\}/,
+      /function connectSSE\(\)\{[\s\S]*?setTimeout\(connectSSE,3000\)\}\}/,
       "function connectSSE(){}"
     );
 
