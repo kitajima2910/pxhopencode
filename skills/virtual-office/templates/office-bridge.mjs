@@ -65,13 +65,13 @@ const state = {
 const WORK_IDLE_MS = 8000
 
 function startAgentIdle(agent, delay) {
-  // T1 + T2 stay until global idle (don't leave individually)
+  // Individual agent idle DISABLED — agents stay at desk until global session end.
+  // Only track activity for global idle check.
   const isCore = agent === 'pxh-help' || agent === 'pxh-pm'
   const timeout = isCore ? WORK_IDLE_MS + 12000 : WORK_IDLE_MS + (delay||0)
   clearTimeout(state.idleTimers[agent])
   state.idleTimers[agent] = setTimeout(() => {
-    if(isCore) return // T1/T2 only leave via global idle
-    emit({ type: 'agent_state', agent, tuiState: 'idle', message: '' })
+    if(isCore) return
     delete state.activeAgents[agent]
     delete state.idleTimers[agent]
   }, timeout)
@@ -82,7 +82,6 @@ function resetGlobalIdle() {
   state.idleTimer = setTimeout(() => {
     for (const ag of Object.keys(state.activeAgents)) {
       clearTimeout(state.idleTimers[ag])
-      emit({ type: 'agent_state', agent: ag, tuiState: 'idle', message: '' })
       delete state.idleTimers[ag]
       delete state.activeAgents[ag]
     }

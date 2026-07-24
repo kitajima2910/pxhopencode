@@ -249,6 +249,7 @@ class SessionRouter {
     this._workflow = '—'
     this._startTime = null
     this._sessionId = null
+    this._message = ''
   }
 
   start(data) {
@@ -257,6 +258,7 @@ class SessionRouter {
     this._workflow = '/vibe'
     this._startTime = data?.startTime || Date.now()
     this._sessionId = `session-${this._startTime}`
+    this._message = data?.message || ''
     return this.snapshot()
   }
 
@@ -264,6 +266,7 @@ class SessionRouter {
     this._active = false
     this._phase = 'idle'
     this._workflow = '—'
+    this._message = data?.message || ''
     const snap = this.snapshot()
     this._startTime = null
     return snap
@@ -286,6 +289,7 @@ class SessionRouter {
       workflow: this._workflow,
       startTime: this._startTime,
       sessionId: this._sessionId,
+      message: this._message,
     }
   }
 }
@@ -617,34 +621,14 @@ export class AgentRuntime {
   // ─── Internal ──────────────────────────────────────────────────
 
   _startIdleTimers(eventKind, agentIds) {
+    // Individual agent idle timers DISABLED.
+    // Agents stay at desk until global session end (workflow_end).
+    // Only _checkGlobalIdle via heartbeat ends the session.
     for (const agentId of agentIds) {
-      const isCore = CORE_AGENTS.has(agentId)
-
       if (this._idleTimers[agentId]) {
         clearTimeout(this._idleTimers[agentId])
-      }
-
-      // Don't set idle timer for session lifecycle events
-      if (eventKind === AgentEventKind.SESSION_START ||
-          eventKind === AgentEventKind.SESSION_END ||
-          eventKind === AgentEventKind.TURN_END) {
-        continue
-      }
-
-      const delay = isCore ? CORE_IDLE_MS : WORK_IDLE_MS
-      this._idleTimers[agentId] = setTimeout(() => {
-        if (isCore) return
-
-        this.stateStore.update(agentId, {
-          currentState: 'idle',
-          badge: '',
-          message: '',
-          active: false,
-          atDesk: false,
-          activeTool: null,
-        })
         delete this._idleTimers[agentId]
-      }, delay)
+      }
     }
   }
 

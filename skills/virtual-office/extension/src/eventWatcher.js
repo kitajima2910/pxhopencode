@@ -199,7 +199,8 @@ function startWatcher(workspaceRoot, onEvent) {
     clearTimeout(idleTimers[agent]);
     idleTimers[agent] = setTimeout(() => {
       if (isCore) return;
-      onEvent({ type: "agent_state", agent, tuiState: "idle", message: "" });
+      // Individual agent idle DISABLED — agents stay at desk until session end.
+      // Only track if all agents are done for global workflow_end check.
       delete activeAgents[agent];
       delete idleTimers[agent];
       const remaining = Object.keys(activeAgents).filter(a => a !== "pxh-help" && a !== "pxh-pm");

@@ -624,12 +624,7 @@ function stopTyping(ch){
   ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[]
   if(ch.ti){clearInterval(ch.ti);ch.ti=null}
   ch.it=performance.now()+2000
-  if(ch.a.n==='pxh-help'||ch.a.n==='pxh-pm'){
-    moveChar(ch,ch.dx,ch.dy+42,.8)
-    ch.it=performance.now()+500
-  }else{
-    moveChar(ch,ch.ix,ch.iy,1)
-  }
+  // Don't teleport — stay in place, wander system handles natural movement
 }
 function highlightAgent(name){const ch=chars[name];if(!ch)return;ch.hrw=true;if(ch.state!=='typing')startTyping(ch)}
 function showDoneNotif(x,y,agentName,color){doneNotifs.push({x,y,agentName,color,life:70,sy:y})}
@@ -677,8 +672,8 @@ function applyStateDiff(diff){
       state.phase='Interface';state.workflow='/vibe';state.startTime=sess.startTime||Date.now()
       document.getElementById('wfVal').textContent='/vibe';document.getElementById('phVal').textContent='Interface'
       document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'
-      addLog('▶ session started','#3fb950')
       sfx('task_start')
+      if(sess.message) addLog(sess.message,'#3fb950')
       // Add session separator, don't clear old logs
       const oc2=chars['pxh-opencode'];if(oc2){oc2._mirrorLog=oc2._mirrorLog||[];oc2._mirrorLog.push('── '+String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0')+' ──');if(oc2._mirrorLog.length>6)oc2._mirrorLog=oc2._mirrorLog.slice(-6)}
     }else if(!sess.active&&wasActive){
@@ -686,7 +681,7 @@ function applyStateDiff(diff){
       state.phase='idle';state.workflow='—'
       document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
       document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'
-      addLog('◼ session ended','#f85149')
+      if(sess.message) addLog(sess.message,'#f85149')
       // Archive pxh-opencode mirror log so it survives session end
       const oc3=chars['pxh-opencode']
       if(oc3&&oc3._mirrorLog&&oc3._mirrorLog.length){
@@ -816,8 +811,8 @@ function animate(now){fc++;updateElapsed()
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w){ch.it=now+2000+Math.random()*3000;ch._wanderScheduled=false}}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
-    // Event-driven idle timeout: leave desk after 5s of no events
-    if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>5000){stopTyping(ch)}
+    // Agents stay at desk until TUI session ends (workflow_end), regardless of idle time
+    // if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>5000){stopTyping(ch)}
     // Wander when idle (after returning from desk)
     if(ch.state==='idle'&&!ch.w&&now>ch.it&&!ch._wanderScheduled){
       ch._wanderScheduled=true
@@ -836,7 +831,7 @@ function animate(now){fc++;updateElapsed()
   const poc=chars['pxh-opencode'];if(poc){
     const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
     if(anyWorking&&poc.state!=='typing'){poc.hrw=true;poc.ts='Synced';startTyping(poc)}
-    if(!anyWorking&&poc.w&&now-poc._lastEvt>30000){stopTyping(poc)}
+    // PXHOpenCode stays at desk until session end — no idle timeout
     if(poc._forceIdle){stopTyping(poc);poc._forceIdle=false}
   }
 
