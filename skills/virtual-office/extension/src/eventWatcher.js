@@ -101,7 +101,7 @@ function startWatcher(workspaceRoot, onEvent) {
         prevState = "idle";
         return;
       }
-      if (st.state && st.state !== prevState) {
+      if (st.state && st.state !== "idle" && st.state !== prevState) {
         prevState = st.state;
         if (!workflowActive) {
           workflowActive = true;

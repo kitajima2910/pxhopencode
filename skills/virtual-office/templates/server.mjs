@@ -252,7 +252,7 @@ try {
       if(!fs.existsSync(STATE_FILE)) return
       const raw = fs.readFileSync(STATE_FILE, 'utf-8')
       const st = JSON.parse(raw)
-      if(st.state && st.state !== prevState){
+      if(st.state && st.state !== 'idle' && st.state !== prevState){
         // Detect initial activity: T1+T2+PXHOpenCode sit at desk immediately
         if(prevState === null || prevState === 'idle' || !prevState){
           console.log(`[Office] State file: first activity ${st.state} — triggering T1+T2+PXHOpenCode`)
