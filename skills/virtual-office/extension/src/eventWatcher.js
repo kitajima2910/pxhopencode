@@ -88,8 +88,27 @@ function startWatcher(workspaceRoot, onEvent) {
       if (!fs.existsSync(stateFile)) return;
       const raw = fs.readFileSync(stateFile, "utf-8");
       const st = JSON.parse(raw);
+      if (st.state === "workflow_start") {
+        if (!workflowActive) {
+          workflowActive = true;
+          onEvent({ type: "workflow_start", message: st.message || "Workflow started", ts: new Date().toISOString() });
+        }
+        return;
+      }
+      if (st.state === "workflow_end") {
+        if (workflowActive) {
+          workflowActive = false;
+          onEvent({ type: "workflow_end", message: st.message || "Workflow ended", ts: new Date().toISOString() });
+        }
+        prevState = "idle";
+        return;
+      }
       if (st.state && st.state !== prevState) {
         prevState = st.state;
+        if (!workflowActive) {
+          workflowActive = true;
+          onEvent({ type: "workflow_start", message: "User prompt submitted", ts: new Date().toISOString() });
+        }
         const STATE_MAP = {
           thinking: "pxh-expert", explore: "pxh-architect", read: "pxh-help",
           deleg: "pxh-pm", "preparing edit": "pxh-expert", edit: "pxh-expert",
@@ -123,6 +142,13 @@ function startWatcher(workspaceRoot, onEvent) {
           agent: "pxh-opencode",
           message: st.message,
         });
+      } else if (!st.state || st.state === "idle") {
+        if (prevState && prevState !== "idle" && workflowActive) {
+          workflowActive = false;
+          onEvent({ type: "workflow_end", message: "Processing complete", ts: new Date().toISOString() });
+        }
+        prevState = "idle";
+        prevAgent = null;
       }
     } catch {}
   }
@@ -159,6 +185,7 @@ function startWatcher(workspaceRoot, onEvent) {
   const idleTimers = {};
   let workspaceWatchTimer = null;
   const pendingFiles = [];
+  let workflowActive = false;
 
   function resetAgentIdle(agent, delay) {
     const isCore = agent === "pxh-help" || agent === "pxh-pm";
@@ -169,6 +196,11 @@ function startWatcher(workspaceRoot, onEvent) {
       onEvent({ type: "agent_state", agent, tuiState: "idle", message: "" });
       delete activeAgents[agent];
       delete idleTimers[agent];
+      const remaining = Object.keys(activeAgents).filter(a => a !== "pxh-help" && a !== "pxh-pm");
+      if (remaining.length === 0 && workflowActive) {
+        workflowActive = false;
+        onEvent({ type: "workflow_end", message: "Processing complete", ts: new Date().toISOString() });
+      }
     }, timeout);
   }
 
@@ -179,10 +211,6 @@ function startWatcher(workspaceRoot, onEvent) {
   function activateAgent(agent, tuiState, message, delay) {
     if (!activeAgents[agent]) {
       if (agent === "pxh-help") sendSignal("pxh-help", "pxh-pm");
-      const role = AGENT_ROLES[agent];
-      if (role) {
-        onEvent({ type: "agent_state", agent, tuiState: role.tuiState, message: role.msg });
-      }
     }
     onEvent({ type: "agent_state", agent, tuiState, message });
     activeAgents[agent] = true;
@@ -201,6 +229,10 @@ function startWatcher(workspaceRoot, onEvent) {
 
   function processPendingBatch() {
     if (pendingFiles.length === 0) return;
+    if (!workflowActive) {
+      workflowActive = true;
+      onEvent({ type: "workflow_start", message: "User prompt submitted", ts: new Date().toISOString() });
+    }
     const seen = new Set();
     const batch = [];
     for (const c of pendingFiles.splice(0)) {

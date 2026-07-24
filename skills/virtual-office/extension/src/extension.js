@@ -87,7 +87,7 @@ function startServer(context, workspaceRoot) {
   try {
     const serverScript = path.join(
       context.extensionUri.fsPath,
-      "..", "..", "templates", "server.mjs"
+      "..", "templates", "server.mjs"
     );
     if (!require("fs").existsSync(serverScript)) return;
 
@@ -114,7 +114,7 @@ function startServer(context, workspaceRoot) {
         }
       })
     );
-  } catch {}
+  } catch (e) { console.error("[PXH Office] startServer error:", e.message); }
 }
 
 function deactivate() {
