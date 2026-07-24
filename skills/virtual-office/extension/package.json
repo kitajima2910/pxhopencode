@@ -1,0 +1,54 @@
+{
+  "name": "pxh-virtual-office",
+  "displayName": "PXH Virtual Office",
+  "description": "AI Company Virtual Office — real-time 4-tier agent visualization in your sidebar",
+  "version": "1.0.0",
+  "publisher": "pxh",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Visualization", "Other"],
+  "activationEvents": [
+    "onView:pxh-office.officeView"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "pxh-office",
+          "title": "PXH Virtual Office",
+          "icon": "$(organization)"
+        }
+      ]
+    },
+    "views": {
+      "pxh-office": [
+        {
+          "type": "webview",
+          "id": "pxh-office.officeView",
+          "name": "Virtual Office"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "pxh-office.open",
+        "title": "PXH Office: Open Virtual Office"
+      },
+      {
+        "command": "pxh-office.emitEvent",
+        "title": "PXH Office: Emit Event"
+      },
+      {
+        "command": "pxh-office.clearEvents",
+        "title": "PXH Office: Clear Events"
+      },
+      {
+        "command": "pxh-office.refresh",
+        "title": "PXH Office: Refresh View"
+      }
+    ]
+  },
+  "scripts": {}
+}
