@@ -124,6 +124,8 @@ function startWatcher(workspaceRoot, onEvent) {
           monitoring: "pxh-pm",
         };
         const agent = st.agent || STATE_MAP[st.state] || "pxh-expert";
+        activeAgents[agent] = true;
+        resetAgentIdle(agent, 0);
         onEvent({
           type: "agent_state",
           agent,
