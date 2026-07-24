@@ -4,6 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import http from 'http'
 import { fileURLToPath } from 'url'
+import { normalizeEvent, getAgentRole } from './hook-provider.mjs'
 
 const _MODULE_DIR = path.dirname(fileURLToPath(import.meta.url))
 const MODULE_ROOT = path.resolve(_MODULE_DIR, '..', '..', '..')

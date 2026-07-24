@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Error404Labs - PXH2910</title>
+<script src="renderer-state.js"></script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%231a2030'/><stop offset='100%' stop-color='%230d1117'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)' stroke='%2330363d' stroke-width='2'/><rect x='14' y='10' width='36' height='10' rx='3' fill='%23bc8cff' opacity='0.9'/><rect x='14' y='22' width='36' height='10' rx='3' fill='%233fb950' opacity='0.9'/><rect x='14' y='34' width='36' height='10' rx='3' fill='%23d29922' opacity='0.9'/><rect x='14' y='46' width='36' height='10' rx='3' fill='%2358a6ff' opacity='0.9'/><circle cx='10' cy='15' r='3' fill='%23bc8cff'/><circle cx='10' cy='27' r='3' fill='%233fb950'/><circle cx='10' cy='39' r='3' fill='%23d29922'/><circle cx='10' cy='51' r='3' fill='%2358a6ff'/></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -642,9 +643,9 @@ function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=c
 }
 
 // ============================================================
-// STATE
+// STATE — driven by StateStore (renderer-state.js)
 // ============================================================
-const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0}
+const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0,_sessionActive:false}
 function addLog(msg,color,agentName){
   if(agentName&&chars[agentName]){
     const ch=chars[agentName];if(!ch._msgs)ch._msgs=[]
@@ -661,161 +662,142 @@ function addLog(msg,color,agentName){
 function updateStatus(){document.getElementById('wfVal').textContent=state.workflow;document.getElementById('phVal').textContent=state.phase;document.getElementById('agVal').textContent=state.agent||'—';const el=document.getElementById('rtVal');if(el)el.textContent=state.retry}
 function updateElapsed(){const ms=Date.now()-state.startTime;const h=String(Math.floor(ms/3600000)).padStart(2,'0'),m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0'),s=String(Math.floor((ms%60000)/1000)).padStart(2,'0');document.getElementById('elVal').textContent=`${h}:${m}:${s}`}
 
-function processEvent(event){
-  const isReal=event.type!=='agent_status'&&event.type!=='connected'
-  if(isReal){state.lastRealEvent=performance.now();document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'}
-  const tc={T0:'#8b949e',T1:'#58a6ff',T2:'#d29922',T3:'#3fb950',T4:'#bc8cff'},ac=event.tier_from||event.tier_to||'T1',color=tc[ac]||'#888'
+// ── StateStore -> Character mapping (PURE renderer logic) ──
+function applyStateDiff(diff){
+  const now=performance.now()
+  state.lastRealEvent=now
 
-  // ============================
-  // workflow:start — triggered IMMEDIATELY on user prompt submission
-  // ============================
-  if(event.type==='workflow_start'){
-    const now=performance.now()
-    state.startTime=Date.now() // Reset elapsed timer
-    console.log('[Office] workflow:start received — animating office')
-    state.phase='Interface'
-    state.workflow='/vibe'
-    // Walk PXHOpenCode to workstation immediately
-    const oc=chars['pxh-opencode']
-    if(oc){
-      oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
-      oc.ts='Synced';oc.tsm='';oc._msgs=[]
-      // Mirror log init
-      if(!oc._mirrorLog)oc._mirrorLog=[]
-      oc._mirrorLog=['User prompt submitted','PXHOpenCode initialized']
-      // Walk to desk + sit + typing
-      oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
-      oc._bcol='#00e5ff'
-      updateElapsed()
-      document.getElementById('wfVal').textContent='/vibe'
-      document.getElementById('phVal').textContent='Interface'
-      document.getElementById('modeTxt').textContent='🔴 Live'
-      document.getElementById('modeTxt').style.opacity='0.8'
-      clearTimeout(oc._bt)
-      oc._bt=setTimeout(()=>{if(oc&&!oc._forceIdle){oc.tsm=''}},30000)
+  // Session changes
+  if(diff.session){
+    const wasActive=state._sessionActive
+    const sess=diff.session
+
+    if(sess.active&&!wasActive){
+      // Session started
+      state.phase='Interface';state.workflow='/vibe';state.startTime=sess.startTime||Date.now()
+      document.getElementById('wfVal').textContent='/vibe';document.getElementById('phVal').textContent='Interface'
+      document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'
+      addLog('▶ session started','#3fb950')
+      sfx('task_start')
+    }else if(!sess.active&&wasActive){
+      // Session ended
+      state.phase='idle';state.workflow='—'
+      document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
+      document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'
+      addLog('◼ session ended','#f85149')
+    }else if(sess.phase){
+      state.phase=sess.phase
+      state.workflow=sess.workflow||state.workflow
     }
-    // T1 Help Desk active
-    const hh=chars['pxh-help']
-    if(hh){hh.w=true;hh.hrw=true;hh.ts='Interface';hh.tsm='🔍 Validate & classify input';hh.state='typing';hh.x=hh.dx;hh.y=hh.dy+40;hh.tx=hh.x;hh.ty=hh.y;hh._lastEvt=now}
-    // T2 CEO PXH active
-    const pm=chars['pxh-pm']
-    if(pm){pm.w=true;pm.hrw=true;pm.ts='Orchestration';pm.tsm='📋 Route & enforce policy';pm.state='typing';pm.x=pm.dx;pm.y=pm.dy+40;pm.tx=pm.x;pm.ty=pm.y;pm._lastEvt=now}
-    // Update dashboard — Active count updates on next render
-    addLog('▶ workflow:start','#3fb950')
+    state._sessionActive=sess.active
     updateStatus()
-    return
   }
 
-  // ============================
-  // workflow:end — stop office animations, walk back
-  // ============================
-  if(event.type==='workflow_end'){
-    console.log('[Office] workflow:end received — stopping office')
-    state.phase='idle'
-    state.workflow='—'
-    const oc=chars['pxh-opencode']
-    if(oc){oc.w=false;oc.hrw=false;oc.ts='';oc.tsm='';oc._msgs=[];oc._forceIdle=true;oc.state='idle';oc.x=oc.ix;oc.y=oc.iy;oc.tx=oc.ix;oc.ty=oc.iy;oc._lastEvt=0;oc._mirrorLog=[]}
-    // Reset T1+T2
-    ;['pxh-help','pxh-pm'].forEach(ag=>{const ch=chars[ag];if(ch){ch.w=false;ch.hrw=false;ch.ts='';ch.tsm='';ch._msgs=[];ch.state='idle';ch.x=ch.ix;ch.y=ch.iy;ch.tx=ch.ix;ch.ty=ch.iy;ch._lastEvt=0}})
-    // Reset all T3+T4 workers
-    AL.forEach(a=>{const ch=chars[a.n];if(!ch)return;if(a.n==='pxh-opencode'||a.n==='pxh-help'||a.n==='pxh-pm')return;ch.w=false;ch.hrw=false;ch.ts='';ch.tsm='';ch._msgs=[];ch.state='idle';ch.x=ch.ix;ch.y=ch.iy;ch.tx=ch.ix;ch.ty=ch.iy;ch._lastEvt=0})
-    addLog('◼ workflow:end','#f85149')
-    document.getElementById('wfVal').textContent='—'
-    document.getElementById('phVal').textContent='idle'
-    document.getElementById('modeTxt').textContent='⚪ Idle'
-    document.getElementById('modeTxt').style.opacity='0.5'
-    updateStatus()
-    return
-  }
+  // Agent state changes
+  if(diff.agents||diff.changedAgents){
+    const changedIds=diff.changedAgents||Object.keys(diff.agents||{})
+    for(const agentId of changedIds){
+      const agentState=diff.agents?.[agentId]||StateStore.getAgent(agentId)
+      if(!agentState)continue
+      const ch=chars[agentId]
+      if(!ch)continue
 
-  if(event.type==='task_start'||event.type==='phase_change'){
-    state.agent=event.to||event.from||state.agent;if(event.phase)state.phase=event.phase;if(event.workflow)state.workflow=event.workflow;if(event.retry)state.retry=event.retry
-    if(state.agent)highlightAgent(state.agent)
-    if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}
-    addLog(`[${ac}] ${event.message||event.type}`,color);if(isReal)sfx('notification')
-  }else if(event.type==='agent_state'){
-    const ag=event.agent,ch=chars[ag];if(ch){
-      const st=event.tuiState||event.state||''
-      // Agent default messages — agents only sit for REAL TUI output, not these defaults
-      const DEFMSG={
-        'pxh-help':{tuiState:'Interface',msg:'🔍 Validate & classify input'},
-        'pxh-pm':{tuiState:'Orchestration',msg:'📋 Route & enforce policy'},
-        'pxh-architect':{tuiState:'Design',msg:'🏗️ Design tech stack & schema'},
-        'pxh-expert':{tuiState:'Code',msg:'✍️ Vibe code & production'},
-        'pxh-fix-bugs':{tuiState:'Debug',msg:'🐛 Root cause → fix bug'},
-        'pxh-qa':{tuiState:'Test',msg:'🧪 Write & run tests'},
-        'pxh-review-code':{tuiState:'Review',msg:'🔍 Security & perf audit'},
-        'pxh-devops':{tuiState:'Build',msg:'⚙️ Lint → test → build'},
-        'pxh-save-history':{tuiState:'Infrastructure',msg:'💾 Save state & checkpoint'},
-        'pxh-ui-ux':{tuiState:'Design',msg:'🎨 Layout & responsive design'},
-        'pxh-office':{tuiState:'Virtual Office',msg:'🏢 Virtual Office'},
-      }
-      const msg=event.message||(st?`${st}...`:'')
-      const isDefault=DEFMSG[ag]&&DEFMSG[ag].msg===msg
-      const timestamp=performance.now();ch._lastEvt=timestamp
-      if(chars['pxh-opencode'])chars['pxh-opencode']._lastEvt=timestamp
-      if(!ch._monitorLog)ch._monitorLog=[]
-      if(st&&st!=='idle'){ch._monitorLog.push({t:timestamp,m:msg||st,s:st});if(ch._monitorLog.length>40)ch._monitorLog.shift()}
-      // Also mirror all agent activity to PXHOpenCode terminal
-      const poc2=chars['pxh-opencode'];if(poc2&&st&&st!=='idle'){if(!poc2._mirrorLog)poc2._mirrorLog=[];poc2._mirrorLog.push(`[${ag}] ${msg||st}`);if(poc2._mirrorLog.length>6)poc2._mirrorLog.shift()}
-      const short=msg.length>32?msg.slice(0,29)+'...':msg
-      const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
-      const line=ts+' '+short
-      ch.ts=st
-      if(!isDefault){
-        if(!ch._msgs)ch._msgs=[]
-        if(st==='idle'||!st){ch._msgs=[]}
-        else if(st!=='update'&&!ch.w){ch._msgs=[line]}
-        else if(line){
+      const isActive=agentState.active||agentState.currentState==='typing'
+      const isIdle=agentState.currentState==='idle'
+
+      ch._lastEvt=now
+
+      if(isActive){
+        // Activate character: reading or typing animation
+        const isReading=agentState.isReading||false
+        ch.ts=agentState.badge||''
+        ch._bcol=agentState.color||AGENTS[agentId]?.c||'#888'
+        ch._isReading=isReading
+
+        // Show active tool
+        if(agentState.activeTool){
+          if(!ch._monitorLog)ch._monitorLog=[]
+          ch._monitorLog.push({t:now,m:`${agentState.awaitingInput?'⏳':'▶'} ${agentState.activeTool}: ${agentState.message||''}`,s:agentState.activeTool})
+          if(ch._monitorLog.length>40)ch._monitorLog.shift()
+        }
+
+        // Speech bubble — show tool + message
+        if(agentState.message){
+          const prefix=agentState.awaitingInput?'⏳ ':''
+          const msg=agentState.activeTool?`[${agentState.activeTool}] ${agentState.message}`:agentState.message
+          const short=msg.length>40?msg.slice(0,37)+'...':msg
+          const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
+          const line=prefix+ts+' '+short
+          if(!ch._msgs)ch._msgs=[]
           if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===line.slice(9))ch._msgs.pop()
           ch._msgs.push(line);if(ch._msgs.length>2)ch._msgs.shift()
+          ch.tsm=ch._msgs.length?ch._msgs:''
         }
-        ch.tsm=ch._msgs.length?ch._msgs:''
-        ch._bcol=AGENTS[ag]?.c||'#888'
+
+        // Mirror to PXHOpenCode
+        const poc=chars['pxh-opencode']
+        if(poc&&agentId!=='pxh-opencode'){
+          if(!poc._mirrorLog)poc._mirrorLog=[]
+          const toolLabel=agentState.activeTool?`[${agentState.activeTool}] `:''
+          poc._mirrorLog.push(`[${agentId}] ${toolLabel}${agentState.message||agentState.badge||''}`)
+          if(poc._mirrorLog.length>6)poc._mirrorLog.shift()
+        }
+
+        if(!ch.w&&ch.state!=='typing'&&ch.state!=='reading'){ch.hrw=true;startTyping(ch)}
+      }else if(isIdle){
+        // Deactivate character: stop typing, walk away
+        if(ch.w){
+          stopTyping(ch)
+          if(isActive===false)showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)
+        }
+        clearTimeout(ch._bt)
+        ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)
       }
-      if(st==='update'){}
-      else if(st==='idle'||!st){clearTimeout(ch._bt);ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}
-      if(st==='idle'||!st){if(ch.w){stopTyping(ch);showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)}}
-      else if(!ch.w&&ch.state!=='typing'){ch.hrw=true;startTyping(ch)}
-      state.agent=ag;if(st)state.phase=st
+
+      if(agentId==='pxh-opencode'&&agentState.currentState==='typing'){
+        // PXHOpenCode mirror update
+        const oc=chars['pxh-opencode']
+        if(oc&&agentState.message){
+          const line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
+          if(line){
+            oc.ts='Synced';oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
+            oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
+            if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
+            if(!oc._msgs)oc._msgs=[]
+            oc._msgs=[line];oc.tsm=oc._msgs;oc._bcol='#00e5ff'
+            if(!oc._mirrorLog)oc._mirrorLog=[]
+            oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
+            clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},30000)
+          }
+        }
+      }
     }
-    updateStatus();return
-  }else if(event.type==='task_end'){
-    const ch=chars[event.from||event.to];if(ch){const wasWorking=ch.w;stopTyping(ch);if(event.status!=='fail'&&wasWorking)showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)}
-    addLog(`[${ac}] ${event.message||(event.status==='fail'?'✗ Failed':'✓ Đã làm xong')}`,event.status==='fail'?'#f85149':color)
-  }else if(event.type==='tui_mirror'){
-    const oc=chars['pxh-opencode'];if(oc){
-      const raw=event.message||event.line||''
-      if(!raw)return
-      const line=raw.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
-      if(!line)return
-      oc.ts='Typing';oc.w=true;oc.hrw=true;oc._lastEvt=performance.now();oc._forceIdle=false
-      oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
-      if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
-      if(!oc._msgs)oc._msgs=[]
-      oc._msgs=[line]
-      oc.tsm=oc._msgs;oc._bcol='#00e5ff'
-      if(!oc._mirrorLog)oc._mirrorLog=[]
-      oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
-      if(oc.state!=='typing'){oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y}
-      clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},30000)
-    }
-    addLog(event.message||'','#00e5ff')
-  }else if(event.type==='contract'){if(event.from||event.to){const fc=chars[event.from],tc=chars[event.to];const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2;const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5;contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80});sfx('contract')}}else if(!isReal)return;else addLog(event.message||'','#8b949e')
-  updateStatus()
+  }
 }
 
-// ============================================================
-// SSE
-// ============================================================
-function connectSSE(){const es=new EventSource('/events');es.onopen=()=>{state.sseConnected=true;state.lastRealEvent=performance.now();document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5';addLog('🔴 SSE connected','#58a6ff');playAmbient();sfx('door')};es.onmessage=(e)=>{try{const ev=JSON.parse(e.data);if(ev.type==='connected')return;processEvent(ev)}catch{}};es.onerror=()=>{state.sseConnected=false;document.getElementById('modeTxt').textContent='⚠️ Reconnecting...';document.getElementById('modeTxt').style.opacity='0.4';setTimeout(connectSSE,3000)}}
+// ── Signal handler (contract lines between agents) ──
+function applySignal(signal){
+  if(!signal||!signal.from||!signal.to)return
+  const fc=chars[signal.from],tc=chars[signal.to]
+  const sx=fc?fc.dx:W*.3,sy=fc?fc.dy-8:H*.2
+  const tx=tc?tc.dx:W*.7,ty=tc?tc.dy-8:H*.5
+  contracts.push({x:sx,y:sy,tx,ty,progress:0,life:80})
+  sfx('contract')
+}
+
+// ── Connect to runtime via StateStore ──
+function connectToRuntime(){
+  StateStore.connect('/events')
+  StateStore.onChange(applyStateDiff)
+  StateStore.onSignal(applySignal)
+}
 
 // ============================================================
 // MAIN LOOP
 // ============================================================
 function animate(now){fc++;updateElapsed()
   if(!chars)return
-  if(state.mode==='sse'&&state.sseConnected&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
+  if(state.mode==='sse'&&StateStore.isConnected()&&now-state.lastRealEvent>15000){document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'}
 
   AL.forEach(a=>{const ch=chars[a.n];ch.ap+=.03
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w){ch.it=now+2000+Math.random()*3000;ch._wanderScheduled=false}}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
@@ -1004,7 +986,7 @@ function animate(now){fc++;updateElapsed()
 // INIT
 // ============================================================
 function init(){resize();addLog('🏢 Error404Labs - PXH2910','#58a6ff')
-  if(state.mode==='sse'){addLog('⚡ SSE — real-time sync','#8b949e');connectSSE()}else{addLog('⚡ Demo — mở qua server để sync TUI','#8b949e');playAmbient()}
+  if(state.mode==='sse'){addLog('⚡ Pixel Agents — runtime-driven renderer','#8b949e');connectToRuntime()}else{addLog('⚡ Demo — open via server for real-time sync','#8b949e');playAmbient()}
   state.startTime=Date.now();requestAnimationFrame(animate)}
 c.addEventListener('click',(e)=>{const rect=c.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;let cl=null,cd=35;AL.forEach(a=>{const ch=chars[a.n],dx=ch.x-mx,dy=ch.y-my,d=Math.sqrt(dx*dx+dy*dy);if(d<cd){cd=d;cl=a}});if(cl){state.agent=cl.n;updateStatus();addLog(`👤 ${cl.role} (${cl.n})`,cl.c);sfx('notification');const ch=chars[cl.n];ch.by=-6;setTimeout(()=>{ch.by=0},300)}})
 window.addEventListener('resize',resize);document.addEventListener('DOMContentLoaded',init)
