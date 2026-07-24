@@ -1,7 +1,7 @@
 # pxhopencode — AI Company cho Vibe Coding
 
 <p align="center">
-  <b>v47</b> &nbsp;·&nbsp; 73 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 159 templates</p>
+  <b>v48</b> &nbsp;·&nbsp; 141 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 159 templates</p>
 
 > AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
 
@@ -311,6 +311,7 @@ node skills/virtual-office/templates/emit-event.mjs --type agent_state --agent p
 - **Tool Output**: `max_lines: 50, max_bytes: 4096` — tiết kiệm token
 - **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
 - **Code preservation**: Chỉ tác động trong TARGET
+- **Prompt Optimizer**: Auto-rewrite prompt mơ hồ → rõ ràng, hiển thị panel `<details>`, transparent - không tường thuật quá trình
 - **Portable**: Copy toàn bộ `.opencode` → hoạt động ngay trong project mới
 
 ---
@@ -318,7 +319,18 @@ node skills/virtual-office/templates/emit-event.mjs --type agent_state --agent p
 ## Changelog
 
 <details>
-<summary><b>v47 — Bat Merge & README Sync (Latest)</b></summary>
+<summary><b>v48 — Prompt Optimizer (Latest)</b></summary>
+
+- **Add:** `prompt-optimizer.md` — auto-rewrite prompt mơ hồ thành implementation-ready spec
+- **Add:** Collapsible `<details>` panel hiển thị original vs optimized prompt
+- **Add:** Context-aware optimization — giữ nguyên goal, chỉ resolve ambiguity
+- **Add:** Integration vào `opencode.json` instructions, chạy trước mọi user task
+- **Update:** README Key Concepts + version bump, commit count sync (73 → 141)
+- **Update:** STATUS.md changelog v48 entry
+</details>
+
+<details>
+<summary><b>v47 — Bat Merge & README Sync</b></summary>
 
 - **Merge:** `pxh-office-on.bat` + `pxh-office-off.bat` → `pxh-office.bat` (on/off/restart + help)
 - **Update:** README virtual office section references `pxh-office.bat`
