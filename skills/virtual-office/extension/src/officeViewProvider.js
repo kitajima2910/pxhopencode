@@ -22,6 +22,8 @@ class OfficeViewProvider {
     webviewView.webview.onDidReceiveMessage((msg) => {
       if (msg.command === "log") {
         console.log("[PXH Office]", msg.text);
+      } else if (msg.command === "work") {
+        this._startOpenCodeSession();
       }
     });
 
@@ -49,6 +51,20 @@ class OfficeViewProvider {
   refresh() {
     if (this._view) {
       this._view.webview.html = this._getHtml();
+    }
+  }
+
+  _startOpenCodeSession() {
+    try {
+      const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+      const terminal = vscode.window.createTerminal({
+        name: "PXH OpenCode",
+        cwd: workspaceRoot,
+      });
+      terminal.show();
+      terminal.sendText("opencode");
+    } catch (e) {
+      console.error("[PXH Office] Failed to start OpenCode session:", e.message);
     }
   }
 
@@ -214,6 +230,29 @@ class OfficeViewProvider {
 
   var _lastSession = false;
 
+  // ── Work button bridge ──
+  var _vscodeApi = acquireVsCodeApi();
+
+  function resetWorkButton() {
+    var btn = document.getElementById('workBtn');
+    if (btn) { btn.textContent = 'Làm việc'; btn.className = 'work-btn'; btn.disabled = false; }
+  }
+
+  function setWorkButtonBusy() {
+    var btn = document.getElementById('workBtn');
+    if (btn) { btn.textContent = '⏳ Đang làm...'; btn.className = 'work-btn working'; btn.disabled = true; }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('workBtn');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        setWorkButtonBusy();
+        _vscodeApi.postMessage({ command: 'work' });
+      });
+    }
+  });
+
   window.addEventListener('message', function(e) {
     try {
       var ev = e.data;
@@ -223,10 +262,15 @@ class OfficeViewProvider {
       if (diff && typeof applyStateDiff === 'function') {
         applyStateDiff(diff);
 
-        // Track session state for signals
+        // Track session state for signals + work button
         if (diff.session) {
-          if (diff.session.active) _lastSession = true;
-          else _lastSession = false;
+          if (diff.session.active) {
+            _lastSession = true;
+            setWorkButtonBusy();
+          } else {
+            _lastSession = false;
+            resetWorkButton();
+          }
         }
       }
     } catch(ex) {}

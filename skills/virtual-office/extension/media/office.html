@@ -24,6 +24,11 @@ canvas{display:block;width:100%;height:100%}
 .st-item{display:flex;align-items:center;gap:3px;opacity:0.7}
 .st-item .lbl{font-size:9px;opacity:0.4;text-transform:uppercase;letter-spacing:0.5px}
 .st-item .val{font-weight:600;font-size:11px}
+.work-btn{background:linear-gradient(135deg,#3fb950,#2d8a3a);color:#fff;border:none;padding:4px 14px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.3px;transition:all .2s;font-family:inherit}
+.work-btn:hover{background:linear-gradient(135deg,#4fd960,#3d9a4a);transform:scale(1.05)}
+.work-btn:active{transform:scale(0.95)}
+.work-btn.working{background:linear-gradient(135deg,#f85149,#c04040);pointer-events:none;opacity:0.85}
+@keyframes workPulse{0%,100%{opacity:1}50%{opacity:0.5}}
 #logOverlay{display:none}
 .log-item{font-size:10px;padding:3px 12px;margin:2px 0;background:rgba(0,0,0,0.8);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideUp .25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
 @keyframes slideUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
@@ -33,7 +38,10 @@ canvas{display:block;width:100%;height:100%}
 <div id="app">
   <div class="title-bar">
     <h1>🏢 Error404Labs - PXH2910</h1>
-    <span class="ver">AI Company · 4-tier Runtime</span>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="workBtn" class="work-btn" title="Start OpenCode TUI session">Làm việc</button>
+      <span class="ver">AI Company · 4-tier Runtime</span>
+    </div>
   </div>
   <div id="canvasWrap"><canvas id="c"></canvas><div id="logOverlay"></div></div>
   <div class="status-bar" id="statusBar">
