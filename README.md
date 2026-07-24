@@ -190,14 +190,6 @@ Visual hóa văn phòng mở real-time với 11 nhân vật pixel-art, thú cưn
 
 Restart VS Code → Virtual Office xuất hiện ở sidebar.
 
-### Chạy server riêng (browser)
-
-```powershell
-.\pxh-office.bat on       # Start + mở browser tại http://localhost:2910
-.\pxh-office.bat off      # Tắt server
-.\pxh-office.bat restart  # Khởi động lại
-```
-
 ### Tính năng
 
 - **11 pixel-art agents** với trang phục + phụ kiện riêng, ngồi làm việc tại bàn

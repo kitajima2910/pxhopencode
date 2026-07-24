@@ -59,8 +59,8 @@
       "template": "Load `skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
     },
     "office": {
-      "description": "Open Virtual Office — real-time 4-tier visualization with bridge auto-detect",
-      "template": "Load `skills/virtual-office/SKILL.md`. Live + Bridge: `node skills/virtual-office/templates/server.mjs` (auto-detect workspace activity). TUI: `node skills/virtual-office/templates/office.mjs`. Webview: http://localhost:2910"
+      "description": "Open Virtual Office sidebar VSCode extension — real-time 4-tier visualization",
+      "template": "Load `skills/virtual-office/SKILL.md`. Cài extension: `pxh-install-extension.bat install`. Restart VS Code, sidebar PXH Virtual Office."
     }
   }
 }

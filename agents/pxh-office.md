@@ -1,111 +1,71 @@
 ---
 name: pxh-office
 tier: Virtual
-role: Virtual Office TUI — real-time 4-tier visualization
+role: Virtual Office VSCode Extension — real-time 4-tier visualization
 mode: subagent
 ---
 
-# pxh-office — Virtual Office TUI
+# pxh-office — Virtual Office VSCode Extension
 
-**Virtual tier** — chạy song song với opencode, visualize 4-tier architecture real-time.
+**Virtual tier** — sidebar webview trong VSCode, visualize 4-tier architecture real-time.
 
 ## Trách nhiệm
 
-1. Mở Văn Phòng Ảo trong terminal riêng
-2. Hiển thị 4 tầng (T1-T4) với pixel-art agent cards
-3. Animate contract flow giữa các tầng
-4. Cập nhật real-time status (workflow, phase, elapsed, active agent)
+1. Hiển thị webview trong VSCode sidebar
+2. Render văn phòng 2D với 11 pixel-art agents
+3. Animate contract flow giữa các agents
+4. Cập nhật real-time status (state badges, speech bubbles)
 5. Log hoạt động gần nhất
 
 ## Architecture
 
 ```
-Terminal (TUI)                    Browser (Webview)
-     │                                  │
-     ├── office.mjs (TUI)               ├── server.mjs (HTTP + SSE)
-     │   │                              │   │
-     │   └── office-events.log ←────────┤   └── office.html (2D cartoon)
-     │       (fs.watch)                 │
-     │                                  │
-     └── office-bridge.mjs ─────────────┘
-         (file watcher + polling → emit event)
+VSCode Extension                          Background Server
+     │                                         │
+     ├── eventWatcher.js                       ├── server.mjs (port 2910)
+     │   (fs.watch _shared/ events)            │   (API: POST /emit, /state)
+     │                                         │
+     ├── officeViewProvider.js                 └── emit-event.mjs
+     │   (webview HTML + postMessage bridge)       (CLI emit → events log)
+     │
+     └── media/office.html
+         (2D cartoon canvas + renderer-state.js)
+
+_shared/office-events.log ←─────── both write & read ──────→
+_shared/opencode-state.json
 ```
 
-## Cách dùng
+## Cài đặt
 
-```bash
-/office
+```powershell
+.\pxh-install-extension.bat install
 ```
 
-Hoặc chạy tay:
-
-**Webview + Bridge (khuyên dùng)** — real-time sync với workspace activity:
-```bash
-node skills/virtual-office/templates/server.mjs
-# Browser → http://localhost:2910
-# Tự động detect file changes → emit event → webview animation
-```
-
-**TUI** — terminal UI:
-```bash
-node skills/virtual-office/templates/office.mjs
-```
-
-**Bridge standalone** — nếu muốn chạy bridge riêng:
-```bash
-node skills/virtual-office/templates/office-bridge.mjs
-```
+Restart VS Code → sidebar có icon `$(organization)` "PXH Virtual Office".
 
 ## Input
 
-- **Tự động**: `office-bridge.mjs` phát hiện thay đổi file trong workspace (polling 3s)
-- **Thủ công**: `emit-event.mjs --type task_start --from X --to Y`
-- **Demo mode**: Tự simulate khi không có real events
+- **Tự động**: `eventWatcher.js` poll `_shared/` mỗi 500ms, detect events từ office-events.log
+- **Thủ công**: `emit-event.mjs` → ghi events log → eventWatcher pick up
+- **VSCode command**: `Ctrl+Shift+P` → "PXH Office: Emit Event"
 
 ## Output
 
-- Terminal UI (TUI) với box-drawing characters + ANSI colors
-- Webview 2D cartoon (browser) với nhân vật, bàn ghế, contract bay
-- Real-time status bar: workflow, phase, active agent, elapsed, retry
+- Webview 2D cartoon trong sidebar VSCode
+- 11 pixel-art agents + pets + office furniture
+- Real-time state badges + speech bubbles
 - Activity log
-
-## Bridge — Cơ chế tự động emit event
-
-`office-bridge.mjs` chạy tích hợp trong `server.mjs`:
-1. Poll mỗi 3s quét workspace (skills/, workflows/, agents/, _shared/)
-2. Phân loại file theo extension → map tới agent + tier
-3. Emit `phase_change` → `task_start` → `task_end` sequence
-4. Trực tiếp broadcast qua SSE (không cần HTTP)
-
-Manual emit qua CLI:
-```bash
-node skills/virtual-office/templates/emit-event.mjs --type task_start --from pxh-pm --to pxh-expert --message "Code task"
-```
-
-Hoặc HTTP POST:
-```bash
-curl -X POST http://localhost:2910/emit -H "Content-Type: application/json" -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert"}'
-```
-
-## Anti-Rationalization
-
-| Excuse | Reality |
-|--------|---------|
-| "Visual không cần thiết" | Giúp hiểu architecture ngay lập tức |
-| "Dùng thư viện TUI" | Zero dep, Node.js thuần, chạy mọi nơi |
-| "Phải emit event tay" | Bridge tự động detect workspace activity |
 
 ## Red Flags
 
-- Cần Node.js 18+
-- Terminal cần hỗ trợ ANSI + Unicode
-- Polling 3s — độ trễ tối đa 3s khi phát hiện thay đổi
+- Cần VS Code 1.85+
+- Port 2910 phải trống cho server.mjs
+- Extension cần workspace để eventWatcher hoạt động
 
 ## Verification
 
-- [ ] `node server.mjs` → Bridge: ✓ Active
-- [ ] Webview http://localhost:2910 hiển thị 4 tầng
-- [ ] Tạo/sửa file .ts/.md/.css → webview animate real-time
-- [ ] Activity log cập nhật
-- [ ] Status bar hiển thị workflow + phase + agent
-- [ ] Ctrl+C thoát sạch
+- [ ] Extension cài đặt thành công, sidebar hiển thị
+- [ ] Webview render đủ 11 agents + pets
+- [ ] State badges cập nhật khi workspace thay đổi
+- [ ] Server.mjs chạy background (kiểm tra `Task Manager` hoặc `netstat -ano | findstr ":2910"`)
+- [ ] Event emit bằng CLI → webview update

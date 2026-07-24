@@ -1,95 +1,70 @@
-# Workflow Office — Virtual Office với Real-time Event Sync
+# Workflow Office — Virtual Office VSCode Extension
 
-> Văn Phòng Ảo đồng bộ real-time với thao tác TUI qua Event Log Bridge.
+> Văn Phòng Ảo trong sidebar VSCode — đồng bộ real-time với workspace activity.
 
-## Cách dùng
+## Cài đặt
 
-```bash
-# Server + Webview (real-time sync — khuyên dùng)
-node skills/virtual-office/templates/server.mjs
-# Browser → http://localhost:2910
-
-# TUI (real-time sync với fs.watch)
-node skills/virtual-office/templates/office.mjs
-
-# Webview offline (chỉ demo)
-start skills/virtual-office/templates/office.html
+```powershell
+.\pxh-install-extension.bat install          # VS Code Stable
+.\pxh-install-extension.bat install insiders  # VS Code Insiders
+.\pxh-install-extension.bat uninstall         # Gỡ cài đặt
 ```
+
+Restart VS Code → mở sidebar với icon `$(organization)` "PXH Virtual Office".
 
 ## Event Sync System
 
-Mọi thao tác trên TUI (task routing, phase change, contract flow) đều ghi vào `_shared/office-events.log`. Cả TUI và Webview đều watch file này để animate real-time.
+Extension tự động đồng bộ với workspace qua 2 cơ chế:
 
-### Agent gọi event
+1. **File watcher** (`eventWatcher.js`): Poll `_shared/office-events.log` và `_shared/opencode-state.json` mỗi 500ms, gửi event tới webview qua `postMessage`
+2. **Background server** (`server.mjs`): Chạy background port 2910, xử lý POST /emit và /state, ghi vào events log
 
-Khi agent làm việc, emit event qua CLI:
+### Manual emit event
+
 ```bash
 node skills/virtual-office/templates/emit-event.mjs \
   --type task_start --from pxh-pm --to pxh-expert \
-  --tier_from T2 --tier_to T3 \
-  --phase code --workflow /vibe \
-  --message "→ Task{code} sent to pxh-expert"
+  --message "→ Task routed"
 ```
 
-Hoặc import module:
-```javascript
-import { emit } from './emit-event.mjs'
-emit({ type: 'phase_change', phase: 'Code', workflow: '/web' })
-```
-
-Hoặc HTTP POST từ bất kỳ đâu:
+Hoặc HTTP POST:
 ```bash
 curl -X POST http://localhost:2910/emit -H "Content-Type: application/json" \
-  -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert","tier_from":"T2","tier_to":"T3","phase":"code","message":"→ Task routed"}'
+  -d '{"type":"task_start","from":"pxh-pm","to":"pxh-expert","message":"→ Task routed"}'
 ```
-
-### Event types
-
-| type | Mô tả | Fields quan trọng |
-|------|-------|-------------------|
-| `phase_change` | Chuyển phase | phase, workflow |
-| `task_start` | Gửi task đến agent | from, to, tier_from, tier_to, phase |
-| `task_end` | Task hoàn thành | from, status (ok/fail) |
-| `contract` | Contract flow giữa tầng | tier_from, tier_to |
-| `agent_status` | Agent thay đổi | from, message |
-
-## 3 chế độ
-
-| Chế độ | Cách chạy | Cơ chế |
-|--------|-----------|--------|
-| **Live** | `server.mjs` → browser | Watch events log + SSE push |
-| **Real** | `office.mjs` (có events) | fs.watch events log |
-| **Demo** | `office.html` trực tiếp / `office.mjs` (không events) | Auto-simulate |
 
 ## File structure
 
 | File | Vai trò |
 |------|---------|
-| `templates/office.html` | Webview 2D cartoon office |
-| `templates/office.mjs` | Terminal TUI |
-| `templates/server.mjs` | HTTP + SSE server cho webview |
-| `templates/emit-event.mjs` | Shared event emitter (CLI + module) |
-| `_shared/office-events.log` | Event log (append-only, auto-created) |
+| `extension/src/extension.js` | Extension entry, activate/deactivate, spawn server |
+| `extension/src/eventWatcher.js` | File watcher + state poller → webview postMessage |
+| `extension/src/officeViewProvider.js` | Webview provider, HTML injection, postMessage bridge |
+| `extension/media/office.html` | Webview 2D cartoon canvas |
+| `templates/server.mjs` | Background API server (port 2910) |
+| `templates/emit-event.mjs` | Event emitter CLI + module |
+| `templates/agent-runtime.mjs` | Agent state management |
+| `templates/hook-provider.mjs` | OpenCode event normalization |
+| `templates/messages.mjs` | Message type definitions |
 
 ## Anti-Rationalization
 
 | Excuse | Reality |
 |--------|---------|
-| "Chạy office.html trực tiếp, không cần server" | Thiếu SSE sync → webview tĩnh, không real-time |
-| "Không cần emit event, office tự animate" | Agent sẽ không hiển thị đúng trạng thái thực tế |
-| "Một chế độ là đủ" | Live/Real/Demo mỗi chế độ phục vụ mục đích khác nhau |
+| "Visual không cần thiết, CLI text là đủ" | Visual giúp hiểu ngay hệ thống 4 tầng |
+| "Cần chạy browser cho webview" | Extension sidebar hoạt động trong VS Code — không cần browser riêng |
+| "Animation phức tạp" | HTML/CSS/JS thuần, zero dependencies |
 
 ## Red Flags
 
-- Server chạy nhưng webview trắng (check port 2910)
-- Event emitted nhưng webview không update (SSE connection?)
-- Bridge không watch được file (permission denied)
-- TUI không emit event (thiếu `--type` flag)
+- Cần VS Code 1.85+
+- Port 2910 phải trống (server.mjs background process)
+- Extension cần workspace mở để eventWatcher hoạt động
 
 ## Verification
 
-- [ ] `server.mjs` chạy → `http://localhost:2910` hiển thị office
-- [ ] Emit event → webview update real-time
-- [ ] Emit event → TUI update real-time
-- [ ] 3 chế độ (live/real/demo) đều hoạt động
-- [ ] Ctrl+C server → cleanup sạch
+- [ ] `pxh-install-extension.bat install` thành công
+- [ ] Sidebar hiển thị icon "PXH Virtual Office"
+- [ ] Webview render 11 agents + office furniture + pets
+- [ ] State badges cập nhật khi có workspace activity
+- [ ] `Ctrl+Shift+P` → "PXH Office: Emit Event" hoạt động

@@ -4,10 +4,7 @@
  * THIS IS THE ONLY FILE the renderer uses to consume state.
  * It NEVER parses raw OpenCode SSE events — only receives state diffs.
  *
- * Pixel Agents mirror: webview-ui/src/hooks/useExtensionMessages.ts
- *   - Imperative state store (outside React/any framework)
- *   - Transport-agnostic message handling
- *   - Typed ServerMessage processing
+ * State store used by the VSCode extension webview (inlined at runtime).
  *
  * Usage in office.html:
  *   <script src="renderer-state.js"></script>

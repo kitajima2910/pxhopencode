@@ -157,24 +157,14 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
 
 <section id="office">
   <h2>🏢 Văn Phòng Ảo</h2>
-  <p>Webview 2D Open Office — 10 nhân vật pixel-art trong văn phòng mở single-floor, real-time sync với TUI qua SSE.</p>
+  <p>VSCode Extension sidebar — 11 pixel-art agents trong văn phòng mở single-floor, real-time sync với workspace activity.</p>
 
-  <h3>Khởi động</h3>
-  <pre># ON — Start server + mở browser
-.\pxh-office-on.bat
+  <h3>Cài đặt Extension</h3>
+  <pre>.\pxh-install-extension.bat install          # VS Code Stable
+.\pxh-install-extension.bat install insiders  # VS Code Insiders
+.\pxh-install-extension.bat uninstall         # Gỡ cài đặt</pre>
 
-# OFF — Tắt server
-.\pxh-office-on.bat off
-
-# RESTART — Tắt + start mới
-.\pxh-office-on.bat restart
-
-# Hoặc chạy tay
-node skills/virtual-office/templates/server.mjs
-start http://localhost:2910</pre>
-
-  <h3>Sync real-time với TUI</h3>
-  <pre>.\skills\virtual-office\templates\hook-opencode.ps1 "your prompt"</pre>
+  <p>Sau khi cài, restart VS Code → sidebar có icon <code>$(organization) "PXH Virtual Office"</code>.</p>
 
   <h3>Tính năng</h3>
   <table>
@@ -192,16 +182,19 @@ start http://localhost:2910</pre>
 
 <section id="sync">
   <h2>⚡ Real-time Sync</h2>
-  <p>Cơ chế đồng bộ thời gian thực giữa TUI (terminal) và webview (browser):</p>
+  <p>Cơ chế đồng bộ thời gian thực giữa workspace activity và webview sidebar:</p>
 
   <h3>Event Flow</h3>
-  <pre>TUI (opencode)
-  │
-  ├── hook-opencode.ps1 ──→ _shared/opencode-state.json ──→ server.mjs (watchFile)
-  │                                                              │
-  ├── file changes ──→ office-bridge.mjs ──→ emit() ──→ broadcast() (SSE)
-  │                                                              │
-  └── HTTP POST /emit /state ─────────────────────────────→ SSE → browser</pre>
+  <pre>VSCode Extension                          Background Server
+     │                                         │
+     ├── eventWatcher.js                       ├── server.mjs (port 2910)
+     │   (fs.watch _shared/ events)            │   (API: POST /emit, /state)
+     │                                         │
+     ├── officeViewProvider.js                 └── emit-event.mjs
+     │   (webview + postMessage bridge)            (CLI emit → events log)
+     │
+     └── media/office.html
+         (2D cartoon canvas)</pre>
 
   <h3>Bridge — Auto-detect workspace activity</h3>
   <table>
