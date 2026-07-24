@@ -62,7 +62,7 @@ set "VSIX_FILE=%TEMP%\pxh-virtual-office.vsix"
 if exist "%VSIX_FILE%" del /f /q "%VSIX_FILE%" 2>nul
 
 pushd "%TEMP_BUILD%"
-npx --yes @vscode/vsce package --out "%VSIX_FILE%" --allow-missing-repository >nul 2>&1
+npx --yes @vscode/vsce package --out "%VSIX_FILE%" --allow-missing-repository
 set VSCE_ERR=%ERRORLEVEL%
 popd
 
@@ -73,7 +73,7 @@ if %VSCE_ERR% neq 0 (
 )
 
 echo [*] Dang cai dat extension...
-%VSCMD% --install-extension "%VSIX_FILE%" --force 2>&1
+%VSCMD% --install-extension "%VSIX_FILE%" --force
 set INSTALL_ERR=%ERRORLEVEL%
 
 :: Cleanup
