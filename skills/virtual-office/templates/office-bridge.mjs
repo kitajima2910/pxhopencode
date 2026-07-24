@@ -176,17 +176,17 @@ const WORKFLOW_PIPELINES = {
   Skill: ['__MAIN__'],
 }
 const AGENT_ROLES = {
-  'pxh-help':   { tuiState: 'Interface',  msg: '🔍 Validate & classify input' },
-  'pxh-pm':     { tuiState: 'Orchestration', msg: '📋 Route & enforce policy' },
-  'pxh-architect': { tuiState: 'Design', msg: '🏗️ Design tech stack & schema' },
-  'pxh-expert': { tuiState: 'Code',     msg: '✍️ Vibe code & production' },
-  'pxh-fix-bugs': { tuiState: 'Debug', msg: '🐛 Root cause → fix bug' },
-  'pxh-qa':     { tuiState: 'Test',   msg: '🧪 Write & run tests' },
-  'pxh-review-code': { tuiState: 'Review', msg: '🔍 Security & perf audit' },
-  'pxh-devops': { tuiState: 'Build',   msg: '⚙️ Lint → test → build' },
-  'pxh-save-history': { tuiState: 'Infrastructure', msg: '💾 Save state & checkpoint' },
-  'pxh-ui-ux':  { tuiState: 'Design',      msg: '🎨 Layout & responsive design' },
-  'pxh-office': { tuiState: 'Virtual Office', msg: '🏢 Virtual Office' },
+  'pxh-help':   { tuiState: 'Interface',  msg: '' },
+  'pxh-pm':     { tuiState: 'Orchestration', msg: '' },
+  'pxh-architect': { tuiState: 'Design', msg: '' },
+  'pxh-expert': { tuiState: 'Code',     msg: '' },
+  'pxh-fix-bugs': { tuiState: 'Debug', msg: '' },
+  'pxh-qa':     { tuiState: 'Test',   msg: '' },
+  'pxh-review-code': { tuiState: 'Review', msg: '' },
+  'pxh-devops': { tuiState: 'Build',   msg: '' },
+  'pxh-save-history': { tuiState: 'Infrastructure', msg: '' },
+  'pxh-ui-ux':  { tuiState: 'Design',      msg: '' },
+  'pxh-office': { tuiState: 'Virtual Office', msg: '' },
 }
 
 // Signal connections: who sends dashed line to whom

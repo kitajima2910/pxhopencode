@@ -244,19 +244,19 @@ export function workflowStartSequence() {
     {
       type: 'agent.state.changed',
       agentId: 'pxh-help',
-      data: { state: 'Interface', badge: 'Interface', message: 'Validate & classify input', tier: 'T1', color: '#58a6ff' },
+      data: { state: 'Interface', badge: 'Interface', message: '', tier: 'T1', color: '#58a6ff' },
       timestamp: now,
     },
     {
       type: 'agent.state.changed',
       agentId: 'pxh-pm',
-      data: { state: 'Orchestration', badge: 'Orchestration', message: 'Route & enforce policy', tier: 'T2', color: '#d29922' },
+      data: { state: 'Orchestration', badge: 'Orchestration', message: '', tier: 'T2', color: '#d29922' },
       timestamp: now,
     },
     {
       type: 'agent.state.changed',
       agentId: 'pxh-opencode',
-      data: { state: 'Synced', badge: 'Synced', message: 'Initializing session...', tier: 'T3', color: '#00e5ff' },
+      data: { state: 'Synced', badge: 'Synced', message: '', tier: 'T3', color: '#00e5ff' },
       timestamp: now,
     },
     {

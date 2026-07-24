@@ -143,9 +143,9 @@ class OfficeViewProvider {
       return {
         session: { active: true, phase: 'Interface', workflow: '/vibe', startTime: Date.now() },
         agents: {
-          'pxh-help': { currentState: 'typing', badge: 'Interface', message: 'Validate & classify input', active: true, color: '#58a6ff' },
-          'pxh-pm': { currentState: 'typing', badge: 'Orchestration', message: 'Route & enforce policy', active: true, color: '#d29922' },
-          'pxh-opencode': { currentState: 'typing', badge: 'Synced', message: 'Initializing session...', active: true, color: '#00e5ff' },
+          'pxh-help': { currentState: 'typing', badge: 'Interface', message: '', active: true, color: '#58a6ff' },
+          'pxh-pm': { currentState: 'typing', badge: 'Orchestration', message: '', active: true, color: '#d29922' },
+          'pxh-opencode': { currentState: 'typing', badge: 'Synced', message: '', active: true, color: '#00e5ff' },
         },
         changedAgents: ['pxh-help','pxh-pm','pxh-opencode']
       };

@@ -679,8 +679,8 @@ function applyStateDiff(diff){
       document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'
       addLog('▶ session started','#3fb950')
       sfx('task_start')
-      // Fresh mirror log for new session
-      const oc2=chars['pxh-opencode'];if(oc2){oc2._mirrorLog=[];oc2._sessionHasData=false}
+      // Add session separator, don't clear old logs
+      const oc2=chars['pxh-opencode'];if(oc2){oc2._mirrorLog=oc2._mirrorLog||[];oc2._mirrorLog.push('── '+String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0')+' ──');if(oc2._mirrorLog.length>6)oc2._mirrorLog=oc2._mirrorLog.slice(-6)}
     }else if(!sess.active&&wasActive){
       // Session ended
       state.phase='idle';state.workflow='—'
@@ -691,10 +691,15 @@ function applyStateDiff(diff){
       const oc3=chars['pxh-opencode']
       if(oc3&&oc3._mirrorLog&&oc3._mirrorLog.length){
         const t=new Date();const ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')
-        oc3._sessionArchive.push({m:'── Session ended '+ts+' ──.',c:'#666',s:'separator'})
-        for(let i=0;i<oc3._mirrorLog.length;i++){oc3._sessionArchive.push({m:oc3._mirrorLog[i],c:null,s:null})}
-        if(oc3._sessionArchive.length>40)oc3._sessionArchive.splice(0,oc3._sessionArchive.length-40)
+        // Filter out previous separators, keep only real agent entries for archive
+        const realEntries=oc3._mirrorLog.filter(function(l){return typeof l==='string'&&!l.match(/^── \d\d:\d\d ──$/)})
+        if(realEntries.length){
+          oc3._sessionArchive.push({m:'── Session ended '+ts+' ──.',c:'#666',s:'separator'})
+          for(let i=0;i<realEntries.length;i++){oc3._sessionArchive.push({m:realEntries[i],c:null,s:null})}
+          if(oc3._sessionArchive.length>40)oc3._sessionArchive.splice(0,oc3._sessionArchive.length-40)
+        }
       }
+      // Keep _mirrorLog intact - don't clear it
     }else if(sess.phase){
       state.phase=sess.phase
       state.workflow=sess.workflow||state.workflow
@@ -830,7 +835,7 @@ function animate(now){fc++;updateElapsed()
   // PXHOpenCode: always sits when any agent works or TUI is active
   const poc=chars['pxh-opencode'];if(poc){
     const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
-    if(anyWorking&&poc.state!=='typing'){poc.hrw=true;poc.ts='Synced';startTyping(poc);if(!poc._mirrorLog||!poc._mirrorLog.length){poc._mirrorLog=['Synced with TUI agents...']}}
+    if(anyWorking&&poc.state!=='typing'){poc.hrw=true;poc.ts='Synced';startTyping(poc)}
     if(!anyWorking&&poc.w&&now-poc._lastEvt>30000){stopTyping(poc)}
     if(poc._forceIdle){stopTyping(poc);poc._forceIdle=false}
   }
@@ -912,7 +917,7 @@ function animate(now){fc++;updateElapsed()
       const rawLine=typeof l==='string'?l:(l&&l.m||'')
       const t=new Date();const ts=String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0')
       let label='',color='#00e5ff'
-      if(rawLine.match(/\bSession (ended|started)\b/i)){label='────';color='#666'}
+      if(rawLine.match(/^── \d\d:\d\d ──$/)){label='────';color='#444'}
       else if(rawLine.match(/\b(read|reading|load|loading)\b/i)){label='READ';color='#58a6ff'}
       else if(rawLine.match(/\b(write|writing|create|edit|modify|generate|code)\b/i)){label='WRITE';color='#3fb950'}
       else if(rawLine.match(/\b(execute|run|bash|build|deploy|install|command)\b/i)){label='EXEC';color='#d29922'}

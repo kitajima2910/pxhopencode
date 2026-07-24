@@ -313,17 +313,17 @@ class StateMachine {
         // Activate T1 + T2 + PXHOpenCode
         patches['pxh-help'] = {
           currentState: 'typing', badge: 'Interface',
-          message: 'Validate & classify input', active: true,
+          message: '', active: true,
           atDesk: true, isReading: true,
         }
         patches['pxh-pm'] = {
           currentState: 'typing', badge: 'Orchestration',
-          message: 'Route & enforce policy', active: true,
+          message: '', active: true,
           atDesk: true, isReading: true,
         }
         patches['pxh-opencode'] = {
           currentState: 'typing', badge: 'Synced',
-          message: 'Initializing session...', active: true,
+          message: '', active: true,
           atDesk: true, isReading: true,
         }
         signals.push({ from: 'pxh-help', to: 'pxh-pm' })
