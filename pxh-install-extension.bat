@@ -5,12 +5,10 @@ set "EXT_VER=1.0.0"
 set "SRC=%~dp0skills\virtual-office\extension"
 set "ACTION=%1"
 
-if "%ACTION%"=="" set ACTION=install
-
 :: Detect VS Code type
 set "CODE_TYPE=stable"
-if "%2"=="insiders" set "CODE_TYPE=insiders"
-if "%2"=="stable" set "CODE_TYPE=stable"
+if "%1"=="insiders" set "CODE_TYPE=insiders"
+if "%1"=="stable" set "CODE_TYPE=stable"
 
 if "%CODE_TYPE%"=="insiders" (
   set "EXT_DIR=%USERPROFILE%\.vscode-insiders\extensions\%EXT_NAME%-%EXT_VER%"
@@ -20,10 +18,8 @@ if "%CODE_TYPE%"=="insiders" (
   set "VSCMD=code"
 )
 
-if /i "%ACTION%"=="install" goto :install
 if /i "%ACTION%"=="uninstall" goto :uninstall
 if /i "%ACTION%"=="reload" goto :reload
-goto :help
 
 :install
 echo ============================================
@@ -33,6 +29,14 @@ echo.
 echo  Target: %CODE_TYPE% VS Code
 echo  Source: %SRC%
 echo.
+
+:: Neu da cai thi xoa sach roi cai moi
+if exist "%EXT_DIR%" (
+  echo [*] Phat hien extension da duoc cai, dang xoa de cai moi...
+  rmdir /s /q "%EXT_DIR%" 2>nul
+  echo [+] Da xoa extension cu.
+  echo.
+)
 
 if not exist "%SRC%\package.json" (
   echo [LOI] Khong tim thay extension tai: %SRC%
@@ -132,18 +136,4 @@ if %ERRORLEVEL% equ 0 (
 )
 exit /b
 
-:help
-echo Cach dung: pxh-install-extension [install^|uninstall^|reload] [stable^|insiders]
-echo.
-echo   install    - Cai dat extension vao VS Code (mac dinh)
-echo   uninstall  - Go cai dat
-echo   reload     - Reload VS Code window
-echo.
-echo   stable     - VS Code Stable (mac dinh)
-echo   insiders   - VS Code Insiders
-echo.
-echo Vi du:
-echo   pxh-install-extension                  # Install vao VS Code Stable
-echo   pxh-install-extension install insiders  # Install vao VS Code Insiders
-echo   pxh-install-extension uninstall         # Go cai dat
-exit /b
+
