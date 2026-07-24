@@ -56,11 +56,9 @@ function startWatcher(workspaceRoot, onEvent) {
 
   try { fs.mkdirSync(sharedDir, { recursive: true }); } catch {}
 
-  try {
-    if (fs.existsSync(eventsFile)) {
-      eventsSize = fs.statSync(eventsFile).size;
-    }
-  } catch {}
+  // Clear stale state from previous session — office starts fresh
+  try { fs.writeFileSync(eventsFile, ""); } catch {}
+  try { fs.writeFileSync(stateFile, JSON.stringify({ state: "idle" })); } catch {}
 
   function readNewEvents() {
     try {

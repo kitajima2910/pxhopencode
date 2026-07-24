@@ -241,6 +241,9 @@ try {
 
 // Watch state file for real-time opencode state sync (polling for Windows compat)
 const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode-state.json')
+// Clear stale state from previous session — office starts fresh
+try { fs.writeFileSync(EVENTS_FILE, ''); } catch {}
+try { fs.writeFileSync(STATE_FILE, JSON.stringify({ state: 'idle' })); } catch {}
 let prevState = null
 let prevAgent = null
 try {
