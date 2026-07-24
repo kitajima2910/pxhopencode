@@ -31,13 +31,13 @@ Webview 2D Open Office — văn phòng mở với 11 nhân vật pixel-art, real
 
 ```powershell
 # ON — Start server + mở browser
-.\pxh-office-on.bat
+.\pxh-office.bat on
 
 # OFF — Tắt server
-.\pxh-office-on.bat off
+.\pxh-office.bat off
 
 # RESTART — Tắt cũ + start mới + mở browser
-.\pxh-office-on.bat restart
+.\pxh-office.bat restart
 ```
 
 ### Cách 2: Chạy tay
@@ -327,7 +327,7 @@ node skills/virtual-office/templates/emit-event.mjs --type agent_state --agent p
 - **Add:** Dashed signal lines thay giấy tờ bay, nối agent theo kiến trúc
 - **Add:** State badge nhấp nháy bên phải tên chức danh (Interface/Orchestration/...)
 - **Add:** T1+T2 ở lại tới global idle, T3+T4 rời bàn khi xong việc
-- **Add:** `pxh-office-on.bat` — ON/OFF/RESTART server 1 lệnh
+- **Add:** `pxh-office.bat` — ON/OFF/RESTART server 1 lệnh
 - **Update:** Bridge per-agent idle timer + pipeline theo workflow
 - **Update:** `hook-opencode.ps1` — bắt tên agent từ TUI output real-time
 - **Update:** Port mặc định 2910, Cache-Control headers
