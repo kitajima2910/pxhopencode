@@ -242,9 +242,13 @@ try {
 // Watch state file for real-time opencode state sync (polling for Windows compat)
 const STATE_FILE = process.env.PXH_STATE || path.join(ROOT, '_shared', 'opencode-state.json')
 // Clear stale state from previous session — office starts fresh
-try { fs.writeFileSync(EVENTS_FILE, ''); } catch {}
-try { fs.writeFileSync(STATE_FILE, JSON.stringify({ state: 'idle' })); } catch {}
-let startupGrace = true // suppress events until first stable poll
+// Only in standalone mode; VS Code extension handles its own cleanup
+if (!NO_BRIDGE) {
+  try { fs.writeFileSync(EVENTS_FILE, ''); } catch {}
+  try { fs.writeFileSync(STATE_FILE, JSON.stringify({ state: 'idle' })); } catch {}
+}
+const startedAt = Date.now() // time-based startup suppression
+function isStartupGrace() { return Date.now() - startedAt < 3000 }
 let prevState = null
 let prevAgent = null
 try {
@@ -254,8 +258,7 @@ try {
       const raw = fs.readFileSync(STATE_FILE, 'utf-8')
       const st = JSON.parse(raw)
       // On first poll after startup, record baseline without emitting events
-      if (startupGrace) {
-        startupGrace = false
+      if (isStartupGrace()) {
         prevState = st.state || 'idle'
         return
       }
@@ -321,5 +324,7 @@ server.listen(PORT, () => {
   console.log(`  \x1b[36m\u251C\u2500\x1b[0m  Sim:  \x1b[1mhttp://localhost:${PORT}/simulate\x1b[0m (POST — mô phỏng pipeline TUI)`)
   console.log(`  \x1b[36m\u2514\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2518\x1b[0m\n`)
 
-  emit({ type: 'agent_status', from: 'pxh-office', message: 'Server started. Ready for real event stream.' })
+  if (!NO_BRIDGE) {
+    emit({ type: 'agent_status', from: 'pxh-office', message: 'Server started. Ready for real event stream.' })
+  }
 })

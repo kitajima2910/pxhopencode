@@ -59,7 +59,7 @@ function startWatcher(workspaceRoot, onEvent) {
   // Clear stale state from previous session — office starts fresh
   try { fs.writeFileSync(eventsFile, ""); } catch {}
   try { fs.writeFileSync(stateFile, JSON.stringify({ state: "idle" })); } catch {}
-  let startupGrace = true; // suppress events until first stable poll
+  const startedAt = Date.now(); // suppress workspace events during startup window
 
   function readNewEvents() {
     try {
@@ -71,7 +71,7 @@ function startWatcher(workspaceRoot, onEvent) {
       const buf = Buffer.alloc(stats.size - eventsSize);
       fs.readSync(fd, buf, 0, buf.length, eventsSize);
       eventsSize = stats.size;
-      if (startupGrace) return; // skip replay during startup
+      if (isStartupGrace()) return; // skip replay during startup
       const lines = buf.toString().split("\n").filter(Boolean);
       lines.forEach((line) => {
         try {
@@ -88,8 +88,7 @@ function startWatcher(workspaceRoot, onEvent) {
       const raw = fs.readFileSync(stateFile, "utf-8");
       const st = JSON.parse(raw);
       // On first stable poll after startup, record baseline without emitting events
-      if (startupGrace) {
-        startupGrace = false;
+      if (isStartupGrace()) {
         prevState = st.state || "idle";
         return;
       }
@@ -253,8 +252,15 @@ function startWatcher(workspaceRoot, onEvent) {
     });
   }
 
+  function isStartupGrace() {
+    return Date.now() - startedAt < 3000;
+  }
+
   function onWorkspaceFileChange(filePath) {
     if (disposed) return;
+    // Suppress file change events during startup window to avoid false
+    // positives from OS/VS Code touching files during extension activation
+    if (isStartupGrace()) return;
     const cls = classifyFile(filePath);
     if (!cls) return;
     pendingFiles.push(cls);
