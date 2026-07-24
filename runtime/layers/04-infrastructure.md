@@ -8,22 +8,12 @@
 
 ## Luồng
 
-```
-Nhận Event contract từ bất kỳ tầng nào
-    │
-    ▼
-Xác định loại: phase_start / phase_end / error / decision / checkpoint / reflection
-    │
-    ▼
-Lưu vào vị trí phù hợp:
-    ├─ .opencode/STATUS.md          → trạng thái hiện tại, phase, artifact
-    ├─ `.opencode/docs/reflections/`  → bản ghi phản ánh
-    ├─ `.opencode/docs/decisions/`    → ADR (quyết định kiến trúc)
-    ├─ `.opencode/docs/bugs/`         → báo cáo lỗi
-    └─ `.opencode/docs/changelog/`    → log phiên
-    │
-    ▼
-Xác nhận lưu trữ → trả về Event{status:"confirmed"} cho người gửi
+```mermaid
+flowchart TD
+    A[Nhận Event từ bất kỳ tầng nào] --> B["Xác định loại:<br/>phase_start / phase_end / error<br/>decision / checkpoint / reflection"]
+    B --> C["Lưu vào vị trí phù hợp"]
+    C --> D["STATUS.md: trạng thái<br/>docs/reflections/: phản ánh<br/>docs/decisions/: ADR<br/>docs/bugs/: báo cáo lỗi<br/>docs/changelog/: log phiên"]
+    D --> E["Xác nhận<br/>→ Event{status: confirmed}"]
 ```
 
 ## Bảng lưu trữ

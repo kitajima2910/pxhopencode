@@ -56,6 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-24 | v49 | User Guide Rewrite — README repositioned as practical vibe coding guide, 3 cách vibe code front-and-center, kiến trúc simplified, virtual office concise, commit count sync (141 → 154) |
 | 2026-07-24 | v48 | Prompt Optimizer — auto-rewrite prompt mơ hồ thành implementation-ready spec, panel `<details>` transparent, integrate vào opencode.json instructions, README Key Concepts + version + commit count sync |
 | 2026-07-24 | v47 | Bat merge — pxh-office.bat hợp nhất on/off/restart + help, xóa pxh-office-on.bat và pxh-office-off.bat, cập nhật README |
 | 2026-07-24 | v46 | Open Office & Real-time Agent Sync — single-floor open space, 11 pixel-art agents, cat+dog pets, speech bubbles, dashed signals, state badges, T1+T2 stay/T3+T4 leave, pxh-office.bat, hook-opencode.ps1, port 2910, README vibe code guide |

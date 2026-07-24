@@ -1,75 +1,143 @@
-# pxhopencode — AI Company cho Vibe Coding
+# pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v48</b> &nbsp;·&nbsp; 141 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 159 templates</p>
+  <b>v49</b> &nbsp;·&nbsp; 154 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills</p>
 
-> AI Company tự động: prompt → classify → route → code → test → fix → review → build → persist. Một luồng duy nhất, không cần can thiệp tay.
+> Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build. Bạn chỉ cần ngồi xem Virtual Office chạy.
 
 ---
 
-## Cài đặt
-
-Clone vào project của bạn, đổi tên thành `.opencode`:
+## Cài đặt (30 giây)
 
 ```bash
-# Trong thư mục project của bạn
-git clone <repo-url> .opencode
-# hoặc download zip, giải nén, rename pxhopencode → .opencode
+# Trong thư mục project của bạn:
+git clone https://github.com/<repo-url> .opencode
 ```
 
-Sau đó dùng opencode mở project → agent tự động load cấu hình từ `.opencode/opencode.json`.
+Mở project bằng [OpenCode](https://opencode.ai) — AI team tự động load. Không cần cấu hình gì thêm.
 
-> 📖 **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html) — kiến trúc, agents, workflows, virtual office, real-time sync.
+> **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html) — kiến trúc, agents, workflows, Virtual Office.
 
 ---
 
-## Văn Phòng Ảo — VS Code Extension
+## 3 Cách Vibe Code
 
-Cài đặt Virtual Office vào sidebar VS Code — văn phòng mở với 11 nhân vật pixel-art, real-time sync với TUI:
+Bạn mô tả ý tưởng. Hệ thống lo toàn bộ phần còn lại. Không cần biết agent nào, skill nào — hệ thống tự quyết định.
 
-### Cài đặt Extension
+### Cách 1: Prompt tự nhiên (khuyên dùng)
 
-```powershell
-# Install vào VS Code Stable
-.\pxh-install-extension.bat install
+Gõ thẳng mô tả công việc bằng tiếng Việt. Hệ thống tự phân loại → chọn workflow → route agent → thực thi:
 
-# Install vào VS Code Insiders
-.\pxh-install-extension.bat install insiders
-
-# Gỡ cài đặt
-.\pxh-install-extension.bat uninstall
+```
+"Xây dựng web blog cá nhân với React, có dark mode"
+"Làm game platformer 2D, nhân vật mèo nhảy qua chướng ngại vật, thu thập coin"
+"Tạo chatbot RAG trả lời câu hỏi từ tài liệu PDF nội bộ"
 ```
 
-Sau khi cài đặt, restart VS Code → Virtual Office xuất hiện ở sidebar với icon `$(organization)`.
+**Luồng tự động phía sau:**
 
-### Sử dụng trong VS Code
+```mermaid
+flowchart TD
+    A[Prompt] --> B["T1 — pxh-help<br/>Phân loại workflow + skill"]
+    B --> C["T2 — pxh-pm<br/>Chọn worker, tạo Task contract"]
+    C --> D["T3 — pxh-expert<br/>Code"]
+    D --> E["T3 — pxh-qa<br/>Viết & chạy test"]
+    E -->|fail| F["T3 — pxh-fix-bugs<br/>Sửa lỗi"]
+    F --> E
+    E -->|pass| G["T3 — pxh-review<br/>Audit security + performance"]
+    G --> H["T3 — pxh-devops<br/>Lint → typecheck → test → build"]
+    H --> I["T4 — pxh-save<br/>Lưu session log"]
+```
 
-| Lệnh (Ctrl+Shift+P) | Mô tả |
-|---|---|
-| `PXH Office: Open Virtual Office` | Mở/focus sidebar office |
-| `PXH Office: Emit Event` | Gửi event mô phỏng (chọn agent + state) |
-| `PXH Office: Clear Events` | Xóa toàn bộ events |
-| `PXH Office: Refresh View` | Reload giao diện office |
+### Cách 2: Lệnh `/` — đi thẳng vào workflow
 
-### Chạy server riêng (tùy chọn — browser)
+Bỏ qua phân loại, route thẳng vào workflow tương ứng:
 
-```powershell
-.\pxh-office.bat on       # Start + mở browser
-.\pxh-office.bat off      # Tắt server
-.\pxh-office.bat restart  # Tắt + start lại + mở browser
+| Lệnh | Ví dụ | Dùng khi |
+|------|-------|----------|
+| `/vibe` | `/vibe xây dựng app quản lý công việc` | Full pipeline 11 bước: phân tích → code → test → review → build |
+| `/web` | `/web làm landing page cho startup` | Web app: React, Next.js, Express, FastAPI |
+| `/game` | `/game game bắn súng không gian 2D` | Game HTML5: Phaser 2D, Isometric, Three.js 3D |
+| `/ai` | `/ai tạo chatbot hỗ trợ khách hàng` | Chatbot, RAG, AI agent, LLM |
+| `/tool` | `/tool CLI tool đổi tên file hàng loạt` | CLI, extension, automation, package |
+| `/debug` | `/debug game bị giật FPS khi nhiều enemy` | Debug + root cause analysis |
+| `/ui-ux` | `/ui-ux thiết kế responsive navbar` | UI/UX design & responsive layout |
+| `/meeting` | `/meeting chọn tech stack cho dự án mới` | Họp agents thảo luận kiến trúc |
+| `/release` | `/release` | Build pipeline: lint → test → build |
+| `/preview` | `/preview` | Live preview game (Vite HMR) |
+| `/office` | `/office` | Mở Virtual Office |
+
+### Cách 3: @mention — gọi thẳng agent
+
+Biết chính xác cần agent nào? Gọi trực tiếp, bỏ qua classify & routing:
+
+```
+@pxh-expert       viết API endpoint /api/users với CRUD
+@pxh-qa           chạy test coverage cho thư mục src/
+@pxh-fix-bugs     sửa lỗi crash khi click nút Login
+@pxh-review-code  audit bảo mật toàn bộ codebase
+@pxh-architect    thiết kế database schema cho app e-commerce
+@pxh-devops       build và deploy lên Vercel
+@pxh-ui-ux        làm responsive navbar với dark mode
 ```
 
 ---
 
-## Kiến trúc Runtime 4 Tầng
+## Quy trình `/vibe` đầy đủ (11 bước)
+
+Pipeline hoàn chỉnh từ ý tưởng đến production:
+
+| # | Phase | Agent | Công việc |
+|---|-------|-------|-----------|
+| 1 | NHẬN | T1→T2 | Phân loại prompt, xác định loại dự án |
+| 2 | PHÂN TÍCH | T2 | Chọn tech stack, đánh giá quy mô |
+| 3 | HỌP | @meeting | Agent council đồng thuận kiến trúc |
+| 4 | KẾ HOẠCH | T2 | Feature list, milestones, acceptance criteria |
+| 5 | THIẾT KẾ | @pxh-architect | Schema DB, API contract, component tree |
+| 6 | CODE | @pxh-expert | Code, .gitignore + favicon |
+| 7 | KIỂM TRA | @pxh-qa | Viết test, coverage ≥ 85% |
+| 8 | SỬA | @pxh-fix-bugs | Root cause → fix → verify |
+| 9 | RÀ SOÁT | @pxh-review-code | Security audit, performance review |
+| 10 | PHÁT HÀNH | @pxh-devops | Lint → typecheck → test → build |
+| 11 | LƯU | @pxh-save-history | Session log, ADR, STATUS.md |
+
+**Tự động retry loop:** Test fail → quay lại bước 6 (max 3 lần). Critical issue → quay lại bước 8 (max 3 lần). Build fail → quay lại bước 6 (max 3 lần).
+
+---
+
+## Ví dụ thực tế
+
+**Làm web app:**
+```
+/vibe Xây dựng ứng dụng quản lý chi tiêu cá nhân với React + Express + PostgreSQL.
+Cho phép thêm/sửa/xóa giao dịch, phân loại thu/chi, xem biểu đồ thống kê theo tháng.
+```
+→ Hệ thống tự: phân tích → thiết kế schema → code frontend + backend → test → review → build.
+
+**Làm game:**
+```
+/game Làm game platformer 2D. Nhân vật mèo chạy nhảy qua chướng ngại vật,
+thu thập coin, có 3 mạng. Enemy là chó bay qua lại. Background parallax rừng cây.
+```
+→ Hệ thống tự: tải assets → scaffold Phaser 3 → code game loop → test headless → polish → build.
+
+**Debug:**
+```
+/debug Game bị crash khi spawn enemy thứ 50. Console báo "pool exhausted".
+```
+→ `pxh-fix-bugs`: root cause → fix object pool → verify.
+
+---
+
+## Kiến trúc 4 Tầng
 
 ```mermaid
 flowchart TD
     User((User))
-    T1["T1 — INTERFACE<br/>pxh-help"]
-    T2["T2 — ORCHESTRATION<br/>pxh-pm"]
-    T3["T3 — WORKERS<br/>7 agents"]
-    T4["T4 — INFRASTRUCTURE<br/>pxh-save-history"]
+    T1["T1 — INTERFACE<br/>pxh-help<br/>validate & classify"]
+    T2["T2 — ORCHESTRATION<br/>pxh-pm<br/>route, retry, recovery"]
+    T3["T3 — WORKERS (7)<br/>code · test · fix · review · build · design"]
+    T4["T4 — INFRASTRUCTURE<br/>pxh-save-history<br/>checkpoint, log, state"]
 
     User -->|Prompt| T1
     T1 -->|Request| T2
@@ -90,149 +158,53 @@ flowchart TD
 
 ---
 
-## 11 Agents
+## Tham khảo: Tất cả Agents
 
-| Agent | Tầng | State Badge | Dùng khi |
-|-------|------|-------------|----------|
-| `pxh-help` | T1 | **INTERFACE** | Validate & classify input |
-| `pxh-pm` | T2 | **ORCHESTRATION** | Điều phối, routing, policy |
-| `pxh-architect` | T3 | **DESIGN** | Thiết kế tech stack, DB, API |
-| `pxh-expert` | T3 | **CODE** | Vibe code, production |
-| `pxh-fix-bugs` | T3 | **DEBUG** | Root cause → fix bug |
-| `pxh-qa` | T3 | **TEST** | Viết & chạy test |
-| `pxh-review-code` | T3 | **REVIEW** | Security, perf audit |
-| `pxh-devops` | T3 | **BUILD** | Lint → typecheck → test → build |
-| `pxh-ui-ux` | T3 | **DESIGN** | Layout, responsive, accessibility |
-| `pxh-save-history` | T4 | **INFRASTRUCTURE** | State, checkpoint, recovery |
-| `pxh-office` | Virtual | **VIRTUAL OFFICE** | Virtual Office — real-time 4-tier visualization |
-
----
-
-## 9 Workflows · 11 Commands
-
-| Lệnh | Mục đích |
-|------|----------|
-| `/vibe` | Toàn bộ quy trình (phân tích → code → test → review → build) |
-| `/web` | Web app (React, Next.js, Express, FastAPI) |
-| `/game` | Game HTML5 (Phaser 2D, Isometric, Three.js 3D) |
-| `/ai` | Chatbot, RAG, agent, LLM |
-| `/tool` | CLI, extension, automation, package |
-| `/debug` | Debug + fix bug |
-| `/ui-ux` | UI/UX design & debug |
-| `/meeting` | Họp agents thảo luận |
-| `/release` | Build pipeline: lint → test → build |
-| `/preview` | Live preview game (Vite HMR) |
-| `/office` | Virtual Office — real-time 4-tier visualization |
+| Agent | Tầng | Chuyên môn | @mention khi |
+|-------|------|------------|-------------|
+| `pxh-help` | T1 | Interface | (tự động — classify input) |
+| `pxh-pm` | T2 | Orchestration | (tự động — route task) |
+| `pxh-architect` | T3 | Thiết kế | Cần DB schema, API design, chọn tech stack |
+| `pxh-expert` | T3 | Code | Cần code production |
+| `pxh-fix-bugs` | T3 | Debug | Có bug, cần root cause |
+| `pxh-qa` | T3 | Test | Cần viết test hoặc check coverage |
+| `pxh-review-code` | T3 | Review | Cần security audit hoặc perf review |
+| `pxh-devops` | T3 | Build | Cần lint → typecheck → test → build |
+| `pxh-ui-ux` | T3 | Thiết kế | Cần layout, responsive, accessibility |
+| `pxh-save-history` | T4 | Infrastructure | (tự động — save session) |
+| `pxh-office` | Virtual | Office | Visual dashboard real-time |
 
 ---
 
-## Cách dùng — Vibe Code thực chiến
+## Virtual Office — VS Code Extension
 
-Có 3 cách gọi agent để vibe code. Agent tự động phân tích, code, test, fix, review, build — bạn chỉ cần mô tả ý tưởng.
+Visual hóa văn phòng mở real-time với 11 nhân vật pixel-art, thú cưng, speech bubbles:
 
-### Cách 1: Prompt tự nhiên (khuyên dùng)
+### Cài đặt Extension
 
-Gõ thẳng mô tả công việc bằng tiếng Việt. Hệ thống tự phân loại → chọn workflow → route → thực thi.
-
-```
-"Xây dựng web blog cá nhân với React, có dark mode"
-"Làm game platformer 2D, nhân vật nhảy qua chướng ngại vật"
-"Tạo chatbot RAG trả lời từ tài liệu PDF"
+```powershell
+.\pxh-install-extension.bat install          # VS Code Stable
+.\pxh-install-extension.bat install insiders  # VS Code Insiders
+.\pxh-install-extension.bat uninstall         # Gỡ cài đặt
 ```
 
-**Luồng tự động:**
-```
-Prompt → pxh-help (T1) phân loại workflow + skill
-       → pxh-pm (T2) chọn worker, tạo Task contract
-       → pxh-expert (T3) code trong TARGET
-       → pxh-qa (T3) viết & chạy test
-       → pxh-fix-bugs (T3) sửa nếu fail
-       → pxh-review-code (T3) audit security + perf
-       → pxh-devops (T3) build: lint → typecheck → test → build
-       → pxh-save-history (T4) lưu session log, STATUS.md
+Restart VS Code → Virtual Office xuất hiện ở sidebar.
+
+### Chạy server riêng (browser)
+
+```powershell
+.\pxh-office.bat on       # Start + mở browser tại http://localhost:2910
+.\pxh-office.bat off      # Tắt server
+.\pxh-office.bat restart  # Khởi động lại
 ```
 
-### Cách 2: Lệnh `/` — đi thẳng vào workflow
+### Tính năng
 
-Bỏ qua bước phân loại, route thẳng T3 theo workflow tương ứng.
-
-| Lệnh | Ví dụ | Khi dùng |
-|------|-------|----------|
-| `/vibe` | `/vibe xây dựng app quản lý công việc` | Full pipeline 11 bước (phân tích → code → test → review → build) |
-| `/web` | `/web làm landing page cho startup` | Web app: React, Next.js, Express, FastAPI |
-| `/game` | `/game game bắn súng không gian 2D` | Game HTML5: Phaser 2D, Isometric, Three.js 3D |
-| `/ai` | `/ai tạo chatbot hỗ trợ khách hàng` | Chatbot, RAG, AI agent, LLM |
-| `/tool` | `/tool CLI tool đổi tên file hàng loạt` | CLI, extension, automation, package |
-| `/debug` | `/debug game bị giật FPS khi nhiều enemy` | Debug + fix bug (có root cause analysis) |
-| `/ui-ux` | `/ui-ux thiết kế responsive navbar` | UI/UX design & responsive layout |
-| `/meeting` | `/meeting chọn tech stack cho dự án mới` | Họp agents thảo luận kiến trúc |
-| `/release` | `/release` | Build pipeline: lint → test → build |
-| `/preview` | `/preview` | Live preview game (Vite HMR, browser auto-open) |
-| `/office` | `/office` | Virtual Office — real-time 4-tier visualization |
-
-### Cách 3: @mention — gọi thẳng agent
-
-Gọi agent cụ thể, bỏ qua classify và routing. Dùng khi bạn biết chính xác cần agent nào.
-
-```
-@pxh-expert viết API endpoint /api/users với CRUD
-@pxh-qa chạy test coverage cho thư mục src/
-@pxh-fix-bugs sửa lỗi crash khi click nút Login
-@pxh-review-code audit bảo mật toàn bộ codebase
-@pxh-architect thiết kế database schema cho app e-commerce
-@pxh-devops build và deploy lên Vercel
-@pxh-ui-ux làm responsive navbar với dark mode
-```
-
-### Quy trình `/vibe` đầy đủ (11 bước)
-
-Pipeline hoàn chỉnh cho dự án từ ý tưởng đến production:
-
-| # | Phase | Agent | Công việc |
-|---|-------|-------|-----------|
-| 1 | NHẬN | T1→T2 | Phân loại prompt, xác định loại dự án |
-| 2 | PHÂN TÍCH | T2 | Chọn tech stack, đánh giá quy mô |
-| 3 | HỌP | @meeting | Agent council đồng thuận kiến trúc |
-| 4 | KẾ HOẠCH | T2 | Feature list, milestones, acceptance criteria |
-| 5 | THIẾT KẾ | @pxh-architect | Schema DB, API contract, component tree |
-| 6 | CODE | @pxh-expert | Code trong TARGET, setup .gitignore + favicon |
-| 7 | KIỂM TRA | @pxh-qa | Viết test, chạy coverage ≥ 85% |
-| 8 | SỬA | @pxh-fix-bugs | Root cause → fix → verify |
-| 9 | RÀ SOÁT | @pxh-review-code | Security audit, perf review, quality gate |
-| 10 | PHÁT HÀNH | @pxh-devops | Lint → typecheck → test → build |
-| 11 | LƯU | @pxh-save-history | Session log, ADR, cập nhật STATUS.md |
-
-**Loop mechanism:**
-- Code → Test → Fix: nếu test fail → quay lại Bước 6 (max 3 lần)
-- Review → Fix → Test: nếu critical issue → quay lại Bước 8 (max 3 lần)
-- Build fail → quay lại Bước 6 (max 3 lần)
-
-### Ví dụ thực tế
-
-**Ví dụ 1: Làm web app**
-```
-/vibe Xây dựng ứng dụng quản lý chi tiêu cá nhân với React + Express + PostgreSQL.
-Cho phép thêm/sửa/xóa giao dịch, phân loại thu/chi, xem biểu đồ thống kê theo tháng.
-```
-→ Hệ thống tự động: phân tích → thiết kế schema → code frontend + backend → test → review → build.
-
-**Ví dụ 2: Làm game**
-```
-/game Làm game platformer 2D. Nhân vật mèo chạy nhảy qua chướng ngại vật,
-thu thập coin, có 3 mạng. Enemy là chó bay qua lại. Background parallax rừng cây.
-```
-→ Hệ thống tự động: tải assets → scaffold Phaser 3 → code game loop → test headless → polish → build.
-
-**Ví dụ 3: Debug**
-```
-/debug Game bị crash khi spawn enemy thứ 50. Console báo "pool exhausted".
-```
-→ `pxh-fix-bugs`: root cause analysis → fix object pool → verify → polish.
-
-**Ví dụ 4: Gọi thẳng agent**
-```
-@pxh-review-code Kiểm tra bảo mật file src/api/auth.ts, đặc biệt phần JWT verification.
-```
+- **11 pixel-art agents** với trang phục + phụ kiện riêng, ngồi làm việc tại bàn
+- **Mèo 🐱 + Chó 🐕** đi dạo tự do trong văn phòng
+- **Speech bubbles** real-time hiển thị log của từng agent
+- **Dashed signals** nối agents theo data flow
+- **State badges** nhấp nháy cạnh tên — biết agent nào đang làm gì ngay lập tức
 
 ---
 
@@ -246,101 +218,40 @@ thu thập coin, có 3 mạng. Enemy là chó bay qua lại. Background parallax
 
 ---
 
-## Virtual Office — Chi tiết
-
-### Thiết kế văn phòng mở
-
-Văn phòng single-floor open space, toàn bộ 11 agent làm việc chung:
-
-- **Tường trái**: 4 server rack LED nhấp nháy
-- **Trung tâm**: Bàn CEO PXH, 7 bàn worker (3 monitor + 4 laptop)
-- **Góc trái dưới**: Historian
-- **Góc phải dưới**: Help Desk + cửa ra vào
-- **Tường phải**: Bảng trắng, water cooler, coffee machine
-- **Trang trí**: Cây cảnh 3 kiểu, đồng hồ treo tường, banner PXH2910
-- **Thú cưng**: Mèo vàng 🐱 + Chó nâu 🐕 đi dạo tự do
-
-### Tính năng
-
-| Animation | Mô tả |
-|-----------|-------|
-| **Walking** | Agent đi lại 4 hướng, body nảy |
-| **Typing** | Ngồi vào bàn, quay lưng gõ phím, tay rung |
-| **Idle breathing** | Đứng thở + nháy mắt |
-| **Dashed signals** | Tín hiệu xanh nối giữa các agent |
-| **Speech bubbles** | Log real-time trên đầu agent |
-| **State badges** | Nhấp nháy bên phải tên chức danh |
-| **Đã làm xong** | Bay lên từ agent khi hoàn thành |
-
-### Trang phục agent
-
-| Agent | Trang phục | Phụ kiện |
-|-------|-----------|----------|
-| Help Desk | Váy xanh dương A-line | Huy hiệu ★ |
-| CEO PXH | Suit đen + vest kem | Cà vạt vàng + kẹp |
-| Architect | Váy tím A-line | Kính tròn |
-| Developer | Hoodie xanh lá | Kính tròn |
-| Bug Hunter | Jacket đỏ sọc | Huy hiệu ★ |
-| QA Engineer | Váy xanh ngọc chấm bi | — |
-| Reviewer | Áo sơ mi vàng | Cà vạt đỏ |
-| DevOps | Hoodie xanh navy | Kính tròn |
-| UI/UX Designer | Váy hồng | Khăn quàng |
-| Historian | Cardigan tím | Kính tròn |
-
-### Real-time Sync
-
-| Cơ chế | Mô tả |
-|--------|-------|
-| **Bridge** | Watch file changes + state file → postMessage tới webview |
-| **Hook** | Bắt tên agent từ TUI output → gửi state |
-| **State file** | `_shared/opencode-state.json` → server + extension watch |
-| **Event watcher** | Extension theo dõi file workspace → gửi event tới webview |
-
-### Gửi event mô phỏng
-
-```powershell
-# Emit event qua HTTP POST
-Invoke-RestMethod -Uri "http://localhost:2910/emit" -Method Post -Body '{"type":"agent_state","agent":"pxh-expert","tuiState":"Code","message":"Test"}' -ContentType "application/json"
-
-# Emit từ CLI
-node skills/virtual-office/templates/emit-event.mjs --type agent_state --agent pxh-expert --tuiState Code --message "Test"
-
-# Clear events
-node skills/virtual-office/templates/emit-event.mjs --clear
-```
-
----
-
 ## Key Concepts
 
-- **Context Budget**: T0→T3 loading, lazy skill/template, batch ops
-- **Compaction**: Auto nén context cũ → summary, giữ 3 turns gần nhất
-- **Tool Output**: `max_lines: 50, max_bytes: 4096` — tiết kiệm token
+- **Prompt Optimizer**: Tự động rewrite prompt mơ hồ → rõ ràng, hiển thị panel `<details>`, transparent
+- **Contract Communication**: Agents giao tiếp qua typed contracts, không @mention trần
+- **Context Budget**: Lazy-load skills, compaction tự động, giới hạn 50 line/4096 byte output
 - **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
-- **Code preservation**: Chỉ tác động trong TARGET
-- **Prompt Optimizer**: Auto-rewrite prompt mơ hồ → rõ ràng, hiển thị panel `<details>`, transparent - không tường thuật quá trình
-- **Portable**: Copy toàn bộ `.opencode` → hoạt động ngay trong project mới
+- **Portable**: Copy toàn bộ `.opencode` folder → hoạt động ngay trong project mới
 
 ---
 
 ## Changelog
 
 <details>
-<summary><b>v48 — Prompt Optimizer (Latest)</b></summary>
+<summary><b>v49 — User Guide Rewrite (Latest)</b></summary>
+
+- **Rewrite:** README repositioned as practical user guide — focus on "how to vibe code" over internal docs
+- **Restructure:** 3 cách vibe code front-and-center, kiến trúc simplified, virtual office concise
+- **Update:** Commit count sync (141 → 154), version bump v48 → v49
+- **Update:** STATUS.md changelog
+</details>
+
+<details>
+<summary><b>v48 — Prompt Optimizer</b></summary>
 
 - **Add:** `prompt-optimizer.md` — auto-rewrite prompt mơ hồ thành implementation-ready spec
 - **Add:** Collapsible `<details>` panel hiển thị original vs optimized prompt
 - **Add:** Context-aware optimization — giữ nguyên goal, chỉ resolve ambiguity
 - **Add:** Integration vào `opencode.json` instructions, chạy trước mọi user task
-- **Update:** README Key Concepts + version bump, commit count sync (73 → 141)
-- **Update:** STATUS.md changelog v48 entry
 </details>
 
 <details>
 <summary><b>v47 — Bat Merge & README Sync</b></summary>
 
 - **Merge:** `pxh-office-on.bat` + `pxh-office-off.bat` → `pxh-office.bat` (on/off/restart + help)
-- **Update:** README virtual office section references `pxh-office.bat`
 - **Remove:** `pxh-office-on.bat`, `pxh-office-off.bat`
 </details>
 
@@ -350,54 +261,23 @@ node skills/virtual-office/templates/emit-event.mjs --clear
 - **Redesign:** Virtual Office thành văn phòng mở single-floor, 11 agent làm việc chung
 - **Add:** 11 agent với pixel-art character, trang phục riêng, phụ kiện
 - **Add:** Mèo 🐱 + Chó 🐕 đi dạo tự do trong văn phòng
-- **Add:** Speech bubble real-time multi-dòng với timestamp
-- **Add:** Dashed signal lines thay giấy tờ bay, nối agent theo kiến trúc
-- **Add:** State badge nhấp nháy bên phải tên chức danh (Interface/Orchestration/...)
-- **Add:** T1+T2 ở lại tới global idle, T3+T4 rời bàn khi xong việc
-- **Add:** `pxh-office.bat` — ON/OFF/RESTART server 1 lệnh
-- **Update:** Bridge per-agent idle timer + pipeline theo workflow
-- **Update:** `hook-opencode.ps1` — bắt tên agent từ TUI output real-time
-- **Update:** Port mặc định 2910, Cache-Control headers
-- **Fix:** HiDPI layout bug, path traversal, ASI semicolon bugs
-- **Fix:** `drawOutfit` váy A-line phủ kín, tóc `slick`/`sidepart`/`short`
+- **Add:** Speech bubble real-time, dashed signal lines, state badges
+- **Add:** `pxh-office.bat` — ON/OFF/RESTART server 1 lệnh, port 2910
 </details>
 
 <details>
 <summary><b>v45 — Virtual Office TUI</b></summary>
 
 - **Add:** `pxh-office` agent — Virtual Office TUI với pixel-art agents
-- **Add:** Webview 2D Cartoon — văn phòng 4 tầng trên browser
-- **Add:** SSE event sync + contract flow animation
+- **Add:** Webview 2D Cartoon, SSE event sync, contract flow animation
 </details>
 
 <details>
-<summary><b>v44 — Context Compaction & AI Studio Live Preview</b></summary>
+<summary><b>v32–v44 — Foundation & Hardening</b></summary>
 
-- **Add:** Context compaction, tool output truncation, skill lazy loading
-- **Add:** `games-preview` skill — Vite HMR live preview
-</details>
-
-<details>
-<summary><b>v43 — Game Polish & AI Studio Quality</b></summary>
-
-- **Add:** AI Studio debug pipeline, Polish Pipeline, game eval assertions
-</details>
-
-<details>
-<summary><b>v42 — Godot Removal</b></summary>
-
-- **Remove:** Godot agent, skills, workflow
-</details>
-
-<details>
-<summary><b>v40 — Architecture Hardening</b></summary>
-
-- **Add:** Observability & Alerting (T4), Contract versioning, Mermaid diagrams
-</details>
-
-<details>
-<summary><b>v32 — Initial Foundation</b></summary>
-
-- **Add:** 4-tier architecture, 10 agents, 8 workflows, 28 skills
-- **Add:** Contract system, Retry/Recovery/Reflection policies
+- v44: Context compaction, tool output truncation, skill lazy loading, live preview
+- v43: AI Studio debug pipeline, Polish Pipeline, game eval assertions
+- v42: Godot removal
+- v40: Observability & Alerting, Contract versioning, Mermaid diagrams
+- v32: Initial foundation — 4-tier architecture, 10 agents, 8 workflows, 28 skills
 </details>

@@ -8,20 +8,12 @@
 
 ## Luồng
 
-```
-Prompt thô
-    │
-    ▼
-Xác thực: có TARGET không? mô tả rõ ràng không?
-    │
-    ▼ (không hợp lệ)
-Trả lỗi xác thực, yêu cầu user làm rõ
-    │
-    ▼ (hợp lệ)
-Tạo Request contract → gửi đến Tầng 2 (Điều phối)
-    │
-    ▼ (sau đó)
-Nhận Response từ Tầng 2 → định dạng thành output thân thiện cho user
+```mermaid
+flowchart TD
+    A[Prompt thô] --> B{"Xác thực:<br/>có TARGET? mô tả rõ ràng?"}
+    B -->|không hợp lệ| C[Trả lỗi xác thực<br/>yêu cầu user làm rõ]
+    B -->|hợp lệ| D[Tạo Request contract<br/>→ gửi đến Tầng 2]
+    D --> E[Nhận Response từ Tầng 2<br/>→ định dạng output cho user]
 ```
 
 ## Quy tắc

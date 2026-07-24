@@ -8,32 +8,15 @@
 
 ## Luồng
 
-```
-Nhận Request từ Tầng 1
-    │
-    ▼
-Phân tích: loại dự án, phạm vi, ràng buộc
-    │
-    ▼
-Nếu phức tạp / chưa rõ phạm vi:
-    ├─ Gọi họp: `pxh-architect`, `pxh-expert`, `pxh-qa`, `pxh-devops` thảo luận
-    ├─ Đạt đồng thuận về tech stack, workflow, timeline
-    └─ Ghi quyết định → Event{decision} → Tầng 4
-    │
-    ▼
-Lên kế hoạch: cần những phase nào? (architect → code → test → fix → review → build)
-    │
-    ▼
-Với mỗi phase:
-    ├─ Tạo Task contract
-    ├─ Gửi đến Worker phù hợp (Tầng 3)
-    ├─ Chờ Result
-    ├─ Áp dụng Chính sách thử lại nếu cần (xem `runtime/policies/retry.md`)
-    ├─ Áp dụng Chính sách phục hồi nếu thất bại (xem `runtime/policies/recovery.md`)
-    └─ Gửi Event{phase_start/phase_end} đến Tầng 4
-    │
-    ▼
-Mọi phase hoàn tất → tạo Response contract → gửi đến Tầng 1
+```mermaid
+flowchart TD
+    A[Nhận Request từ Tầng 1] --> B[Phân tích: loại dự án, phạm vi, ràng buộc]
+    B --> C{"Phức tạp / chưa rõ phạm vi?"}
+    C -->|có| D["Gọi họp agents thảo luận<br/>Đồng thuận tech stack, workflow<br/>Ghi quyết định → Event → T4"]
+    C -->|không| E["Lên kế hoạch:<br/>các phase cần thiết"]
+    D --> E
+    E --> F["Với mỗi phase:<br/>Tạo Task → gửi Worker<br/>Chờ Result → áp dụng policy<br/>Gửi Event → T4"]
+    F --> G["Hoàn tất → tạo Response<br/>→ gửi Tầng 1"]
 ```
 
 ## Bảng Routing
@@ -66,11 +49,18 @@ Sau mỗi phase, worker PHẢI gửi feedback về T2:
 | T2 | `pxh-expert` | Khi review có issues | Task contract với `fix_review_issues` |
 
 Luồng feedback:
-```
-Expert → Result → T2 → QA phát hiện bug → T2 → Fix-Bugs (Task contract)
-Fix-Bugs → Result → T2 → QA verify fix (Task contract)
-QA pass → T2 → Review-Code (Task contract)
-Review có issues → T2 → Expert fix (Task contract)
+```mermaid
+flowchart LR
+    Expert["pxh-expert"] -->|Result| T2(("T2"))
+    T2 -->|Task| QA["pxh-qa"]
+    QA -->|"Result + bugs"| T2
+    T2 -->|"Task + bug_context"| Fix["pxh-fix-bugs"]
+    Fix -->|Result| T2
+    T2 -->|"Task verify"| QA
+    QA -->|pass| T2
+    T2 -->|Task| Review["pxh-review"]
+    Review -->|"Result + issues"| T2
+    T2 -->|"Task fix_issues"| Expert
 ```
 
 ## Quy tắc

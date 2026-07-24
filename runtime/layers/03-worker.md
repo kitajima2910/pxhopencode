@@ -18,23 +18,13 @@
 
 ## Luồng
 
-```
-Nhận Task contract từ Tầng 2
-    │
-    ▼
-Xác thực: mục tiêu rõ ràng không? có đủ context không?
-    │
-    ▼
-Thực thi trong phạm vi TARGET chỉ
-    │
-    ▼
-Tự kiểm tra: output đáp ứng yêu cầu không? code cũ vẫn chạy không?
-    │
-    ▼
-Tạo Result contract → trả về Tầng 2
-    │
-    ▼
-Gửi Event phản ánh đến Tầng 4
+```mermaid
+flowchart TD
+    A[Nhận Task contract từ Tầng 2] --> B{"Xác thực:<br/>mục tiêu rõ ràng?<br/>đủ context?"}
+    B --> C[Thực thi trong TARGET]
+    C --> D{"Tự kiểm tra:<br/>output đáp ứng yêu cầu?<br/>code cũ vẫn chạy?"}
+    D --> E[Tạo Result contract<br/>→ trả về Tầng 2]
+    E --> F[Gửi Event phản ánh<br/>→ Tầng 4]
 ```
 
 ## Quy tắc
