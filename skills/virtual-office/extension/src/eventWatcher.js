@@ -322,7 +322,9 @@ function startWatcher(workspaceRoot, onEvent) {
     } catch {}
   }
 
-  watchWorkspaceDirs(workspaceRoot);
+  // Filesystem watch DISABLED — agents mirror real TUI events only.
+  // Uncomment below to re-enable auto-detection from workspace file changes.
+  // watchWorkspaceDirs(workspaceRoot);
   readNewEvents();
   readState();
 

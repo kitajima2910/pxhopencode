@@ -322,75 +322,21 @@ export function startBridge(opts = {}) {
   const onEvent = opts.onEvent || null
   if (onEvent) state.directBroadcast = onEvent
 
-  const WATCH_EXT = new Set(['.ts','.tsx','.js','.jsx','.css','.md','.html','.json','.mjs'])
-  const watchDirs = [
-    rootDir, path.join(rootDir, 'skills'),
-    path.join(rootDir, 'workflows'), path.join(rootDir, 'agents'),
-    path.join(rootDir, '_shared'),
-  ].filter(d => { try { return fs.statSync(d).isDirectory() } catch { return false } })
-
-  // Use fs.watch for instant OS-level file change notifications
-  const watchers = []
-  let watchTimer = null
-
-  watchDirs.forEach(dir => {
-    try {
-      const w = fs.watch(dir, { recursive: true }, (eventType, filename) => {
-        if(!filename) return
-        const ext = path.extname(filename).toLowerCase()
-        if(!WATCH_EXT.has(ext)) return
-        const full = path.join(dir, filename)
-        // Skip ignored dirs
-        const rel = path.relative(ROOT, full).replace(/\\/g, '/')
-        const parts = rel.split('/')
-        for(const p of parts){ if(EXCLUDE_DIRS.has(p)) return }
-        if(isIgnored(full)) return
-
-        // Instant debounce: batch rapid changes within 200ms
-        clearTimeout(watchTimer)
-        watchTimer = setTimeout(() => onFileChange('change', full), 100)
-      })
-      watchers.push(w)
-    } catch {}
-  })
-
-  // Fallback polling every 5s for dirs where fs.watch fails
-  let pollState = {}
-  let pollReady = false
-  const scanDirs = watchDirs
-  function pollSnapshot(dir) {
-    try {
-      const entries = fs.readdirSync(dir, { withFileTypes: true })
-      for(const e of entries){
-        const full = path.join(dir, e.name)
-        if(e.name === '.' || e.name === '..') continue
-        if(EXCLUDE_DIRS.has(e.name)) continue
-        if(e.isDirectory()) pollSnapshot(full)
-        else if(e.isFile() && WATCH_EXT.has(path.extname(e.name).toLowerCase())){
-          const rel = path.relative(ROOT, full)
-          try {
-            const mtime = fs.statSync(full).mtimeMs
-            if(pollReady && pollState[rel] !== mtime) onFileChange('change', full)
-            pollState[rel] = mtime
-          } catch {}
-        }
-      }
-    } catch {}
-  }
-  for(const d of scanDirs) pollSnapshot(d)
-  pollReady = true
-  setInterval(() => { for(const d of scanDirs) pollSnapshot(d) }, 1000)
+  // Filesystem watch DISABLED — agents mirror real TUI events only (via /emit, state file).
+  // Uncomment the block below to re-enable auto-detection from file changes.
+  // const WATCH_EXT = new Set(['.ts','.tsx','.js','.jsx','.css','.md','.html','.json','.mjs'])
+  // ... file watching code ...
 
   startHeartbeat()
 
   setTimeout(() => {
     emit({
       type: 'agent_status', from: 'pxh-office',
-      message: `Bridge watching ${watchDirs.length} dirs (fs.watch + poll fallback)`,
+      message: `Bridge active — mirroring real TUI events only`,
     })
   }, 500)
 
-  return { emit, watchers }
+  return { emit, watchers: [] }
 }
 
 if (process.argv[1] && (process.argv[1].endsWith('office-bridge.mjs') || process.argv[1].endsWith('office-bridge.js'))) {
