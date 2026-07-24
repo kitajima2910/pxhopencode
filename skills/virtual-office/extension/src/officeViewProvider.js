@@ -7,6 +7,17 @@ class OfficeViewProvider {
     this._extensionUri = extensionUri;
     this._context = context;
     this._view = null;
+    this._workTerminal = null;
+    this._workActive = false;
+    this._workDisposables = [];
+
+    // Detect terminal close → reset work button
+    // Compare by name (more robust than object reference)
+    vscode.window.onDidCloseTerminal((t) => {
+      if (this._workActive && t.name === 'PXH OpenCode') {
+        this._handleWorkEnd();
+      }
+    });
   }
 
   resolveWebviewView(webviewView) {
@@ -24,6 +35,8 @@ class OfficeViewProvider {
         console.log("[PXH Office]", msg.text);
       } else if (msg.command === "work") {
         this._startOpenCodeSession();
+      } else if (msg.command === "stop") {
+        this._stopWorkSession();
       }
     });
 
@@ -54,6 +67,35 @@ class OfficeViewProvider {
     }
   }
 
+  _handleWorkEnd() {
+    if (!this._workActive) return;
+    this._workActive = false;
+    this._workTerminal = null;
+    this._disposeWorkListeners();
+    this.broadcast({ type: "workflow_end" });
+    // Direct reset ensures the button always reverts even if
+    // the workflow_end → normalizeVSCodeEvent → applyStateDiff chain fails.
+    this.broadcast({ type: "reset_work_button" });
+  }
+
+  _disposeWorkListeners() {
+    while (this._workDisposables.length) {
+      const d = this._workDisposables.pop();
+      try { d.dispose(); } catch {}
+    }
+  }
+
+  _stopWorkSession() {
+    if (this._workTerminal) {
+      try { this._workTerminal.dispose(); } catch {}
+    }
+    this._handleWorkEnd();
+  }
+
+  _resetWorkButtonDirect() {
+    this.broadcast({ type: "reset_work_button" });
+  }
+
   _startOpenCodeSession() {
     try {
       const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
@@ -61,7 +103,22 @@ class OfficeViewProvider {
         name: "PXH OpenCode",
         cwd: workspaceRoot,
       });
+      this._workTerminal = terminal;
+      this._workActive = true;
       terminal.show();
+
+      // VSCode 1.82+ shell integration: clean process-exit detection
+      try {
+        if (terminal.shellIntegration) {
+          const execution = terminal.shellIntegration.executeCommand("opencode");
+          this._workDisposables.push(
+            execution.onDidEnd(() => this._handleWorkEnd())
+          );
+          return;
+        }
+      } catch {}
+
+      // Fallback: sendText
       terminal.sendText("opencode");
     } catch (e) {
       console.error("[PXH Office] Failed to start OpenCode session:", e.message);
@@ -240,15 +297,22 @@ class OfficeViewProvider {
 
   function setWorkButtonBusy() {
     var btn = document.getElementById('workBtn');
-    if (btn) { btn.textContent = '⏳ Đang làm...'; btn.className = 'work-btn working'; btn.disabled = true; }
+    if (btn) { btn.textContent = '⏳ Đang làm...'; btn.className = 'work-btn working'; btn.disabled = false; }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('workBtn');
     if (btn) {
       btn.addEventListener('click', function() {
-        setWorkButtonBusy();
-        _vscodeApi.postMessage({ command: 'work' });
+        if (btn.classList.contains('working')) {
+          btn.textContent = 'Làm việc';
+          btn.className = 'work-btn';
+          btn.disabled = false;
+          _vscodeApi.postMessage({ command: 'stop' });
+        } else {
+          setWorkButtonBusy();
+          _vscodeApi.postMessage({ command: 'work' });
+        }
       });
     }
   });
@@ -257,6 +321,13 @@ class OfficeViewProvider {
     try {
       var ev = e.data;
       if (!ev || !ev.type) return;
+
+      // Direct reset_work_button — bypasses the entire normalize → applyStateDiff chain.
+      // This ensures the button always reverts when the terminal/process ends.
+      if (ev.type === 'reset_work_button') {
+        resetWorkButton();
+        return;
+      }
 
       var diff = normalizeVSCodeEvent(ev);
       if (diff && typeof applyStateDiff === 'function') {
