@@ -864,8 +864,9 @@ function animate(now){fc++;updateElapsed()
   ctx.fillStyle='rgba(88,166,255,0.5)';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company',W*.5,btop+16)
   ctx.fillStyle='rgba(255,255,255,0.25)';ctx.fillRect((W-bwW)/2+20,btop+22,bwW-40,1)
   sysLogs.forEach((l,i)=>{
-    ctx.fillStyle=l.color;ctx.font='8px "Segoe UI",sans-serif';ctx.textAlign='center'
-    ctx.fillText(l.msg,W*.5,btop+36+i*12)
+    ctx.fillStyle=l.color;ctx.font='7px "Consolas",monospace';ctx.textAlign='center'
+    const t=new Date(l.ts),ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0')
+    ctx.fillText(ts+'  '+l.msg,W*.5,btop+36+i*12)
   })
 
   // Desks — monitor row
