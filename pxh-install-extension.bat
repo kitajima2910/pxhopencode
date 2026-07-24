@@ -32,7 +32,6 @@ echo ============================================
 echo.
 echo  Target: %CODE_TYPE% VS Code
 echo  Source: %SRC%
-echo  Dest:   %EXT_DIR%
 echo.
 
 if not exist "%SRC%\package.json" (
@@ -41,33 +40,70 @@ if not exist "%SRC%\package.json" (
   exit /b 1
 )
 
-:: Remove old version if exists
-if exist "%EXT_DIR%" (
-  echo [*] Dang xoa version cu...
-  rmdir /s /q "%EXT_DIR%" 2>nul
+:: Check if node is available for packaging
+where node >nul 2>&1
+if %ERRORLEVEL% neq 0 goto :install_copy
+
+:: Check if code CLI is available
+where %VSCMD% >nul 2>&1
+if %ERRORLEVEL% neq 0 goto :install_copy
+
+echo [*] Dang dong goi extension thanh .vsix...
+set "TEMP_BUILD=%TEMP%\pxh-ext-build"
+if exist "%TEMP_BUILD%" rmdir /s /q "%TEMP_BUILD%" 2>nul
+xcopy "%SRC%" "%TEMP_BUILD%" /E /I /H /Y /Q >nul
+
+:: Create temp package.json override to avoid vsce prompts
+set "VSIX_FILE=%TEMP%\pxh-virtual-office.vsix"
+if exist "%VSIX_FILE%" del /f /q "%VSIX_FILE%" 2>nul
+
+pushd "%TEMP_BUILD%"
+npx --yes @vscode/vsce package --out "%VSIX_FILE%" --allow-missing-repository >nul 2>&1
+set VSCE_ERR=%ERRORLEVEL%
+popd
+
+if %VSCE_ERR% neq 0 (
+  echo [!] Khong the dong goi .vsix, thu cai dat bang cach copy truc tiep...
+  rmdir /s /q "%TEMP_BUILD%" 2>nul
+  goto :install_copy
 )
 
-:: Create extensions dir if needed
-if not exist "%EXT_DIR%\.." mkdir "%EXT_DIR%\.." 2>nul
+echo [*] Dang cai dat extension...
+%VSCMD% --install-extension "%VSIX_FILE%" --force 2>&1
+set INSTALL_ERR=%ERRORLEVEL%
 
-echo [*] Dang copy extension...
-xcopy "%SRC%" "%EXT_DIR%" /E /I /H /Y /Q >nul
+:: Cleanup
+rmdir /s /q "%TEMP_BUILD%" 2>nul
+del /f /q "%VSIX_FILE%" 2>nul
+
+if %INSTALL_ERR% neq 0 (
+  echo [!] code --install-extension bi loi, thu cai dat bang cach copy truc tiep...
+  goto :install_copy
+)
+
+echo [+] Da cai dat thanh cong!
+echo.
+echo [^^>] Mo VS Code, sidebar se co icon ^$(organization^) "PXH Virtual Office"
+echo.
+exit /b
+
+:install_copy
+:: Fallback: copy directly to extensions folder
+echo [*] Dang copy extension truc tiep...
+set "DEST=%EXT_DIR%"
+if exist "%DEST%" rmdir /s /q "%DEST%" 2>nul
+if not exist "%DEST%\.." mkdir "%DEST%\.." 2>nul
+xcopy "%SRC%" "%DEST%" /E /I /H /Y /Q >nul
 if %ERRORLEVEL% neq 0 (
   echo [LOI] Khong the copy extension.
   exit /b 1
 )
 
-echo [+] Da cai dat thanh cong!
+echo [+] Da copy extension vao: %DEST%
 echo.
-echo [^^^>] Hay khoi dong lai VS Code hoac nhan Ctrl+Shift+P - "Developer: Reload Window"
+echo [^^>] DONG HOAN TOAN VS Code (tat tat ca cua so), sau do mo lai.
+echo     Neu da dong VS Code truoc khi chay script nay, chi can mo lai VS Code.
 echo.
-
-:: Try to auto-reload VS Code
-where %VSCMD% >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-  echo [*] Dang reload VS Code...
-  %VSCMD% --install-extension "%EXT_DIR%" --force >nul 2>&1
-)
 exit /b
 
 :uninstall
