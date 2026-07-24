@@ -7,6 +7,48 @@ $STATE_FILE = "$PSScriptRoot\..\..\..\_shared\opencode-state.json"
 $EMIT_URL = "http://localhost:2910/emit"
 $MIRROR_URL = "http://localhost:2910/emit"
 
+# Debug mode — set $env:PXH_DEBUG=1 to enable verbose logging
+$DEBUG = [bool]$env:PXH_DEBUG
+
+function Dbg($msg) {
+  if($DEBUG) { Write-Host "[Office] $msg" -ForegroundColor DarkCyan }
+}
+
+function Emit-Event($type, $agent, $state, $message) {
+  $body = @{ type=$type; agent=$agent; tuiState=$state; message=$message } | ConvertTo-Json -Compress
+  try {
+    Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 2 | Out-Null
+    Dbg "Emitted: type=$type agent=$agent state=$state msg=$message"
+  } catch {
+    Dbg "FAILED to emit: type=$type agent=$agent — $_"
+  }
+}
+
+function Emit-WorkflowStart($msg) {
+  # Fire workflow:start IMMEDIATELY — before any opencode processing
+  $body = @{ type='workflow_start'; message=$msg; ts=(Get-Date -Format 'o') } | ConvertTo-Json -Compress
+  try {
+    [System.IO.File]::WriteAllText($STATE_FILE, (@{ state='workflow_start'; agent='pxh-opencode'; message=$msg } | ConvertTo-Json -Compress))
+    Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 2 | Out-Null
+    Write-Host "[Office] workflow:start emitted" -ForegroundColor Green
+    Write-Host "[Office] Animation started" -ForegroundColor Green
+  } catch {
+    Dbg "FAILED workflow:start emit: $_"
+  }
+}
+
+function Emit-WorkflowEnd($msg) {
+  $body = @{ type='workflow_end'; message=$msg; ts=(Get-Date -Format 'o') } | ConvertTo-Json -Compress
+  try {
+    [System.IO.File]::WriteAllText($STATE_FILE, (@{ state='workflow_end'; agent='pxh-opencode'; message=$msg } | ConvertTo-Json -Compress))
+    Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 2 | Out-Null
+    Write-Host "[Office] workflow:end emitted" -ForegroundColor DarkYellow
+    Write-Host "[Office] Dashboard Active = 0" -ForegroundColor DarkYellow
+  } catch {
+    Dbg "FAILED workflow:end emit: $_"
+  }
+}
+
 # Tool action patterns detected from TUI output (keyword)
 $TOOL_RX = @{}
 $TOOL_RX['planning']   = '(?:plan|planning|prepare|preparing|outline|outlining|todos|organize)'
@@ -89,7 +131,10 @@ function Send-Agent($agent, $state, $msg) {
   try {
     [System.IO.File]::WriteAllText($STATE_FILE, $body)
     Invoke-RestMethod -Uri $STATE_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 2 | Out-Null
-  } catch {}
+    Dbg "Send-Agent: $agent state=$state msg=$msg"
+  } catch {
+    Dbg "Send-Agent FAILED: $agent — $_"
+  }
 }
 
 function Send-Mirror($lineText) {
@@ -97,14 +142,18 @@ function Send-Mirror($lineText) {
   try {
     [System.IO.File]::WriteAllText($STATE_FILE, (@{ state='Mirror'; agent='pxh-opencode'; message=$lineText } | ConvertTo-Json -Compress))
     Invoke-RestMethod -Uri $MIRROR_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null
-  } catch {}
+  } catch {
+    Dbg "Mirror send failed: $_"
+  }
 }
 
 function Idle-All {
+  Write-Host "[Office] Resetting all agents to idle" -ForegroundColor DarkGray
   foreach($p in $AGENT_PATTERNS) {
     $body = @{ state='idle'; agent=$p.agent; message='' } | ConvertTo-Json -Compress
     try { Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null } catch {}
   }
+  Dbg "All agents set to idle"
 }
 
 function Clean-Line($raw) {
@@ -134,10 +183,26 @@ function Detect-Agent {
 Write-Host "Hook active - watching TUI for agent states..." -ForegroundColor Cyan
 
 if($Prompt) {
-  Send-Agent 'pxh-help' 'Interface' "Classifying: $Prompt"
-  Send-Agent 'pxh-pm' 'Orchestration' "Processing: $Prompt"
+  # === IMMEDIATE workflow:start — fired BEFORE any opencode processing ===
+  Write-Host "[Office] User submitted prompt: $Prompt" -ForegroundColor Cyan
+  Dbg "User submitted prompt"
+
+  # 1. Fire workflow:start to trigger office animations
+  Emit-WorkflowStart "User prompt: $Prompt"
+
+  # 2. Fire agent states in sequence to populate office
+  # T1 — Help Desk classifies
+  Emit-Event 'agent_state' 'pxh-help' 'Interface' "Classifying: $Prompt"
+  # T2 — CEO PXH orchestrates
+  Emit-Event 'agent_state' 'pxh-pm' 'Orchestration' "Processing: $Prompt"
+  # PXHOpenCode walks to desk and shows "Thinking..."
   Send-Mirror "[TUI START] PXHOpenCode physical visualization active"
   Send-Mirror "Thinking: initializing OpenCode session..."
+  Dbg "Animation started"
+  Dbg "Dashboard Active should increase"
+
+  # 3. Start opencode process — this may take a few seconds to initialize,
+  #    but the office is ALREADY animating from the workflow:start above
 }
 
 $proc = Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -Command opencode '$Prompt'" -NoNewWindow -PassThru -RedirectStandardOutput "$env:TEMP\opencode-out.txt" -RedirectStandardError "$env:TEMP\opencode-err.txt"
@@ -232,9 +297,11 @@ while(!$proc.HasExited) {
         Write-Host "  -> $targetAgent [$targetState]: $targetMsg" -ForegroundColor Green
         Send-Agent $targetAgent $targetState $targetMsg
         $agentCooldown[$targetAgent] = $now
+        Dbg "First activation: $targetAgent state=$targetState"
       } elseif(($now - $agentCooldown[$targetAgent]).TotalMilliseconds -ge 800) {
         Send-Agent $targetAgent $targetState $targetMsg
         $agentCooldown[$targetAgent] = $now
+        Dbg "Update: $targetAgent state=$targetState"
       }
       $activeAgents[$targetAgent] = $now
       $foundAny = $true
@@ -248,11 +315,14 @@ while(!$proc.HasExited) {
       $body = @{ state='idle'; agent=$ag; message='' } | ConvertTo-Json -Compress
       try { Invoke-RestMethod -Uri $EMIT_URL -Method Post -Body $body -ContentType "application/json" -TimeoutSec 1 | Out-Null } catch {}
       $activeAgents.Remove($ag)
+      Dbg "$ag removed — idle timeout"
     }
   }
 }
 
 $proc.WaitForExit()
 Send-Mirror "[TUI STOP] Session ended"
+Emit-WorkflowEnd "Session finished"
 Idle-All
 Write-Host "Session ended" -ForegroundColor Green
+Dbg "Phase = idle"

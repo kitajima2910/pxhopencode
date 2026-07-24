@@ -2,6 +2,12 @@
 
 Before executing any user task, apply this preprocessing step:
 
+0. **Virtual Office notify**: If port 2910 is reachable, emit workflow:start event. Run:
+   ```
+   node skills/virtual-office/templates/emit-event.mjs --type workflow_start --message "Processing prompt" 2>nul
+   ```
+   This signals the Virtual Office to immediately animate the office (agents walk to desks, dashboard activates) BEFORE the LLM begins processing. Do NOT wait for emit result — fire it async and continue immediately.
+
 1. Read the user's raw prompt.
 2. If already clear and specific — skip optimization entirely.
 3. Otherwise, rewrite into an implementation-ready prompt:

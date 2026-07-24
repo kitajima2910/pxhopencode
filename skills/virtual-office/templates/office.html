@@ -665,6 +665,69 @@ function processEvent(event){
   const isReal=event.type!=='agent_status'&&event.type!=='connected'
   if(isReal){state.lastRealEvent=performance.now();document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'}
   const tc={T0:'#8b949e',T1:'#58a6ff',T2:'#d29922',T3:'#3fb950',T4:'#bc8cff'},ac=event.tier_from||event.tier_to||'T1',color=tc[ac]||'#888'
+
+  // ============================
+  // workflow:start — triggered IMMEDIATELY on user prompt submission
+  // ============================
+  if(event.type==='workflow_start'){
+    const now=performance.now()
+    state.startTime=Date.now() // Reset elapsed timer
+    console.log('[Office] workflow:start received — animating office')
+    state.phase='Interface'
+    state.workflow='/vibe'
+    // Walk PXHOpenCode to workstation immediately
+    const oc=chars['pxh-opencode']
+    if(oc){
+      oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
+      oc.ts='Synced';oc.tsm='';oc._msgs=[]
+      // Mirror log init
+      if(!oc._mirrorLog)oc._mirrorLog=[]
+      oc._mirrorLog=['User prompt submitted','PXHOpenCode initialized']
+      // Walk to desk + sit + typing
+      oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
+      oc._bcol='#00e5ff'
+      updateElapsed()
+      document.getElementById('wfVal').textContent='/vibe'
+      document.getElementById('phVal').textContent='Interface'
+      document.getElementById('modeTxt').textContent='🔴 Live'
+      document.getElementById('modeTxt').style.opacity='0.8'
+      clearTimeout(oc._bt)
+      oc._bt=setTimeout(()=>{if(oc&&!oc._forceIdle){oc.tsm=''}},30000)
+    }
+    // T1 Help Desk active
+    const hh=chars['pxh-help']
+    if(hh){hh.w=true;hh.hrw=true;hh.ts='Interface';hh.tsm='🔍 Validate & classify input';hh.state='typing';hh.x=hh.dx;hh.y=hh.dy+40;hh.tx=hh.x;hh.ty=hh.y;hh._lastEvt=now}
+    // T2 CEO PXH active
+    const pm=chars['pxh-pm']
+    if(pm){pm.w=true;pm.hrw=true;pm.ts='Orchestration';pm.tsm='📋 Route & enforce policy';pm.state='typing';pm.x=pm.dx;pm.y=pm.dy+40;pm.tx=pm.x;pm.ty=pm.y;pm._lastEvt=now}
+    // Update dashboard — Active count updates on next render
+    addLog('▶ workflow:start','#3fb950')
+    updateStatus()
+    return
+  }
+
+  // ============================
+  // workflow:end — stop office animations, walk back
+  // ============================
+  if(event.type==='workflow_end'){
+    console.log('[Office] workflow:end received — stopping office')
+    state.phase='idle'
+    state.workflow='—'
+    const oc=chars['pxh-opencode']
+    if(oc){oc.w=false;oc.hrw=false;oc.ts='';oc.tsm='';oc._msgs=[];oc._forceIdle=true;oc.state='idle';oc.x=oc.ix;oc.y=oc.iy;oc.tx=oc.ix;oc.ty=oc.iy;oc._lastEvt=0;oc._mirrorLog=[]}
+    // Reset T1+T2
+    ;['pxh-help','pxh-pm'].forEach(ag=>{const ch=chars[ag];if(ch){ch.w=false;ch.hrw=false;ch.ts='';ch.tsm='';ch._msgs=[];ch.state='idle';ch.x=ch.ix;ch.y=ch.iy;ch.tx=ch.ix;ch.ty=ch.iy;ch._lastEvt=0}})
+    // Reset all T3+T4 workers
+    AL.forEach(a=>{const ch=chars[a.n];if(!ch)return;if(a.n==='pxh-opencode'||a.n==='pxh-help'||a.n==='pxh-pm')return;ch.w=false;ch.hrw=false;ch.ts='';ch.tsm='';ch._msgs=[];ch.state='idle';ch.x=ch.ix;ch.y=ch.iy;ch.tx=ch.ix;ch.ty=ch.iy;ch._lastEvt=0})
+    addLog('◼ workflow:end','#f85149')
+    document.getElementById('wfVal').textContent='—'
+    document.getElementById('phVal').textContent='idle'
+    document.getElementById('modeTxt').textContent='⚪ Idle'
+    document.getElementById('modeTxt').style.opacity='0.5'
+    updateStatus()
+    return
+  }
+
   if(event.type==='task_start'||event.type==='phase_change'){
     state.agent=event.to||event.from||state.agent;if(event.phase)state.phase=event.phase;if(event.workflow)state.workflow=event.workflow;if(event.retry)state.retry=event.retry
     if(state.agent)highlightAgent(state.agent)

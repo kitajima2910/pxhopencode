@@ -14,6 +14,9 @@ const NO_BRIDGE = process.argv.includes('--no-bridge')
 
 let clients = []
 let lastEventsSize = 0
+// Workflow lifecycle tracking
+let workflowActive = false
+let workflowStartTime = null
 
 function readNewEvents() {
   try {
@@ -102,12 +105,20 @@ const server = http.createServer((req, res) => {
           fix: 'pxh-fix-bugs', debug: 'pxh-fix-bugs',
           deploy: 'pxh-devops', polish: 'pxh-ui-ux',
           monitoring: 'pxh-pm',
+          workflow_start: 'pxh-opencode',
         }
         const agent = explicitAgent || STATE_MAP[tuiState] || 'pxh-expert'
-        // Auto-trigger T1+T2 on first activity
-        if((prevState === null || prevState === 'idle') && tuiState !== 'idle' && tuiState){
+        // Auto-trigger T1+T2+PXHOpenCode on first activity (workflow:start)
+        if((prevState === null || prevState === 'idle' || !prevState) && tuiState && tuiState !== 'idle'){
+          console.log(`[Office] First activity detected: ${tuiState} — triggering T1+T2+PXHOpenCode`)
+          if (!workflowActive) {
+            workflowActive = true
+            workflowStartTime = new Date()
+            broadcast({ type: 'workflow_start', message: 'User prompt submitted', ts: workflowStartTime.toISOString() })
+          }
           broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Validate & classify input' })
           broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Route & enforce policy' })
+          broadcast({ type: 'agent_state', agent: 'pxh-opencode', tuiState: 'Synced', message: 'Thinking: initializing OpenCode session...' })
           prevState = tuiState
         }
         const event = {
@@ -115,10 +126,18 @@ const server = http.createServer((req, res) => {
           agent, tuiState,
           message: customMsg || `${tuiState}...`,
         }
+        console.log(`[Office] State: ${tuiState} → agent: ${agent}`)
         emit(event)
         // Also direct broadcast for instant update
         broadcast(event)
-        if(tuiState === 'idle') prevState = 'idle'
+        if(tuiState === 'idle') {
+          prevState = 'idle'
+          if (workflowActive) {
+            workflowActive = false
+            broadcast({ type: 'workflow_end', message: 'Processing complete', ts: new Date().toISOString() })
+            console.log(`[Office] workflow:end — Processing complete`)
+          }
+        }
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ status:'ok', agent, state: tuiState }))
       } catch(e) {
@@ -135,6 +154,37 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const event = JSON.parse(body)
+
+        // Handle workflow lifecycle events
+        if (event.type === 'workflow_start') {
+          workflowActive = true
+          workflowStartTime = new Date(event.ts || Date.now())
+          console.log(`[Office] workflow:start — User submitted prompt`)
+          // Broadcast immediately to all SSE clients
+          broadcast({
+            type: 'workflow_start',
+            message: event.message || 'Workflow started',
+            ts: workflowStartTime.toISOString(),
+          })
+          // Also auto-trigger T1+T2
+          broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Validate & classify input' })
+          broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Route & enforce policy' })
+          // PXHOpenCode active
+          broadcast({ type: 'agent_state', agent: 'pxh-opencode', tuiState: 'Synced', message: 'Thinking: initializing OpenCode session...' })
+          console.log(`[Office] T1+T2 auto-triggered, PXHOpenCode activated`)
+          prevState = 'Interface' // Mark as active so subsequent /state calls don't re-trigger
+        } else if (event.type === 'workflow_end') {
+          workflowActive = false
+          workflowStartTime = null
+          console.log(`[Office] workflow:end — Session finished`)
+          broadcast({
+            type: 'workflow_end',
+            message: event.message || 'Workflow ended',
+            ts: new Date().toISOString(),
+          })
+          prevState = 'idle'
+        }
+
         const result = emit(event)
         broadcast(event)
         res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -200,10 +250,17 @@ try {
       const raw = fs.readFileSync(STATE_FILE, 'utf-8')
       const st = JSON.parse(raw)
       if(st.state && st.state !== prevState){
-        // Detect initial activity: T1+T2 sit at desk immediately
+        // Detect initial activity: T1+T2+PXHOpenCode sit at desk immediately
         if(prevState === null || prevState === 'idle' || !prevState){
+          console.log(`[Office] State file: first activity ${st.state} — triggering T1+T2+PXHOpenCode`)
+          if (!workflowActive) {
+            workflowActive = true
+            workflowStartTime = new Date()
+            broadcast({ type: 'workflow_start', message: 'User prompt submitted', ts: workflowStartTime.toISOString() })
+          }
           broadcast({ type: 'agent_state', agent: 'pxh-help', tuiState: 'Interface', message: '🔍 Validate & classify input' })
           broadcast({ type: 'agent_state', agent: 'pxh-pm', tuiState: 'Orchestration', message: '📋 Route & enforce policy' })
+          broadcast({ type: 'agent_state', agent: 'pxh-opencode', tuiState: 'Synced', message: 'Thinking: initializing OpenCode session...' })
         }
         broadcast({
           type: 'agent_state',
@@ -217,8 +274,28 @@ try {
         // Mirror: always broadcast each line for PXHOpenCode
         broadcast({ type: 'tui_mirror', agent: 'pxh-opencode', message: st.message })
       } else if(!st.state || st.state === 'idle'){
+        if (prevState !== 'idle' && workflowActive) {
+          workflowActive = false
+          broadcast({ type: 'workflow_end', message: 'Processing complete', ts: new Date().toISOString() })
+          console.log(`[Office] workflow:end — processing complete (state file idle)`)
+        }
         prevState = 'idle'
         prevAgent = null
+      }
+      // Handle workflow_start / workflow_end from state file
+      if (st.state === 'workflow_start') {
+        if (!workflowActive) {
+          workflowActive = true
+          workflowStartTime = new Date()
+          broadcast({ type: 'workflow_start', message: st.message || 'Workflow started', ts: workflowStartTime.toISOString() })
+          console.log(`[Office] workflow:start from state file`)
+        }
+      } else if (st.state === 'workflow_end') {
+        if (workflowActive) {
+          workflowActive = false
+          broadcast({ type: 'workflow_end', message: st.message || 'Workflow ended', ts: new Date().toISOString() })
+          console.log(`[Office] workflow:end from state file`)
+        }
       }
     } catch {}
   })
