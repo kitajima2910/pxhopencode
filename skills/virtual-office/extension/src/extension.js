@@ -1,7 +1,9 @@
 const vscode = require("vscode");
+const path = require("path");
 const { OfficeViewProvider } = require("./officeViewProvider");
 
 let eventWatcher = null;
+let serverProcess = null;
 
 function activate(context) {
   const provider = new OfficeViewProvider(context.extensionUri, context);
@@ -76,12 +78,52 @@ function activate(context) {
         if (eventWatcher) eventWatcher.dispose();
       })
     );
+
+    startServer(context, workspaceRoot);
   }
+}
+
+function startServer(context, workspaceRoot) {
+  try {
+    const serverScript = path.join(
+      context.extensionUri.fsPath,
+      "..", "..", "templates", "server.mjs"
+    );
+    if (!require("fs").existsSync(serverScript)) return;
+
+    const { spawn } = require("child_process");
+    serverProcess = spawn("node", [serverScript, "--no-bridge"], {
+      cwd: workspaceRoot,
+      stdio: "ignore",
+      windowsHide: true,
+    });
+
+    serverProcess.on("error", () => {
+      serverProcess = null;
+    });
+
+    serverProcess.on("exit", () => {
+      serverProcess = null;
+    });
+
+    context.subscriptions.push(
+      new vscode.Disposable(() => {
+        if (serverProcess) {
+          try { serverProcess.kill(); } catch {}
+          serverProcess = null;
+        }
+      })
+    );
+  } catch {}
 }
 
 function deactivate() {
   if (eventWatcher) {
     eventWatcher.dispose();
+  }
+  if (serverProcess) {
+    try { serverProcess.kill(); } catch {}
+    serverProcess = null;
   }
 }
 
