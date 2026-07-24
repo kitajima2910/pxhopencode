@@ -17,6 +17,17 @@ canvas{display:block;image-rendering:pixelated;touch-action:none}
 #msgOverlay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-size:clamp(18px,6vw,32px);text-align:center;text-shadow:0 0 12px #fff,0 0 24px #f0f;pointer-events:none;width:90%}
 #msgOverlay small{display:block;font-size:clamp(11px,3.5vw,16px);color:#aaa;margin-top:10px;line-height:1.5}
 @media(orientation:portrait){#topBar{font-size:clamp(8px,2.8vw,14px)}}
+.sound-btn{position:absolute;top:clamp(8px,2vh,18px);right:clamp(50px,12vw,80px);z-index:20;background:none;border:1px solid rgba(0,255,255,.3);color:#0ff;font-size:clamp(14px,3.5vw,20px);padding:clamp(2px,.5vw,6px) clamp(6px,1.5vw,12px);border-radius:6px;cursor:pointer;pointer-events:auto;touch-action:none;opacity:.7;font-family:'Courier New',monospace;line-height:1}
+.help-btn{position:absolute;top:clamp(8px,2vh,18px);right:clamp(10px,3vw,20px);z-index:20;width:clamp(24px,6vw,36px);height:clamp(24px,6vw,36px);border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;font-size:clamp(14px,3.5vw,20px);display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto;touch-action:none;font-family:'Courier New',monospace}
+.help-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.93);z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;padding:clamp(16px,4vw,40px);color:#fff;font-family:'Courier New',monospace;text-align:center}
+.help-overlay.show{display:flex}
+.help-overlay h2{color:#0ff;font-size:clamp(18px,5vw,28px);margin-bottom:clamp(12px,2vh,20px);text-shadow:0 0 10px #0ff}
+.help-overlay p{font-size:clamp(11px,3vw,16px);margin:clamp(4px,1vh,8px) 0;line-height:1.6;color:#ccc}
+.help-overlay .key{color:#ff0}
+.help-overlay .highlight{color:#f0f}
+.help-overlay .close-btn{margin-top:clamp(16px,3vh,30px);padding:clamp(8px,1.5vw,14px) clamp(20px,5vw,40px);border:2px solid #0ff;background:rgba(0,255,255,.1);color:#0ff;font-size:clamp(14px,3.5vw,20px);border-radius:8px;cursor:pointer;pointer-events:auto;font-family:'Courier New',monospace}
+.orient-warning{position:absolute;top:0;left:0;right:0;z-index:50;background:rgba(255,100,0,.85);color:#fff;text-align:center;padding:clamp(4px,1vh,8px);font-size:clamp(10px,2.5vw,14px);font-family:'Courier New',monospace;display:none;pointer-events:none}
+.orient-warning.show{display:block}
 </style>
 </head>
 <body>
@@ -29,15 +40,33 @@ canvas{display:block;image-rendering:pixelated;touch-action:none}
   </div>
   <div id="hpBar"></div>
   <div id="fireBtn">🔥</div>
+  <button id="soundBtn" class="sound-btn">🔊</button>
+  <button id="helpBtn" class="help-btn">?</button>
 </div>
 <div id="msgOverlay"></div>
+<div id="orientWarning" class="orient-warning">📱 Xoay ngang máy để chơi tốt hơn</div>
+<div id="helpOverlay" class="help-overlay">
+  <h2>Hướng dẫn</h2>
+  <p>📱 <b class="key">Kéo</b> trên màn hình để di chuyển</p>
+  <p>🔥 Nút <b class="key">lửa</b> để bắn</p>
+  <p>⌨️ Phím <b class="key">mũi tên / WASD</b> di chuyển, <b class="key">Space</b> bắn</p>
+  <p>—</p>
+  <p>⚡ <b class="highlight">Double</b> — 2 đạn song song</p>
+  <p>✨ <b class="highlight">Spread</b> — 3 đạn hình nón</p>
+  <p>🛡️ <b class="highlight">Shield</b> — lá chắn 5 máu</p>
+  <p>🔥 <b class="highlight">Laser</b> — tia laser xuyên thấu</p>
+  <p>—</p>
+  <p>Hạ enemy liên tiếp để nhân đôi điểm</p>
+  <p>Sau 4 wave, <b class="key">BOSS</b> xuất hiện!</p>
+  <button class="close-btn" id="helpClose">OK! 🚀</button>
+</div>
 <canvas id="c"></canvas>
 <script>
 // ==================== AUDIO ====================
 const AC=window.AudioContext||window.webkitAudioContext
 let audioCtx
 function sfx(freq,type,dur,vol=.06,slide=0){
-  if(!audioCtx)return
+  if(!audioCtx||!soundEnabled)return
   const t=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain()
   o.type=type||'square'
   o.frequency.setValueAtTime(freq,t)
@@ -53,6 +82,10 @@ function explode(){sfx(40,'sawtooth',.12,.06);sfx(120,'square',.08,.04,-80)}
 function powerUp(){sfx(800,'square',.06,.03);setTimeout(()=>sfx(1200,'square',.06,.03),50)}
 function bossSfx(){for(let i=0;i<4;i++)setTimeout(()=>sfx(100+i*50,'square',.08,.05),i*50)}
 function gameOverSfx(){sfx(200,'sawtooth',.12,.08);setTimeout(()=>sfx(150,'sawtooth',.1,.06),120);setTimeout(()=>sfx(100,'sawtooth',.08,.12),240)}
+function toggleSound(){soundEnabled=!soundEnabled;document.getElementById('soundBtn').textContent=soundEnabled?'🔊':'🔇'}
+function showHelp(){document.getElementById('helpOverlay').classList.add('show')}
+function hideHelp(){document.getElementById('helpOverlay').classList.remove('show')}
+function checkOrientation(){const w=document.getElementById('orientWarning');w.classList.toggle('show',window.innerHeight>window.innerWidth)}
 
 // ==================== CANVAS ====================
 const c=document.getElementById('c'),ctx=c.getContext('2d')
@@ -61,15 +94,17 @@ function resize(){
   W=window.innerWidth;H=window.innerHeight
   S=Math.min(W,H)/520
   c.width=W;c.height=H
+  checkOrientation()
 }
 resize();window.addEventListener('resize',resize)
+window.addEventListener('orientationchange',()=>setTimeout(checkOrientation,300))
 
 // ==================== HELPERS ====================
 const R=v=>v*S
 const SC=Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:.5+Math.random()*1.5,b:.3+Math.random()*.7}))
 
 // ==================== GAME STATE ====================
-let score=0,combo=0,maxCombo=0,comboTimer=0,wave=1,lives=3,gameOver=false,shakeX=0,shakeY=0,shakeT=0
+let score=0,combo=0,maxCombo=0,comboTimer=0,wave=1,lives=3,gameOver=false,shakeX=0,shakeY=0,shakeT=0,soundEnabled=true
 let player,bullets=[],enemies=[],enemyBullets=[],particles=[],powerUps=[],boss=null,firePressed=false
 
 // ==================== PLAYER ====================
@@ -118,6 +153,12 @@ fb.addEventListener('touchend',e=>{e.preventDefault();e.stopPropagation();firePr
 fb.addEventListener('touchcancel',e=>{firePressed=false})
 fb.addEventListener('mousedown',()=>{initAudio();firePressed=true})
 fb.addEventListener('mouseup',()=>{firePressed=false})
+document.getElementById('soundBtn').addEventListener('click',e=>{e.stopPropagation();initAudio();toggleSound()})
+document.getElementById('soundBtn').addEventListener('touchstart',e=>{e.stopPropagation();e.preventDefault();initAudio();toggleSound()},{passive:false})
+document.getElementById('helpBtn').addEventListener('click',e=>{e.stopPropagation();showHelp()})
+document.getElementById('helpBtn').addEventListener('touchstart',e=>{e.stopPropagation();e.preventDefault();showHelp()},{passive:false})
+document.getElementById('helpClose').addEventListener('click',hideHelp)
+document.getElementById('helpClose').addEventListener('touchstart',e=>{e.preventDefault();hideHelp()},{passive:false})
 
 // ==================== RESET ====================
 function reset(){
@@ -421,6 +462,7 @@ function draw(){
   ctx.restore()
 
   // DOM UI
+  document.getElementById('soundBtn').textContent=soundEnabled?'🔊':'🔇'
   document.getElementById('score').textContent=score
   document.getElementById('combo').textContent='x'+(combo+Math.min(1,lives>0))
   document.getElementById('combo').style.color=combo>5?'#f0f':combo>2?'#ff0':'#0ff'
