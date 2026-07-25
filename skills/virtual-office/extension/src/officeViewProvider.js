@@ -22,6 +22,39 @@ class OfficeViewProvider {
     webviewView.webview.onDidReceiveMessage((msg) => {
       if (msg.command === "log") {
         console.log("[PXH Office]", msg.text);
+      } else if (msg.command === "pxh_exec") {
+        // Execute terminal command in workspace root
+        const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+        if (!wsRoot) {
+          this._send({ type: "tui_mirror", agent: "pxh-opencode", message: "[error] No workspace folder open" });
+          return;
+        }
+        const { exec } = require("child_process");
+        const child = exec(msg.text, { cwd: wsRoot, maxBuffer: 1024 * 1024, timeout: 600000 });
+        
+        child.stdout.on("data", (data) => {
+          const lines = data.toString().split("\n").filter(Boolean);
+          lines.forEach((line) => {
+            this._send({ type: "tui_mirror", agent: "pxh-opencode", message: line.trim() });
+          });
+        });
+        
+        child.stderr.on("data", (data) => {
+          const lines = data.toString().split("\n").filter(Boolean);
+          lines.forEach((line) => {
+            this._send({ type: "tui_mirror", agent: "pxh-opencode", message: "[stderr] " + line.trim() });
+          });
+        });
+        
+        child.on("error", (err) => {
+          this._send({ type: "tui_mirror", agent: "pxh-opencode", message: "[error] " + err.message });
+          this._send({ type: "workflow_end", message: "Command failed" });
+        });
+        
+        child.on("close", (code) => {
+          this._send({ type: "tui_mirror", agent: "pxh-opencode", message: `[done] Exit code: ${code}` });
+          this._send({ type: "workflow_end", message: `Command finished (exit: ${code})` });
+        });
       }
     });
 

@@ -28,6 +28,8 @@ canvas{display:block;width:100%;height:100%}
 #logOverlay{display:none}
 .log-item{font-size:10px;padding:3px 12px;margin:2px 0;background:rgba(0,0,0,0.8);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideUp .25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
 @keyframes slideUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+#pxhTermInput{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;z-index:10}
+#pxhTermInput:focus{outline:none}
 </style>
 </head>
 <body>
@@ -38,7 +40,7 @@ canvas{display:block;width:100%;height:100%}
       <span class="ver">AI Company · 4-tier Runtime</span>
     </div>
   </div>
-  <div id="canvasWrap"><canvas id="c"></canvas><div id="logOverlay"></div></div>
+  <div id="canvasWrap"><canvas id="c"></canvas><div id="logOverlay"></div><input id="pxhTermInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></div>
   <div class="status-bar" id="statusBar">
     <div class="st-item"><span class="lbl">Workflow</span><span class="val" id="wfVal">—</span></div>
     <div class="st-item"><span class="lbl">Phase</span><span class="val" id="phVal">—</span></div>
@@ -87,6 +89,85 @@ let W,H
 const chars={}
 AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now(),_sessionArchive:[]}})
 const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
+
+// ============================================================
+// PXH TERMINAL — interactive command input
+// ============================================================
+const pxhTerm={buf:'',hist:[],histIdx:-1,focused:false,cmdRunning:false}
+const termInput=document.getElementById('pxhTermInput')
+
+function focusTerminal(){pxhTerm.focused=true;termInput.focus()}
+function blurTerminal(){pxhTerm.focused=false;termInput.blur()}
+
+termInput.addEventListener('focus',()=>{pxhTerm.focused=true})
+termInput.addEventListener('blur',()=>{pxhTerm.focused=false})
+termInput.addEventListener('keydown',function(e){
+  if(e.key==='Enter'){
+    const cmd=this.value.trim()
+    if(!cmd)return
+    // Add to history
+    pxhTerm.hist.push(cmd);pxhTerm.histIdx=pxhTerm.hist.length
+    // Show in terminal log
+    addLog('> '+cmd,'#00e5ff','pxh-opencode')
+    // Execute
+    executePXHCommand(cmd)
+    this.value='';pxhTerm.buf=''
+    e.preventDefault()
+  }else if(e.key==='ArrowUp'){
+    if(pxhTerm.histIdx>0){pxhTerm.histIdx--;this.value=pxhTerm.hist[pxhTerm.histIdx]}
+    e.preventDefault()
+  }else if(e.key==='ArrowDown'){
+    if(pxhTerm.histIdx<pxhTerm.hist.length-1){pxhTerm.histIdx++;this.value=pxhTerm.hist[pxhTerm.histIdx]}
+    else{pxhTerm.histIdx=pxhTerm.hist.length;this.value=''}
+    e.preventDefault()
+  }else if(e.key==='Escape'){
+    termInput.blur()
+    e.preventDefault()
+  }
+})
+
+function executePXHCommand(cmd){
+  pxhTerm.cmdRunning=true
+  // Trigger workflow_start so agents go to desk
+  if(typeof applyStateDiff==='function'){
+    applyStateDiff({
+      session:{active:true,phase:'Interface',workflow:'/terminal',startTime:Date.now()},
+      agents:{'pxh-opencode':{currentState:'typing',badge:'Exec',message:'Running: '+cmd,active:true,color:'#00e5ff'}},
+      changedAgents:['pxh-opencode']
+    })
+  }
+  // Send to extension host for execution (VSCode mode)
+  if(typeof acquireVsCodeApi==='function'){
+    acquireVsCodeApi().postMessage({command:'pxh_exec',text:cmd})
+  }else{
+    // Demo mode: simulate output
+    addLog('[demo] Cannot execute in browser mode','#f85149','pxh-opencode')
+    addLog('[demo] Install VSCode extension for real execution','#d29922','pxh-opencode')
+    setTimeout(()=>{
+      if(typeof applyStateDiff==='function'){
+        applyStateDiff({session:{active:false,phase:'idle',workflow:'—'},
+          agents:{'pxh-opencode':{currentState:'idle',badge:'',message:'',active:false}},
+          changedAgents:['pxh-opencode']})
+      }
+      pxhTerm.cmdRunning=false
+    },500)
+  }
+}
+
+// Click on PXHOpenCode terminal area -> focus terminal input
+c.addEventListener('click',function(e){
+  const rect=c.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top
+  const pch=chars['pxh-opencode']
+  if(!pch)return
+  const scx=pch.dx,scy=pch.dy+50,pmw=70,pmh=46
+  // Check if click is near PXHOpenCode desk/terminal area
+  if(mx>scx-pmw/2-20&&mx<scx+pmw/2+20&&my>scy-pmh-10&&my<scy+30){
+    focusTerminal()
+    return
+  }
+  // If clicking elsewhere while terminal focused, blur
+  if(pxhTerm.focused)blurTerminal()
+})
 
 // ============================================================
 // LAYOUT
@@ -944,8 +1025,22 @@ function animate(now){fc++;updateElapsed()
     ctx.fillStyle='rgba(0,229,255,0.08)';ctx.font='5px "Consolas",monospace'
     ctx.fillText('Waiting for tasks...',scx,scy-pmh/2+8)
   }
-  // Blinking cursor
-  if(Math.floor(fc/20)%2){ctx.fillStyle='rgba(0,229,255,0.6)';ctx.fillRect(scx+pmw/2-12,scy-12,4,2.5)}
+  // PXH Terminal input line — below screen
+  ctx.fillStyle='rgba(0,229,255,0.08)';ctx.fillRect(scx-pmw/2+2,scy+2,pmw-4,11)
+  ctx.fillStyle='rgba(0,229,255,0.3)';ctx.font='6px "Consolas",monospace';ctx.textAlign='left'
+  var termPrompt='PXH> '
+  var termDisplay=termPrompt+(termInput.value||'')
+  ctx.fillText(termDisplay,scx-pmw/2+4,scy+10)
+  // Input cursor on canvas
+  if(pxhTerm.focused&&Math.floor(fc/8)%2){
+    var cursorX=scx-pmw/2+4+ctx.measureText(termDisplay).width
+    ctx.fillStyle='rgba(0,229,255,0.8)';ctx.fillRect(cursorX,scy+3,4,7)
+  }
+  // Terminal hint when not focused
+  if(!pxhTerm.focused&&!termInput.value){
+    ctx.fillStyle='rgba(0,229,255,0.15)';ctx.font='5px "Consolas",monospace'
+    ctx.fillText('Click here to type commands',scx-pmw/2+4,scy+10)
+  }
   ctx.restore()
   // Status LED
   var pact=pch.state==='typing'||pch.w;ctx.fillStyle=pact?'#00e5ff':'#0a2a3a';ctx.beginPath();ctx.arc(scx+pmw/2-5,scy-pmh+4,3,0,Math.PI*2);ctx.fill()
