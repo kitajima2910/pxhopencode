@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v50</b> &nbsp;·&nbsp; 168 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 175 templates</p>
+  <b>v57</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 175 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build. Bạn chỉ cần ngồi xem Virtual Office chạy.
 
@@ -223,7 +223,58 @@ Restart VS Code → Virtual Office xuất hiện ở sidebar.
 ## Changelog
 
 <details>
-<summary><b>v50 — Release (Latest)</b></summary>
+<summary><b>v57 — Colorize logs theo agent (Latest)</b></summary>
+
+- **Colorize:** Agent logs trên PXHOpenCode terminal + monitors dùng màu `AGENTS[agentId].c` thay vì keyword-match
+- **Fallback:** System entries (sys) vẫn dùng keyword-based color
+</details>
+
+<details>
+<summary><b>v56 — Mở rộng PXHOpenCode mirror</b></summary>
+
+- **Expand:** Bỏ guard `currentState==='typing'` — ALL messages từ PXHOpenCode đẩy vào `_monitorLog` bất kể state
+</details>
+
+<details>
+<summary><b>v55 — Clean dead code</b></summary>
+
+- **Clean:** Xóa 5 functions không dùng (~50 dòng) + flag `hrw` + comment disabled + file `test-eventwatcher.js` rỗng
+</details>
+
+<details>
+<summary><b>v54 — Fix 4 agent bugs</b></summary>
+
+- **Fix #1:** Walking agents được đưa về desk khi session start
+- **Fix #2:** Stale timeout không xóa speech bubble khi agent active
+- **Fix #3:** `isIdle` bắt được `active:false` không kèm currentState
+- **Fix #4:** `startTyping` không leak interval khi gọi nhiều lần
+</details>
+
+<details>
+<summary><b>v53 — Render layer fix + Audit</b></summary>
+
+- **Fix:** PXHOpenCode character vẽ sau terminal screen (ngồi sau màn hình)
+- **Fix:** PXHOpenCode không bị vô hình khi wandering
+- **Audit:** Toàn bộ agent logic — không còn bug nghiêm trọng
+</details>
+
+<details>
+<summary><b>v52 — PXHOpenCode vào desk khi session active</b></summary>
+
+- **Fix:** Thêm `state._sessionActive` trigger PXHOpenCode đi làm
+- **Fix:** Guard `poc._lastEvt!==0` chống infinite loop
+</details>
+
+<details>
+<summary><b>v51 — PXHOpenCode Terminal Re-enable</b></summary>
+
+- **Re-enable:** Banner hiển thị task logs, PXHOpenCode terminal screen vẽ lại
+- **Add:** `_monitorLog` agents re-enabled, `addLog()` đẩy tất cả logs vào PXHOpenCode terminal
+- **Fix:** Duplicate log bug
+</details>
+
+<details>
+<summary><b>v50 — Release</b></summary>
 
 - **Release:** Extension-only Virtual Office — remove standalone browser/TUI, server.mjs API-only
 - **Harden:** Arch check 0 errors, root package.json fixed, build script handles meta-projects + VSCE packaging

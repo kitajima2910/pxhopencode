@@ -197,9 +197,13 @@ function drawAgentMonitor(x,y,ch){
   if(ml.length){
     ml.slice(-6).forEach((entry,i)=>{
       const ly=y+mh-8-(ml.slice(-6).length-1-i)*5
-      let c='#8cf';if(entry.s&&entry.s.match(/error|fail|debug|fix/i))c='#f85149'
-      else if(entry.s&&entry.s.match(/build|execute|test/i))c='#d29922'
-      else if(entry.s&&entry.s.match(/code|write|edit/i))c='#3fb950'
+      let c='#8cf'
+      if(entry.s){
+        if(AGENTS[entry.s])c=AGENTS[entry.s].c
+        else if(entry.s.match(/error|fail|debug|fix/i))c='#f85149'
+        else if(entry.s.match(/build|execute|test/i))c='#d29922'
+        else if(entry.s.match(/code|write|edit/i))c='#3fb950'
+      }
       ctx.fillStyle=c;ctx.font='6px "Consolas",monospace';ctx.textAlign='left'
       const txt=entry.m.length>22?entry.m.slice(0,21)+'…':entry.m
       ctx.fillText(txt,x-mw/2+6,ly)
@@ -734,21 +738,24 @@ function applyStateDiff(diff){
         ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)
       }
 
-      if(agentId==='pxh-opencode'&&agentState.currentState==='typing'){
-        // PXHOpenCode mirror update — push all agent logs to PXHOpenCode terminal
-        if(agentState&&agentState.message){
-          var oc=chars['pxh-opencode']
-          if(oc){
-            var line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
-            if(line){
+      // PXHOpenCode mirror — push ALL messages to terminal regardless of currentState
+      if(agentId==='pxh-opencode'&&agentState&&agentState.message){
+        var oc=chars['pxh-opencode']
+        if(oc){
+          var line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
+          if(line){
+            // Always push to PXHOpenCode _monitorLog for terminal display
+            oc._monitorLog.push({s:agentId,m:line,t:Date.now()})
+            if(oc._monitorLog.length>50)oc._monitorLog.splice(0,oc._monitorLog.length-50)
+            if(line.match(/\[TUI STOP\]/i)){
+              // STOP: don't set working state, just log it
+              oc._forceIdle=true;oc._lastEvt=0
+            }else{
+              // Active: set character to working state
               oc.ts='Synced';oc.w=true;oc._lastEvt=now;oc._forceIdle=false
               oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
-              if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
-              // Push to PXHOpenCode _monitorLog for terminal display
-              oc._monitorLog.push({s:agentId,m:line,t:Date.now()})
-              if(oc._monitorLog.length>50)oc._monitorLog.splice(0,oc._monitorLog.length-50)
-              clearTimeout(oc._bt);oc._bt=setTimeout(function(){oc.tsm='';oc.ts=''},30000)
             }
+            clearTimeout(oc._bt);oc._bt=setTimeout(function(){oc.tsm='';oc.ts=''},30000)
           }
         }
       }
@@ -882,9 +889,12 @@ function animate(now){fc++;updateElapsed()
     oml.slice(-10).forEach(function(entry,i){
       var ly=scy-12-(oml.slice(-10).length-1-i)*3.8
       var cc='#8cf'
-      if(entry.s&&entry.s.match(/error|fail|debug|fix/i))cc='#f85149'
-      else if(entry.s&&entry.s.match(/build|execute|test/i))cc='#d29922'
-      else if(entry.s&&entry.s.match(/code|write|edit/i))cc='#3fb950'
+      if(entry.s){
+        if(AGENTS[entry.s])cc=AGENTS[entry.s].c
+        else if(entry.s.match(/error|fail|debug|fix/i))cc='#f85149'
+        else if(entry.s.match(/build|execute|test/i))cc='#d29922'
+        else if(entry.s.match(/code|write|edit/i))cc='#3fb950'
+      }
       ctx.fillStyle=cc;ctx.font='5.5px "Consolas",monospace';ctx.textAlign='left'
       var txt=entry.m.length>32?entry.m.slice(0,29)+'...':entry.m
       ctx.fillText(txt,scx-pmw/2+5,ly)

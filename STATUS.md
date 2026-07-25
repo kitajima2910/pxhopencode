@@ -56,6 +56,8 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-25 | v57 | **Colorize logs theo agent** — `drawAgentMonitor()` + PXHOpenCode terminal dùng `AGENTS[entry.s].c` thay vì keyword-match, fallback keyword cho system entries |
+| 2026-07-25 | v56 | **Mở rộng PXHOpenCode mirror** — bỏ guard `currentState==='typing'`, ALL messages từ PXHOpenCode đẩy vào `_monitorLog` terminal bất kể state |
 | 2026-07-25 | v55 | **Clean dead code** — xóa 5 functions không dùng (~50 dòng) + flag `hrw` + comment disabled + file `test-eventwatcher.js` rỗng |
 | 2026-07-25 | v54 | **Fix 4 agent bugs** — (1) walking agents về desk khi session start, (2) stale timeout không xóa speech bubble khi active, (3) `isIdle` bắt `active:false`, (4) `startTyping` không leak interval |
 | 2026-07-25 | v53 | **Render layer fix + Audit** — PXHOpenCode character vẽ sau terminal screen (ngồi sau màn hình), fix vô hình khi wandering, audit toàn bộ agent logic |
