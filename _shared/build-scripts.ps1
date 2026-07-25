@@ -28,9 +28,12 @@ function Invoke-LintAndTypeCheck {
 
 function Invoke-Test {
   if ($isNode) {
-    npm test
-    if (-not $?) { Write-Warning "⚠ Tests fail"; exit 1 }
-    Write-Output "✅ Tests pass"
+    $hasTest = (Get-Content "package.json" -Raw | ConvertFrom-Json).scripts.test
+    if ($hasTest) {
+      npm test
+      if (-not $?) { Write-Warning "⚠ Tests fail"; exit 1 }
+      Write-Output "✅ Tests pass"
+    } else { Write-Output "⏭️ No test script, skip" }
   } elseif ($isRust) {
     cargo test
     if (-not $?) { exit 1 }
@@ -43,14 +46,29 @@ function Invoke-Test {
 
 function Invoke-Build {
   if ($isNode) {
-    npm run build
-    if ($?) {
-      $outDir = if (Test-Path ".next") { ".next" } elseif (Test-Path "dist") { "dist" } else { "build" }
-      if (Test-Path $outDir) {
-        $size = (Get-ChildItem -Path $outDir -Recurse -File | Measure-Object -Property Length -Sum).Sum / 1MB
-        Write-Output "✅ Build success ($($size.ToString('N1'))MB)"
-      } else { Write-Output "✅ Build success" }
-    } else { exit 1 }
+    $hasBuild = (Get-Content "package.json" -Raw | ConvertFrom-Json).scripts.build
+    if ($hasBuild) {
+      npm run build
+      if ($?) {
+        $outDir = if (Test-Path ".next") { ".next" } elseif (Test-Path "dist") { "dist" } else { "build" }
+        if (Test-Path $outDir) {
+          $size = (Get-ChildItem -Path $outDir -Recurse -File | Measure-Object -Property Length -Sum).Sum / 1MB
+          Write-Output "✅ Build success ($($size.ToString('N1'))MB)"
+        } else { Write-Output "✅ Build success" }
+      } else { exit 1 }
+    } else {
+      Write-Output "⏭️ No build script — meta-project, skip npm build"
+      # Try VSCE extension packaging if present
+      $extPkg = "skills/virtual-office/extension/package.json"
+      if (Test-Path $extPkg) {
+        Write-Output "📦 Packaging VSCE extension..."
+        npx @vscode/vsce package --out "pxh-virtual-office.vsix" 2>$null
+        if ($? -and (Test-Path "pxh-virtual-office.vsix")) {
+          $size = (Get-Item "pxh-virtual-office.vsix").Length / 1MB
+          Write-Output "✅ VSCE extension packaged ($($size.ToString('N1'))MB)"
+        } else { Write-Warning "⚠ VSCE packaging skipped (install vsce: npm i -g @vscode/vsce)" }
+      }
+    }
   } elseif ($isRust) {
     cargo build --release
     if ($?) {

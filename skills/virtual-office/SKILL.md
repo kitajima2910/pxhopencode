@@ -82,6 +82,13 @@ emit({ type: 'agent_status', from: 'pxh-expert', message: 'Code completed' })
 | `templates/messages.mjs` | Message type definitions |
 | `templates/renderer-state.js` | State store (inlined vào webview) |
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Office chỉ là visual, lỗi không sao" | User mất niềm tin vào AI team |
+| "Event sync chậm vài giây cũng được" | UX tệ, agent speech bubble lag |
+| "Không cần test extension, manual là đủ" | Regression mỗi lần thêm tính năng mới |
+
 ## Red Flags
 
 - Cần VS Code 1.85+

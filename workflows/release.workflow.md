@@ -1,6 +1,6 @@
 # Workflow Phát hành — Build Pipeline
 
-Pipeline: lint → typecheck → test → build → báo user.
+Pipeline: lint → typecheck → test → build/tag → báo user.
 
 ## Điều kiện (Gate Check)
 ```
@@ -14,7 +14,10 @@ Không thỏa → **TỪ CHỐI**, Event{reject} → T4 + báo user.
 1. **Lint + TypeCheck**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/build-scripts.ps1" -Step lint`
 2. **Test Suite**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/build-scripts.ps1" -Step test`
 3. **Build**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/build-scripts.ps1" -Step build`
-4. **Báo user**: `✅ Build thành công! 📁 Output: dist/ (hoặc .next/) 👉 Bạn deploy tuỳ ý.`
+4. **Tag version**: `git tag v$(node -e "console.log(require('./package.json').version)")`
+5. **Báo user**:
+   - **Meta-project** (pxhopencode): `✅ Release v50 sẵn sàng! 📦 Extension .vsix nếu có. 👉 git push --tags && publish extension.`
+   - **User project**: `✅ Build thành công! 📁 Output: dist/ (hoặc .next/) 👉 Bạn deploy tuỳ ý.`
 
 Sau build → Event{phase: release, status: success, data: {version, size, date}} → @pxh-save-history.
 
@@ -24,6 +27,7 @@ Sau build → Event{phase: release, status: success, data: {version, size, date}
 | Lint lỗi | Fix → commit → chạy lại pipeline |
 | Test fail | Báo QA, không release |
 | Build fail | Kiểm tra log, fix dependency |
+| Tag conflict | `git tag -d vX` → bump version → tag lại |
 
 ## Anti-Rationalization
 | Excuse | Reality |
@@ -31,16 +35,19 @@ Sau build → Event{phase: release, status: success, data: {version, size, date}
 | "Lint warning nhỏ, release vẫn được" | Warning hôm nay = error ngày mai |
 | "Typecheck chậm, skip đi" | Runtime error type-related lúc nào cũng xảy ra |
 | "Test flaky, chạy lại là pass" | Flaky test bỏ qua bug → regression |
+| "Meta-project không có build, skip hết" | VSCE extension vẫn cần package → verify |
 
 ## Red Flags
 - Build success nhưng có warning
 - Gate check chưa pass (QA/review)
 - Output file không tồn tại hoặc size 0
+- Tag version không khớp STATUS.md
 
 ## Verification
 - [ ] Gate: QA pass + Review pass + Git clean
 - [ ] Lint 0 error, typecheck pass, test all green
-- [ ] Build output exists + size hợp lý
+- [ ] Build output exists + size hợp lý (hoặc meta-project: tag tồn tại)
+- [ ] Tag version phù hợp STATUS.md
 
 ## NGUYÊN TẮC
 1. **Fail fast**: lỗi → dừng ngay

@@ -56,7 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-07-24 | v50 | Extension-only Virtual Office — remove standalone browser/TUI webview (office.html, office.mjs, office-bridge.mjs, transport.mjs, opencode-adapter.mjs, hook-opencode.ps1), delete pxh-office.bat, clean server.mjs for API-only mode, remove webview-ui comment refs, update SKILL.md/README.md/prompt-optimizer.md/office.workflow.md/pxh-office.md for VSCode extension focus |
+| 2026-07-25 | v50 | Extension-only Virtual Office + **Release v50** — remove standalone browser/TUI, clean server.mjs API-only, VSCE extension focus. Arch check 0 errors, root package.json fixed, build script handles meta-projects + VSCE packaging, tagged release, fix Anti-Rationalization warnings |
 | 2026-07-24 | v48 | Prompt Optimizer — auto-rewrite prompt mơ hồ thành implementation-ready spec, panel `<details>` transparent, integrate vào opencode.json instructions, README Key Concepts + version + commit count sync |
 | 2026-07-24 | v47 | Bat merge — pxh-office.bat hợp nhất on/off/restart + help, xóa pxh-office-on.bat và pxh-office-off.bat, cập nhật README |
 | 2026-07-24 | v46 | Open Office & Real-time Agent Sync — single-floor open space, 11 pixel-art agents, cat+dog pets, speech bubbles, dashed signals, state badges, T1+T2 stay/T3+T4 leave, pxh-office.bat, hook-opencode.ps1, port 2910, README vibe code guide |

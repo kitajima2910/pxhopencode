@@ -56,6 +56,13 @@ Restart VS Code → sidebar có icon `$(organization)` "PXH Virtual Office".
 - Real-time state badges + speech bubbles
 - Activity log
 
+## Anti-Rationalization
+| Excuse | Reality |
+|--------|---------|
+| "Webview đơn giản, không cần verify" | Lỗi render = mất tín nhiệm user |
+| "Extension chạy được là đủ" | Crash khi workspace không có _shared/ |
+| "Server port 2910 tự động chọn port khác nếu bận" | Background process âm thầm chết — không ai biết |
+
 ## Red Flags
 
 - Cần VS Code 1.85+
