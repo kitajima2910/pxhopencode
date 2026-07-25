@@ -118,12 +118,12 @@ let touchId=null,touchX=null,touchY=null,fireTouchId=null
 const fb=document.getElementById('fireBtn')
 function initAudio(){if(!audioCtx)audioCtx=new AC()}
 
-document.addEventListener('keydown',e=>{
+try{document.addEventListener('keydown',e=>{
   keys[e.key]=true;initAudio()
   if(e.key===' '||e.key==='ArrowUp')e.preventDefault()
   if(gameOver&&e.key===' '){reset()}
-})
-document.addEventListener('keyup',e=>keys[e.key]=false)
+})}catch(e){}
+try{document.addEventListener('keyup',e=>keys[e.key]=false)}catch(e){}
 
 c.addEventListener('touchstart',e=>{
   e.preventDefault();initAudio()

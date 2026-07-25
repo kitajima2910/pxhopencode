@@ -44,7 +44,7 @@ const AGENTS={
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,ts:'',tsm:'',_monitorLog:[],_lastEvt:Date.now(),_sessionArchive:[]}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now(),_sessionArchive:[]}})
 const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 
 // ============================================================
@@ -239,7 +239,6 @@ function drawServerRack(x,y,w,h){
 
 function drawKeyboard(x,y){ctx.save();const kw=42,kh=12;ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-kw/2,y,kw,kh,2.5);ctx.fill();ctx.fillStyle='#2a2d34';for(let r=0;r<5;r++){ctx.fillRect(x-kw/2+3,y+2+r*2,kw-6,1.4)}ctx.fillRect(x-12,y+9.5,24,1.4);ctx.restore()}
 function drawMouse(x,y){ctx.save();ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.ellipse(x,y,6,7.5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#2a2d34';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+3);ctx.stroke();ctx.restore()}
-function drawMonitor(x,y){ctx.save();const mw=68,mh=44;ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-mw/2-2,y-2,mw+4,mh+4,4);ctx.fill();ctx.fillStyle='#0a141e';ctx.fillRect(x-mw/2,y,mw,mh);ctx.fillStyle='rgba(0,255,255,0.03)';ctx.font='6px "Consolas",monospace';ctx.textAlign='center';ctx.fillText('PXH2910 • Terminal',x,y+mh/2+2);ctx.fillStyle='#252830';ctx.fillRect(x-3,y+mh,6,6);ctx.fillStyle='#3a3d44';ctx.beginPath();ctx.arc(x,y+mh-1,2.5,0,Math.PI*2);ctx.fill();ctx.restore()}
 function drawAgentMonitor(x,y,ch){
   if(!ch)return;ctx.save()
   const mw=54,mh=36,ml=ch._monitorLog||[]
@@ -331,7 +330,7 @@ function drawComicBubble(cx,cy,msgs,accent){
   const lines=Array.isArray(msgs)?msgs.slice(-2):[msgs]
   if(!lines.length)return
   ctx.save()
-  const maxW=Math.max(...lines.map(m=>m.length))*5+30,bh=Math.min(lines.length,5)*16+20
+  const maxW=Math.max(...lines.map(m=>m.length))*5.5+24,bh=lines.length*14+16
   ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=2
   ctx.beginPath();ctx.roundRect(cx-maxW/2,cy-bh,maxW,bh,8);ctx.fill();ctx.stroke()
   ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.beginPath();ctx.moveTo(cx-6,cy-2);ctx.lineTo(cx,cy+8);ctx.lineTo(cx+6,cy-2);ctx.closePath();ctx.fill();ctx.stroke()
@@ -458,7 +457,7 @@ function drawCharacter(ch){
     //state badge — right of name, blinking
     if(ch.ts&&ch.w&&Math.sin(ph*4)>0){const st=ch.ts.toUpperCase(),sw=st.length*5+8;ctx.fillStyle=`rgba(${hr(a.c)},0.9)`;ctx.beginPath();ctx.roundRect(rw/2+4,ly-6,sw,10,3);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 7px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(st,rw/2+4+sw/2,ly+1)}
     //bubble
-    if(ch.tsm||(ch._monitorLog&&ch._monitorLog.length)){var logLines=ch.tsm?ch.tsm:[];if(ch._monitorLog&&ch._monitorLog.length){var recentLogs=ch._monitorLog.slice(-5).map(function(e){return(e.s?("["+e.s.slice(0,8)+"]"):"")+" "+(e.m?e.m.slice(0,30):"")});if(recentLogs.length>0){logLines=logLines.length?logLines.concat(recentLogs.slice(0,3)):recentLogs}}if(logLines.length)drawAgentLogDialog(0,hcy-65,logLines,ch._bcol||a.c)}
+    if(ch.tsm)drawComicBubble(0,hcy-58,ch.tsm,ch._bcol||a.c)
   }else{
     const bw=g==='female'?12:14,bt=-40,bb=-3
     // Legs under desk
@@ -494,7 +493,7 @@ function drawCharacter(ch){
     const ly=hcy-28;ctx.fillStyle='#1a1a2a';const rw=a.role.length*5+7;ctx.beginPath();ctx.roundRect(-rw/2,ly-10,rw,15,5);ctx.fill();ctx.fillStyle=a.c;ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(a.role,0,ly+1)
     // State badge — right of name, blinking
     if(ch.ts&&ch.w&&Math.sin(ph*4)>0){const st=ch.ts.toUpperCase(),sw=st.length*5+8;ctx.fillStyle=`rgba(${hr(a.c)},0.9)`;ctx.beginPath();ctx.roundRect(rw/2+4,ly-6,sw,10,3);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 7px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(st,rw/2+4+sw/2,ly+1)}
-    if(ch.tsm||(ch._monitorLog&&ch._monitorLog.length)){var logLines=ch.tsm?ch.tsm:[];if(ch._monitorLog&&ch._monitorLog.length){var recentLogs=ch._monitorLog.slice(-5).map(function(e){return(e.s?("["+e.s.slice(0,8)+"]"):"")+" "+(e.m?e.m.slice(0,30):"")});if(recentLogs.length>0){logLines=logLines.length?logLines.concat(recentLogs.slice(0,3)):recentLogs}}if(logLines.length)drawAgentLogDialog(0,hcy-58,logLines,ch._bcol||a.c)}
+    if(ch.tsm)drawComicBubble(0,hcy-58,ch.tsm,ch._bcol||a.c)
   }
   ctx.restore()
 }
@@ -672,7 +671,7 @@ function addLog(msg,color,agentName){
     const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
     const s=(ts+' '+msg).length>44?(ts+' '+msg).slice(0,41)+'...':ts+' '+msg
     if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===s.slice(9))ch._msgs.pop()
-    ch._msgs.push(s);if(ch._msgs.length>5)ch._msgs.shift()
+    ch._msgs.push(s);if(ch._msgs.length>2)ch._msgs.shift()
     ch.tsm=ch._msgs;ch._bcol=color||'#888'
     // Also push to agent's _monitorLog
     ch._monitorLog.push({s:agentName,m:msg,t:Date.now()})
@@ -792,7 +791,7 @@ function applyStateDiff(diff){
           if(isActive===false)showDoneNotif(ch.x,ch.y-55,ch.a.role,ch.a.c)
         }
         clearTimeout(ch._bt)
-        if(isIdle||!isActive){ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)}else{ch._bt=setTimeout(()=>{if(ch.w||ch.state!=='idle'){if(ch.tsm&&Array.isArray(ch.tsm)&&ch.tsm.length>2)ch.tsm=ch.tsm.slice(-2)}else{ch.tsm='';ch.ts=''}},8000)}
+        ch._bt=setTimeout(()=>{ch.tsm='';ch.ts=''},3000)
       }
 
       // PXHOpenCode mirror — push ALL messages to terminal regardless of currentState
@@ -1091,38 +1090,6 @@ function animate(now){fc++;updateElapsed()
 // ============================================================
 // INIT
 // ============================================================
-function drawAgentLogDialog(cx,cy,lines,accent){
-  if(!lines||!lines.length)return
-  ctx.save()
-  const maxLines=Math.min(lines.length,5)
-  const maxW=Math.max.apply(null,lines.map(function(m){return m.length}))*4.5+32
-  const bh=maxLines*15+24
-  // Background panel with rounded corners
-  ctx.fillStyle='rgba(10,14,23,0.92)'
-  ctx.beginPath();ctx.roundRect(cx-maxW/2,cy-bh,maxW,bh,10);ctx.fill()
-  ctx.strokeStyle=accent||'#58a6ff';ctx.lineWidth=1.5
-  ctx.beginPath();ctx.roundRect(cx-maxW/2,cy-bh,maxW,bh,10);ctx.stroke()
-  // Title bar
-  ctx.fillStyle=accent||'#58a6ff'
-  ctx.beginPath();ctx.roundRect(cx-maxW/2,cy-bh,maxW,20,{tl:10,tr:10,br:0,bl:0});ctx.fill()
-  ctx.fillStyle='#fff';ctx.font='bold 8px "Consolas",monospace';ctx.textAlign='center'
-  ctx.fillText('Agent Log',cx,cy-bh+14)
-  // Log lines
-  lines.slice(0,maxLines).forEach(function(m,i){
-    var color='#c9d1d9'
-    if(m.indexOf('[error')>=0||m.indexOf('[fix')>=0)color='#f85149'
-    else if(m.indexOf('[read')>=0||m.indexOf('[search')>=0)color='#58a6ff'
-    else if(m.indexOf('[edit')>=0||m.indexOf('[write')>=0)color='#3fb950'
-    else if(m.indexOf('[build')>=0||m.indexOf('[test')>=0)color='#d29922'
-    ctx.fillStyle=color
-    ctx.font='9px "Consolas",monospace'
-    ctx.textAlign='left'
-    var txt=m.length>34?m.slice(0,31)+'...':m
-    ctx.fillText(txt,cx-maxW/2+10,cy-bh+35+i*14)
-  })
-  ctx.restore()
-}
-
 function init(){
   console.log('init() called W='+W+' H='+H+' mode='+state.mode);
   try{resize();console.log('init resize W='+W+' H='+H)}catch(e){console.log('init resize err '+e)}
@@ -1263,7 +1230,6 @@ window.addEventListener('resize',resize);document.addEventListener('DOMContentLo
     } catch(ex) {}
   });
 })();
-
 // VSCode Bridge
 // ============================================================
 (function() {

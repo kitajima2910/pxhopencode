@@ -1,15 +1,23 @@
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 
 function startWatcher(workspaceRoot, onEvent) {
   const sharedDir = path.join(workspaceRoot, "_shared");
   const eventsFile = path.join(sharedDir, "office-events.log");
   const stateFile = path.join(sharedDir, "opencode-state.json");
+  const activityFile = path.join(sharedDir, "opencode-activity.log");
 
   let eventsSize = 0;
   let prevState = null;
+  let prevActivitySize = 0;
+  let lastActivityMtime = 0;
+  let activityWorkflowActive = false;
   const watchers = [];
   let disposed = false;
+
+  // Activity detection: how long without file changes before considering idle
+  const ACTIVITY_TIMEOUT_MS = 15000;
 
   try { fs.mkdirSync(sharedDir, { recursive: true }); } catch {}
 
@@ -121,6 +129,93 @@ function startWatcher(workspaceRoot, onEvent) {
     } catch {}
   }
 
+  // ── Activity log watcher: detect ANY new content in opencode-activity.log ──
+  // This is a separate fallback that detects opencode activity by monitoring
+  // the activity log file for any changes (timestamps, new lines, etc.)
+  function checkActivityLog() {
+    try {
+      if (!fs.existsSync(activityFile)) return;
+      if (isStartupGrace()) {
+        // On first poll, just record mtime without firing events
+        const stats = fs.statSync(activityFile);
+        lastActivityMtime = stats.mtimeMs;
+        prevActivitySize = stats.size;
+        return;
+      }
+      const stats = fs.statSync(activityFile);
+      const mtime = stats.mtimeMs;
+
+      if (mtime !== lastActivityMtime) {
+        // File was modified — read new content to find workflow markers
+        const raw = fs.readFileSync(activityFile, "utf-8");
+
+        // Detect workflow markers in the activity log (delta-based: only check new content)
+        const hasWorkflowStart = raw.lastIndexOf("[workflow_start]") > prevActivitySize;
+        const hasWorkflowEnd = raw.lastIndexOf("[workflow_end]") > prevActivitySize;
+
+        // If we see a NEW workflow_start marker → activate
+        if (hasWorkflowStart && !activityWorkflowActive) {
+          activityWorkflowActive = true;
+          onEvent({ type: "workflow_start", message: "Activity log: workflow detected", ts: new Date().toISOString() });
+        }
+
+        // If we see a NEW workflow_end marker → deactivate
+        if (hasWorkflowEnd && activityWorkflowActive) {
+          activityWorkflowActive = false;
+          onEvent({ type: "workflow_end", message: "Activity log: workflow ended", ts: new Date().toISOString() });
+        }
+
+        // If file grew but no explicit markers → consider generic activity (retroactive activate)
+        if (stats.size > prevActivitySize && !hasWorkflowStart && !hasWorkflowEnd) {
+          if (!activityWorkflowActive) {
+            activityWorkflowActive = true;
+            onEvent({ type: "workflow_start", message: "Activity log: activity detected", ts: new Date().toISOString() });
+          }
+        }
+
+        lastActivityMtime = mtime;
+        prevActivitySize = stats.size;
+      }
+
+      // Check for timeout: if file hasn't changed for ACTIVITY_TIMEOUT_MS → end session
+      if (activityWorkflowActive && (Date.now() - mtime > ACTIVITY_TIMEOUT_MS)) {
+        activityWorkflowActive = false;
+        onEvent({ type: "workflow_end", message: "Activity timeout: no activity for " + (ACTIVITY_TIMEOUT_MS/1000) + "s", ts: new Date().toISOString() });
+      }
+    } catch {}
+  }
+
+  // ── OpenCode temp file detector ──
+  // OpenCode creates temp output files (opencode-out*.txt) in the system TEMP dir
+  // during prompt processing. Check if any exist and are recently modified.
+  function checkOpenCodeTempFiles() {
+    if (activityWorkflowActive) return; // Already active, no need to check
+    try {
+      const tempDir = os.tmpdir();
+      const files = fs.readdirSync(tempDir);
+      const now = Date.now();
+      let hasRecentActivity = false;
+
+      for (const name of files) {
+        if (name.indexOf("opencode-out") === 0 && name.endsWith(".txt")) {
+          const fp = path.join(tempDir, name);
+          try {
+            const st = fs.statSync(fp);
+            if (now - st.mtimeMs < ACTIVITY_TIMEOUT_MS) {
+              hasRecentActivity = true;
+              break;
+            }
+          } catch {}
+        }
+      }
+
+      if (hasRecentActivity && !activityWorkflowActive) {
+        activityWorkflowActive = true;
+        onEvent({ type: "workflow_start", message: "Temp file: opencode session active", ts: new Date().toISOString() });
+      }
+    } catch {}
+  }
+
   function isStartupGrace() {
     return Date.now() - startedAt < 3000;
   }
@@ -145,14 +240,18 @@ function startWatcher(workspaceRoot, onEvent) {
 
   watchFileOrDir(eventsFile, readNewEvents);
   watchFileOrDir(stateFile, readStateFallback);
+  watchFileOrDir(activityFile, checkActivityLog);
 
   readNewEvents();
   readStateFallback();
+  checkActivityLog();
 
   const pollTimer = setInterval(() => {
     if (disposed) return;
     readNewEvents();
     readStateFallback();
+    checkActivityLog();
+    checkOpenCodeTempFiles();
   }, 500);
 
   return {
