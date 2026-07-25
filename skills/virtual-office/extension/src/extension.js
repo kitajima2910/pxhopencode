@@ -67,12 +67,6 @@ function activate(context) {
     })
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("pxh-office.work", () => {
-      provider._startOpenCodeSession();
-    })
-  );
-
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
   if (workspaceRoot) {
     const { startWatcher } = require("./eventWatcher");

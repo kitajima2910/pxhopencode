@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
+set "PUBLISHER=pxh"
 set "EXT_NAME=pxh-virtual-office"
-set "EXT_VER=1.0.0"
 set "SRC=%~dp0skills\virtual-office\extension"
 set "ACTION=%1"
 
@@ -11,13 +11,12 @@ if "%1"=="insiders" set "CODE_TYPE=insiders"
 if "%1"=="stable" set "CODE_TYPE=stable"
 
 if "%CODE_TYPE%"=="insiders" (
-  set "EXT_DIR=%USERPROFILE%\.vscode-insiders\extensions\%EXT_NAME%-%EXT_VER%"
+  set "EXT_BASE=%USERPROFILE%\.vscode-insiders\extensions"
   set "VSCMD=code-insiders"
 ) else (
-  set "EXT_DIR=%USERPROFILE%\.vscode\extensions\%EXT_NAME%-%EXT_VER%"
+  set "EXT_BASE=%USERPROFILE%\.vscode\extensions"
   set "VSCMD=code"
 )
-
 if /i "%ACTION%"=="uninstall" goto :uninstall
 if /i "%ACTION%"=="reload" goto :reload
 
@@ -30,13 +29,14 @@ echo  Target: %CODE_TYPE% VS Code
 echo  Source: %SRC%
 echo.
 
-:: Neu da cai thi xoa sach roi cai moi
-if exist "%EXT_DIR%" (
-  echo [*] Phat hien extension da duoc cai, dang xoa de cai moi...
-  rmdir /s /q "%EXT_DIR%" 2>nul
-  echo [+] Da xoa extension cu.
-  echo.
+:: Xoa sach moi thu cua extension nay (moi phien ban, moi cach dat ten) roi cai moi
+echo [*] Dang xoa moi version cu cua extension...
+for /d %%d in ("%EXT_BASE%\%PUBLISHER%.%EXT_NAME%*") do (
+  echo     - Xoa: %%d
+  rmdir /s /q "%%d" 2>nul
 )
+echo [+] Da xoa sach extension cu.
+echo.
 
 if not exist "%SRC%\package.json" (
   echo [LOI] Khong tim thay extension tai: %SRC%
@@ -44,55 +44,21 @@ if not exist "%SRC%\package.json" (
   exit /b 1
 )
 
-:: Check if node is available for packaging
-where node >nul 2>&1
-if %ERRORLEVEL% neq 0 goto :install_copy
-
-:: Check if code CLI is available
-where %VSCMD% >nul 2>&1
-if %ERRORLEVEL% neq 0 goto :install_copy
-
-echo [*] Dang dong goi extension thanh .vsix...
-set "TEMP_BUILD=%TEMP%\pxh-ext-build"
-if exist "%TEMP_BUILD%" rmdir /s /q "%TEMP_BUILD%" 2>nul
-xcopy "%SRC%" "%TEMP_BUILD%" /E /I /H /Y /Q >nul
-
-:: Create temp package.json override to avoid vsce prompts
-set "VSIX_FILE=%TEMP%\pxh-virtual-office.vsix"
-if exist "%VSIX_FILE%" del /f /q "%VSIX_FILE%" 2>nul
-
-pushd "%TEMP_BUILD%"
-npx --yes @vscode/vsce package --out "%VSIX_FILE%" --allow-missing-repository
-set VSCE_ERR=%ERRORLEVEL%
-popd
-
-if %VSCE_ERR% neq 0 (
-  echo [!] Khong the dong goi .vsix, thu cai dat bang cach copy truc tiep...
-  rmdir /s /q "%TEMP_BUILD%" 2>nul
-  goto :install_copy
+:: Doc version tu package.json
+set "EXT_VER="
+for /f "tokens=2 delims=:" %%v in ('findstr /i "version" "%SRC%\package.json"') do (
+  set "EXT_VER=%%v"
 )
-
-echo [*] Dang cai dat extension...
-%VSCMD% --install-extension "%VSIX_FILE%" --force
-set INSTALL_ERR=%ERRORLEVEL%
-
-:: Cleanup
-rmdir /s /q "%TEMP_BUILD%" 2>nul
-del /f /q "%VSIX_FILE%" 2>nul
-
-if %INSTALL_ERR% neq 0 (
-  echo [!] code --install-extension bi loi, thu cai dat bang cach copy truc tiep...
-  goto :install_copy
+if defined EXT_VER (
+  set "EXT_VER=!EXT_VER:"=!
+  set "EXT_VER=!EXT_VER: =!
+  set "EXT_VER=!EXT_VER:,=!
 )
+if not defined EXT_VER set "EXT_VER=1.0.0"
+echo [*] Extension version: !EXT_VER!
+set "EXT_DIR=%EXT_BASE%\%PUBLISHER%.%EXT_NAME%-!EXT_VER!"
 
-echo [+] Da cai dat thanh cong!
-echo.
-echo [^^>] Mo VS Code, sidebar se co icon ^$(organization^) "PXH Virtual Office"
-echo.
-exit /b
-
-:install_copy
-:: Fallback: copy directly to extensions folder
+:: Copy directly — skip vsce packaging (unreliable + slow)
 echo [*] Dang copy extension truc tiep...
 set "DEST=%EXT_DIR%"
 if exist "%DEST%" rmdir /s /q "%DEST%" 2>nul
@@ -116,9 +82,13 @@ echo  PXH Virtual Office - Go cai dat
 echo ============================================
 echo.
 
-if exist "%EXT_DIR%" (
-  echo [*] Dang xoa extension...
-  rmdir /s /q "%EXT_DIR%" 2>nul
+set "DELETED="
+for /d %%d in ("%EXT_BASE%\%PUBLISHER%.%EXT_NAME%*") do (
+  echo     - Xoa: %%d
+  rmdir /s /q "%%d" 2>nul
+  set "DELETED=1"
+)
+if defined DELETED (
   echo [+] Da go cai dat.
 ) else (
   echo [-] Extension chua duoc cai dat.

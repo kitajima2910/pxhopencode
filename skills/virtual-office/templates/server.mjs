@@ -19,11 +19,7 @@ const runtime = createRuntime({ root: ROOT })
 // VSCode extension uses postMessage bridge instead.
 
 let prevState = null
-
-// Periodic flush for batched updates
-const flushInterval = setInterval(() => {
-  runtime.flush()
-}, 250)
+let watcherWorkflowActive = false
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`)
@@ -42,31 +38,25 @@ const server = http.createServer((req, res) => {
 
         // Handle workflow lifecycle detection
         if ((prevState === null || prevState === 'idle' || !prevState) && tuiState && tuiState !== 'idle') {
-          console.log(`[Office] First activity detected: ${tuiState} — triggering T1+T2+PXHOpenCode`)
-          const seq = workflowStartSequence()
-          for (const evt of seq) {
-            runtime.ingest(evt)
+          console.log(`[Office] First activity detected: ${tuiState} — triggering workflow_start`)
+          emit({ type: 'workflow_start', message: 'User prompt submitted' })
+          watcherWorkflowActive = true
+        }
+
+        // Determine event type: Mirror → tui_mirror, others → agent_state
+        if (explicitAgent === 'pxh-opencode' && tuiState === 'Mirror' && customMsg) {
+          emit({ type: 'tui_mirror', agent: 'pxh-opencode', message: customMsg })
+        } else if (tuiState === 'idle') {
+          if (watcherWorkflowActive) {
+            watcherWorkflowActive = false
+            emit({ type: 'workflow_end', message: 'Processing complete' })
           }
-        }
-
-        // Feed through adapter + runtime
-        const rawEvent = {
-          type: 'agent_state',
-          agent: explicitAgent || undefined,
-          tuiState,
-          message: customMsg || `${tuiState}...`,
-        }
-        runtime.ingest(rawEvent)
-
-        if (tuiState === 'idle') {
-          prevState = 'idle'
-          runtime.session.end({ message: 'Processing complete' })
         } else {
-          prevState = tuiState
+          const agent = explicitAgent || STATE_MAP[tuiState] || 'pxh-expert'
+          emit({ type: 'agent_state', agent, tuiState, message: customMsg || `${tuiState}...` })
         }
 
-        // Flush immediately for instant updates
-        runtime.flush()
+        prevState = tuiState === 'idle' ? 'idle' : tuiState
 
         res.writeHead(200, { 'Content-Type': 'application/json' })
         res.end(JSON.stringify({ status: 'ok', state: tuiState }))
@@ -145,6 +135,23 @@ try { fs.writeFileSync(STATE_FILE, JSON.stringify({ state: 'idle' })); } catch {
 const startedAt = Date.now()
 function isStartupGrace() { return Date.now() - startedAt < 3000 }
 
+const STATE_MAP = {
+  thinking: 'pxh-expert', explore: 'pxh-architect', read: 'pxh-help',
+  deleg: 'pxh-pm', 'preparing edit': 'pxh-expert', edit: 'pxh-expert',
+  write: 'pxh-expert', bash: 'pxh-devops', grep: 'pxh-qa',
+  glob: 'pxh-qa', list: 'pxh-qa', task: 'pxh-pm',
+  websearch: 'pxh-help', webfetch: 'pxh-help', lsp: 'pxh-expert',
+  skill: 'pxh-expert', question: 'pxh-pm', doom_loop: 'pxh-fix-bugs',
+  review: 'pxh-review-code', test: 'pxh-qa', build: 'pxh-devops',
+  design: 'pxh-architect', save: 'pxh-save-history',
+  classify: 'pxh-help', route: 'pxh-pm',
+  planning: 'pxh-pm', plan: 'pxh-pm', prepare: 'pxh-expert',
+  todos: 'pxh-pm', todo: 'pxh-pm', outline: 'pxh-architect',
+  fix: 'pxh-fix-bugs', debug: 'pxh-fix-bugs',
+  deploy: 'pxh-devops', polish: 'pxh-ui-ux',
+  monitoring: 'pxh-pm',
+}
+
 try {
   fs.watchFile(STATE_FILE, { interval: 200 }, () => {
     try {
@@ -157,38 +164,63 @@ try {
         return
       }
 
-      if (st.state && st.state !== 'idle' && st.state !== prevState) {
-        if (prevState === null || prevState === 'idle' || !prevState) {
-          console.log(`[Office] State file: first activity ${st.state}`)
-          const seq = workflowStartSequence()
-          for (const evt of seq) {
-            runtime.ingest(evt)
-          }
+      // ── Explicit workflow_start ──
+      if (st.state === 'workflow_start') {
+        if (!watcherWorkflowActive) {
+          watcherWorkflowActive = true
+          console.log(`[Office] workflow:start from state file`)
+          emit({ type: 'workflow_start', message: st.message || 'Workflow started' })
         }
-
-        const rawEvent = {
-          type: 'agent_state',
-          agent: st.agent || undefined,
-          tuiState: st.state,
-          message: st.message || `${st.state}...`,
-        }
-        runtime.ingest(rawEvent)
         prevState = st.state
-      } else if (st.agent === 'pxh-opencode' && st.state === 'Mirror' && st.message) {
-        runtime.ingest({ type: 'tui_mirror', agent: 'pxh-opencode', message: st.message })
-      } else if (!st.state || st.state === 'idle') {
-        prevState = 'idle'
+        return
       }
 
-      if (st.state === 'workflow_start') {
-        const seq = workflowStartSequence()
-        for (const evt of seq) {
-          runtime.ingest(evt)
+      // ── Explicit workflow_end ──
+      if (st.state === 'workflow_end') {
+        if (watcherWorkflowActive) {
+          watcherWorkflowActive = false
+          console.log(`[Office] workflow:end from state file`)
+          emit({ type: 'workflow_end', message: st.message || 'Workflow ended' })
         }
-        console.log(`[Office] workflow:start from state file`)
-      } else if (st.state === 'workflow_end') {
+        prevState = 'idle'
         runtime.session.end({ message: st.message || 'Workflow ended' })
-        console.log(`[Office] workflow:end from state file`)
+        return
+      }
+
+      // ── pxh-opencode mirror (check BEFORE generic non-idle to avoid misclassification) ──
+      if (st.agent === 'pxh-opencode' && st.state === 'Mirror' && st.message) {
+        emit({ type: 'tui_mirror', agent: 'pxh-opencode', message: st.message })
+        return
+      }
+
+      // ── Non-idle state transition (agent activity) ──
+      if (st.state && st.state !== 'idle' && st.state !== prevState) {
+        // First activity after idle → emit workflow_start
+        if (prevState === null || prevState === 'idle' || !prevState) {
+          watcherWorkflowActive = true
+          console.log(`[Office] State file: first activity ${st.state}`)
+          emit({ type: 'workflow_start', message: 'User prompt submitted' })
+        }
+
+        const agent = st.agent || STATE_MAP[st.state] || 'pxh-expert'
+        emit({
+          type: 'agent_state',
+          agent,
+          tuiState: st.state,
+          message: st.message || `${st.state}...`,
+        })
+        prevState = st.state
+        return
+      }
+
+      // ── Idle state → end workflow if active ──
+      if (!st.state || st.state === 'idle') {
+        if (prevState && prevState !== 'idle' && watcherWorkflowActive) {
+          watcherWorkflowActive = false
+          emit({ type: 'workflow_end', message: 'Processing complete' })
+        }
+        prevState = 'idle'
+        return
       }
     } catch {}
   })
@@ -203,7 +235,6 @@ server.listen(PORT, () => {
 // ─── Graceful Shutdown ──────────────────────────────────────────
 
 function shutdown() {
-  clearInterval(flushInterval)
   runtime.stop()
   server.close()
   process.exit(0)

@@ -24,11 +24,7 @@ canvas{display:block;width:100%;height:100%}
 .st-item{display:flex;align-items:center;gap:3px;opacity:0.7}
 .st-item .lbl{font-size:9px;opacity:0.4;text-transform:uppercase;letter-spacing:0.5px}
 .st-item .val{font-weight:600;font-size:11px}
-.work-btn{background:linear-gradient(135deg,#3fb950,#2d8a3a);color:#fff;border:none;padding:4px 14px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;letter-spacing:0.3px;transition:all .2s;font-family:inherit}
-.work-btn:hover{background:linear-gradient(135deg,#4fd960,#3d9a4a);transform:scale(1.05)}
-.work-btn:active{transform:scale(0.95)}
-.work-btn.working{background:linear-gradient(135deg,#f85149,#c04040);opacity:0.85}
-@keyframes workPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+
 #logOverlay{display:none}
 .log-item{font-size:10px;padding:3px 12px;margin:2px 0;background:rgba(0,0,0,0.8);border-radius:4px;border-left:2px solid rgba(255,255,255,0.2);animation:slideUp .25s ease-out;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;backdrop-filter:blur(4px)}
 @keyframes slideUp{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
@@ -39,7 +35,6 @@ canvas{display:block;width:100%;height:100%}
   <div class="title-bar">
     <h1>🏢 Error404Labs - PXH2910</h1>
     <div style="display:flex;align-items:center;gap:8px">
-      <button id="workBtn" class="work-btn" title="Start OpenCode TUI session" style="display:none">Làm việc</button>
       <span class="ver">AI Company · 4-tier Runtime</span>
     </div>
   </div>
@@ -650,6 +645,9 @@ function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=c
 // ============================================================
 const state={workflow:'—',phase:'—',agent:null,retry:'0/3',elapsed:0,startTime:Date.now(),mode:location.protocol==='http:'||location.protocol==='https:'?'sse':'demo',sseConnected:false,lastRealEvent:0,lastTick:-1,_lt:0,_sessionActive:false}
 function addLog(msg,color,agentName){
+  // Safety: ensure msg is a short string (prevent source code from leaking to canvas)
+  if(typeof msg!=='string')msg=String(msg);
+  if(msg.length>200){msg=msg.slice(0,197)+'...';}
   if(agentName&&chars[agentName]){
     const ch=chars[agentName];if(!ch._msgs)ch._msgs=[]
     const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
@@ -684,12 +682,15 @@ function applyStateDiff(diff){
       if(sess.message) addLog(sess.message,'#3fb950')
       // Add session separator, don't clear old logs
       const oc2=chars['pxh-opencode'];if(oc2){oc2._mirrorLog=oc2._mirrorLog||[];oc2._mirrorLog.push('── '+String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0')+' ──');if(oc2._mirrorLog.length>6)oc2._mirrorLog=oc2._mirrorLog.slice(-6)}
-    }else if(!sess.active&&wasActive){
-      // Session ended
-      state.phase='idle';state.workflow='—'
-      document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
-      document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'
-      if(sess.message) addLog(sess.message,'#f85149')
+      // Reset ALL agents to desk — prevent wandering during active session
+      AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+60000;if(cc.state!=='typing'&&cc.state!=='walking'){cc.state='idle';cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.x;cc.ty=cc.y}}})      }else if(!sess.active&&wasActive){
+        // Session ended
+        state.phase='idle';state.workflow='—'
+        document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
+        document.getElementById('modeTxt').textContent='⚪ Idle';document.getElementById('modeTxt').style.opacity='0.5'
+        if(sess.message) addLog(sess.message,'#f85149')
+        // Allow agents to start wandering after session ends
+        AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+3000+Math.random()*4000}})
       // Archive pxh-opencode mirror log so it survives session end
       const oc3=chars['pxh-opencode']
       if(oc3&&oc3._mirrorLog&&oc3._mirrorLog.length){
@@ -735,7 +736,8 @@ function applyStateDiff(diff){
         // Show active tool
         if(agentState.activeTool){
           if(!ch._monitorLog)ch._monitorLog=[]
-          ch._monitorLog.push({t:now,m:`${agentState.awaitingInput?'⏳':'▶'} ${agentState.activeTool}: ${agentState.message||''}`,s:agentState.activeTool})
+          var _mMsg=(agentState.message||'');if(_mMsg.length>40)_mMsg=_mMsg.slice(0,37)+'...'
+          ch._monitorLog.push({t:now,m:`${agentState.awaitingInput?'⏳':'▶'} ${agentState.activeTool}: ${_mMsg}`,s:agentState.activeTool})
           if(ch._monitorLog.length>40)ch._monitorLog.shift()
         }
 
@@ -757,7 +759,8 @@ function applyStateDiff(diff){
         if(poc&&agentId!=='pxh-opencode'){
           if(!poc._mirrorLog)poc._mirrorLog=[]
           const toolLabel=agentState.activeTool?`[${agentState.activeTool}] `:''
-          poc._mirrorLog.push(`[${agentId}] ${toolLabel}${agentState.message||agentState.badge||''}`)
+          var _mirMsg=(agentState.message||agentState.badge||'');if(_mirMsg.length>120)_mirMsg=_mirMsg.slice(0,117)+'...'
+          poc._mirrorLog.push(`[${agentId}] ${toolLabel}${_mirMsg}`)
           if(poc._mirrorLog.length>6)poc._mirrorLog.shift()
         }
 
@@ -821,8 +824,8 @@ function animate(now){fc++;updateElapsed()
     if(ch.state==='walking'){const dx=ch.tx-ch.x,dy=ch.ty-ch.y,dist=Math.sqrt(dx*dx+dy*dy);if(dist<2){ch.x=ch.tx;ch.y=ch.ty;const wasW=ch.w;ch.state=ch.w?'typing':'idle';if(!wasW||!ch.w){ch.it=now+2000+Math.random()*3000;ch._wanderScheduled=false}}else{const step=ch.ws*1.5;ch.x+=dx/dist*step;ch.y+=dy/dist*step;ch.wp+=step*.3;if(fc%18===0)sfx('footstep')}}
     // Agents stay at desk until TUI session ends (workflow_end), regardless of idle time
     // if((ch.state==='typing'||ch.state==='sitting')&&ch.w&&now-ch._lastEvt>5000){stopTyping(ch)}
-    // Wander when idle (after returning from desk)
-    if(ch.state==='idle'&&!ch.w&&now>ch.it&&!ch._wanderScheduled){
+    // Wander when idle (after returning from desk) — NEVER during active session
+    if(ch.state==='idle'&&!ch.w&&now>ch.it&&!ch._wanderScheduled&&!state._sessionActive){
       ch._wanderScheduled=true
       const r=chars._r;let wx=ch.ix+(Math.random()-.5)*120,wy=ch.iy+(Math.random()-.5)*40
       if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20)
@@ -871,11 +874,7 @@ function animate(now){fc++;updateElapsed()
   ctx.strokeStyle='rgba(88,166,255,0.25)';ctx.lineWidth=1.2;ctx.stroke()
   ctx.fillStyle='rgba(88,166,255,0.5)';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company',W*.5,btop+16)
   ctx.fillStyle='rgba(255,255,255,0.25)';ctx.fillRect((W-bwW)/2+20,btop+22,bwW-40,1)
-  sysLogs.forEach((l,i)=>{
-    ctx.fillStyle=l.color;ctx.font='7px "Consolas",monospace';ctx.textAlign='center'
-    const t=new Date(l.ts),ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0')
-    ctx.fillText(ts+'  '+l.msg,W*.5,btop+36+i*12)
-  })
+  // sysLogs log display disabled
 
   // Desks — monitor row
   ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawAgentMonitor(ch.dx,ch.dy-4,ch);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
@@ -916,31 +915,7 @@ function animate(now){fc++;updateElapsed()
     ctx.fillStyle='rgba(0,229,255,0.15)';ctx.font='bold 7px "Consolas",monospace';ctx.textAlign='center'
     ctx.fillText('─ Last session ─',oc.dx,oc.dy-8)
   }
-  if(mirrorLines&&mirrorLines.length){
-    mirrorLines.slice(-4).forEach((l,i)=>{
-      const rawLine=typeof l==='string'?l:(l&&l.m||'')
-      const t=new Date();const ts=String(t.getMinutes()).padStart(2,'0')+':'+String(t.getSeconds()).padStart(2,'0')
-      let label='',color='#00e5ff'
-      if(rawLine.match(/^── \d\d:\d\d ──$/)){label='────';color='#444'}
-      else if(rawLine.match(/\b(read|reading|load|loading)\b/i)){label='READ';color='#58a6ff'}
-      else if(rawLine.match(/\b(write|writing|create|edit|modify|generate|code)\b/i)){label='WRITE';color='#3fb950'}
-      else if(rawLine.match(/\b(execute|run|bash|build|deploy|install|command)\b/i)){label='EXEC';color='#d29922'}
-      else if(rawLine.match(/\b(test|testing|verify|spec)\b/i)){label='TEST';color='#3fb950'}
-      else if(rawLine.match(/\b(review|audit|inspect)\b/i)){label='REVIEW';color='#d29922'}
-      else if(rawLine.match(/\b(fix|debug|error|bug|fail)\b/i)){label='FIX';color='#f85149'}
-      else if(rawLine.match(/\b(think|analyze|plan|route|architect)\b/i)){label='THINK';color='#bc8cff'}
-      else if(rawLine.match(/\b(search|find|grep|glob|explore)\b/i)){label='FIND';color='#58a6ff'}
-      else if(rawLine.match(/\b(classify|validate|help)\b/i)){label='HELP';color='#8b949e'}
-      else{label='INFO';color='#00e5ff'}
-      const y=oc.dy-10+i*12
-      ctx.fillStyle='#222';ctx.fillRect(oc.dx-55,y-5,30,10);ctx.fillStyle=color;ctx.font='bold 6px "Consolas",monospace';ctx.textAlign='center';ctx.fillText(label,oc.dx-40,y+2)
-      const txt=rawLine.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,36)
-      ctx.fillStyle='#aaa';ctx.textAlign='left';ctx.font='7px "Consolas",monospace';ctx.fillText(ts,oc.dx-20,y+2)
-      ctx.fillStyle='#8cf';ctx.font='7px "Consolas",monospace';ctx.fillText(txt,oc.dx+4,y+2)
-    })
-  }else{
-    ctx.fillStyle='rgba(0,229,255,0.25)';ctx.font='8px "Consolas",monospace';ctx.textAlign='center';ctx.fillText('waiting for TUI output...',oc.dx,oc.dy+6)
-  }
+  if(false){}
   const blink=Math.sin(fc*.05)>0;ctx.fillStyle=blink?'#00e5ff':'transparent';ctx.fillRect(oc.dx-56,oc.dy+18,5,10)
   ctx.restore()
   ctx.fillStyle='#4a3520';ctx.fillRect(oc.dx-45,oc.dy+40,90,8)

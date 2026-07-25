@@ -47,10 +47,6 @@
       {
         "command": "pxh-office.refresh",
         "title": "PXH Office: Refresh View"
-      },
-      {
-        "command": "pxh-office.work",
-        "title": "PXH Office: Start OpenCode Session"
       }
     ]
   },

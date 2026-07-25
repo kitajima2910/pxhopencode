@@ -7,17 +7,6 @@ class OfficeViewProvider {
     this._extensionUri = extensionUri;
     this._context = context;
     this._view = null;
-    this._workTerminal = null;
-    this._workActive = false;
-    this._workDisposables = [];
-
-    // Detect terminal close → reset work button
-    // Compare by name (more robust than object reference)
-    vscode.window.onDidCloseTerminal((t) => {
-      if (this._workActive && t.name === 'PXH OpenCode') {
-        this._handleWorkEnd();
-      }
-    });
   }
 
   resolveWebviewView(webviewView) {
@@ -33,10 +22,6 @@ class OfficeViewProvider {
     webviewView.webview.onDidReceiveMessage((msg) => {
       if (msg.command === "log") {
         console.log("[PXH Office]", msg.text);
-      } else if (msg.command === "work") {
-        this._startOpenCodeSession();
-      } else if (msg.command === "stop") {
-        this._stopWorkSession();
       }
     });
 
@@ -67,64 +52,6 @@ class OfficeViewProvider {
     }
   }
 
-  _handleWorkEnd() {
-    if (!this._workActive) return;
-    this._workActive = false;
-    this._workTerminal = null;
-    this._disposeWorkListeners();
-    this.broadcast({ type: "workflow_end" });
-    // Direct reset ensures the button always reverts even if
-    // the workflow_end → normalizeVSCodeEvent → applyStateDiff chain fails.
-    this.broadcast({ type: "reset_work_button" });
-  }
-
-  _disposeWorkListeners() {
-    while (this._workDisposables.length) {
-      const d = this._workDisposables.pop();
-      try { d.dispose(); } catch {}
-    }
-  }
-
-  _stopWorkSession() {
-    if (this._workTerminal) {
-      try { this._workTerminal.dispose(); } catch {}
-    }
-    this._handleWorkEnd();
-  }
-
-  _resetWorkButtonDirect() {
-    this.broadcast({ type: "reset_work_button" });
-  }
-
-  _startOpenCodeSession() {
-    try {
-      const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
-      const terminal = vscode.window.createTerminal({
-        name: "PXH OpenCode",
-        cwd: workspaceRoot,
-      });
-      this._workTerminal = terminal;
-      this._workActive = true;
-      terminal.show();
-
-      // VSCode 1.82+ shell integration: clean process-exit detection
-      try {
-        if (terminal.shellIntegration) {
-          const execution = terminal.shellIntegration.executeCommand("opencode");
-          this._workDisposables.push(
-            execution.onDidEnd(() => this._handleWorkEnd())
-          );
-          return;
-        }
-      } catch {}
-
-      // Fallback: sendText
-      terminal.sendText("opencode");
-    } catch (e) {
-      console.error("[PXH Office] Failed to start OpenCode session:", e.message);
-    }
-  }
-
   _send(data) {
     try {
       this._view.webview.postMessage(data);
@@ -146,18 +73,78 @@ class OfficeViewProvider {
     }
 
     // Inline renderer-state.js (VSCode webview uses data URL, can't resolve external scripts)
-    const stateStorePath = path.join(
+    let rendererStateJs = null;
+
+    // Try 1: from extension media dir (always included in packaged extension)
+    const mediaPath = path.join(
       this._extensionUri.fsPath,
-      "..", "templates", "renderer-state.js"
+      "media", "renderer-state.js"
     );
     try {
-      const rendererStateJs = fs.readFileSync(stateStorePath, "utf-8");
+      rendererStateJs = fs.readFileSync(mediaPath, "utf-8");
+    } catch {
+      // Try 2: from extension templates dir (development mode)
+      try {
+        const tmplPath = path.join(
+          this._extensionUri.fsPath,
+          "..", "templates", "renderer-state.js"
+        );
+        if (fs.existsSync(tmplPath)) {
+          rendererStateJs = fs.readFileSync(tmplPath, "utf-8");
+        }
+      } catch {
+        // Try 3: from workspace root (standalone installed extension)
+        try {
+          const wsRoot = vscode.workspace.workspaceFolders?.[0]?.uri?.fsPath;
+          if (wsRoot) {
+            const altPath = path.join(wsRoot, 'skills', 'virtual-office', 'templates', 'renderer-state.js');
+            if (fs.existsSync(altPath)) {
+              rendererStateJs = fs.readFileSync(altPath, 'utf-8');
+            }
+          }
+        } catch {}
+      }
+    }
+
+    // Always replace the script src tag (empty fallback prevents 403 in webview)
+    html = html.replace(
+      '<script src="renderer-state.js"></script>',
+      '<script>' + (rendererStateJs || '') + '</script>'
+    );
+
+    // Ensure StateStore is always defined — inject stub if file not found
+    if (!rendererStateJs) {
+      const stateStoreStub = `/** StateStore stub — file not found, using fallback */
+const StateStore = (function() {
+  var M = {};
+  var _agents = {}, _session = { active: false, phase: 'idle', workflow: '—', startTime: null };
+  var _listeners = [], _signalListeners = [];
+  var _connected = false;
+  M.connect = function() { _connected = true; };
+  M.disconnect = function() { _connected = false; };
+  M.isConnected = function() { return _connected; };
+  M.onChange = function(fn) { _listeners.push(fn); };
+  M.onSignal = function(fn) { _signalListeners.push(fn); };
+  M.getAgent = function(id) { return _agents[id] || null; };
+  M.getAllAgents = function() { return _agents; };
+  M.getSession = function() { return Object.assign({}, _session); };
+  M._applySnapshot = function(s) {
+    if(s.agents) { for(var k in s.agents) { _agents[k] = Object.assign({}, s.agents[k]); } }
+    if(s.session) { Object.assign(_session, s.session); }
+    for(var i=0;i<_listeners.length;i++){try{_listeners[i]({type:'snapshot',session:_session,agents:_agents})}catch(e){}}
+  };
+  M._applyDiff = function(d) {
+    if(d.session) { Object.assign(_session, d.session); }
+    if(d.agents) { var ca=[]; for(var k in d.agents) { _agents[k] = Object.assign({}, d.agents[k]); ca.push(k); } }
+    for(var i=0;i<_listeners.length;i++){try{_listeners[i]({type:'diff',session:_session,agents:_agents,changedAgents:ca||[]})}catch(e){}}
+  };
+  if(typeof module !== 'undefined' && module.exports) { module.exports = M; }
+  return M;
+})();\n`;
       html = html.replace(
-        '<script src="renderer-state.js"></script>',
-        '<script>' + rendererStateJs + '</script>'
+        '<script></script>',
+        '<script>\n' + stateStoreStub + '\n</script>'
       );
-    } catch (e) {
-      console.error("[PXH Office] renderer-state.js not found:", e.message);
     }
 
     // Set mode to 'vscode' bypassing SSE
@@ -261,12 +248,14 @@ class OfficeViewProvider {
     }
 
     if (ev.type === 'tui_mirror') {
+      var msg = (ev.message || ev.line || '').trim();
+      if (msg.length > 200) msg = msg.slice(0, 197) + '...';
       return {
         agents: {
           'pxh-opencode': {
             currentState: 'typing',
             badge: 'Synced',
-            message: (ev.message || ev.line || '').trim(),
+            message: msg,
             active: true,
             color: '#00e5ff'
           }
@@ -285,64 +274,16 @@ class OfficeViewProvider {
     return null;
   }
 
-  var _lastSession = false;
-
-  // ── Work button bridge ──
   var _vscodeApi = acquireVsCodeApi();
-
-  function resetWorkButton() {
-    var btn = document.getElementById('workBtn');
-    if (btn) { btn.textContent = 'Làm việc'; btn.className = 'work-btn'; btn.disabled = false; }
-  }
-
-  function setWorkButtonBusy() {
-    var btn = document.getElementById('workBtn');
-    if (btn) { btn.textContent = '⏳ Đang làm...'; btn.className = 'work-btn working'; btn.disabled = false; }
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    var btn = document.getElementById('workBtn');
-    if (btn) {
-      btn.addEventListener('click', function() {
-        if (btn.classList.contains('working')) {
-          btn.textContent = 'Làm việc';
-          btn.className = 'work-btn';
-          btn.disabled = false;
-          _vscodeApi.postMessage({ command: 'stop' });
-        } else {
-          setWorkButtonBusy();
-          _vscodeApi.postMessage({ command: 'work' });
-        }
-      });
-    }
-  });
 
   window.addEventListener('message', function(e) {
     try {
       var ev = e.data;
       if (!ev || !ev.type) return;
 
-      // Direct reset_work_button — bypasses the entire normalize → applyStateDiff chain.
-      // This ensures the button always reverts when the terminal/process ends.
-      if (ev.type === 'reset_work_button') {
-        resetWorkButton();
-        return;
-      }
-
       var diff = normalizeVSCodeEvent(ev);
       if (diff && typeof applyStateDiff === 'function') {
         applyStateDiff(diff);
-
-        // Track session state for signals + work button
-        if (diff.session) {
-          if (diff.session.active) {
-            _lastSession = true;
-            setWorkButtonBusy();
-          } else {
-            _lastSession = false;
-            resetWorkButton();
-          }
-        }
       }
     } catch(ex) {}
   });
