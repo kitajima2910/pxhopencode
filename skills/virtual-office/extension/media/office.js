@@ -895,7 +895,7 @@ function animate(now){fc++;updateElapsed()
   const bh=H*.11,bwW=W*.58,btop=H*.005
   ctx.fillStyle='rgba(0,0,0,0.5)';ctx.beginPath();ctx.roundRect((W-bwW)/2,btop,bwW,bh,6);ctx.fill()
   ctx.strokeStyle='rgba(88,166,255,0.25)';ctx.lineWidth=1.2;ctx.stroke()
-  ctx.fillStyle='rgba(88,166,255,0.6)';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company — Task Logs',W*.5,btop+11)
+  ctx.fillStyle='rgba(88,166,255,0.6)';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 - AI Company --- Task Logs',W*.5,btop+11)
   ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect((W-bwW)/2+16,btop+15,bwW-32,1)
   // Show sysLogs under banner (recent task events)
   if(sysLogs.length){
