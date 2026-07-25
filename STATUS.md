@@ -56,7 +56,11 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-07-25 | v51 | **PXHOpenCode Terminal Re-enable** — banner hiển thị task logs dưới "PXH2910 · AI Company — Task Logs", PXHOpenCode terminal screen vẽ lại với log scroll, _monitorLog agents re-enabled, addLog() đẩy tất cả logs vào PXHOpenCode terminal, fix duplicate log |
+| 2026-07-25 | v55 | **Clean dead code** — xóa 5 functions không dùng (~50 dòng) + flag `hrw` + comment disabled + file `test-eventwatcher.js` rỗng |
+| 2026-07-25 | v54 | **Fix 4 agent bugs** — (1) walking agents về desk khi session start, (2) stale timeout không xóa speech bubble khi active, (3) `isIdle` bắt `active:false`, (4) `startTyping` không leak interval |
+| 2026-07-25 | v53 | **Render layer fix + Audit** — PXHOpenCode character vẽ sau terminal screen (ngồi sau màn hình), fix vô hình khi wandering, audit toàn bộ agent logic |
+| 2026-07-25 | v52 | **PXHOpenCode vào desk khi session active** — thêm `state._sessionActive` vào trigger PXHOpenCode đi làm, fix infinite loop với `poc._lastEvt!==0` guard |
+| 2026-07-25 | v51 | **PXHOpenCode Terminal Re-enable** — banner hiển thị task logs, PXHOpenCode terminal screen vẽ lại, _monitorLog agents re-enabled, addLog() đẩy tất cả logs vào PXHOpenCode terminal, fix duplicate log |
 | 2026-07-25 | v50 | Extension-only Virtual Office + **Release v50** — remove standalone browser/TUI, clean server.mjs API-only, VSCE extension focus. Arch check 0 errors, root package.json fixed, build script handles meta-projects + VSCE packaging, tagged release, fix Anti-Rationalization warnings |
 | 2026-07-24 | v48 | Prompt Optimizer — auto-rewrite prompt mơ hồ thành implementation-ready spec, panel `<details>` transparent, integrate vào opencode.json instructions, README Key Concepts + version + commit count sync |
 | 2026-07-24 | v47 | Bat merge — pxh-office.bat hợp nhất on/off/restart + help, xóa pxh-office-on.bat và pxh-office-off.bat, cập nhật README |

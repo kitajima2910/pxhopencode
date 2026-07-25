@@ -85,7 +85,7 @@ const AGENTS={
 const AL=Object.values(AGENTS)
 let W,H
 const chars={}
-AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,hrw:false,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now(),_sessionArchive:[]}})
+AL.forEach(a=>{chars[a.n]={a,state:'idle',x:0,y:0,tx:0,ty:0,dx:0,dy:0,ix:0,iy:0,ws:0,wp:Math.random()*Math.PI*2,ap:Math.random()*Math.PI*2,it:Math.random()*3e3+1e3,ti:null,w:false,by:0,ts:'',tsm:'',_monitorLog:[],_lastEvt:performance.now(),_sessionArchive:[]}})
 const contracts=[],POI=[],plants=[],doneNotifs=[],sysLogs=[]
 
 // ============================================================
@@ -134,14 +134,6 @@ let fc=0
 function hr(hex){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`${r},${g},${b}`}
 function dc(hex,f=.6){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgb(${Math.floor(r*f)},${Math.floor(g*f)},${Math.floor(b*f)})`}
 
-function drawFloor(y0,y1,label,color){
-  const g=ctx.createLinearGradient(0,y0,0,y1)
-  g.addColorStop(0,`rgba(${hr(color)},0.06)`);g.addColorStop(0.5,`rgba(${hr(color)},0.03)`);g.addColorStop(1,`rgba(${hr(color)},0.01)`)
-  ctx.fillStyle=g;ctx.fillRect(0,y0,W,y1-y0)
-  ctx.strokeStyle=`rgba(${hr(color)},0.2)`;ctx.lineWidth=1
-  ctx.beginPath();ctx.moveTo(30,y1);ctx.lineTo(W-30,y1);ctx.stroke()
-  ctx.fillStyle=color;ctx.globalAlpha=0.5;ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.fillText(label,10,y0+14);ctx.globalAlpha=1
-}
 
 function drawPlant(x,y,s){
   ctx.save();const sw=Math.sin(fc*.015+x)*4;const t=Math.floor(x)%3
@@ -189,23 +181,6 @@ function drawServerRack(x,y,w,h){
   ctx.restore()
 }
 
-function drawMonitor(x,y,active){
-  ctx.save();const mw=48,mh=30
-  ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-mw/2-1,y-1,mw+2,mh+2,3);ctx.fill()
-  ctx.fillStyle='#22262d';ctx.fillRect(x-mw/2-1,y+mh-8,mw+2,9)
-  ctx.fillStyle='#3a3d44';ctx.beginPath();ctx.arc(x,y+mh-1.5,2,0,Math.PI*2);ctx.fill()
-  ctx.fillStyle='#252830';ctx.fillRect(x-3,y+mh,6,5);ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-14,y+mh+4,28,4,2);ctx.fill()
-  if(active){
-    ctx.fillStyle='#0a1628';ctx.fillRect(x-mw/2+4,y+4,mw-8,mh-13);ctx.strokeStyle='#3fb950';ctx.lineWidth=0.8
-    for(let i=0;i<6;i++){const ly=y+7+i*3.2,ind=(i%3)*4;ctx.beginPath();ctx.moveTo(x-mw/2+7+ind,ly);ctx.lineTo(x-mw/2+7+ind+Math.sin(fc*0.07+i)*3+15,ly);ctx.stroke()}
-    if(Math.floor(fc/15)%2){ctx.fillStyle='#3fb950';ctx.fillRect(x-mw/2+7+15,y+7,5,2.5)}
-    ctx.fillStyle='#3fb950';ctx.beginPath();ctx.arc(x+mw/2-7,y+mh-3,2.5,0,Math.PI*2);ctx.fill()
-  }else{
-    ctx.fillStyle='#0d1117';ctx.fillRect(x-mw/2+4,y+4,mw-8,mh-13)
-    ctx.fillStyle='#1a2a1a';ctx.beginPath();ctx.arc(x+mw/2-7,y+mh-3,2.5,0,Math.PI*2);ctx.fill()
-  }
-  ctx.restore()
-}
 function drawKeyboard(x,y){ctx.save();const kw=42,kh=12;ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(x-kw/2,y,kw,kh,2.5);ctx.fill();ctx.fillStyle='#2a2d34';for(let r=0;r<5;r++){ctx.fillRect(x-kw/2+3,y+2+r*2,kw-6,1.4)}ctx.fillRect(x-12,y+9.5,24,1.4);ctx.restore()}
 function drawMouse(x,y){ctx.save();ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.ellipse(x,y,6,7.5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#2a2d34';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(x,y-4);ctx.lineTo(x,y+3);ctx.stroke();ctx.restore()}
 function drawAgentMonitor(x,y,ch){
@@ -238,23 +213,6 @@ function drawAgentMonitor(x,y,ch){
   const act=ch.state==='typing'||ch.w;ctx.fillStyle=act?'#3fb950':'#1a2a1a';ctx.beginPath();ctx.arc(x+mw/2-7,y+mh-3,2.5,0,Math.PI*2);ctx.fill()
   ctx.restore()
 }
-function drawLaptop(x,y,active){
-  ctx.save();const lw=40,sh=24,bh=8
-  ctx.fillStyle='#a8acb4';ctx.beginPath();ctx.roundRect(x-lw/2,y-sh,lw,sh,3);ctx.fill()
-  ctx.fillStyle='#161a20';ctx.fillRect(x-lw/2+3,y-sh+4,lw-6,sh-8)
-  ctx.fillStyle='#0d1117';ctx.beginPath();ctx.arc(x,y-sh+3,1.2,0,Math.PI*2);ctx.fill()
-  if(active){
-    ctx.fillStyle='#0a1628';ctx.fillRect(x-lw/2+4,y-sh+7,lw-8,sh-13);ctx.strokeStyle='#58a6ff';ctx.lineWidth=0.8
-    for(let i=0;i<5;i++){const ly=y-sh+9+i*2.8;ctx.beginPath();ctx.moveTo(x-lw/2+7,ly);ctx.lineTo(x-lw/2+7+Math.sin(fc*0.06+i)*2+13,ly);ctx.stroke()}
-    if(Math.floor(fc/12)%2){ctx.fillStyle='#58a6ff';ctx.fillRect(x-lw/2+7+13,y-sh+9,5,2.5)}
-  }else{ctx.fillStyle='#0d1117';ctx.fillRect(x-lw/2+4,y-sh+7,lw-8,sh-13)}
-  ctx.fillStyle='#888c94';ctx.fillRect(x-lw/2,y-1,lw,2)
-  ctx.fillStyle='#a8acb4';ctx.beginPath();ctx.roundRect(x-lw/2,y+1,lw,bh,1.5);ctx.fill()
-  ctx.fillStyle='#2a2d34';ctx.fillRect(x-lw/2+3,y+2,lw-6,3.5);for(let r=0;r<6;r++)ctx.fillRect(x-lw/2+4,y+2.3+r*0.7,lw-8,0.5)
-  ctx.fillStyle='#787c84';ctx.beginPath();ctx.roundRect(x-7,y+6,14,2,0.7);ctx.fill()
-  ctx.restore()
-}
-
 // ============================================================
 // CHARACTER RENDERING
 // ============================================================
@@ -621,24 +579,17 @@ function drawContract(ct){
 // ============================================================
 function moveChar(ch,tx,ty,sp){ch.tx=tx;ch.ty=ty;ch.ws=sp||1.5;if(ch.state!=='walking'){ch.state='walking';ch.wp=0}}
 function startTyping(ch){const dtx=ch.dx,dty=ch.dy+40;const dist=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2)
-  if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;const ck=setInterval(()=>{if(!ch.w){clearInterval(ck);return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ck);if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
+  // Clear previous walk polling interval to prevent leak
+  if(ch._walkTimer){clearInterval(ch._walkTimer);ch._walkTimer=null}
+  if(dist>20){moveChar(ch,dtx,dty,2);ch.w=true;ch._walkTimer=setInterval(()=>{if(!ch.w){clearInterval(ch._walkTimer);ch._walkTimer=null;return};const d=Math.sqrt((ch.x-dtx)**2+(ch.y-dty)**2);if(d<6||ch.state!=='walking'){clearInterval(ch._walkTimer);ch._walkTimer=null;if(!ch.w)return;ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}},100)}
   else{ch.state='typing';ch.x=dtx;ch.y=dty;ch.tx=ch.x;ch.ty=ch.y;ch.w=true;if(ch.ti)clearInterval(ch.ti);ch.ti=setInterval(()=>{if(ch.state!=='typing'||!ch.w){clearInterval(ch.ti);ch.ti=null;return}},150+Math.random()*200)}}
 function stopTyping(ch){
-  ch.state='idle';ch.w=false;ch.hrw=false;ch.tsm='';ch.ts='';ch._msgs=[]
+  ch.state='idle';ch.w=false;ch.tsm='';ch.ts='';ch._msgs=[]
   if(ch.ti){clearInterval(ch.ti);ch.ti=null}
   ch.it=performance.now()+2000
   // Don't teleport — stay in place, wander system handles natural movement
 }
-function highlightAgent(name){const ch=chars[name];if(!ch)return;ch.hrw=true;if(ch.state!=='typing')startTyping(ch)}
 function showDoneNotif(x,y,agentName,color){doneNotifs.push({x,y,agentName,color,life:70,sy:y})}
-function randomWander(ch){if(ch.state!=='idle'||ch.w)return;const r=chars._r,a=ch.a;let wx,wy;const roll=Math.random()
-  if(roll<.3&&POI.length>0){const p=POI[Math.floor(Math.random()*POI.length)];wx=p.x+(Math.random()-.5)*20;wy=p.y+(Math.random()-.5)*10}
-  else if(roll<.6){const cols=AL.filter(c=>c.tier===a.tier&&c.n!==a.n);if(cols.length>0){const cl=chars[cols[Math.floor(Math.random()*cols.length)].n];wx=cl.x+(Math.random()-.5)*30+20;wy=cl.y+(Math.random()-.5)*15}else{wx=ch.ix+(Math.random()-.5)*60;wy=ch.iy+(Math.random()-.5)*20}}
-  else{wx=ch.ix+(Math.random()-.5)*80;wy=ch.iy+(Math.random()-.5)*30}
-  if(a.tier==='T1')wy=Math.min(Math.max(wy,r.t1t+20),r.t1b-20);else if(a.tier==='T2')wy=Math.min(Math.max(wy,r.t2t+20),r.t2b-20);else if(a.tier==='T3')wy=Math.min(Math.max(wy,r.t3t+30),r.t3b-30);else wy=Math.min(Math.max(wy,r.t4t+20),r.t4b-20)
-  wx=Math.max(60,Math.min(W-60,wx));moveChar(ch,wx,wy,.8+Math.random()*.5);sfx('footstep')
-  setTimeout(()=>{if(ch&&ch.state==='walking'&&!ch.w){ch.state='idle';ch.it=performance.now()+1500+Math.random()*3000;setTimeout(()=>{if(ch&&ch.state==='idle'&&!ch.w)moveChar(ch,ch.ix,ch.iy,1)},2000)}},1500)
-}
 
 // ============================================================
 // STATE — driven by StateStore (renderer-state.js)
@@ -691,9 +642,8 @@ function applyStateDiff(diff){
       document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'
       sfx('task_start')
       if(sess.message) addLog(sess.message,'#3fb950')
-      // Session separator — disabled (code leak prevention)
       // Reset ALL agents to desk — prevent wandering during active session
-      AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+60000;if(cc.state!=='typing'&&cc.state!=='walking'){cc.state='idle';cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.x;cc.ty=cc.y}}})      }else if(!sess.active&&wasActive){
+      AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+60000;if(cc.state!=='typing'){cc.state='idle';cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.x;cc.ty=cc.y}}})      }else if(!sess.active&&wasActive){
         // Session ended
         state.phase='idle';state.workflow='—'
         document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
@@ -725,11 +675,13 @@ function applyStateDiff(diff){
       if(!ch)continue
 
       const isActive=agentState.active||agentState.currentState==='typing'
-      const isIdle=agentState.currentState==='idle'
+      const isIdle=!agentState.active||agentState.currentState==='idle'
 
       ch._lastEvt=now
 
       if(isActive){
+        // Clear stale idle timeout that could clear bubble while active
+        clearTimeout(ch._bt)
         // Activate character: reading or typing animation
         const isReading=agentState.isReading||false
         ch.ts=agentState.badge||''
@@ -767,11 +719,11 @@ function applyStateDiff(diff){
           if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===line.slice(9))ch._msgs.pop()
           ch._msgs.push(line);if(ch._msgs.length>2)ch._msgs.shift()
           ch.tsm=ch._msgs.length?ch._msgs:''
+          // Clear stale idle timeout to prevent bubble from disappearing while active
+          clearTimeout(ch._bt)
         }
 
-        // Mirror to PXHOpenCode — disabled (code leak prevention)
-
-        if(!ch.w&&ch.state!=='typing'&&ch.state!=='reading'){ch.hrw=true;startTyping(ch)}
+        if(!ch.w&&ch.state!=='typing'&&ch.state!=='reading'){startTyping(ch)}
       }else if(isIdle){
         // Deactivate character: stop typing, walk away
         if(ch.w){
@@ -789,7 +741,7 @@ function applyStateDiff(diff){
           if(oc){
             var line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
             if(line){
-              oc.ts='Synced';oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
+              oc.ts='Synced';oc.w=true;oc._lastEvt=now;oc._forceIdle=false
               oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
               if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
               // Push to PXHOpenCode _monitorLog for terminal display
@@ -848,8 +800,8 @@ function animate(now){fc++;updateElapsed()
 
   // PXHOpenCode: always sits when any agent works or TUI is active
   const poc=chars['pxh-opencode'];if(poc){
-    const anyWorking=AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
-    if(anyWorking&&poc.state!=='typing'){poc.hrw=true;poc.ts='Synced';startTyping(poc)}
+    const anyWorking=(state._sessionActive&&poc._lastEvt!==0)||AL.some(a=>a.n!=='pxh-opencode'&&chars[a.n]&&chars[a.n].w)
+    if(anyWorking&&poc.state!=='typing'){poc.ts='Synced';startTyping(poc)}
     // PXHOpenCode stays at desk until session end — no idle timeout
     if(poc._forceIdle){stopTyping(poc);poc._forceIdle=false}
   }
@@ -910,6 +862,9 @@ function animate(now){fc++;updateElapsed()
   // Historian desk
   const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawAgentMonitor(sh.dx,sh.dy-4,sh);drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
+  // PXHOpenCode character (drawn BEFORE terminal so terminal covers body — only when sitting)
+  var pocChar=chars['pxh-opencode']
+  if(pocChar&&pocChar.state==='typing')drawCharacter(pocChar)
   // PXHOpenCode — big terminal screen + swivel chair
   const pch=chars['pxh-opencode'];const scx=pch.dx,scy=pch.dy+50,pmw=70,pmh=46
   // Desk
@@ -963,7 +918,7 @@ function animate(now){fc++;updateElapsed()
   doneNotifs.forEach(dn=>{if(dn.life<=0)return;const a=Math.min(1,dn.life/25);ctx.save();ctx.globalAlpha=a;const t='✓ Đã làm xong',tw=t.length*5+10;ctx.fillStyle='#fff';ctx.strokeStyle='#111';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(dn.x-tw/2,dn.y-7,tw,16,5);ctx.fill();ctx.stroke();ctx.fillStyle='#111';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText(t,dn.x,dn.y+3);ctx.restore()})
 
   // Characters
-  const walkers=AL.filter(a=>chars[a.n].state==='walking'||chars[a.n].state==='idle'),workers=AL.filter(a=>chars[a.n].state==='sitting'||chars[a.n].state==='typing')
+  const walkers=AL.filter(a=>(a.n!=='pxh-opencode'||chars[a.n].state!=='typing')&&(chars[a.n].state==='walking'||chars[a.n].state==='idle')),workers=AL.filter(a=>(a.n!=='pxh-opencode'||chars[a.n].state!=='typing')&&(chars[a.n].state==='sitting'||chars[a.n].state==='typing'))
   walkers.forEach(a=>drawCharacter(chars[a.n]));workers.forEach(a=>drawCharacter(chars[a.n]))
   drawCat(cat)
   drawDog(dog)
