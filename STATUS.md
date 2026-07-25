@@ -56,7 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-07-25 | v60 | **Xoá `pxh-opencode.ps1`** — đã thay thế bằng PXH Terminal tích hợp sẵn trong Virtual Office, xoá file script + references trong README.md, cập nhật STATUS.md |
+| 2026-07-25 | v61 | **Fix Virtual Office không start** — `extension.js` dùng `context.extensionUri.fsPath` để resolve `templates/server.mjs` nhưng path đó không tồn tại trong extension package (templates/ nằm ngoài thư mục extension). Fix: dùng `workspaceRoot` + `skills/virtual-office/templates/server.mjs` thay vì resolve từ extension URI |
 | 2026-07-25 | v59 | **Redesign desk/furniture + fix agent direction** — chair vẽ TRƯỚC body (depth đúng), desk có chân + roundRect, laptop row vẽ laptop clamshell thay monitor, đồng bộ desk styling (PM/Help/Historian), `var`→`const` |
 | 2026-07-25 | v57 | **Colorize logs theo agent** — `drawAgentMonitor()` + PXHOpenCode terminal dùng `AGENTS[entry.s].c` thay vì keyword-match, fallback keyword cho system entries |
 | 2026-07-25 | v56 | **Mở rộng PXHOpenCode mirror** — bỏ guard `currentState==='typing'`, ALL messages từ PXHOpenCode đẩy vào `_monitorLog` terminal bất kể state |

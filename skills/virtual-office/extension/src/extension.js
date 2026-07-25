@@ -86,8 +86,8 @@ function activate(context) {
 function startServer(context, workspaceRoot) {
   try {
     const serverScript = path.join(
-      context.extensionUri.fsPath,
-      "..", "templates", "server.mjs"
+      workspaceRoot,
+      "skills", "virtual-office", "templates", "server.mjs"
     );
     if (!require("fs").existsSync(serverScript)) return;
 
