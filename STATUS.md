@@ -56,6 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-25 | v51 | **PXHOpenCode Terminal Re-enable** — banner hiển thị task logs dưới "PXH2910 · AI Company — Task Logs", PXHOpenCode terminal screen vẽ lại với log scroll, _monitorLog agents re-enabled, addLog() đẩy tất cả logs vào PXHOpenCode terminal, fix duplicate log |
 | 2026-07-25 | v50 | Extension-only Virtual Office + **Release v50** — remove standalone browser/TUI, clean server.mjs API-only, VSCE extension focus. Arch check 0 errors, root package.json fixed, build script handles meta-projects + VSCE packaging, tagged release, fix Anti-Rationalization warnings |
 | 2026-07-24 | v48 | Prompt Optimizer — auto-rewrite prompt mơ hồ thành implementation-ready spec, panel `<details>` transparent, integrate vào opencode.json instructions, README Key Concepts + version + commit count sync |
 | 2026-07-24 | v47 | Bat merge — pxh-office.bat hợp nhất on/off/restart + help, xóa pxh-office-on.bat và pxh-office-off.bat, cập nhật README |

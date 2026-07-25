@@ -648,6 +648,13 @@ function addLog(msg,color,agentName){
   // Safety: ensure msg is a short string (prevent source code from leaking to canvas)
   if(typeof msg!=='string')msg=String(msg);
   if(msg.length>200){msg=msg.slice(0,197)+'...';}
+  // Push ALL logs to PXHOpenCode terminal for unified log display
+  var ocTerm=chars['pxh-opencode']
+  if(ocTerm){
+    ocTerm._monitorLog.push({s:agentName||'sys',m:msg,t:Date.now()})
+    if(ocTerm._monitorLog.length>50)ocTerm._monitorLog.splice(0,ocTerm._monitorLog.length-50)
+  }
+  // Agent-specific: show in speech bubble
   if(agentName&&chars[agentName]){
     const ch=chars[agentName];if(!ch._msgs)ch._msgs=[]
     const t=new Date();const ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`
@@ -655,10 +662,14 @@ function addLog(msg,color,agentName){
     if(ch._msgs.length&&ch._msgs[ch._msgs.length-1].slice(9)===s.slice(9))ch._msgs.pop()
     ch._msgs.push(s);if(ch._msgs.length>2)ch._msgs.shift()
     ch.tsm=ch._msgs;ch._bcol=color||'#888'
+    // Also push to agent's _monitorLog
+    ch._monitorLog.push({s:agentName,m:msg,t:Date.now()})
+    if(ch._monitorLog.length>30)ch._monitorLog.splice(0,ch._monitorLog.length-30)
     return
   }
+  // System-wide: show in banner task log area
   sysLogs.unshift({msg,color:color||'#888',ts:Date.now()})
-  if(sysLogs.length>3)sysLogs.length=3
+  if(sysLogs.length>5)sysLogs.length=5
 }
 function updateStatus(){document.getElementById('wfVal').textContent=state.workflow;document.getElementById('phVal').textContent=state.phase;document.getElementById('agVal').textContent=state.agent||'—';const el=document.getElementById('rtVal');if(el)el.textContent=state.retry}
 function updateElapsed(){const ms=Date.now()-state.startTime;const h=String(Math.floor(ms/3600000)).padStart(2,'0'),m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0'),s=String(Math.floor((ms%60000)/1000)).padStart(2,'0');document.getElementById('elVal').textContent=`${h}:${m}:${s}`}
@@ -690,7 +701,12 @@ function applyStateDiff(diff){
         if(sess.message) addLog(sess.message,'#f85149')
         // Allow agents to start wandering after session ends
         AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+3000+Math.random()*4000}})
-      // Archive pxh-opencode mirror log — disabled (code leak prevention)
+      // Archive pxh-opencode mirror log to session archive
+      var pocA=chars['pxh-opencode']
+      if(pocA&&pocA._monitorLog.length){
+        pocA._sessionArchive=pocA._sessionArchive.concat(pocA._monitorLog.slice(-10))
+        if(pocA._sessionArchive.length>100)pocA._sessionArchive.splice(0,pocA._sessionArchive.length-100)
+      }
     }else if(sess.phase){
       state.phase=sess.phase
       state.workflow=sess.workflow||state.workflow
@@ -722,7 +738,22 @@ function applyStateDiff(diff){
 
         // Show active tool
         if(agentState.activeTool){
-        // _monitorLog disabled (code leak prevention)
+        // Agent monitor log — capture tool + message to agent's own monitor
+        if(agentState.activeTool||agentState.message){
+          var logMsg=agentState.message||agentState.badge||''
+          var logTool=agentState.activeTool||''
+          // Push to agent's own _monitorLog
+          ch._monitorLog.push({s:logTool,m:logMsg,t:Date.now()})
+          if(ch._monitorLog.length>30)ch._monitorLog.splice(0,ch._monitorLog.length-30)
+          // Also mirror to PXHOpenCode terminal (skip if same agent to avoid double)
+          if(agentId!=='pxh-opencode'){
+            var ocT=chars['pxh-opencode']
+            if(ocT){
+              ocT._monitorLog.push({s:agentId,m:'['+logTool+'] '+logMsg,t:Date.now()})
+              if(ocT._monitorLog.length>50)ocT._monitorLog.splice(0,ocT._monitorLog.length-50)
+            }
+          }
+        }
         }
 
         // Speech bubble — show tool + message
@@ -752,15 +783,20 @@ function applyStateDiff(diff){
       }
 
       if(agentId==='pxh-opencode'&&agentState.currentState==='typing'){
-        // PXHOpenCode mirror update — _mirrorLog/_msgs disabled (code leak prevention)
-        const oc=chars['pxh-opencode']
-        if(oc&&agentState.message){
-          const line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
-          if(line){
-            oc.ts='Synced';oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
-            oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
-            if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
-            clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},30000)
+        // PXHOpenCode mirror update — push all agent logs to PXHOpenCode terminal
+        if(agentState&&agentState.message){
+          var oc=chars['pxh-opencode']
+          if(oc){
+            var line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
+            if(line){
+              oc.ts='Synced';oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
+              oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
+              if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
+              // Push to PXHOpenCode _monitorLog for terminal display
+              oc._monitorLog.push({s:agentId,m:line,t:Date.now()})
+              if(oc._monitorLog.length>50)oc._monitorLog.splice(0,oc._monitorLog.length-50)
+              clearTimeout(oc._bt);oc._bt=setTimeout(function(){oc.tsm='';oc.ts=''},30000)
+            }
           }
         }
       }
@@ -840,13 +876,21 @@ function animate(now){fc++;updateElapsed()
 
   plants.forEach(p=>drawPlant(p.x,p.y,p.s))
 
-  // Banner — top center with system logs
-  const bh=H*.085,bwW=W*.55,btop=H*.012
-  ctx.fillStyle='rgba(0,0,0,0.45)';ctx.beginPath();ctx.roundRect((W-bwW)/2,btop,bwW,bh,6);ctx.fill()
+  // Banner — top center with task logs
+  const bh=H*.11,bwW=W*.58,btop=H*.005
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.beginPath();ctx.roundRect((W-bwW)/2,btop,bwW,bh,6);ctx.fill()
   ctx.strokeStyle='rgba(88,166,255,0.25)';ctx.lineWidth=1.2;ctx.stroke()
-  ctx.fillStyle='rgba(88,166,255,0.5)';ctx.font='bold 10px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company',W*.5,btop+16)
-  ctx.fillStyle='rgba(255,255,255,0.25)';ctx.fillRect((W-bwW)/2+20,btop+22,bwW-40,1)
-  // sysLogs log display disabled
+  ctx.fillStyle='rgba(88,166,255,0.6)';ctx.font='bold 8px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.fillText('PXH2910 · AI Company — Task Logs',W*.5,btop+11)
+  ctx.fillStyle='rgba(255,255,255,0.15)';ctx.fillRect((W-bwW)/2+16,btop+15,bwW-32,1)
+  // Show sysLogs under banner (recent task events)
+  if(sysLogs.length){
+    sysLogs.slice(-5).forEach(function(sl,i){
+      var sy=btop+22+i*10
+      ctx.fillStyle=sl.color||'#888';ctx.globalAlpha=0.85;ctx.font='6.5px "Consolas",monospace';ctx.textAlign='left'
+      var stxt=sl.msg.length>64?sl.msg.slice(0,61)+'...':sl.msg
+      ctx.fillText(stxt,(W-bwW)/2+10,sy)
+    });ctx.globalAlpha=1
+  }
 
   // Desks — monitor row
   ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawAgentMonitor(ch.dx,ch.dy-4,ch);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
@@ -866,10 +910,45 @@ function animate(now){fc++;updateElapsed()
   // Historian desk
   const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawAgentMonitor(sh.dx,sh.dy-4,sh);drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
-  // PXHOpenCode terminal — disabled (code leak prevention)
-
-  // PXHOpenCode — swivel chair (drawn after desk so it appears behind character)
-  const pch=chars['pxh-opencode'];const scx=pch.dx,scy=pch.dy+50
+  // PXHOpenCode — big terminal screen + swivel chair
+  const pch=chars['pxh-opencode'];const scx=pch.dx,scy=pch.dy+50,pmw=70,pmh=46
+  // Desk
+  ctx.fillStyle='#3a2a18';ctx.fillRect(scx-50,scy+10,100,6)
+  // Large terminal monitor
+  ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(scx-pmw/2-2,scy-pmh-2,pmw+4,pmh+4,4);ctx.fill()
+  ctx.fillStyle='#22262d';ctx.fillRect(scx-pmw/2-2,scy-8,pmw+4,10)
+  ctx.fillStyle='#3a3d44';ctx.beginPath();ctx.arc(scx,scy-3.5,2,0,Math.PI*2);ctx.fill()
+  // Screen content
+  ctx.save();ctx.beginPath();ctx.rect(scx-pmw/2+3,scy-pmh+4,pmw-6,pmh-14);ctx.clip()
+  ctx.fillStyle='#0a0e1a';ctx.fillRect(scx-pmw/2+3,scy-pmh+4,pmw-6,pmh-14)
+  // Show _monitorLog for PXHOpenCode
+  var oml=pch._monitorLog||[]
+  if(oml.length){
+    oml.slice(-10).forEach(function(entry,i){
+      var ly=scy-12-(oml.slice(-10).length-1-i)*3.8
+      var cc='#8cf'
+      if(entry.s&&entry.s.match(/error|fail|debug|fix/i))cc='#f85149'
+      else if(entry.s&&entry.s.match(/build|execute|test/i))cc='#d29922'
+      else if(entry.s&&entry.s.match(/code|write|edit/i))cc='#3fb950'
+      ctx.fillStyle=cc;ctx.font='5.5px "Consolas",monospace';ctx.textAlign='left'
+      var txt=entry.m.length>32?entry.m.slice(0,29)+'...':entry.m
+      ctx.fillText(txt,scx-pmw/2+5,ly)
+    })
+  }else{
+    ctx.fillStyle='rgba(0,229,255,0.2)';ctx.font='bold 6px "Consolas",monospace';ctx.textAlign='center'
+    ctx.fillText('PXHOpenCode Terminal',scx,scy-pmh/2-2)
+    ctx.fillStyle='rgba(0,229,255,0.08)';ctx.font='5px "Consolas",monospace'
+    ctx.fillText('Waiting for tasks...',scx,scy-pmh/2+8)
+  }
+  // Blinking cursor
+  if(Math.floor(fc/20)%2){ctx.fillStyle='rgba(0,229,255,0.6)';ctx.fillRect(scx+pmw/2-12,scy-12,4,2.5)}
+  ctx.restore()
+  // Status LED
+  var pact=pch.state==='typing'||pch.w;ctx.fillStyle=pact?'#00e5ff':'#0a2a3a';ctx.beginPath();ctx.arc(scx+pmw/2-5,scy-pmh+4,3,0,Math.PI*2);ctx.fill()
+  // Keyboard
+  ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(scx-24,scy+11,48,6,2);ctx.fill()
+  ctx.fillStyle='#2a2d34';for(var kr=0;kr<3;kr++)ctx.fillRect(scx-21,scy+12+kr*1.5,42,1)
+  // Swivel chair
   ctx.save();const sr=Math.sin(fc*.008)*2
   for(let i=0;i<5;i++){const a=i/5*Math.PI*2+sr*.5,cx2=scx+Math.cos(a)*10,cy2=scy+Math.sin(a)*10+6;ctx.fillStyle='#444';ctx.beginPath();ctx.arc(cx2,cy2,2.2,0,Math.PI*2);ctx.fill();ctx.fillStyle='#555';ctx.beginPath();ctx.arc(cx2,cy2,1.2,0,Math.PI*2);ctx.fill()}
   ctx.fillStyle='#3a3a4a';ctx.beginPath();for(let i=0;i<5;i++){const a=i/5*Math.PI*2+sr*.3,cx2=scx+Math.cos(a)*10,cy2=scy+Math.sin(a)*10+4;if(i===0)ctx.moveTo(cx2,cy2);else ctx.lineTo(cx2,cy2)}ctx.closePath();ctx.fill()
