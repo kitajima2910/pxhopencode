@@ -56,6 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-25 | v58 | **Bridge OpenCode → Virtual Office** — sửa `pxh-opencode.ps1` auto-start watchdog + write `workflow_start`/`workflow_end` vào `_shared/opencode-state.json`, kích hoạt event pipeline → agents vào desk khi user text prompt |
 | 2026-07-25 | v57 | **Colorize logs theo agent** — `drawAgentMonitor()` + PXHOpenCode terminal dùng `AGENTS[entry.s].c` thay vì keyword-match, fallback keyword cho system entries |
 | 2026-07-25 | v56 | **Mở rộng PXHOpenCode mirror** — bỏ guard `currentState==='typing'`, ALL messages từ PXHOpenCode đẩy vào `_monitorLog` terminal bất kể state |
 | 2026-07-25 | v55 | **Clean dead code** — xóa 5 functions không dùng (~50 dòng) + flag `hrw` + comment disabled + file `test-eventwatcher.js` rỗng |
