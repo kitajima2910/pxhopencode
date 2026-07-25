@@ -6,7 +6,7 @@
 |--------|---------|
 | Giai đoạn | PHÁT HÀNH ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime + Virtual Office |
-| Agents | 11 chuyên biệt (Tầng 1-4 + Virtual) |
+| Agents | 12 (11 chuyên biệt Tầng 1-4 + Virtual + Mirror) |
 | Workflows | 9 theo lĩnh vực |
 | Skills | 32 skills (4 lĩnh vực + Virtual Office) |
 | Contracts | 6 cấu trúc |

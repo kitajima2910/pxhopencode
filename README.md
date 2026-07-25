@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v49</b> &nbsp;·&nbsp; 154 commits &nbsp;·&nbsp; 11 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 11 commands &nbsp;·&nbsp; 32 skills</p>
+  <b>v50</b> &nbsp;·&nbsp; 168 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 175 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build. Bạn chỉ cần ngồi xem Virtual Office chạy.
 
@@ -223,7 +223,16 @@ Restart VS Code → Virtual Office xuất hiện ở sidebar.
 ## Changelog
 
 <details>
-<summary><b>v49 — User Guide Rewrite (Latest)</b></summary>
+<summary><b>v50 — Release (Latest)</b></summary>
+
+- **Release:** Extension-only Virtual Office — remove standalone browser/TUI, server.mjs API-only
+- **Harden:** Arch check 0 errors, root package.json fixed, build script handles meta-projects + VSCE packaging
+- **Fix:** Anti-Rationalization warnings, tagged release v50
+- **Sync:** README/docs-vibe bump v49→v50, commit count 154→168
+</details>
+
+<details>
+<summary><b>v49 — User Guide Rewrite</b></summary>
 
 - **Rewrite:** README repositioned as practical user guide — focus on "how to vibe code" over internal docs
 - **Restructure:** 3 cách vibe code front-and-center, kiến trúc simplified, virtual office concise
