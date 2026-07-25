@@ -417,6 +417,10 @@ function drawCharacter(ch){
       ctx.fillRect(-3,0,6,22+ta)
       ctx.restore()
     }
+    // Chair — drawn BEFORE body so it sits behind character
+    ctx.fillStyle='#2a3038';ctx.beginPath();ctx.roundRect(-14,4,28,8,2);ctx.fill()
+    ctx.fillStyle='#222830';ctx.fillRect(-7,-30,14,35)
+    ctx.fillStyle='#303840';ctx.beginPath();ctx.roundRect(-6,-33,12,6,2);ctx.fill()
     // Body — back view
     ctx.fillStyle=a.bc;ctx.beginPath()
     ctx.moveTo(-bw,bb);ctx.lineTo(bw,bb)
@@ -424,10 +428,6 @@ function drawCharacter(ch){
     ctx.closePath();ctx.fill()
     // Back clothing — waistline stripe
     ctx.fillStyle=a.oc||dc(a.bc,.6);ctx.fillRect(-bw+1,(bt+bb)/2,bw*2-2,2)
-    // Chair behind body
-    ctx.fillStyle='#282d38';ctx.fillRect(-15,5,30,7)
-    ctx.fillStyle='#222830';ctx.fillRect(-6,-32,12,37)
-    ctx.fillStyle='#303840';ctx.fillRect(-5,-35,10,5)
     // Head from behind
     const hcy=bt-7;ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
     ctx.fillStyle=sk;ctx.beginPath();ctx.arc(0,hcy,13,0,Math.PI*2);ctx.fill()
@@ -851,23 +851,62 @@ function animate(now){fc++;updateElapsed()
     });ctx.globalAlpha=1
   }
 
-  // Desks — monitor row
-  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-40,ch.dy+22,80,8);drawAgentMonitor(ch.dx,ch.dy-4,ch);drawKeyboard(ch.dx,ch.dy+24);drawMouse(ch.dx+28,ch.dy+32)})
+  // Desks — monitor row with legs
+  ;['pxh-architect','pxh-expert','pxh-fix-bugs'].forEach(n=>{const ch=chars[n];if(!ch)return;
+    var dx=ch.dx,dy=ch.dy
+    // Desk top
+    ctx.fillStyle='#4a3520';ctx.beginPath();ctx.roundRect(dx-40,dy+22,80,8,2);ctx.fill()
+    ctx.fillStyle='#5a4530';ctx.fillRect(dx-38,dy+23,76,1)
+    // Desk legs
+    ctx.fillStyle='#3a2a18';ctx.fillRect(dx-36,dy+30,5,8);ctx.fillRect(dx+31,dy+30,5,8)
+    // Monitor
+    drawAgentMonitor(dx,dy-4,ch);drawKeyboard(dx,dy+24);drawMouse(dx+28,dy+32)})
 
-  // Desks — laptop row
-  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;ctx.fillStyle='#4a3520';ctx.fillRect(ch.dx-32,ch.dy+22,65,8);drawAgentMonitor(ch.dx,ch.dy-6,ch)})
+  // Desks — laptop row (open clamshell ON desk)
+  ;['pxh-qa','pxh-review-code','pxh-devops','pxh-ui-ux'].forEach(n=>{const ch=chars[n];if(!ch)return;
+    const dx=ch.dx,dy=ch.dy
+    // Desk top
+    ctx.fillStyle='#4a3520';ctx.beginPath();ctx.roundRect(dx-33,dy+22,66,8,2);ctx.fill()
+    ctx.fillStyle='#5a4530';ctx.fillRect(dx-31,dy+23,62,1)
+    // Desk legs
+    ctx.fillStyle='#3a2a18';ctx.fillRect(dx-29,dy+30,4,8);ctx.fillRect(dx+25,dy+30,4,8)
+    // Laptop resting on desk (keyboard base)
+    ctx.fillStyle='#2a2d34';ctx.beginPath();ctx.roundRect(dx-18,dy+24,36,5,1.5);ctx.fill()
+    // Laptop screen (angled up)
+    ctx.fillStyle='#1a1d24';ctx.beginPath();ctx.roundRect(dx-20,dy+6,40,20,2);ctx.fill()
+    ctx.fillStyle='#0d1117';ctx.fillRect(dx-17,dy+9,34,14)
+    // Screen content on laptop
+    const omll=ch._monitorLog||[]
+    if(omll.length){ctx.fillStyle='rgba(63,185,80,0.5)';ctx.font='4.5px "Consolas",monospace';ctx.textAlign='left'
+      omll.slice(-4).forEach(function(el,ie){ctx.fillText(el.m.length>12?el.m.slice(0,11)+'…':el.m,dx-15,dy+14+ie*3.5)})}
+    })
 
-  // Chairs — all agents
-  ;AL.forEach(a=>{const ch=chars[a.n],cx=ch.dx,cy=ch.dy+40;ctx.fillStyle='#282d38';ctx.fillRect(cx-13,cy,27,6);ctx.fillStyle='#222830';ctx.fillRect(cx-4,cy-22,9,22);ctx.fillStyle='#303840';ctx.fillRect(cx-3,cy-25,6,3)})
+  // Chairs — all agents (with rounded backrest)
+  ;AL.forEach(a=>{const ch=chars[a.n];if(!ch)return;var cx=ch.dx,cy=ch.dy+40
+    ctx.fillStyle='#2a3038';ctx.beginPath();ctx.roundRect(cx-12,cy,24,7,2);ctx.fill()
+    ctx.fillStyle='#222830';ctx.fillRect(cx-5,cy-20,10,22)
+    ctx.fillStyle='#303840';ctx.beginPath();ctx.roundRect(cx-4,cy-23,8,5,2);ctx.fill()})
 
-  // PM corner desk
-  const pm=chars['pxh-pm'];ctx.fillStyle='#5a4020';ctx.fillRect(pm.dx-60,pm.dy+22,100,9);drawAgentMonitor(pm.dx,pm.dy-4,pm);drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+40,pm.dy+32)
+  // PM corner desk (big corner desk)
+  const pm=chars['pxh-pm']
+  ctx.fillStyle='#5a4020';ctx.beginPath();ctx.roundRect(pm.dx-60,pm.dy+22,100,9,3);ctx.fill()
+  ctx.fillStyle='#6a5030';ctx.fillRect(pm.dx-58,pm.dy+23,96,1)
+  ctx.fillStyle='#3a2a18';ctx.fillRect(pm.dx-56,pm.dy+31,5,8);ctx.fillRect(pm.dx+31,pm.dy+31,5,8)
+  drawAgentMonitor(pm.dx,pm.dy-4,pm);drawKeyboard(pm.dx,pm.dy+24);drawMouse(pm.dx+40,pm.dy+32)
 
   // Help desk
-  const hh=chars['pxh-help'];ctx.fillStyle='#4a3520';ctx.fillRect(hh.dx-40,hh.dy+22,80,9);drawAgentMonitor(hh.dx,hh.dy-4,hh);drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+28,hh.dy+32)
+  const hh=chars['pxh-help']
+  ctx.fillStyle='#4a3520';ctx.beginPath();ctx.roundRect(hh.dx-40,hh.dy+22,80,8,2);ctx.fill()
+  ctx.fillStyle='#5a4530';ctx.fillRect(hh.dx-38,hh.dy+23,76,1)
+  ctx.fillStyle='#3a2a18';ctx.fillRect(hh.dx-36,hh.dy+30,5,8);ctx.fillRect(hh.dx+31,hh.dy+30,5,8)
+  drawAgentMonitor(hh.dx,hh.dy-4,hh);drawKeyboard(hh.dx,hh.dy+24);drawMouse(hh.dx+28,hh.dy+32)
 
   // Historian desk
-  const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawAgentMonitor(sh.dx,sh.dy-4,sh);drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
+  const sh=chars['pxh-save-history']
+  ctx.fillStyle='#4a3520';ctx.beginPath();ctx.roundRect(sh.dx-40,sh.dy+22,80,8,2);ctx.fill()
+  ctx.fillStyle='#5a4530';ctx.fillRect(sh.dx-38,sh.dy+23,76,1)
+  ctx.fillStyle='#3a2a18';ctx.fillRect(sh.dx-36,sh.dy+30,5,8);ctx.fillRect(sh.dx+31,sh.dy+30,5,8)
+  drawAgentMonitor(sh.dx,sh.dy-4,sh);drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
   // PXHOpenCode character (drawn BEFORE terminal so terminal covers body — only when sitting)
   var pocChar=chars['pxh-opencode']

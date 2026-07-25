@@ -74,6 +74,17 @@ echo.
 echo [^^>] DONG HOAN TOAN VS Code (tat tat ca cua so), sau do mo lai.
 echo     Neu da dong VS Code truoc khi chay script nay, chi can mo lai VS Code.
 echo.
+echo ============================================
+echo  Virtual Office Bridge
+echo ============================================
+echo.
+echo [*] Dang mo PXHOpenCode workspace (server + watchdog)...
+start "PXHOpenCode - Virtual Office" powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0pxh-opencode.ps1"
+echo.
+echo [+] Virtual Office bridge dang chay trong cua so moi.
+echo     Khi VS Code mo lai, extension se tu dong ket noi.
+echo     Muon tat: dong cua so PXHOpenCode hoac Ctrl+C.
+echo.
 exit /b
 
 :uninstall

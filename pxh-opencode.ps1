@@ -5,8 +5,8 @@ param([string]$Prompt)
 $ROOT = Split-Path -Parent $PSCommandPath
 $SERVER = Join-Path $ROOT "skills\virtual-office\templates\server.mjs"
 $WATCHDOG = Join-Path $ROOT "pxh-watch.ps1"
-$STATE_FILE = Join-Path $ROOT "_shared" "opencode-state.json"
-$ACTIVITY_FILE = Join-Path $ROOT "_shared" "opencode-activity.log"
+$STATE_FILE = "$ROOT\_shared\opencode-state.json"
+$ACTIVITY_FILE = "$ROOT\_shared\opencode-activity.log"
 
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host " PXHOpenCode" -ForegroundColor Cyan

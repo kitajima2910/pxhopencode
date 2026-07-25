@@ -198,6 +198,32 @@ Restart VS Code → Virtual Office xuất hiện ở sidebar.
 - **Dashed signals** nối agents theo data flow
 - **State badges** nhấp nháy cạnh tên — biết agent nào đang làm gì ngay lập tức
 
+### Sử dụng PXHOpenCode — real-time agent tracking
+
+Khi bạn chạy OpenCode qua `pxh-opencode.ps1`, Virtual Office tự động:
+
+1. **Hiển thị agents vào bàn làm việc** khi session bắt đầu
+2. **Cập nhật terminal PXHOpenCode** với log real-time của từng agent
+3. **Đồng bộ trạng thái** (code, test, review, build,...) lên speech bubbles
+4. **Giải phóng agents** khi session kết thúc
+
+```powershell
+# Khởi chạy OpenCode với Virtual Office bridge
+.\pxh-opencode.ps1 "Xây dựng web blog cá nhân với React"
+
+# Hoặc không truyền prompt — script sẽ hỏi bạn
+.\pxh-opencode.ps1
+```
+
+**Quy trình tự động:**
+1. Script khởi động server API (port 2910) nếu chưa chạy
+2. Khởi động watchdog (`pxh-watch.ps1`) trong nền để bắc cầu output OpenCode → Virtual Office
+3. Ghi `workflow_start` vào `_shared/opencode-state.json` → kích hoạt event pipeline → agents vào bàn
+4. Chạy `opencode` (tương tác bình thường)
+5. Ghi `workflow_end` → agents giải phóng, về chỗ ngồi
+
+> **Lưu ý:** Nếu chạy `opencode` trực tiếp (không qua wrapper), Virtual Office sẽ không tự động cập nhật. Luôn dùng `pxh-opencode.ps1` để có trải nghiệm real-time.
+
 ---
 
 ## Chính sách
