@@ -56,6 +56,14 @@ if defined EXT_VER (
 )
 if not defined EXT_VER set "EXT_VER=1.0.0"
 echo [*] Extension version: !EXT_VER!
+
+:: Xoa khoi .obsolete de VS Code khong bo qua extension
+set "OBSOLETE=%EXT_BASE%\.obsolete"
+set "EXT_KEY=%PUBLISHER%.%EXT_NAME%-%EXT_VER%"
+if exist "%OBSOLETE%" (
+  powershell -NoProfile -Command "$c=Get-Content '%OBSOLETE%' -Raw -Encoding utf8; $j=$c|ConvertFrom-Json; if($j.PSObject.Properties.Name -contains '%EXT_KEY%'){$j.PSObject.Properties.Remove('%EXT_KEY%')}; ($j|ConvertTo-Json -Compress) -replace ',$',''|Set-Content '%OBSOLETE%' -NoNewline -Encoding utf8" 2>nul
+)
+
 set "EXT_DIR=%EXT_BASE%\%PUBLISHER%.%EXT_NAME%-!EXT_VER!"
 
 :: Copy directly — skip vsce packaging (unreliable + slow)
@@ -71,11 +79,11 @@ if %ERRORLEVEL% neq 0 (
 
 echo [+] Da copy extension vao: %DEST%
 echo.
-echo [^^>] DONG HOAN TOAN VS Code (tat tat ca cua so), sau do mo lai.
+echo [^^^>] DONG HOAN TOAN VS Code (tat tat ca cua so), sau do mo lai.
 echo     Neu da dong VS Code truoc khi chay script nay, chi can mo lai VS Code.
 echo.
 echo.
-echo [^^>] Mo VS Code, mo sidebar PXH Virtual Office, click vao terminal PXH de go lenh.
+echo [^^^>] Mo VS Code, mo sidebar PXH Virtual Office, click vao terminal PXH de go lenh.
 exit /b
 
 :uninstall

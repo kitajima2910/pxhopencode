@@ -56,7 +56,8 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-07-25 | v61 | **Fix Virtual Office không start** — `extension.js` dùng `context.extensionUri.fsPath` để resolve `templates/server.mjs` nhưng path đó không tồn tại trong extension package (templates/ nằm ngoài thư mục extension). Fix: dùng `workspaceRoot` + `skills/virtual-office/templates/server.mjs` thay vì resolve từ extension URI |
+| 2026-07-25 | v65 | **Fix batch tạo file `]` (spurious redirect)** — `^^>` trong 2 lệnh `echo` ở `pxh-install-extension.bat` khiến cmd.exe hiểu `>` là redirect, tạo file `]`. Fix: `^^^>` — caret thứ 3 escape `>` |
+| 2026-07-25 | v64 | **Fix không thấy Virtual Office sau install** — `.obsolete` file chứa `pxh.pxh-virtual-office-1.0.0:true` khiến VS Code bỏ qua extension dù đã copy vào extensions folder. Fix: xoá entry khỏi `.obsolete` khi install, thêm cleanup step vào `pxh-install-extension.bat` |
 | 2026-07-25 | v59 | **Redesign desk/furniture + fix agent direction** — chair vẽ TRƯỚC body (depth đúng), desk có chân + roundRect, laptop row vẽ laptop clamshell thay monitor, đồng bộ desk styling (PM/Help/Historian), `var`→`const` |
 | 2026-07-25 | v57 | **Colorize logs theo agent** — `drawAgentMonitor()` + PXHOpenCode terminal dùng `AGENTS[entry.s].c` thay vì keyword-match, fallback keyword cho system entries |
 | 2026-07-25 | v56 | **Mở rộng PXHOpenCode mirror** — bỏ guard `currentState==='typing'`, ALL messages từ PXHOpenCode đẩy vào `_monitorLog` terminal bất kể state |

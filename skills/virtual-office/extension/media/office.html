@@ -8,13 +8,14 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0%' stop-color='%231a2030'/><stop offset='100%' stop-color='%230d1117'/></linearGradient></defs><rect width='64' height='64' rx='14' fill='url(%23g)' stroke='%2330363d' stroke-width='2'/><rect x='14' y='10' width='36' height='10' rx='3' fill='%23bc8cff' opacity='0.9'/><rect x='14' y='22' width='36' height='10' rx='3' fill='%233fb950' opacity='0.9'/><rect x='14' y='34' width='36' height='10' rx='3' fill='%23d29922' opacity='0.9'/><rect x='14' y='46' width='36' height='10' rx='3' fill='%2358a6ff' opacity='0.9'/><circle cx='10' cy='15' r='3' fill='%23bc8cff'/><circle cx='10' cy='27' r='3' fill='%233fb950'/><circle cx='10' cy='39' r='3' fill='%23d29922'/><circle cx='10' cy='51' r='3' fill='%2358a6ff'/></svg>">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;width:100%}
 :root{
   --bg:#0a0e17; --surface:#111620; --border:rgba(255,255,255,0.06);
   --t1:#58a6ff; --t2:#d29922; --t3:#3fb950; --t4:#bc8cff;
   --wall-top:#1a1f2e; --wall-bot:#141820;
 }
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c9d1d9;overflow:hidden;height:100vh;user-select:none}
-#app{width:100vw;height:100vh;display:flex;flex-direction:column}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:#c9d1d9;overflow:hidden;user-select:none}
+#app{width:100%;height:100%;display:flex;flex-direction:column}
 .title-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 16px;background:rgba(255,255,255,0.02);border-bottom:1px solid var(--border);flex-shrink:0}
 .title-bar h1{font-size:13px;font-weight:600;letter-spacing:0.3px;background:linear-gradient(90deg,#58a6ff,#bc8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .title-bar .ver{font-size:9px;opacity:0.25}
@@ -62,9 +63,9 @@ window.onerror=function(){return false}
 // ============================================================
 const AudioCtx=window.AudioContext||window.webkitAudioContext
 let audioCtx=null,soundOn=true,ambientNode=null
-function ensureAudio(){if(!audioCtx)audioCtx=new AudioCtx}
-function playAmbient(){if(!soundOn)return;ensureAudio();if(ambientNode)return;const g=(audioCtx.createGain());g.gain.value=0.01;g.connect(audioCtx.destination);ambientNode={_ns:[],stop(){g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.5);setTimeout(()=>{ambientNode._ns.forEach(n=>{try{n.stop()}catch{}});ambientNode=null},600)}};const o=audioCtx.createOscillator();o.type='sine';o.frequency.value=55;const gg=audioCtx.createGain();gg.gain.value=0.05;o.connect(gg);gg.connect(g);o.start();ambientNode._ns.push(o)}
-function sfx(t){if(!soundOn)return;ensureAudio();const g=audioCtx.createGain();g.connect(audioCtx.destination);const now=audioCtx.currentTime;if(t==='footstep'){g.gain.setValueAtTime(0.015,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.05);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(80+Math.random()*40,now);o.connect(g);o.start(now);o.stop(now+0.05)}else if(t==='notification'){g.gain.setValueAtTime(0.04,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.15);const o=audioCtx.createOscillator();o.type='sine';o.frequency.setValueAtTime(880,now);o.frequency.setValueAtTime(1100,now+0.06);o.connect(g);o.start(now);o.stop(now+0.15)}else if(t==='task_start'){g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.25);const o=audioCtx.createOscillator();o.type='sine';o.frequency.setValueAtTime(523,now);o.frequency.setValueAtTime(659,now+0.06);o.frequency.setValueAtTime(784,now+0.12);o.connect(g);o.start(now);o.stop(now+0.25)}else if(t==='contract'){g.gain.setValueAtTime(0.02,now);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(300,now);o.frequency.linearRampToValueAtTime(600,now+0.3);o.connect(g);o.start(now);o.stop(now+0.4)}else if(t==='door'){g.gain.setValueAtTime(0.02,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.12);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(200,now);o.frequency.linearRampToValueAtTime(100,now+0.12);o.connect(g);o.start(now);o.stop(now+0.12)}}
+function ensureAudio(){if(!audioCtx){try{audioCtx=new AudioCtx}catch(e){}}}
+function playAmbient(){if(!soundOn)return;ensureAudio();if(!audioCtx||ambientNode)return;const g=(audioCtx.createGain());g.gain.value=0.01;g.connect(audioCtx.destination);ambientNode={_ns:[],stop(){g.gain.linearRampToValueAtTime(0,audioCtx.currentTime+0.5);setTimeout(()=>{ambientNode._ns.forEach(n=>{try{n.stop()}catch{}});ambientNode=null},600)}};const o=audioCtx.createOscillator();o.type='sine';o.frequency.value=55;const gg=audioCtx.createGain();gg.gain.value=0.05;o.connect(gg);gg.connect(g);o.start();ambientNode._ns.push(o)}
+function sfx(t){if(!soundOn)return;ensureAudio();if(!audioCtx)return;try{const g=audioCtx.createGain();g.connect(audioCtx.destination);const now=audioCtx.currentTime;if(t==='footstep'){g.gain.setValueAtTime(0.015,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.05);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(80+Math.random()*40,now);o.connect(g);o.start(now);o.stop(now+0.05)}else if(t==='notification'){g.gain.setValueAtTime(0.04,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.15);const o=audioCtx.createOscillator();o.type='sine';o.frequency.setValueAtTime(880,now);o.frequency.setValueAtTime(1100,now+0.06);o.connect(g);o.start(now);o.stop(now+0.15)}else if(t==='task_start'){g.gain.setValueAtTime(0.05,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.25);const o=audioCtx.createOscillator();o.type='sine';o.frequency.setValueAtTime(523,now);o.frequency.setValueAtTime(659,now+0.06);o.frequency.setValueAtTime(784,now+0.12);o.connect(g);o.start(now);o.stop(now+0.25)}else if(t==='contract'){g.gain.setValueAtTime(0.02,now);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(300,now);o.frequency.linearRampToValueAtTime(600,now+0.3);o.connect(g);o.start(now);o.stop(now+0.4)}else if(t==='door'){g.gain.setValueAtTime(0.02,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.12);const o=audioCtx.createOscillator();o.type='triangle';o.frequency.setValueAtTime(200,now);o.frequency.linearRampToValueAtTime(100,now+0.12);o.connect(g);o.start(now);o.stop(now+0.12)}}catch(e){}}
 function toggleSound(){soundOn=!soundOn;document.getElementById('sndToggle').textContent=soundOn?'🔊':'🔇';if(soundOn)playAmbient();else{if(ambientNode){ambientNode.stop();ambientNode=null}}}
 document.getElementById('sndToggle').addEventListener('click',toggleSound)
 
@@ -899,6 +900,10 @@ function animate(now){fc++;updateElapsed()
   updateCat()
   updateDog()
 
+  // Ensure canvas has size
+  if(!W||!H){try{resize()}catch(e){}}
+  if(!W||!H){requestAnimationFrame(animate);return}
+
   // RENDER
   ctx.clearRect(0,0,W,H)
   const r=chars._r
@@ -1115,8 +1120,8 @@ function animate(now){fc++;updateElapsed()
 // ============================================================
 // INIT
 // ============================================================
-function init(){resize();addLog('🏢 Error404Labs - PXH2910','#58a6ff')
-  if(state.mode==='sse'){addLog('⚡ Pixel Agents — runtime-driven renderer','#8b949e');connectToRuntime()}else{addLog('⚡ Demo — open via server for real-time sync','#8b949e');playAmbient()}
+function init(){try{resize()}catch(e){}try{addLog('🏢 Error404Labs - PXH2910','#58a6ff')}catch(e){}
+  try{if(state.mode==='sse'){addLog('⚡ Pixel Agents — runtime-driven renderer','#8b949e');connectToRuntime()}else{addLog('⚡ Demo — open via server for real-time sync','#8b949e');playAmbient()}}catch(e){}
   state.startTime=Date.now();requestAnimationFrame(animate)}
 c.addEventListener('click',(e)=>{const rect=c.getBoundingClientRect(),mx=e.clientX-rect.left,my=e.clientY-rect.top;let cl=null,cd=35;AL.forEach(a=>{const ch=chars[a.n],dx=ch.x-mx,dy=ch.y-my,d=Math.sqrt(dx*dx+dy*dy);if(d<cd){cd=d;cl=a}});if(cl){state.agent=cl.n;updateStatus();addLog(`👤 ${cl.role} (${cl.n})`,cl.c);sfx('notification');const ch=chars[cl.n];ch.by=-6;setTimeout(()=>{ch.by=0},300)}})
 window.addEventListener('resize',resize);document.addEventListener('DOMContentLoaded',init)
