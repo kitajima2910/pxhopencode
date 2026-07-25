@@ -77,6 +77,12 @@ if %ERRORLEVEL% neq 0 (
   exit /b 1
 )
 
+:: Dang ky extension trong VS Code manifest (extensions.json)
+if exist "%EXT_BASE%\extensions.json" (
+  echo [*] Dang dang ky extension trong VS Code manifest...
+  powershell -NoProfile -Command "$j='%EXT_BASE%\extensions.json';$i='%PUBLISHER%.%EXT_NAME%';$v='%EXT_VER%';$d='%PUBLISHER%.%EXT_NAME%-%EXT_VER%';$p='%EXT_BASE%\%PUBLISHER%.%EXT_NAME%-%EXT_VER%';$c=Get-Content $j -Raw -Encoding utf8;$a=$c|ConvertFrom-Json;$e=$a|Where-Object{$_.identifier.id -eq $i};if(-not$e){$u=[guid]::NewGuid().ToString();$ts=[long]([DateTime]::UtcNow-[DateTime]::new(1970,1,1,0,0,0,[DateTimeKind]::Utc)).TotalMilliseconds;$rp='/'+$p.Replace('\','/');if($rp[2]-eq':'){$rp=$rp[0]+$rp[1].ToString().ToLower()+$rp.Substring(2)};$o=@{identifier=@{id=$i;uuid=$u};version=$v;location=@{'$mid'=1;path=$rp;scheme='file'};relativeLocation=$d;metadata=@{isApplicationScoped=$false;isMachineScoped=$false;isBuiltin=$false;installedTimestamp=$ts;pinned=$false;source='local';id=$u;publisherId=$i.Split('.')[0];publisherDisplayName=$i.Split('.')[0];targetPlatform='undefined';updated=$true;private=$false;isPreReleaseVersion=$false;hasPreReleaseVersion=$false;preRelease=$false}};$a+=$o;$a|ConvertTo-Json -Depth 10|Set-Content $j -Encoding utf8};echo '  OK'" 2>nul
+)
+
 echo [+] Da copy extension vao: %DEST%
 echo.
 echo [^^^>] DONG HOAN TOAN VS Code (tat tat ca cua so), sau do mo lai.

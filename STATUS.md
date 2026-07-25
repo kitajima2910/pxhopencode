@@ -56,6 +56,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-25 | v66 | **Fix không thấy Virtual Office trên VS Code 1.130+** — VS Code 1.130 dùng `extensions.json` manifest thay vì scan directory để liệt kê extension. Batch copy file vào thư mục extensions nhưng không đăng ký trong manifest → extension vô hình. Fix: thêm bước PowerShell register entry vào `extensions.json` |
 | 2026-07-25 | v65 | **Fix batch tạo file `]` (spurious redirect)** — `^^>` trong 2 lệnh `echo` ở `pxh-install-extension.bat` khiến cmd.exe hiểu `>` là redirect, tạo file `]`. Fix: `^^^>` — caret thứ 3 escape `>` |
 | 2026-07-25 | v64 | **Fix không thấy Virtual Office sau install** — `.obsolete` file chứa `pxh.pxh-virtual-office-1.0.0:true` khiến VS Code bỏ qua extension dù đã copy vào extensions folder. Fix: xoá entry khỏi `.obsolete` khi install, thêm cleanup step vào `pxh-install-extension.bat` |
 | 2026-07-25 | v59 | **Redesign desk/furniture + fix agent direction** — chair vẽ TRƯỚC body (depth đúng), desk có chân + roundRect, laptop row vẽ laptop clamshell thay monitor, đồng bộ desk styling (PM/Help/Historian), `var`→`const` |
