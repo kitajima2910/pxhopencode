@@ -107,6 +107,10 @@ class OfficeViewProvider {
     }
 
     // Always replace the script src tag (empty fallback prevents 403 in webview)
+    // Escape </script> to prevent HTML parser from breaking on it inside JSDoc comments
+    if (rendererStateJs) {
+      rendererStateJs = rendererStateJs.replace(/<\/script>/gi, '<\\/script>');
+    }
     html = html.replace(
       '<script src="renderer-state.js"></script>',
       '<script>' + (rendererStateJs || '') + '</script>'

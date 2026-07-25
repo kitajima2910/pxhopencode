@@ -7,11 +7,11 @@
  * State store used by the VSCode extension webview.
  *
  * Usage in office.html:
- *   <script src="renderer-state.js"></script>
- *   <script>
+ *   script src="renderer-state.js"
+ *   script
  *     StateStore.connect('/events')
  *     StateStore.onChange(function(diff) { applyStateDiff(diff) })
- *   </script>
+ *   /script
  */
 
 const StateStore = (function() {

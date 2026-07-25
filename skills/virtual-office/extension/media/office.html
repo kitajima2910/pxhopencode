@@ -680,8 +680,7 @@ function applyStateDiff(diff){
       document.getElementById('modeTxt').textContent='🔴 Live';document.getElementById('modeTxt').style.opacity='0.8'
       sfx('task_start')
       if(sess.message) addLog(sess.message,'#3fb950')
-      // Add session separator, don't clear old logs
-      const oc2=chars['pxh-opencode'];if(oc2){oc2._mirrorLog=oc2._mirrorLog||[];oc2._mirrorLog.push('── '+String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0')+' ──');if(oc2._mirrorLog.length>6)oc2._mirrorLog=oc2._mirrorLog.slice(-6)}
+      // Session separator — disabled (code leak prevention)
       // Reset ALL agents to desk — prevent wandering during active session
       AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+60000;if(cc.state!=='typing'&&cc.state!=='walking'){cc.state='idle';cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.x;cc.ty=cc.y}}})      }else if(!sess.active&&wasActive){
         // Session ended
@@ -691,19 +690,7 @@ function applyStateDiff(diff){
         if(sess.message) addLog(sess.message,'#f85149')
         // Allow agents to start wandering after session ends
         AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+3000+Math.random()*4000}})
-      // Archive pxh-opencode mirror log so it survives session end
-      const oc3=chars['pxh-opencode']
-      if(oc3&&oc3._mirrorLog&&oc3._mirrorLog.length){
-        const t=new Date();const ts=String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0')
-        // Filter out previous separators, keep only real agent entries for archive
-        const realEntries=oc3._mirrorLog.filter(function(l){return typeof l==='string'&&!l.match(/^── \d\d:\d\d ──$/)})
-        if(realEntries.length){
-          oc3._sessionArchive.push({m:'── Session ended '+ts+' ──.',c:'#666',s:'separator'})
-          for(let i=0;i<realEntries.length;i++){oc3._sessionArchive.push({m:realEntries[i],c:null,s:null})}
-          if(oc3._sessionArchive.length>40)oc3._sessionArchive.splice(0,oc3._sessionArchive.length-40)
-        }
-      }
-      // Keep _mirrorLog intact - don't clear it
+      // Archive pxh-opencode mirror log — disabled (code leak prevention)
     }else if(sess.phase){
       state.phase=sess.phase
       state.workflow=sess.workflow||state.workflow
@@ -735,10 +722,7 @@ function applyStateDiff(diff){
 
         // Show active tool
         if(agentState.activeTool){
-          if(!ch._monitorLog)ch._monitorLog=[]
-          var _mMsg=(agentState.message||'');if(_mMsg.length>40)_mMsg=_mMsg.slice(0,37)+'...'
-          ch._monitorLog.push({t:now,m:`${agentState.awaitingInput?'⏳':'▶'} ${agentState.activeTool}: ${_mMsg}`,s:agentState.activeTool})
-          if(ch._monitorLog.length>40)ch._monitorLog.shift()
+        // _monitorLog disabled (code leak prevention)
         }
 
         // Speech bubble — show tool + message
@@ -754,15 +738,7 @@ function applyStateDiff(diff){
           ch.tsm=ch._msgs.length?ch._msgs:''
         }
 
-        // Mirror to PXHOpenCode
-        const poc=chars['pxh-opencode']
-        if(poc&&agentId!=='pxh-opencode'){
-          if(!poc._mirrorLog)poc._mirrorLog=[]
-          const toolLabel=agentState.activeTool?`[${agentState.activeTool}] `:''
-          var _mirMsg=(agentState.message||agentState.badge||'');if(_mirMsg.length>120)_mirMsg=_mirMsg.slice(0,117)+'...'
-          poc._mirrorLog.push(`[${agentId}] ${toolLabel}${_mirMsg}`)
-          if(poc._mirrorLog.length>6)poc._mirrorLog.shift()
-        }
+        // Mirror to PXHOpenCode — disabled (code leak prevention)
 
         if(!ch.w&&ch.state!=='typing'&&ch.state!=='reading'){ch.hrw=true;startTyping(ch)}
       }else if(isIdle){
@@ -776,7 +752,7 @@ function applyStateDiff(diff){
       }
 
       if(agentId==='pxh-opencode'&&agentState.currentState==='typing'){
-        // PXHOpenCode mirror update
+        // PXHOpenCode mirror update — _mirrorLog/_msgs disabled (code leak prevention)
         const oc=chars['pxh-opencode']
         if(oc&&agentState.message){
           const line=agentState.message.replace(/[\x00-\x1f\x7f-\x9f]/g,'').trim().slice(0,80)
@@ -784,10 +760,6 @@ function applyStateDiff(diff){
             oc.ts='Synced';oc.w=true;oc.hrw=true;oc._lastEvt=now;oc._forceIdle=false
             oc.state='typing';oc.x=oc.dx;oc.y=oc.dy+40;oc.tx=oc.x;oc.ty=oc.y
             if(line.match(/\[TUI STOP\]/i)){oc._forceIdle=true;oc._lastEvt=0}
-            if(!oc._msgs)oc._msgs=[]
-            oc._msgs=[line];oc.tsm=oc._msgs;oc._bcol='#00e5ff'
-            if(!oc._mirrorLog)oc._mirrorLog=[]
-            oc._mirrorLog.push(line);if(oc._mirrorLog.length>6)oc._mirrorLog.shift()
             clearTimeout(oc._bt);oc._bt=setTimeout(()=>{oc.tsm='';oc.ts=''},30000)
           }
         }
@@ -894,31 +866,7 @@ function animate(now){fc++;updateElapsed()
   // Historian desk
   const sh=chars['pxh-save-history'];ctx.fillStyle='#4a3520';ctx.fillRect(sh.dx-40,sh.dy+22,80,9);drawAgentMonitor(sh.dx,sh.dy-4,sh);drawKeyboard(sh.dx,sh.dy+24);drawMouse(sh.dx+28,sh.dy+32)
 
-  // PXHOpenCode terminal -- Physical Visualization of OpenCode
-  const oc=chars['pxh-opencode'];ctx.fillStyle='#111620';ctx.beginPath();ctx.roundRect(oc.dx-65,oc.dy-35,130,70,6);ctx.fill();ctx.strokeStyle='#00e5ff';ctx.lineWidth=2;ctx.stroke()
-  ctx.fillStyle='#0a1218';ctx.fillRect(oc.dx-60,oc.dy-30,120,56)
-  ctx.save();ctx.beginPath();ctx.rect(oc.dx-58,oc.dy-28,116,52);ctx.clip()
-  // Header bar
-  ctx.fillStyle='#0d1520';ctx.fillRect(oc.dx-58,oc.dy-28,116,14)
-  ctx.strokeStyle='rgba(0,229,255,0.3)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(oc.dx-57,oc.dy-14);ctx.lineTo(oc.dx+57,oc.dy-14);ctx.stroke()
-  ctx.fillStyle='#00e5ff';ctx.font='bold 7px "Consolas",monospace';ctx.textAlign='left';ctx.fillText('PXHOpenCode -- Physical Visualization',oc.dx-54,oc.dy-20)
-  // Agent count
-  const activeCount=AL.filter(a=>chars[a.n]&&chars[a.n].w).length
-  ctx.fillStyle='#0a8';ctx.font='7px "Consolas",monospace';ctx.textAlign='right';ctx.fillText('agents:'+activeCount,oc.dx+54,oc.dy-20)
-  // Output lines — prefer active mirror log, fallback to session archive
-  const activeMirror=oc._mirrorLog&&oc._mirrorLog.length?oc._mirrorLog:null
-  const showArchive=!activeMirror&&oc._sessionArchive&&oc._sessionArchive.length
-  let mirrorLines=activeMirror||(oc._msgs&&oc._msgs.length?oc._msgs:null)
-  if(!mirrorLines&&showArchive){
-    mirrorLines=oc._sessionArchive.slice(-4).map(function(e){return e.m})
-    // Show archive header
-    ctx.fillStyle='rgba(0,229,255,0.15)';ctx.font='bold 7px "Consolas",monospace';ctx.textAlign='center'
-    ctx.fillText('─ Last session ─',oc.dx,oc.dy-8)
-  }
-  if(false){}
-  const blink=Math.sin(fc*.05)>0;ctx.fillStyle=blink?'#00e5ff':'transparent';ctx.fillRect(oc.dx-56,oc.dy+18,5,10)
-  ctx.restore()
-  ctx.fillStyle='#4a3520';ctx.fillRect(oc.dx-45,oc.dy+40,90,8)
+  // PXHOpenCode terminal — disabled (code leak prevention)
 
   // PXHOpenCode — swivel chair (drawn after desk so it appears behind character)
   const pch=chars['pxh-opencode'];const scx=pch.dx,scy=pch.dy+50
