@@ -52,6 +52,7 @@ canvas{display:block;width:100%;height:100%}
     <div style="flex:1"></div>
     <div class="st-item"><span id="modeTxt" style="opacity:0.8">⚪ Idle</span></div>
     <div class="st-item"><span id="sndToggle" style="cursor:pointer;opacity:0.5" title="Toggle sound">🔊</span></div>
+    <div class="st-item"><span id="dbgToggle" style="cursor:pointer;opacity:0.5" title="Toggle debug">🐛</span></div>
   </div>
 </div>
 
@@ -77,6 +78,14 @@ canvas{display:block;width:100%;height:100%}
   try{
     var d2=document.getElementById('dbgOverlay');
     if(d2)d2.textContent='post-init\n'+d2.textContent;
+  }catch(e){}
+
+  try{
+    var dt=document.getElementById('dbgToggle');
+    if(dt)dt.addEventListener('click',function(e){
+      var o=document.getElementById('dbgOverlay');
+      if(o)o.style.display=o.style.display==='none'?'block':'none';
+    });
   }catch(e){}
 })();
 </script>
