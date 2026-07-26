@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v80.1</b> &nbsp;·&nbsp; 218 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 154 templates</p>
+  <b>v80.1</b> &nbsp;·&nbsp; 222 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 169 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build.
 
@@ -36,14 +36,18 @@ opencode
 ```
 pxhopencode/
 ├── opencode.json        # Config: agents, commands, skills
-├── README.md / STATUS.md
+├── package.json         # Project metadata v80.1
+├── README.md            # Hướng dẫn sử dụng
+├── STATUS.md            # Dashboard tiến độ
+├── prompt-optimizer.md  # Prompt optimization pipeline
 ├── agents/              # 10 AI agents
 ├── runtime/             # 4 tầng + contracts + policies + memory
 ├── workflows/           # 8 workflow templates
 ├── skills/              # 50 skills theo lĩnh vực
+├── prompt-compiler/     # TypeScript Prompt Compiler (34 files)
 ├── docs-vibe/           # Tài liệu kiến trúc
 ├── _shared/             # Scripts, templates dùng chung
-└── .memory/             # Vibe Coding Memory (tự động)
+└── .memory/             # Vibe Coding Memory Engine (tự động)
 ```
 
 ---
@@ -94,6 +98,7 @@ Bỏ qua phân loại, route thẳng vào workflow tương ứng:
 | `/meeting` | `/meeting chọn tech stack cho dự án mới` | Họp agents thảo luận kiến trúc |
 | `/release` | `/release` | Build pipeline: lint → test → build |
 | `/preview` | `/preview` | Live preview game (Vite HMR) |
+| `/compile` | `/compile "xây dựng blog React"` | Prompt Compiler — phân tích intent, sinh IR, tối ưu prompt |
 
 ### Cách 3: @mention — gọi thẳng agent
 
@@ -215,12 +220,13 @@ flowchart TD
 
 ## Key Concepts
 
-- **Prompt Optimizer**: Tự động rewrite prompt mơ hồ → rõ ràng, hiển thị panel `<details>`, transparent
+- **Prompt Compiler TypeScript Engine**: `prompt-compiler/` — 11-stage pipeline, 7 backends (DeepSeek, Claude, GPT, Gemini, GeminiCodex, OpenCode), 6 dictionaries, Trie/Aho-Corasick/FSM matching. Zero-AI, zero-token optimization.
 - **Contract Communication**: Agents giao tiếp qua typed contracts, không @mention trần
 - **Context Budget**: Lazy-load skills, compaction tự động, giới hạn 50 line/4096 byte output
 - **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
 - **Portable**: Copy pxhopencode vào project — hoạt động ngay. Hoặc dùng source trực tiếp.
-- **Vibe Coding Memory Engine**: Hệ thống knowledge tự động — không phải chat history. Agents tự học project structure, architecture, patterns, bugs, decisions, preferences qua từng session. `.memory/` được auto-create ở workspace root, không cần cấu hình. Chi tiết: `runtime/memory/README.md`
+- **Vibe Coding Memory Engine**: Hệ thống knowledge tự động — 13 file JSON (`index.json`, `project.json`, `architecture.json`, `patterns.json`, `bugs.json`, `decisions.json`, `preferences.json`, `workflow.json`, `prompt.json`, `vibe.json`, `snapshots.json`, `timeline.json`, `stats.json`). Agents tự học project structure, architecture, patterns, bugs, decisions, preferences qua từng session. `.memory/` được auto-create ở workspace root, không cần cấu hình. Chi tiết: `runtime/memory/README.md`
+- **169 Skill Templates**: 164 templates trong `skills/**/templates/` + 5 shared templates trong `_shared/templates/` — ADR, bug report, session log, status, gitignore.
 
 ---
 
