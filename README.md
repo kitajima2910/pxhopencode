@@ -92,7 +92,6 @@ Bỏ qua phân loại, route thẳng vào workflow tương ứng:
 | `/meeting` | `/meeting chọn tech stack cho dự án mới` | Họp agents thảo luận kiến trúc |
 | `/release` | `/release` | Build pipeline: lint → test → build |
 | `/preview` | `/preview` | Live preview game (Vite HMR) |
-| `/office` | `/office` | Mở Virtual Office |
 
 ### Cách 3: @mention — gọi thẳng agent
 

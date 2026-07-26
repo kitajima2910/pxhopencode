@@ -58,8 +58,6 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
   <a href="#architecture">Kiến trúc 4 Tầng</a>
   <a href="#agents">11 AI Agents</a>
   <a href="#workflows">Workflows</a>
-  <a href="#office">Văn Phòng Ảo</a>
-  <a href="#sync">Real-time Sync</a>
   <a href="#install">Cài đặt</a>
   <a href="#policies">Chính sách</a>
   <div class="section">
@@ -74,7 +72,7 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
   <p style="color:var(--muted);font-size:1.1em">Kiến trúc Runtime 4 Tầng cho Vibe Coding với OpenCode</p>
   <div class="badge-row">
     <div class="badge">Version <b>v76</b></div>
-    <div class="badge">Agents <b>12</b></div>
+    <div class="badge">Agents <b>10</b></div>
     <div class="badge">Workflows <b>9</b></div>
     <div class="badge">Skills <b>50</b></div>
     <div class="badge">Contracts <b>6</b></div>
@@ -124,7 +122,7 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
 </section>
 
 <section id="agents">
-  <h2>🤖 12 AI Agents</h2>
+  <h2>🤖 10 AI Agents</h2>
   <div class="card-grid">
     <div class="card"><h4>pxh-help <span class="tag tag-t1">T1</span></h4><p style="color:var(--muted);font-size:.85em">Help Desk — Validate & classify input. Huy hiệu ★, váy xanh dương.</p></div>
     <div class="card"><h4>pxh-pm <span class="tag tag-t2">T2</span></h4><p style="color:var(--muted);font-size:.85em">CEO PXH — Route, policy enforcement. Suit đen + vest kem, cà vạt vàng.</p></div>
@@ -136,8 +134,7 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
     <div class="card"><h4>pxh-devops <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">DevOps — Lint → build pipeline. Hoodie xanh navy, kính tròn.</p></div>
     <div class="card"><h4>pxh-ui-ux <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">UI/UX Designer — Layout, responsive. Váy hồng, khăn quàng.</p></div>
     <div class="card"><h4>pxh-save-history <span class="tag tag-t4">T4</span></h4><p style="color:var(--muted);font-size:.85em">Historian — State, checkpoint. Cardigan tím, kính tròn.</p></div>
-    <div class="card"><h4>pxh-office <span class="tag" style="background:rgba(255,107,107,.15);color:#ff6b6b">Virtual</span></h4><p style="color:var(--muted);font-size:.85em">Virtual Office — VSCode sidebar webview, 2D cartoon agents.</p></div>
-    <div class="card"><h4>pxh-opencode <span class="tag" style="background:rgba(255,107,107,.15);color:#ff6b6b">Mirror</span></h4><p style="color:var(--muted);font-size:.85em">TUI Mirror — Real-time TUI output mirroring to Virtual Office.</p></div>
+
   </div>
 </section>
 
@@ -157,57 +154,7 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
   </table>
 </section>
 
-<section id="office">
-  <h2>🏢 Văn Phòng Ảo</h2>
-  <p>VSCode Extension sidebar — 11 pixel-art agents trong văn phòng mở single-floor, real-time sync với workspace activity.</p>
 
-  <h3>Cài đặt Extension</h3>
-  <pre>.\pxh-install-extension.bat install          # VS Code Stable
-.\pxh-install-extension.bat install insiders  # VS Code Insiders
-.\pxh-install-extension.bat uninstall         # Gỡ cài đặt</pre>
-
-  <p>Sau khi cài, restart VS Code → sidebar có icon <code>$(organization) "PXH Virtual Office"</code>.</p>
-
-  <h3>Tính năng</h3>
-  <table>
-    <tr><th>Tính năng</th><th>Mô tả</th></tr>
-    <tr><td>Walking</td><td>Agent đi 4 hướng, body nảy theo nhịp bước</td></tr>
-    <tr><td>Typing</td><td>Ngồi vào bàn, quay lưng gõ phím, tay rung</td></tr>
-    <tr><td>Idle breathing</td><td>Đứng thở + nháy mắt định kỳ</td></tr>
-    <tr><td>Dashed signals</td><td>Tín hiệu xanh nối giữa các agent theo kiến trúc</td></tr>
-    <tr><td>Speech bubbles</td><td>Log real-time multi-dòng với timestamp</td></tr>
-    <tr><td>State badges</td><td>Nhấp nháy bên phải tên chức danh</td></tr>
-    <tr><td>Done notification</td><td>"✓ Đã làm xong" bay lên từ agent</td></tr>
-    <tr><td>Pets</td><td>🐱 Mèo + 🐕 Chó đi dạo tự do</td></tr>
-  </table>
-</section>
-
-<section id="sync">
-  <h2>⚡ Real-time Sync</h2>
-  <p>Cơ chế đồng bộ thời gian thực giữa workspace activity và webview sidebar:</p>
-
-  <h3>Event Flow</h3>
-  <pre>VSCode Extension                          Background Server
-     │                                         │
-     ├── eventWatcher.js                       ├── server.mjs (port 2910)
-     │   (fs.watch _shared/ events)            │   (API: POST /emit, /state)
-     │                                         │
-     ├── officeViewProvider.js                 └── emit-event.mjs
-     │   (webview + postMessage bridge)            (CLI emit → events log)
-     │
-     └── media/office.html
-         (2D cartoon canvas)</pre>
-
-  <h3>Bridge — Auto-detect workspace activity</h3>
-  <table>
-    <tr><th>File type</th><th>Agent được gọi</th><th>Pipeline</th></tr>
-    <tr><td><code>.ts .js .html</code></td><td>Developer</td><td>Help → PM → Architect → Developer → QA → Review → DevOps → History</td></tr>
-    <tr><td><code>.css</code></td><td>UI/UX Designer</td><td>UI/UX (làm 1 mình)</td></tr>
-    <tr><td><code>.test.ts</code></td><td>QA Engineer</td><td>QA (làm 1 mình)</td></tr>
-    <tr><td><code>.md</code></td><td>Historian</td><td>Historian (làm 1 mình)</td></tr>
-    <tr><td><code>.json</code></td><td>DevOps</td><td>DevOps (làm 1 mình)</td></tr>
-  </table>
-</section>
 
 <section id="install">
   <h2>📦 Cài đặt</h2>

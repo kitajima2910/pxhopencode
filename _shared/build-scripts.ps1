@@ -58,16 +58,6 @@ function Invoke-Build {
       } else { exit 1 }
     } else {
       Write-Output "⏭️ No build script — meta-project, skip npm build"
-      # Try VSCE extension packaging if present
-      $extPkg = "skills/virtual-office/extension/package.json"
-      if (Test-Path $extPkg) {
-        Write-Output "📦 Packaging VSCE extension..."
-        npx @vscode/vsce package --out "pxh-virtual-office.vsix" 2>$null
-        if ($? -and (Test-Path "pxh-virtual-office.vsix")) {
-          $size = (Get-Item "pxh-virtual-office.vsix").Length / 1MB
-          Write-Output "✅ VSCE extension packaged ($($size.ToString('N1'))MB)"
-        } else { Write-Warning "⚠ VSCE packaging skipped (install vsce: npm i -g @vscode/vsce)" }
-      }
     }
   } elseif ($isRust) {
     cargo build --release
