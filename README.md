@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v76</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 46 skills &nbsp;·&nbsp; 175 templates</p>
+  <b>v76</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 175 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build. Bạn chỉ cần ngồi xem Virtual Office chạy.
 
@@ -57,6 +57,7 @@ Bỏ qua phân loại, route thẳng vào workflow tương ứng:
 |------|-------|----------|
 | `/vibe` | `/vibe xây dựng app quản lý công việc` | Full pipeline 11 bước: phân tích → code → test → review → build |
 | `/web` | `/web làm landing page cho startup` | Web app: React, Next.js, Express, FastAPI |
+| `/3d` | `/3d tạo product configurator 3D với Three.js` | 3D web experience: Three.js, R3F, Spline, WebGL |
 | `/game` | `/game game bắn súng không gian 2D` | Game HTML5: Phaser 2D, Isometric, Three.js 3D |
 | `/ai` | `/ai tạo chatbot hỗ trợ khách hàng` | Chatbot, RAG, AI agent, LLM |
 | `/tool` | `/tool CLI tool đổi tên file hàng loạt` | CLI, extension, automation, package |

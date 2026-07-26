@@ -55,6 +55,10 @@
     "release": { "template": "workflows/release.workflow.md" },
     "debug": { "template": "workflows/debug.workflow.md" },
     "web": { "template": "workflows/web.workflow.md" },
+    "3d": {
+      "description": "3D web experience — Three.js, React Three Fiber, Spline, WebGL, interactive 3D scenes, product configurators",
+      "template": "Load `skills/3d-web-experience/SKILL.md`. Dùng `workflows/web.workflow.md` với `classified_skills: 3d-web-experience`."
+    },
     "game": {
       "description": "Phát triển game HTML5 — support 2D (Phaser), 3D (Three.js), Isometric. Load orchestrator + workflow.",
       "template": "Load `skills/game-development/SKILL.md` → route đến đúng sub-skill theo platform/dimension. Sau đó chạy `workflows/game.workflow.md`."

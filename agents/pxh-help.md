@@ -20,6 +20,7 @@ Phân tích prompt keywords → tự chọn workflow + skill. Dùng `_shared/ski
 | debug, fix, bug, crash, lỗi | `/debug` | — |
 | **game debug**, game physics bug, game animation lỗi, FPS drop, game crash, game asset lỗi, game 2D bug, game 3D bug | `/debug` | `games-testing`, `games-optimization` |
 | web, website, SPA, landing, blog, dashboard, API backend | `/web` | `webs-*` |
+| **3D web**, Three.js, WebGL, React Three Fiber, Spline, 3D product configurator, 3D scene, 3D portfolio, immersive web | `/web` | `3d-web-experience` |
 | game 2D, platformer, Phaser | `/game` | `games-2d` |
 | game 3D, Three.js, FPS | `/game` | `games-3d` |
 | game isometric, 2.5D, tactical | `/game` | `games-isometric` |

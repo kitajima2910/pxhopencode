@@ -2,7 +2,7 @@
 
 Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 dòng.
 
-## Tổng quan: Process(8) + Web(7) + Game(12) + AI(5) + Tool(5) + UI/UX(1) + Virtual Office(1) = 39 skills (33→39 sau superpowers upgrade)
+## Tổng quan: Process(8) + Web(8) + Game(12) + AI(5) + Tool(5) + UI/UX(1) + Virtual Office(1) + 3D Web(1) + Vibe Memory(1) = 42 skills
 
 ## Process Skills (8) — Meta-Cognition & Workflow
 | Skill | Use when | Path |
@@ -28,6 +28,11 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 | `webs-frontend` | React, components, hooks, data fetching, bundle | React, TanStack Query | skills/webs-frontend/ |
 | `webs-styling` | Tailwind, design system, responsive, dark mode | Tailwind | skills/webs-styling/ |
 | `webs-testing` | Vitest, Playwright, MSW, unit/integration/e2e | Vitest | skills/webs-testing/ |
+
+## 3D Web Experience (1)
+| Skill | Use when | Deps | Path |
+|-------|----------|------|------|
+| `3d-web-experience` | 3D website, Three.js, React Three Fiber, Spline, WebGL, 3D product configurator, interactive 3D scene | Three.js, R3F | skills/3d-web-experience/ |
 
 ## Game Skills (12) — gồm Live Preview
 | Skill | Use when | Deps | Path |

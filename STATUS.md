@@ -9,7 +9,7 @@
 | Phiên bản | v76 |
 | Agents | 12 (10 Tầng 1-4 + Virtual + Mirror) |
 | Workflows | 9 theo lĩnh vực |
-| Skills | 49 skills (8 Process + 8 Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office + 1 Vibe Memory) |
+| Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office + 1 Vibe Memory) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 

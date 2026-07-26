@@ -5,7 +5,7 @@
 | `@pxh-help` | Hướng dẫn chọn workflow | Tầng 1 — Giao diện |
 | `@pxh-pm` | CEO — điều phối, routing | Tầng 2 — Điều phối |
 | `@pxh-architect` | Thiết kế kiến trúc | Tầng 3 — Nhân công |
-| `@pxh-expert` | Vibe code tự động | Tầng 3 — Nhân công |
+| `@pxh-expert` | Vibe code tự động (web, game, 3D web, tool, AI) | Tầng 3 — Nhân công |
 | `@pxh-qa` | Kiểm thử, chất lượng | Tầng 3 — Nhân công |
 | `@pxh-fix-bugs` | Sửa lỗi | Tầng 3 — Nhân công |
 | `@pxh-review-code` | Rà soát code | Tầng 3 — Nhân công |
