@@ -28,7 +28,6 @@ RULE:
 - Giữ nguyên code đang hoạt động.
 - Verify TARGET.
 - Cập nhật STATUS.md.
-- Update version của source và những files liên quan.
 
 TARGET:
 [optimized prompt]
