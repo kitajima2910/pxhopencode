@@ -1,8 +1,34 @@
 # Prompt Optimizer + Template Engine + Compiler
 
-Before executing any user task, apply this preprocessing pipeline:
+> **BẮT BUỘC:** Trước khi xử lý user task, chạy các bước dưới đây theo đúng thứ tự.
 
-## Step 0: Prompt Compiler (deterministic, 0 token)
+## Step 0: Memory Init — Deterministic (0 token)
+
+Kiểm tra và khởi tạo Vibe Coding Memory. Chạy NGAY ở prompt đầu tiên của session:
+
+```
+1. Detect mode:
+   - Có file `.opencode/opencode.json` trong CWD? → embedded
+   - Không? → standalone
+2. Xác định memory_root:
+   - Standalone: {CWD}/.memory/
+   - Embedded:   {CWD}/.opencode/.memory/
+3. Nếu chưa có file {memory_root}/index.json → chạy:
+   Standalone: powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"
+   Embedded:   powershell.exe -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/init-memory.ps1"
+4. Verify:
+   - [ ] .memory/ tồn tại ở đúng path
+   - [ ] .memory/ có ≥ 13 file *.json
+   - [ ] .gitignore tồn tại cùng cấp với .opencode/ (nếu embedded)
+   - [ ] .opencode/.git đã bị xoá (nếu embedded)
+5. Inject compact memory string vào context.
+```
+
+**Script tự động:** tạo 13 file JSON, cập nhật `.gitignore`, xoá `.opencode/.git` (nếu embedded).
+
+**Red flag:** Bỏ qua Step 0 = violation. Không được xử lý user prompt nếu chưa verify.
+
+## Step 1: Prompt Compiler (deterministic, 0 token)
 
 Run the prompt through the compiler BEFORE any AI optimization:
 
@@ -24,7 +50,7 @@ Run the prompt through the compiler BEFORE any AI optimization:
 
 **IR is injected into the TARGET context.**
 
-## Step 1: Optimize the compiled prompt
+## Step 2: Optimize the compiled prompt
 
 Apply the standard optimization to the **compiled** prompt:
 
@@ -37,7 +63,7 @@ Apply the standard optimization to the **compiled** prompt:
 
 Optimize both natural-language prompts AND `/command` prompts.
 
-## Step 2: Auto-wrap RULE+TARGET template
+## Step 3: Auto-wrap RULE+TARGET template
 
 If the optimized prompt does NOT already start with `RULE:` (i.e. free-form text), wrap it:
 
@@ -64,5 +90,5 @@ IR Context:
 
 If it already starts with `RULE:`, the template is already present — skip this step.
 
-3. Use ONLY the final prompt for all planning, delegation, and execution.
-4. Do NOT narrate the optimization process — it must feel transparent.
+4. Use ONLY the final prompt for all planning, delegation, and execution.
+5. Do NOT narrate the optimization process — it must feel transparent.
