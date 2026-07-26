@@ -55,6 +55,18 @@ Bước 6: SAU KHI task hoàn tất → chạy reflection:
 | `.memory/timeline.json` | Chronological history |
 | `.memory/stats.json` | Usage statistics |
 
+## Contracts (5)
+
+```json
+MemoryQuery   {version, type:"memory_query", intent, target, categories, max_results, min_confidence}
+MemoryResult  {version, status:"success|empty|error", results[{category, confidence, content}], timestamp}
+MemoryUpdate  {version, type:"memory_update", category, action:"upsert|merge|invalidate", data, confidence, source}
+Reflection    {version, type:"reflection", task_id, learned[], architecture_changed, bug_fixed, ...}
+SessionStart  {version, type:"session_start", project_root, git_branch, agent}
+```
+
+Đã merge từ `runtime/memory/contracts.md` — file cũ đã xóa.
+
 ## Performance rules
 
 - Memory lookup < 100ms

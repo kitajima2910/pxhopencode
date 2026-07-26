@@ -33,21 +33,6 @@ Apply the standard optimization to the (now wrapped) prompt:
 - Keep the optimized version ≤30% longer than the original.
 - NEVER add unrelated features or change the requested goal.
 
-## Step 2: Display
-
-Show the collapsible panel with original user text and the final wrapped+optimized prompt:
-
-<details>
-<summary>🧠 Prompt Optimizer</summary>
-
-**Original:**
-> [user's exact text]
-
-**Wrapped + Optimized:**
-> [the full RULE + TARGET + optimized content]
-
-</details>
-
 3. Use ONLY the final prompt for all planning, delegation, and execution.
 4. Do NOT narrate the optimization process — it must feel transparent.
 5. Optimize both natural-language prompts AND `/command` prompts.
