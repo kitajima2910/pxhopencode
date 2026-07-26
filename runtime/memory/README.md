@@ -29,6 +29,12 @@ Script này tự động:
 
 **Luật**: Chạy script trước. Nếu script lỗi → agent init thủ công từ `init.json`.
 
+Script cũng tự động:
+- Kiểm tra `.gitignore` ở workspace root
+- Nếu chưa có `.opencode/` entry → thêm vào (ngăn commit nhầm AI Company lên GitHub)
+
+> Không cần lo — script idempotent. Chạy lại không gây hại.
+
 ## INTENT → CATEGORIES MAP
 
 | Intent | Load .memory/ |

@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v79</b> &nbsp;·&nbsp; 215 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 154 templates</p>
+  <b>v79.1</b> &nbsp;·&nbsp; 216 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 154 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build.
 
@@ -26,6 +26,8 @@ cd project-của-bạn
 git clone https://github.com/<repo-url> .opencode
 opencode
 ```
+
+> `.opencode/` tự động được thêm vào `.gitignore` project của bạn (bởi init script khi chạy lần đầu). Không lo commit nhầm AI Company lên GitHub.
 
 > **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html)
 

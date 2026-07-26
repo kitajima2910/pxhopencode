@@ -1,5 +1,8 @@
 # Changelog
 
+## v79.1 — GitGuard: auto .gitignore for .opencode/
+init-memory.ps1 now ensures parent project's `.gitignore` has `.opencode/` entry — creates if missing, appends if present, skips if already covered. AI Company never leaked to GitHub.
+
 ## v79 — Architecture Integrity Fix
 6 violations detected and fixed: storage consolidation (.opencode/docs/ → .memory/), reflection policy dual-path resolution, STATUS.md path alignment, architecture.json population, Event→T4 added to all T3 agents, cross-reference audit. Future-proof: new agents/skills/workflows add with 0 architectural drift.
 
