@@ -9,14 +9,40 @@
 
 ## Cài đặt (30 giây)
 
+### A — Dùng source trực tiếp (khuyên dùng)
+
+Clone pxhopencode và mở bằng OpenCode ngay trong thư mục source:
+
 ```bash
-# Trong thư mục project của bạn:
-git clone https://github.com/<repo-url> .opencode
+git clone https://github.com/<repo-url> pxhopencode
+cd pxhopencode
+opencode
 ```
 
-Mở project bằng [OpenCode](https://opencode.ai) — AI team tự động load. Không cần cấu hình gì thêm.
+### B — Nhúng vào project có sẵn
 
-> **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html) — kiến trúc, agents, workflows, Virtual Office.
+```bash
+cd project-của-bạn
+git clone https://github.com/<repo-url> .opencode
+opencode
+```
+
+> **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html)
+
+## Cấu trúc source
+
+```
+pxhopencode/
+├── opencode.json        # Config: agents, commands, skills
+├── README.md / STATUS.md
+├── agents/              # 12 AI agents
+├── runtime/             # 4 tầng + contracts + policies + memory
+├── workflows/           # 9 workflow templates
+├── skills/              # 50 skills theo lĩnh vực
+├── docs-vibe/           # Tài liệu kiến trúc
+├── _shared/             # Scripts, templates dùng chung
+└── .memory/             # Vibe Coding Memory (tự động)
+```
 
 ---
 
@@ -224,7 +250,7 @@ Bạn có thể gõ lệnh trực tiếp vào terminal PXHOpenCode trong Virtual
 - **Contract Communication**: Agents giao tiếp qua typed contracts, không @mention trần
 - **Context Budget**: Lazy-load skills, compaction tự động, giới hạn 50 line/4096 byte output
 - **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
-- **Portable**: Copy toàn bộ `.opencode` folder → hoạt động ngay trong project mới
+- **Portable**: Copy pxhopencode vào project — hoạt động ngay. Hoặc dùng source trực tiếp.
 - **Vibe Coding Memory Engine**: Hệ thống knowledge tự động — không phải chat history. Agents tự học project structure, architecture, patterns, bugs, decisions, preferences qua từng session. `.memory/` được auto-create ở workspace root, không cần cấu hình. Chi tiết: `runtime/memory/README.md`
 
 ---

@@ -73,11 +73,11 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
   <h1>PXH2910 — AI Company</h1>
   <p style="color:var(--muted);font-size:1.1em">Kiến trúc Runtime 4 Tầng cho Vibe Coding với OpenCode</p>
   <div class="badge-row">
-    <div class="badge">Version <b>v57</b></div>
+    <div class="badge">Version <b>v76</b></div>
     <div class="badge">Agents <b>12</b></div>
     <div class="badge">Workflows <b>9</b></div>
-    <div class="badge">Skills <b>32</b></div>
-    <div class="badge">Commands <b>11</b></div>
+    <div class="badge">Skills <b>50</b></div>
+    <div class="badge">Contracts <b>6</b></div>
   </div>
 </section>
 
@@ -211,13 +211,18 @@ footer{text-align:center;padding:40px;color:var(--muted);font-size:.8em;border-t
 
 <section id="install">
   <h2>📦 Cài đặt</h2>
-  <pre># Clone vào project, đổi tên thành .opencode
-git clone &lt;repo-url&gt; .opencode
 
-# Dùng opencode mở project → tự động load config từ .opencode/opencode.json
+  <h3>Cách A — Dùng source trực tiếp</h3>
+  <pre>git clone &lt;repo-url&gt; pxhopencode
+cd pxhopencode
 opencode</pre>
 
-  <p style="color:var(--muted);font-size:.85em">Portable: copy toàn bộ folder <code>.opencode</code> vào bất kỳ project nào — hoạt động ngay lập tức.</p>
+  <h3>Cách B — Nhúng vào project có sẵn</h3>
+  <pre>cd project-của-bạn
+git clone &lt;repo-url&gt; .opencode
+opencode</pre>
+
+  <p style="color:var(--muted);font-size:.85em">Portable: copy pxhopencode vào bất kỳ project nào — hoạt động ngay lập tức.</p>
 </section>
 
 <section id="policies">
@@ -231,7 +236,7 @@ opencode</pre>
 </section>
 
 <footer>
-  PXH2910 v57 · AI Company for Vibe Coding · <a href="https://github.com/anomalyco/opencode" style="color:var(--t1)">opencode</a>
+  PXH2910 v76 · AI Company for Vibe Coding · <a href="https://github.com/anomalyco/opencode" style="color:var(--t1)">opencode</a>
 </footer>
 
 </main>
