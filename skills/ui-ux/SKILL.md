@@ -1,19 +1,61 @@
 ---
 name: ui-ux
-description: UI/UX design production — web (React/Tailwind), game HUD (Phaser/Three.js), tool (CLI). Responsive, dark mode, animation, accessibility, FOUC-free.
+description: UI/UX design production — web (React/Tailwind), game HUD (Phaser/Three.js), tool (CLI). Priority-based categories (1-10), design system workflow, design tokens, pro-rules checklist.
 ---
 
-# ui-ux — UI/UX Design cho Web, Game, Tool
+# ui-ux — UI/UX Design (Pro Max Pattern)
 
 **Khi dùng:** Yêu cầu UI/UX → load skill này. Agent tự chọn platform (web/game/tool) dựa trên project type.
 
-## Quy trình (3 bước)
+## Priority-Based Rule Categories
 
-| Step | Làm | Output |
-|------|-----|--------|
-| 1. Phân tích | Xác định platform + constraints (mobile-first?, dark mode?, FOUC?, a11y?) | Platform checklist |
-| 2. Áp dụng pattern | Chọn section tương ứng bên dưới, tạo component | Code + style |
-| 3. Verify | Chạy cross-platform checklist, kiểm tra NO_COLOR fallback | Pass/fail |
+*Follow priority 1→10; focus on higher priorities first. Each rule applies to all platforms unless marked.*
+
+| Pri | Category | Impact | Key Checks | Anti-Patterns |
+|-----|----------|--------|------------|---------------|
+| 1 | **Accessibility** | CRITICAL | Contrast ≥4.5:1, Alt text, Keyboard nav, Aria-labels, Focus rings | Removing focus rings, Icon-only without labels, Color-only indicators |
+| 2 | **Touch & Interaction** | CRITICAL | Min 44×44px touch, 8px+ spacing, Loading feedback, Press feedback (80-150ms) | Hover-only, Instant 0ms transitions, No disabled state |
+| 3 | **Performance** | HIGH | WebP/AVIF, Lazy load, Reserve space (CLS<0.1), font-display:swap | Layout thrashing, No image dimensions, FOIT |
+| 4 | **Layout & Responsive** | HIGH | Mobile-first breakpoints, Viewport meta, No horizontal scroll, Safe areas | Fixed px containers, Disable zoom, Content behind notch |
+| 5 | **Typography & Color** | HIGH | Base 16px, Line-height 1.5, Semantic tokens, 8dp spacing rhythm | Text <12px body, Gray-on-gray, Raw hex in components |
+| 6 | **Style Selection** | MEDIUM | Match product type, Consistent style, SVG icons (no emoji) | Mixing flat/skeuomorphic, Emoji as icons, Raster PNGs |
+| 7 | **Animation** | MEDIUM | Duration 150-300ms, Conveys meaning, prefers-reduced-motion | Decorative-only, Animating width/height, No reduced-motion |
+| 8 | **Forms & Feedback** | MEDIUM | Visible labels, Error near field, Helper text, Progressive disclosure | Placeholder-only label, Errors only at top, Overwhelm upfront |
+| 9 | **Navigation** | HIGH | Predictable back, Bottom nav ≤5, Deep linking, Tab order matches visual | Broken back, No deep links, Overloaded nav |
+| 10 | **Charts & Data** | LOW | Legends, Tooltips, Accessible colors, Loading/empty/error states | Color-only meaning, No fallback for missing data |
+
+## Design System Workflow (3 steps)
+
+### Step 1: Analyze
+- **Product type**: SaaS, e-commerce, dashboard, game, tool/CLI
+- **Platform**: web (React/Tailwind), game (Phaser/Three.js), tool (CLI)
+- **Keywords**: playful, minimal, dark mode, content-first, immersive, data-dense
+- **Constraints**: mobile-first?, dark mode?, FOUC?, a11y?, offline?
+
+### Step 2: Generate Design Tokens
+Define token set before coding components:
+
+```ts
+// Tailwind convention
+colors: { brand: { 50..900 }, surface: { primary, secondary }, text: { primary, secondary, disabled } }
+spacing: { xs:4, sm:8, md:16, lg:24, xl:32, 2xl:48 }
+fonts: { body: 'Inter, sans-serif', heading: 'Inter, sans-serif', mono: 'JetBrains Mono' }
+radius: { sm:4, md:8, lg:12, xl:16 }
+```
+
+For CLI, tokens map to ANSI: `colors: { info:cyan, success:green, warning:yellow, error:red, meta:dim }`.
+
+### Step 3: Supplement + Stack
+- Deep-dive any category: a11y, animation, form UX, dark mode
+- Stack guidelines: React server components, Next.js App Router streaming, Phaser Scene state, CLI `NO_COLOR`
+
+## Design Dials (optional tuning)
+
+| Dial | Low (1-3) | Mid (4-7) | High (8-10) |
+|------|-----------|-----------|-------------|
+| Variance | Centered / minimal | Balanced / modern | Bold / asymmetric |
+| Motion | Subtle micro-interactions | Standard scroll/stagger | Complex choreography |
+| Density | Spacious (24-96px) | Standard (16-64px) | Dense (8-32px) |
 
 ## Web — Layout & Components
 
@@ -126,16 +168,6 @@ Không in raw JSON — tóm tắt 1-2 dòng.
 | Không prefix tầng | `[T1]`, `[T2]`, ... |
 | Màu tuỳ tiện | NO_COLOR fallback |
 
-**5. Pre-delivery checklist**
-
-- [ ] Output prefix `[Tn]` mỗi dòng
-- [ ] Box ┌─┐ cho block multi-line
-- [ ] Contract tóm tắt, không raw JSON
-- [ ] status icon ✓/✗ đúng
-- [ ] `$env:NO_COLOR` fallback hoạt động
-- [ ] Progress ≤ 5Hz
-- [ ] Phân cách section rõ ràng
-
 ## Anti-Rationalization
 
 | Excuse | Reality |
@@ -154,14 +186,44 @@ Không in raw JSON — tóm tắt 1-2 dòng.
 - CLI output không có NO_COLOR fallback
 - Keyboard navigation không hoạt động
 - Thiếu loading/error/empty states
+- Emoji used as structural icons (use SVG)
+- No pressed/disabled state feedback on interactive elements
+- Mixing filled and outline icons at same hierarchy
 
-## Verification
+## Pre-Delivery Checklist
 
+### Process
+- [ ] Ran priority 1-3 categories (a11y, touch, performance) as validation pass
+- [ ] Tested on 375px mobile and in landscape
+- [ ] Verified with prefers-reduced-motion and system font scaling
+- [ ] Checked dark mode contrast independently (light-mode values ≠ carry over)
+- [ ] Confirmed touch targets ≥44pt, no content behind safe areas
+
+### Web
 - [ ] Platform checklist complete (web/game/tool)
 - [ ] Dark mode toggle works, no flash
 - [ ] Keyboard nav: Tab/Enter/Escape
 - [ ] Color contrast ≥ 4.5:1
-- [ ] `$env:NO_COLOR = "1"` → plain text
-- [ ] Touch zones ≥ 48×48
 - [ ] prefers-reduced-motion respected
 - [ ] Loading + error + empty states exist
+
+### Game
+- [ ] Touch zones ≥ 48×48
+- [ ] setScrollFactor(0) on HUD
+- [ ] FSM sync: idle→playing→paused→gameover
+- [ ] Font size even (16,18,20...)
+
+### CLI
+- [ ] `$env:NO_COLOR = "1"` → plain text
+- [ ] Output prefix `[Tn]` mỗi dòng
+- [ ] Box ┌─┐ cho block multi-line
+- [ ] Contract tóm tắt, không raw JSON
+- [ ] Progress ≤ 5Hz
+- [ ] Phân cách section rõ ràng
+
+### Visual Quality
+- [ ] No emojis as icons (use SVG/vector)
+- [ ] All icons from consistent family and stroke
+- [ ] Pressed-state visuals do not shift layout
+- [ ] Semantic theme tokens used (no ad-hoc hex)
+- [ ] Icons aligned to text baseline
