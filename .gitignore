@@ -12,3 +12,7 @@ target/
 .github/
 .vibe/
 .memory/
+_shared/opencode-state.json
+_shared/agent-events.log
+_shared/office-events.log
+_shared/opencode-activity.log
