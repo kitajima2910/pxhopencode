@@ -12,4 +12,3 @@ target/
 .github/
 .vibe/
 .memory/
-_shared/agent-events.log
