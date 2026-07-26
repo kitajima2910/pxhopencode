@@ -51,8 +51,14 @@
    - `decisions.json` — ADR entries
    - `patterns.json` — code/design patterns phát hiện
    - `project.json` — framework, tools, conventions
-   - `architecture.json` — modules, services, flows
-   - `preferences.json` — style preferences, habits
-   - `stats.json` — counters, timestamps
+   - `architecture.json` — modules, services, flows, tiers
+   - `preferences.json` — style preferences, habits, language
+   - `workflow.json` — workflow sequences, optimizations
+   - `prompt.json` — repeated instructions, optimized templates
+   - `vibe.json` — coding philosophy, preferred approach
+   - `snapshots.json` — context snapshots (checkpoint)
+   - `timeline.json` — session timeline, phase changes
+   - `index.json` — memory_count, confidence, tags
+   - `stats.json` — counters, timestamps, session tracking
 7. Sau khi ghi `.memory/`, gửi `Event{type:"reflection", phase, category}` → T4 để T4 cập nhật STATUS.md nếu cần.
 8. Nếu agent không ghi memory → xem như task incomplete.

@@ -45,3 +45,19 @@ Không exceptions: không giữ làm reference, không adapt, không nhìn lại
 | "Tôi biết code này đúng mà" | Biết != chứng minh được |
 | "Không có thời gian viết test" | Không test = 3x thời gian debug |
 | "Test đơn giản, không cần run" | Test không run = test không tồn tại |
+
+## Red Flags
+
+- Viết code trước test → không có RED phase
+- Test luôn pass ngay từ lần đầu → test weak hoặc không test đúng behavior
+- Không run test, chỉ nhìn code "cũng đúng"
+- Test không cover edge cases (empty, null, error)
+- Refactor xong không run lại test
+
+## Verification
+
+- [ ] RED phase: test fail với expected message
+- [ ] GREEN phase: minimal code pass test
+- [ ] REFACTOR phase: clean code, test vẫn pass
+- [ ] Edge cases covered: empty/null/error states
+- [ ] No production code without failing test first

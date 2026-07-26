@@ -56,3 +56,19 @@ Kiểm tra: spec compliance, code quality, test pass
 | "Task nhỏ quá, không cần subagent" | Task nhỏ + không review = bug tiềm ẩn |
 | "Tiết kiệm context, dispatch chung" | Context pollution → sai logic, mất thời gian debug |
 | "Review sau, làm nhanh đã" | Không review = không biết quality |
+
+## Red Flags
+
+- Dispatch subagent không có expected output rõ ràng
+- Skip review sau mỗi task vì "đơn giản"
+- Gộp nhiều task vào một subagent
+- Không kiểm tra test pass trước khi merge
+- Plan chưa rõ nhưng vẫn dispatch
+
+## Verification
+
+- [ ] Mỗi task có spec + expected output trước khi dispatch
+- [ ] Review spec compliance + code quality sau mỗi task
+- [ ] Integration test + lint/typecheck pass ở final review
+- [ ] Không task nào được dispatch với context không đầy đủ
+- [ ] Subagent output matches expected output

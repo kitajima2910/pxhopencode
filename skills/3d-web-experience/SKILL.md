@@ -61,5 +61,30 @@ export default function Scene() {
 | Model too large | Draco compression, <5MB, lazy load |
 | No fallback for low-end | Disable 3D on low-end devices, graceful degradation |
 
+## Anti-Rationalization
+
+| Excuse | Reality |
+|--------|---------|
+| "3D thuần túy, không cần optimization" | 3D không optimize = 15 FPS trên mobile |
+| "Không cần fallback cho low-end" | 30% users không thấy gì = 30% conversion mất |
+| "Dùng model gốc luôn cho chất lượng" | Model gốc >10MB → load 10 giây, user bỏ đi |
+| "Test trên máy mình mượt là được" | Máy bạn ≠ thiết bị người dùng thực tế |
+
+## Red Flags
+
+- Không có loading state khi 3D đang tải
+- Model không qua Draco compression
+- Không test trên mobile trước khi deploy
+- Không có fallback khi WebGL không hỗ trợ
+- Scroll-driven 3D không có scroll timeline fallback
+
+## Verification
+
+- [ ] Model optimized: Draco compressed, <5MB
+- [ ] Loading state: progress indicator hoặc skeleton
+- [ ] Mobile test: 60 FPS trên thiết bị tầm trung
+- [ ] Fallback: static fallback khi WebGL hoặc low-end device
+- [ ] Scroll timeline: hoạt động cả khi không có ScrollTrigger
+
 ## Related
 - Works well with: frontend, landing-page-design

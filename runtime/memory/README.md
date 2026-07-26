@@ -9,7 +9,7 @@ Step 1: workspace_root = dir containing .opencode/
 Step 2: Check {workspace_root}/.memory/
   EXISTS → read index.json → check memory_count + confidence
   MISSING → run AUTO-INIT script OR init manually from init.json
-Step 3: Parse user prompt intent (regex match bảng bên dưới)
+Step 3: Parse user prompt intent (dùng Prompt Compiler → IR → intent map bên dưới)
 Step 4: Lookup intent→categories (bảng bên dưới) → max 3 categories
 Step 5: Read selected .memory/ files → produce compact injection (định dạng bên dưới)
 Step 6: Inject compact string vào context → thực thi task
@@ -52,11 +52,11 @@ Script cũng tự động:
 ## COMPACT INJECTION FORMAT
 
 1 dòng/category, tối đa 3 categories. Skip category nếu confidence < 60 hoặc data rỗng.
-📦 `MEMORY [{cat}] {key}={val} {key}={val}`
+`MEMORY [{cat}] {key}={val} {key}={val}`
 
 ```
-📦 MEMORY [project] lang=TS fw=opencode tools=npm,powershell | [patterns] naming=snake_case err=2 | [bugs] count=0
-📦 MEMORY empty   ← khi memory_count = 0
+MEMORY [project] lang=TS fw=opencode tools=npm,powershell | [patterns] naming=snake_case err=2 | [bugs] count=0
+MEMORY empty   ← khi memory_count = 0
 ```
 
 ## ANTI-RATIONALIZATION
@@ -71,7 +71,7 @@ Script cũng tự động:
 
 ## RED FLAGS
 
-- memory_count = 0 nhưng không inject "📦 MEMORY empty"
+- memory_count = 0 nhưng không inject "MEMORY empty"
 - Load > 3 categories
 - Inject > 1 dòng/category
 - Confidence < 60 nhưng vẫn inject

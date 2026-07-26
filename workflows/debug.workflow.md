@@ -1,6 +1,6 @@
 # Workflow Gỡ lỗi — Sửa lỗi & Tối ưu
 
-> UI text vẫn tiếng Việt. Debug game: headless test (`skills/games-testing/`).
+> **LUẬT NGÔN NGỮ**: UI text = **tiếng Việt**. Code, log, debug messages = **tiếng Anh**. Debug game: headless test (`skills/games-testing/`).
 > Eval: `skills/games-testing/templates/game-eval-schema.ts`.
 
 ## Quy trình (8 bước)
@@ -46,6 +46,15 @@
 
 Chi tiết polish: `workflows/game.workflow.md` Bước 5.
 Eval assertions: `node skills/games-testing/templates/game-eval-schema.ts` → `node _shared/scripts/game-gen/eval-grader.js --threshold 0.85`
+
+## Post-code: route qua company workflow phase 9-11
+Sau step 7 (Prevent) → route qua `workflows/company.workflow.md` phase 9-11 (Review→Build→Persist).
+
+## Loop/Failover
+- Reproduce fail → thay đổi approach debug, max 3 attempts
+- Fix không pass test → rollback, tìm root cause khác, max 3 lần
+- Regression xuất hiện → ghi bug mới, không gộp với bug hiện tại
+- Quá 3 lần → báo user + snapshot state
 
 ## Anti-Rationalization
 | Excuse | Reality |

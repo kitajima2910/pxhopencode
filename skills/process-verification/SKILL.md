@@ -39,8 +39,25 @@ Trước mỗi claim về status:
 | Bug fixed | Test original symptom passes | Code changed |
 | Agent completed | VCS diff + changes | Agent báo "success" |
 
+## Anti-Rationalization
+
+| Excuse | Reality |
+|--------|---------|
+| "Tôi nhớ là test pass mà" | "Nhớ" = 0 evidence |
+| "Chạy partial command cũng đủ" | Partial check bỏ sót failure |
+| "Code nhìn ổn, không cần verify" | Nhìn ổn != chạy ổn |
+| "Hôm qua chạy pass rồi" | Hôm qua không chứng minh gì cho hôm nay |
+
 ## Red Flags
 
 - "Tôi đã chạy test rồi" nhưng không show output
 - "Trông ổn rồi" thay vì chạy command verify
 - Skip verification vì "đơn giản mà"
+
+## Verification
+
+- [ ] Command xác định đúng claim cần chứng minh
+- [ ] Command chạy FULL (không partial)
+- [ ] Output đọc và exit code checked
+- [ ] Output khớp với claim (hoặc báo actual status)
+- [ ] Claim kèm evidence output

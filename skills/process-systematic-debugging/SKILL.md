@@ -53,3 +53,19 @@ Mọi technical issue: test failures, production bugs, unexpected behavior, perf
 | "Không có thời gian, fix đại đi" | Fix đại = 3 lần thời gian sau này debug lại |
 | "Log là đủ, không cần reproduction" | Không reproduce → không biết fix đúng |
 | "Fix 1 dòng, không cần typecheck" | Typecheck catch 70% bugs |
+
+## Red Flags
+
+- Propose fix trước khi hoàn thành root cause investigation
+- Không tạo minimal reproduction
+- Debug dựa trên assumption, không có evidence
+- Fix symptom thay vì root cause
+- Skip typecheck/lint vì "fix nhỏ"
+
+## Verification
+
+- [ ] Phase 1 hoàn thành: root cause xác định + reproduction
+- [ ] Phase 2: minimal fix, verified với test
+- [ ] Phase 3: không regression sau fix
+- [ ] Phase 4: unit test cho bug + error boundary
+- [ ] Reproduction steps documented hoặc automated

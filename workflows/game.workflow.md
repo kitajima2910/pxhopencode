@@ -1,6 +1,6 @@
 # Workflow Game — Phát triển game HTML5 Pro
 
-> **LUẬT NGÔN NGỮ**: UI game = tiếng Việt. Animation state = tiếng Anh.
+> **LUẬT NGÔN NGỮ**: UI game = **tiếng Việt**. Code, variable, comments, animation state = **tiếng Anh**.
 > Testing: Vitest headless. Orchestrator: `skills/game-development/SKILL.md` → route implementation + principle.
 > Genre: `skills/_shared/game-genre-reference.md` (Decision Tree → anti-patterns).
 > Black-box scripts: `_shared/scripts/game-gen/`. Eval: `skills/games-testing/templates/game-eval-schema.ts`.
@@ -94,6 +94,16 @@ Xem: `skills/games-pwa/SKILL.md`, `skills/games-deploy/SKILL.md`
 - Animation state thiếu hurt/die
 - Pool không dùng (object leak)
 - Camera không follow player
+
+## Post-code: route qua company workflow phase 7-11
+Sau Bước 7 (Build & Deploy) → route qua `workflows/company.workflow.md` phase 7-11 (Test→Fix→Review→Build→Persist).
+
+## Loop/Failover
+- Test fail → fix → rerun test max 3 lần
+- Coverage < 85% → bổ sung test, max 3 attempts
+- Eval < 0.9 → polish lại, max 3 lần
+- Build fail → fix dependency → rebuild, max 3 lần
+- Quá 3 lần → báo user + snapshot state
 
 ## References
 - Orchestrator: `skills/game-development/SKILL.md`

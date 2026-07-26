@@ -112,6 +112,23 @@ interface PromptIR {
 }
 ```
 
+## Anti-Rationalization
+
+| Excuse | Reality |
+|--------|---------|
+| "Compiler chạy sau cũng được, prompt ổn rồi" | Không compile = token waste, intent ambiguous |
+| "IR chỉ là format, không ảnh hưởng output" | IR sai → backend gen sai → quality giảm |
+| "Tôi biết intent của mình mà" | Biết intent ≠ extract constraints đúng |
+| "Compress làm mất context" | Compressor giữ semantics, chỉ bỏ filler |
+
+## Red Flags
+
+- Skip compiler stage vì "prompt ngắn"
+- Backend generator không match IR output style
+- IR có confidence score < 60 nhưng vẫn dùng
+- Constraints missing → LLM tự do interpret
+- Compression ratio < 1.2x (còn nhiều filler)
+
 ## Verification
 - [ ] Pipeline chạy < 50ms cho medium prompt
 - [ ] Intent detected correctly for target language

@@ -93,6 +93,15 @@ Nếu `/debug` + classified_skills chứa `games-*` → sau khi @pxh-fix-bugs, r
 - Phase bị skip không lý do
 - Worker trả về failure liên tục
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/decisions.json` → ghi routing decision: `{id, workflow, agent_routed, rationale}`
+2. Mở `{workspace_root}/.memory/workflow.json` → update workflow sequence đã dùng
+3. Mở `{workspace_root}/.memory/stats.json` → increment `total_decisions`, update `last_session`
+4. Gửi `Event{type:"reflection", phase:"orchestrate", categories:["decisions","workflow","stats"]}` → T4
+
+Red Flag: Routing decision không ghi memory → T2 không học được pattern. Không bao giờ skip.
+
 ## Verification
 - [ ] Task contract đủ fields: phase, target, context, skills
 - [ ] Retry/recovery policy applied

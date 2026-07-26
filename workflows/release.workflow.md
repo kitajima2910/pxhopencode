@@ -1,5 +1,7 @@
 # Workflow Phát hành — Build Pipeline
 
+> **LUẬT NGÔN NGỮ**: UI text (thông báo user) = **tiếng Việt**. Script code, commit messages, tags = **tiếng Anh**.
+
 Pipeline: lint → typecheck → test → build/tag → báo user.
 
 ## Điều kiện (Gate Check)
@@ -28,6 +30,13 @@ Sau build → Event{phase: release, status: success, data: {version, size, date}
 | Test fail | Báo QA, không release |
 | Build fail | Kiểm tra log, fix dependency |
 | Tag conflict | `git tag -d vX` → bump version → tag lại |
+
+## Loop/Failover
+- Lint error → fix → rerun lint, max 3 lần
+- Test fail → báo QA, không bypass, max 3 lần
+- Build fail → fix dep → rebuild, max 3 lần
+- Tag conflict → `git tag -d vX` → bump → tag lại, max 2 lần
+- Quá 3 lần → báo user + abort release
 
 ## Anti-Rationalization
 | Excuse | Reality |

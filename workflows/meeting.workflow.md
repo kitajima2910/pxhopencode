@@ -1,5 +1,7 @@
 # Workflow Họp — Agents thảo luận & quyết định
 
+> **LUẬT NGÔN NGỮ**: Nội dung họp, biên bản, quyết định = **tiếng Việt**. Code snippets, technical terms, decision matrix = **tiếng Anh**.
+
 Triệu tập agents thảo luận, phản biện, quyết định chung.
 
 ## Agents tham gia
@@ -22,6 +24,12 @@ Khi nhiều option: đánh giá theo Time/Performance/Maintainability/Scalabilit
 | Không consensus | PM quyết định, ghi dissent |
 | User có ý kiến | Làm theo user |
 | Quá phức tạp | Hỏi user thêm thông tin |
+
+## Loop/Failover
+- Không đạt consensus sau 3 vòng phản biện → PM quyết định, ghi dissent
+- Meeting kéo dài > 15 phút → PM force decision, ghi remaining items
+- Agent không phản hồi → skip, ghi absent, tiếp tục
+- Quyết định sai → ghi ADR, reconvene trong session sau
 
 ## Anti-Rationalization
 | Excuse | Reality |

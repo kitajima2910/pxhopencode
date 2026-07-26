@@ -1,10 +1,10 @@
 # Tầng 1: Giao diện
 
-**Trách nhiệm:** Đầu vào cho mọi yêu cầu user. Xác thực input, tạo Request contract cấu trúc, trình bày kết quả cuối cho user.
+**Trách nhiệm:** Đầu vào cho mọi yêu cầu user. Phân tích prompt (classify), xác thực input, tạo Request contract cấu trúc, trình bày kết quả cuối cho user.
 
 **Chủ quản:** `pxh-help`, user/system prompt
 
-**Trách nhiệm duy nhất:** Xác thực đầu vào + định dạng đầu ra. Không bao giờ thực thi công việc domain.
+**Trách nhiệm duy nhất:** Phân tích prompt + xác thực đầu vào + định dạng đầu ra. Classification là phạm vi cho phép (được T2 triệu tập). Không bao giờ thực thi công việc domain (code, test, build).
 
 ## Luồng
 

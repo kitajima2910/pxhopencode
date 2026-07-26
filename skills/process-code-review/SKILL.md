@@ -40,3 +40,11 @@ KHÔNG review NẾU CHƯA self-review trước
 |--------|---------|
 | "Merge trước, review sau" | Merge trước = technical debt |
 | "Code của tôi không cần review" | Everyone needs review |
+
+## Verification
+
+- [ ] Self-review hoàn tất trước khi request review
+- [ ] Context gửi kèm: spec/plan, files changed, testing done
+- [ ] Focus areas chỉ rõ trong review request
+- [ ] Mỗi comment có action: fix hoặc reply
+- [ ] Ít nhất 1 review pass trước khi merge

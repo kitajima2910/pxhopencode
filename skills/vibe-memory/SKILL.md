@@ -30,13 +30,13 @@ Skill này đã được load tự động qua instruction. Chỉ cần load th�
 [ ] .memory/ tồn tại? → load index
 [ ] .memory/ chưa tồn tại? → chạy `powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"`
 [ ] Nếu script lỗi → init thủ công từ runtime/memory/init.json
-[ ] Task intent → semantic search → inject context
+[ ] Task intent → dùng Prompt Compiler IR → lookup intent→categories
 [ ] Task → reflection → update memory
 ```
 
 ## Anti-Rationalization
 
-| Ausrede | Reality |
+| Excuse | Reality |
 |---------|---------|
 | "Memory không cần, tôi tự nhớ" | Mỗi session mới = mất context cũ |
 | "Tạo .memory/ thủ công cũng được" | Bước này phải tự động, không cần user |
@@ -47,3 +47,12 @@ Skill này đã được load tự động qua instruction. Chỉ cần load th�
 - `.memory/` không tồn tại ở workspace_root → chưa chạy startup step
 - Index có confidence = 0 → chưa có dữ liệu, cần học dần
 - Không chạy reflection sau task → memory không tiến hóa
+
+## Verification
+
+- [ ] .memory/ tồn tại ở workspace_root
+- [ ] index.json loaded với memory_count + confidence
+- [ ] Intent matched ≥ 1 category (fallback: unknown)
+- [ ] Injected ≤ 3 categories, ≤ 1 dòng/category
+- [ ] Confidence filter applied (skip < 60)
+- [ ] Reflection executed và .memory/ updated sau task

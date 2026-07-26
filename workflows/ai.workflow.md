@@ -1,6 +1,6 @@
 # Workflow AI — Phát triển ứng dụng AI
 
-> **LUẬT NGÔN NGỮ**: UI text trong AI app (chat message, label, thông báo) = **tiếng Việt**.
+> **LUẬT NGÔN NGỮ**: UI text (chat message, label, thông báo) = **tiếng Việt**. Code, variable, comments = **tiếng Anh**.
 
 ## Bước 1: Stack
 **Backend**: FastAPI + LangChain (mặc định), FastAPI + LlamaIndex, Django + Celery
@@ -27,6 +27,12 @@ Chat đơn giản / RAG với PDF / AI Agent / Multi-modal / Streaming SSE / Fun
 
 ## Bước 6: Security
 Rate limiting, input sanitization (prompt injection defense), auth, token limits + cost monitoring, logging LLM calls
+
+## Loop/Failover
+- LLM call fail → retry max 3 (exponential backoff 1s→2s→4s)
+- RAG pipeline error → rebuild index từ chunk cache
+- Security gate fail → fix → retest (max 3)
+- Quá 3 lần → báo user + snapshot state
 
 ## Anti-Rationalization
 | Excuse | Reality |

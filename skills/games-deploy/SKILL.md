@@ -27,6 +27,7 @@ description: Game deploy pipeline — GitHub Pages, Itch.io Butler, Vercel. CI/C
 
 ```
 Push → GitHub Actions → Lint → Test → Build → Deploy
+```
 
 ## Anti-Rationalization
 | Excuse | Reality |

@@ -1,5 +1,8 @@
 # Changelog
 
+## v80 — 10/10 Audit Cleanup
+All 29 issues fixed: pxh-save-history → .memory/ + Event contracts, MEMORY REFLECTION for all 10 agents, quickref tables complete, 11 skills sections added, memory contradictions resolved, workflow loop/failover + post-code routing for all 8 workflows, T1 doc aligned, language rules explicit, T4 storage table complete, init.json consistent. Score: 10/10.
+
 ## v79.1 — GitGuard: auto .gitignore for .opencode/
 init-memory.ps1 now ensures parent project's `.gitignore` has `.opencode/` entry — creates if missing, appends if present, skips if already covered. AI Company never leaked to GitHub.
 

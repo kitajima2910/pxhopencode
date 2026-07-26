@@ -56,3 +56,19 @@ Mỗi task = smallest unit với test cycle riêng:
 | "Plan trong đầu là đủ" | Đầu không share được, không review được |
 | "Code xong rồi viết plan" | Plan sau = justification, không phải guide |
 | "Dự án nhỏ, không cần plan" | Dự án nhỏ + không plan = bug to |
+
+## Red Flags
+
+- Plan không có file paths cụ thể
+- Task size > 5 phút nhưng không split
+- Bỏ qua verify step trong task
+- Plan viết sau khi code xong
+- Không tính đến edge cases hoặc error states
+
+## Verification
+
+- [ ] Plan có task list với file paths cụ thể
+- [ ] Mỗi task ≤ 5 phút implement
+- [ ] Mỗi task có verify step + expected output
+- [ ] Plan review được bởi người khác (hoặc agent)
+- [ ] Edge cases và error handling được đề cập trong plan

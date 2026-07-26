@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v79.1</b> &nbsp;·&nbsp; 216 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 154 templates</p>
+  <b>v80</b> &nbsp;·&nbsp; 217 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 154 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build.
 
@@ -40,7 +40,7 @@ pxhopencode/
 ├── agents/              # 10 AI agents
 ├── runtime/             # 4 tầng + contracts + policies + memory
 ├── workflows/           # 8 workflow templates
-├── skills/              # 49 skills theo lĩnh vực
+├── skills/              # 50 skills theo lĩnh vực
 ├── docs-vibe/           # Tài liệu kiến trúc
 ├── _shared/             # Scripts, templates dùng chung
 └── .memory/             # Vibe Coding Memory (tự động)

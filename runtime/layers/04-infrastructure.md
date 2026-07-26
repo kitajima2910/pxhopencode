@@ -23,9 +23,11 @@ flowchart TD
 | phase_start / phase_end | STATUS.md | Markdown |
 | error | STATUS.md + `.memory/bugs.json` | JSON |
 | decision | `.memory/decisions.json` (ADR entry) | JSON |
-| checkpoint | STATUS.md (snapshot) | Markdown |
-| reflection | `.memory/{category}.json` (theo loại) | JSON |
+| checkpoint | STATUS.md + `.memory/snapshots.json` | Markdown + JSON |
+| reflection | `.memory/{category}.json` | JSON |
 | task_result | STATUS.md (mục artifacts) | Markdown |
+
+**Category mapping cho reflection events**: bugs → `bugs.json`, decisions → `decisions.json`, patterns → `patterns.json`, project → `project.json`, architecture → `architecture.json`, preferences → `preferences.json`, workflow → `workflow.json`, prompt → `prompt.json`, vibe → `vibe.json`, snapshots → `snapshots.json`, timeline → `timeline.json`, index → `index.json`, stats → `stats.json`.
 
 ## Tham chiếu chéo
 - **Contracts:** `runtime/contracts/README.md` — Event (đầu vào), State (đầu ra)
@@ -47,7 +49,7 @@ flowchart TD
 Mỗi metric ghi vào `Event{type:"alert", phase: "observability"}` → lưu `STATUS.md` mục `[Alerts]`.
 
 ## Quy tắc
-- Không bao giờ sửa dữ liệu — append-only cho `.memory/` JSON, ghi đè `STATUS.md` cho trạng thái hiện tại.
+- Append-only cho `.memory/` JSON (merge/append, không xoá). Ghi đè `STATUS.md` cho trạng thái hiện tại — đây là ngoại lệ duy nhất.
 - Khi được yêu cầu checkpoint, serialize toàn bộ trạng thái Tầng 2 vào `STATUS.md`.
 - Khi được yêu cầu phục hồi, trả về trạng thái checkpoint cuối cùng dưới dạng State contract.
 - Mọi ghi phải idempotent nếu có thể.

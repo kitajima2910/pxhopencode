@@ -1,6 +1,6 @@
 # Workflow Web — Phát triển web app
 
-> **LUẬT NGÔN NGỮ**: UI text (nút, tiêu đề, label, placeholder, menu, error message) = **tiếng Việt**.
+> **LUẬT NGÔN NGỮ**: UI text (nút, tiêu đề, label, placeholder, menu, error message) = **tiếng Việt**. Code, variable, comments, API routes = **tiếng Anh**.
 > **KHÔNG START SERVER**: Tuyệt đối không tự ý chạy `npm run dev`, `npx vite`, `npx serve`, hay bất kỳ dev server nào. Chỉ hướng dẫn user cách chạy. Để user tự quyết định khi nào start server.
 
 ## Bước 1: Tech stack
@@ -53,6 +53,13 @@ Code xong → route qua `workflows/company.workflow.md` phase 7-11 (Test→Fix�
 - [ ] Template scaffold dùng đúng stack
 - [ ] .gitignore + favicon setup
 - [ ] Security checklist chạy phase review
+
+## Loop/Failover
+- Setup fail (npm create vite lỗi) → retry với flag `--force`, max 2 lần
+- TypeScript compile error → fix type → rebuild, max 3 lần
+- Test fail → fix → rerun, max 3 lần
+- Security review critical > 0 → fix → re-review, max 3 lần
+- Quá 3 lần → báo user + snapshot state
 
 ### Security checklist (tích hợp trong phase review)
 Khi `pxh-review-code` chạy, load `skills/webs-security/SKILL.md` + `security-checklist.ts` để kiểm tra: auth, XSS, CSRF, SQLi, rate limit, URL bypass, secure headers, dependency audit. Một pass, không thêm phase.

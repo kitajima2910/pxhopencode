@@ -46,3 +46,19 @@ Gom kết quả từ tất cả subagents:
 |--------|---------|
 | "Làm tuần tự cho chắc" | Độc lập → tuần tự = 3x thời gian |
 | "Sợ agents conflict" | Craft context cách ly đúng → không conflict |
+
+## Red Flags
+
+- Dispatch parallel cho tasks có shared state
+- Không xác định domain boundaries trước khi dispatch
+- Bỏ qua conflict resolution khi gom kết quả
+- Quá nhiều agents cùng lúc → context window exhaustion
+- Tasks phụ thuộc nhau nhưng chạy parallel
+
+## Verification
+
+- [ ] Tasks verified independent: no shared state, no dependency
+- [ ] Mỗi subagent nhận context độc lập, không overlap
+- [ ] Kết quả từ tất cả agents được collect và review
+- [ ] Conflicts resolved trước khi merge
+- [ ] Không agent nào bị timeout hoặc stalled

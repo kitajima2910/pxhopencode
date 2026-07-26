@@ -35,6 +35,16 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 |-------|----------|------|------|
 | `3d-web-experience` | 3D website, Three.js, React Three Fiber, Spline, WebGL, 3D product configurator, interactive 3D scene | Three.js, R3F | skills/3d-web-experience/ |
 
+## UI/UX Design (1)
+| Skill | Use when | Deps | Path |
+|-------|----------|------|------|
+| `ui-ux` | UI/UX design — web (React/Tailwind), game HUD (Phaser/Three.js), tool (CLI output). Priority categories (1-10), design system workflow | Tailwind | skills/ui-ux/ |
+
+## Vibe Memory Engine (1)
+| Skill | Use when | Deps | Path |
+|-------|----------|------|------|
+| `vibe-memory` | Tra cứu/lưu knowledge project. Query, update, snapshot, reflection. Startup pipeline + memory injection | — | skills/vibe-memory/ |
+
 ## Game Skills — Implementation (12)
 | Skill | Use when | Deps | Path |
 |-------|----------|------|------|
