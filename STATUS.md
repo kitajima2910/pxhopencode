@@ -8,7 +8,7 @@
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
 | Phiên bản | v76 |
 | Agents | 10 (Tầng 1-4) |
-| Workflows | 9 theo lĩnh vực |
+| Workflows | 8 theo lĩnh vực |
 | Skills | 49 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Vibe Memory) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
@@ -32,7 +32,7 @@
 ├── README.md / STATUS.md   # Tổng quan + Dashboard
 ├── agents/                 # 10 agents (Tầng 1-4)
 ├── runtime/                # 4 tầng, memory, contracts, policies
-├── workflows/              # 9 workflow templates
+├── workflows/              # 8 workflow templates
 ├── skills/                 # 5 lĩnh vực, 33 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
@@ -98,7 +98,7 @@
 
 - [x] 10 agents với thẻ layer + tham chiếu chéo
 - [x] Runtime 4 layer, 6 contracts, 3 policies
-- [x] 9 workflows theo lĩnh vực
+- [x] 8 workflows theo lĩnh vực
 - [x] 33 skills với templates/ riêng
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
 - [x] Chrome DevTools MCP tích hợp (--autoConnect)
