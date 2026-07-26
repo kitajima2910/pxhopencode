@@ -9,17 +9,7 @@
 
 ## Cài đặt (30 giây)
 
-### A — Dùng source trực tiếp (khuyên dùng)
-
-Clone pxhopencode và mở bằng OpenCode ngay trong thư mục source:
-
-```bash
-git clone https://github.com/<repo-url> pxhopencode
-cd pxhopencode
-opencode
-```
-
-### B — Nhúng vào project có sẵn
+Nhúng vào project có sẵn:
 
 ```bash
 cd project-của-bạn

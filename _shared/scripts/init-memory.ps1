@@ -18,6 +18,15 @@ if ($isEmbedded) {
   $memoryDir = Join-Path $WorkspaceRoot ".memory"
 }
 
+# Embedded mode: remove nested .git to avoid nested repo
+if ($isEmbedded) {
+  $nestedGit = Join-Path $PxhopencodeRoot ".git"
+  if (Test-Path $nestedGit) {
+    Remove-Item -Recurse -Force $nestedGit
+    Write-Output "🗑️ Removed .opencode/.git (nested repo)"
+  }
+}
+
 # Check if .memory/ already exists
 if (Test-Path $memoryDir) {
   $idx = Join-Path $memoryDir "index.json"
