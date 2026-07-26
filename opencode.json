@@ -24,6 +24,16 @@
     "paths": ["skills", ".opencode/skills", "pxhopencode/skills"],
     "lazy": true
   },
+  "skill_aliases": {
+    "game-art": "skills/game-art",
+    "game-design": "skills/game-design",
+    "multiplayer": "skills/multiplayer",
+    "vr-ar": "skills/vr-ar",
+    "web-games": "skills/web-games",
+    "mobile-games": "skills/mobile-games",
+    "pc-games": "skills/pc-games",
+    "game-dev": "skills/game-development"
+  },
 
   "agent": {
     "pxh-pm": { "description": "T2 Orchestrator", "mode": "primary" },
@@ -55,7 +65,10 @@
     "release": { "template": "workflows/release.workflow.md" },
     "debug": { "template": "workflows/debug.workflow.md" },
     "web": { "template": "workflows/web.workflow.md" },
-    "game": { "template": "workflows/game.workflow.md" },
+    "game": {
+      "description": "Phát triển game HTML5 — support 2D (Phaser), 3D (Three.js), Isometric. Load orchestrator + workflow.",
+      "template": "Load `skills/game-development/SKILL.md` → route đến đúng sub-skill theo platform/dimension. Sau đó chạy `workflows/game.workflow.md`."
+    },
     "ai": { "template": "workflows/ai.workflow.md" },
     "tool": { "template": "workflows/tool.workflow.md" },
     "ui-ux": { "description": "UI/UX design — web (React/Tailwind), game HUD, CLI output", "template": "Load `skills/ui-ux/SKILL.md`. Chạy design workflow." },

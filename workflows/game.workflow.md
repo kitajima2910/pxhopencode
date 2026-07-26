@@ -2,7 +2,9 @@
 
 > **LUẬT NGÔN NGỮ**: UI game (nút, menu, HUD, hướng dẫn) = **tiếng Việt**. Animation state (`idle`, `run`, `jump`) = tiếng Anh.
 > Testing dùng Vitest headless — không cần chạy dev server. Xem `skills/games-testing/`.
+> **Orchestrator**: trước khi code, đọc `skills/game-development/SKILL.md` → route đến đúng implementation + principle sub-skill.
 > **Genre Reference**: trước khi code bất kỳ game nào, đọc `skills/_shared/game-genre-reference.md` → dùng Decision Tree để chọn đúng category.
+> **Principle sub-skills** (từ agent-skills-hub): `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games` — load thêm nếu liên quan.
 > **Black-box scripts**: `_shared/scripts/game-gen/` — chạy `--help` để dùng (không đọc source). Sinh physics config, spline track, eval grading.
 > **Eval assertions**: dùng `skills/games-testing/templates/game-eval-schema.ts` + `eval-grader.js` để verify quality.
 
@@ -206,7 +208,9 @@ Pre-deploy: build success, < 10MB, source maps tắt, PWA ≥ 90, FPS ≥ 58/30,
 - Camera không follow player
 
 ## Game Design & References
+- **Orchestrator**: `skills/game-development/SKILL.md`
 - **Genre Reference**: `skills/_shared/game-genre-reference.md`
+- **Principle sub-skills**: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`
 - 2D design: `skills/games-2d/game-design-h5-2d.md`
 - 3D design: `skills/games-3d/game-design-h5-3d.md`
 - 3D Racing: `skills/games-3d/game-design-h5-marble-racing.md`

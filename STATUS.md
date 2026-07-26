@@ -6,10 +6,10 @@
 |--------|---------|
 | Giai đoạn | PHÁT HÀNH ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime + Virtual Office |
-| Phiên bản | v75 |
+| Phiên bản | v76 |
 | Agents | 12 (10 Tầng 1-4 + Virtual + Mirror) |
 | Workflows | 9 theo lĩnh vực |
-| Skills | 39 skills (8 Process + 7 Web + 12 Game + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office) |
+| Skills | 46 skills (8 Process + 7 Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 
@@ -83,6 +83,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-26 | v76 | **Agent Skills Hub Game Upgrade** — Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46. |
 | 2026-07-26 | v75 | **UI/UX Pro Max Upgrade** — Tham khảo [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill). Nâng cấp `skills/ui-ux/SKILL.md`: priority-based rule categories (1-10, Critical→Low), design system workflow (Analyze → Tokens → Supplement), design dials (variance/motion/density), design tokens section, pre-delivery checklist merge. Giữ nguyên game HUD, CLI design system, anti-rationalization. |
 | 2026-07-26 | v74 | **Superpowers Skill Upgrade** — Tham khảo [obra/superpowers](https://github.com/obra/superpowers/tree/main/skills). Tạo 8 process skills mới (driven-development, parallel-agents, systematic-debugging, writing-plans, tdd, verification, code-review, finishing-branch). Nâng cấp 6 existing skills với Iron Law + Core Principle. Update 5 agents reference process skills. Skill count: 33→39. |
 | 2026-07-26 | v73 | **Token Optimization V3.0** — Slim `workflow-hook.md` 159→43 dòng (-73%), merge `contracts.md` vào README (xóa file), trim `prompt-optimizer.md` 53→35 dòng (-34%), move README changelog → `_shared/changelog.md` (-124 dòng). Tổng savings: ~334 dòng + 1 file read mỗi session. |

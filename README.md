@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v74</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 39 skills &nbsp;·&nbsp; 175 templates</p>
+  <b>v76</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 46 skills &nbsp;·&nbsp; 175 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build. Bạn chỉ cần ngồi xem Virtual Office chạy.
 
