@@ -6,9 +6,9 @@
 |--------|---------|
 | Giai đoạn | PHÁT HÀNH ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime + Virtual Office |
-| Agents | 12 (11 chuyên biệt Tầng 1-4 + Virtual + Mirror) |
+| Agents | 12 (10 Tầng 1-4 + Virtual + Mirror) |
 | Workflows | 9 theo lĩnh vực |
-| Skills | 32 skills (4 lĩnh vực + Virtual Office) |
+| Skills | 33 skills (4 lĩnh vực + Virtual Office + Vibe Memory) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 
@@ -29,10 +29,10 @@
 .opencode/
 ├── opencode.json           # Config: agents, commands, skills
 ├── README.md / STATUS.md   # Tổng quan + Dashboard
-├── agents/                 # 11 agents (Tầng 1-4 + Virtual)
-├── runtime/                # 4 tầng, contracts, policies
+├── agents/                 # 12 agents (Tầng 1-4 + Virtual + Mirror)
+├── runtime/                # 4 tầng, memory, contracts, policies
 ├── workflows/              # 9 workflow templates
-├── skills/                 # 5 lĩnh vực, 32 skills + templates/
+├── skills/                 # 5 lĩnh vực, 33 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
 
@@ -64,11 +64,13 @@
 - [x] `.gitignore` chặn `.memory/` — mỗi user có memory riêng, không lẫn với pxhopencode dev
 - [x] `runtime/memory/init.json` — seed template cho agents auto-create `.memory/` ở workspace root
 - [x] 10 Memory-Kategorien | 5 Contracts | Startup-Pipeline | Reflection Engine | Confidence-System | Token-Optimierung
+- [x] Instruction `runtime/memory/README.md` viết lại dạng imperative — buộc agent thực thi startup pipeline mỗi session
 
 ## 🚀 Changelog
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-26 | v71 | **Review + Refactor + Optimize** — Fix `pxh-expert.md` QUY_TRÌNH section bị split; sửa STATUS.md agent count (12) + skills count (33); thêm memory reflection step vào T3 worker layer; thêm step load skill vào memory startup |
 | 2026-07-26 | v70 | **Vibe Coding Memory Engine v1.0** — 13 file `.memory/` storage, 10 memory categories (project, architecture, patterns, bugs, decisions, preferences, workflow, prompt, vibe, snapshots), timeline + stats, `runtime/memory/` module with README + 5 contracts, `skills/vibe-memory/SKILL.md` for agent integration, Startup-Pipeline, Reflection Engine, Confidence System, Token-Optimierung, auto-project-detection |
 | 2026-07-25 | v69 | **Per-agent log dialog boxes khi agents ngồi bàn làm việc** — Thêm function `drawAgentLogDialog()` vẽ panel log trong suốt gần desk mỗi agent, hiển thị 5 dòng log gần nhất từ `_monitorLog` kết hợp speech bubble. `drawComicBubble` mở rộng từ 2 lên 5 dòng. Timeout speech bubble kéo dài 8s cho active agents (giữ nguyên 3s cho idle). `_msgs` tăng từ 2 lên 5 entry. Restore office.js từ git HEAD~1 + VSCode Bridge. **Fix v69a**: Sitting agents (ngồi bàn) cũng hiển thị `drawAgentLogDialog` — trước đó chỉ standing/walking agents mới có enhanced dialog, agents tại desk chỉ dùng `drawComicBubble` cũ thiếu `_monitorLog`.
 | 2026-07-25 | v69b | **Fix missing `drawMonitor()` function** — `office.js` gọi `drawMonitor()` để vẽ màn hình lớn tại desk CEO và PXHOpenCode, nhưng function chưa từng được định nghĩa → `ReferenceError`. Thêm function vẽ màn hình 68x44 với dark screen + label "PXH2910 • Terminal". |
@@ -95,10 +97,10 @@
 
 ## ✅ Điều kiện hoàn thành
 
-- [x] 11 agents với thẻ layer + tham chiếu chéo
+- [x] 12 agents với thẻ layer + tham chiếu chéo
 - [x] Runtime 4 layer, 6 contracts, 3 policies
 - [x] 9 workflows theo lĩnh vực
-- [x] 32 skills với templates/ riêng
+- [x] 33 skills với templates/ riêng
 - [x] _shared/ dùng chung (templates, scripts, agent-listing)
 - [x] Chrome DevTools MCP tích hợp (--autoConnect)
 - [x] README hướng dẫn copy vào `.opencode/`

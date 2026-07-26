@@ -1,54 +1,64 @@
 # Vibe Coding Memory Engine
 
-> Persistente Wissensschicht für PXHOpenCode — merkt sich Projekte, Architektur, Muster und Vorlieben.
-> Kein Chatverlauf. Kein Gesprächsgedächtnis. Nur strukturiertes Wissen.
+> ***QUAN TRỌNG: Đây là instruction bắt buộc. Đọc và thực thi ngay đầu mỗi session.***
 
-## Speicherkategorien
+## STARTUP BẮT BUỘC — Thực thi ngay khi session bắt đầu
 
-| Modul | Datei | Zweck |
-|-------|-------|-------|
-| Projekt | `.memory/project.json` | Framework, Sprache, Runtime, Tools |
-| Architektur | `.memory/architecture.json` | Module, Services, Abhängigkeiten, Datenflüsse |
-| Patterns | `.memory/patterns.json` | Coding-Conventionen, wiederkehrende Muster |
-| Bugs | `.memory/bugs.json` | Gelöste Probleme mit Ursache + Lösung |
-| Entscheidungen | `.memory/decisions.json` | Architekturentscheidungen + Begründung |
-| Präferenzen | `.memory/preferences.json` | User-Vorlieben, Coding-Habits |
-| Workflow | `.memory/workflow.json` | Wiederkehrende Arbeitsabläufe |
-| Prompt | `.memory/prompt.json` | Wiederholte Anweisungen, optimierte Templates |
-| Vibe | `.memory/vibe.json` | Coding-Philosophie, abgeleiteter Stil |
-| Snapshots | `.memory/snapshots.json` | Kontext-Snapshots nach abgeschlossenen Tasks |
-| Timeline | `.memory/timeline.json` | Chronologische Historie aller Änderungen |
-| Stats | `.memory/stats.json` | Nutzungsstatistiken, Speichergröße |
+```yaml
+Bước 0: Load skills/vibe-memory/SKILL.md để có API reference
+Bước 1: Xác định workspace_root
+  - workspace_root = thư mục chứa .opencode/
+  - Nếu không tìm thấy .opencode/ → dùng thư mục hiện tại
 
-## Startup-Pipeline
+Bước 2: Kiểm tra {workspace_root}/.memory/
+  - Nếu TỒN TẠI → đọc .memory/index.json, load index
+  - Nếu KHÔNG TỒN TẠI → TẠO NGAY:
+    a. Đọc runtime/memory/init.json (seed template)
+    b. Tạo .memory/ tại workspace_root
+    c. Điền project_id, project_name, timestamps
+    d. Ghi index.json → ghi các file còn lại
+    e. Log: "Memory initialized at {workspace_root}/.memory/"
 
+Bước 3: Xác định task intent từ prompt user
+
+Bước 4: Semantic search trong .memory/
+  - Nếu task liên quan bug → load bugs.json
+  - Nếu task liên quan architecture → load architecture.json
+  - Nếu task feature mới → load patterns.json + decisions.json
+  - Chỉ load Top-K (tối đa 3 categories), không load tất cả
+
+Bước 5: Inject context compact → thực thi task
+
+Bước 6: SAU KHI task hoàn tất → chạy reflection:
+  - Học được gì? → update patterns / preferences
+  - Có bug mới? → ghi bugs.json
+  - Có decision mới? → ghi decisions.json
+  - Architecture thay đổi? → update architecture.json
+  - Snapshot context hiện tại → snapshots.json
 ```
-Projekt erkennen → Index laden → Task-Intent bestimmen
-→ Semantische Suche → Relevante Erinnerungen abrufen
-→ Kompakten Kontext injizieren → Task starten
-```
 
-## Contracts
+## File storage
 
-Siehe `runtime/memory/contracts.md`
+| File | Mục đích |
+|------|----------|
+| `.memory/index.json` | Index nhẹ, load đầu tiên |
+| `.memory/project.json` | Framework, language, runtime, tools |
+| `.memory/architecture.json` | Modules, services, dependencies, flows |
+| `.memory/patterns.json` | Coding conventions, recurring patterns |
+| `.memory/bugs.json` | Bug đã fix + root cause + solution |
+| `.memory/decisions.json` | Architectural decisions + rationale |
+| `.memory/preferences.json` | User coding habits (language, style) |
+| `.memory/workflow.json` | Recurring workflows |
+| `.memory/prompt.json` | Repeated instructions, optimized templates |
+| `.memory/vibe.json` | Coding philosophy, inferred style |
+| `.memory/snapshots.json` | Context snapshots after completed tasks |
+| `.memory/timeline.json` | Chronological history |
+| `.memory/stats.json` | Usage statistics |
 
-## Integration mit 4-Tier Runtime
+## Performance rules
 
-- **T1 Interface:** Lädt Memory-Skill bei Projektstart
-- **T2 Orchestration:** Fragt relevante Erinnerungen ab vor Task-Delegation
-- **T3 Worker:** Aktualisiert Memory nach abgeschlossenen Tasks via Reflection
-- **T4 Infrastructure:** pxh-save-history persistiert Snapshots + Timeline
-
-## Anti-Rationalization
-
-| Ausrede | Realität |
-|---------|----------|
-| "Ich merk mir das schon" | Nächste Session = wieder alles lesen |
-| "Memory ist nur Chat-History" | Memory speichert Wissen, keine Konversationen |
-| "Manuell pflegen reicht" | Vergisst man → Memory veraltet |
-
-## Red Flags
-
-- `.memory/` fehlt → wird bei nächster Session automatisch erstellt
-- Memory-Index hat `confidence < 50` → Projekt noch nicht vollständig erfasst
-- Bugs ohne `root_cause` → unvollständige Problemanalyse
+- Memory lookup < 100ms
+- Incremental save — never rewrite entire file
+- Confidence filter: chỉ inject memory có confidence >= 60
+- Snapshot < 500 bytes mỗi entry
+- KHÔNG lưu chat history, password, secrets, API keys

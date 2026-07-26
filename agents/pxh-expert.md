@@ -54,6 +54,10 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 8. **Không tự ý start server** — tuyệt đối không `npm run dev`, `npx vite`, `npx serve`. Chỉ hướng dẫn user.
 
 ## QUY TRÌNH
+1. Xác định loại + workflow + skill
+2. Code: Web=Component→API→DB→Auth / Game=Scene→Player→Enemies→UI→Polish / AI=Pipeline→Model→API / Tool=CLI→Core
+3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.
+
 ## Anti-Rationalization
 | Excuse | Reality |
 |--------|---------|
@@ -70,6 +74,4 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 - [ ] Dùng template trước khi code tay
 - [ ] Chạy `npx vitest run` sau mỗi feature
 - [ ] .gitignore có .opencode/ + .github/
-
-1. Xác định loại + workflow + skill 2. Code: Web=Component→API→DB→Auth. Game=Scene→Player→Enemies→UI→Polish. AI=Pipeline→Model→API. Tool=CLI→Core 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.
 

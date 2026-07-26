@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v57</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 32 skills &nbsp;·&nbsp; 175 templates</p>
+  <b>v71</b> &nbsp;·&nbsp; 174 commits &nbsp;·&nbsp; 12 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 9 workflows &nbsp;·&nbsp; 33 skills &nbsp;·&nbsp; 175 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build. Bạn chỉ cần ngồi xem Virtual Office chạy.
 
@@ -224,13 +224,25 @@ Bạn có thể gõ lệnh trực tiếp vào terminal PXHOpenCode trong Virtual
 - **Context Budget**: Lazy-load skills, compaction tự động, giới hạn 50 line/4096 byte output
 - **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
 - **Portable**: Copy toàn bộ `.opencode` folder → hoạt động ngay trong project mới
+- **Vibe Coding Memory Engine**: Hệ thống knowledge tự động — không phải chat history. Agents tự học project structure, architecture, patterns, bugs, decisions, preferences qua từng session. `.memory/` được auto-create ở workspace root, không cần cấu hình. Chi tiết: `runtime/memory/README.md`
 
 ---
 
 ## Changelog
 
 <details>
-<summary><b>v57 — Colorize logs theo agent (Latest)</b></summary>
+<summary><b>v70 — Vibe Coding Memory Engine v1.0 (Latest)</b></summary>
+
+- **Add:** `runtime/memory/` — Memory Engine module với 5 contracts (Query, Result, Update, Reflection, SessionStart)
+- **Add:** `skills/vibe-memory/SKILL.md` — Skill cho agents: startup pipeline, semantic retrieval, reflection, token optimization
+- **Add:** `runtime/memory/init.json` — Seed template, `.memory/` auto-created ở workspace root mỗi session đầu
+- **Auto-learn:** 10 memory categories — project structure, architecture, patterns, bugs, decisions, preferences, workflow, prompt, vibe, snapshots
+- **Zero config:** Không cần cài đặt, không commit `.memory/`, không manual save/restore
+- **How it works:** Session 1 học → Session 5 nhanh hơn rõ → Session 100+ như engineer đã làm project cả năm
+</details>
+
+<details>
+<summary><b>v57 — Colorize logs theo agent</b></summary>
 
 - **Colorize:** Agent logs trên PXHOpenCode terminal + monitors dùng màu `AGENTS[agentId].c` thay vì keyword-match
 - **Fallback:** System entries (sys) vẫn dùng keyword-based color

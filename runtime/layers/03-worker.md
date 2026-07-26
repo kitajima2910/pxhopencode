@@ -24,7 +24,8 @@ flowchart TD
     B --> C[Thực thi trong TARGET]
     C --> D{"Tự kiểm tra:<br/>output đáp ứng yêu cầu?<br/>code cũ vẫn chạy?"}
     D --> E[Tạo Result contract<br/>→ trả về Tầng 2]
-    E --> F[Gửi Event phản ánh<br/>→ Tầng 4]
+    E --> F[Chạy memory reflection<br/>→ cập nhật .memory/]
+    F --> G[Gửi Event phản ánh<br/>→ Tầng 4]
 ```
 
 ## Quy tắc
