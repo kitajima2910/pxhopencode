@@ -9,7 +9,7 @@
 | Phiên bản | v76 |
 | Agents | 12 (10 Tầng 1-4 + Virtual + Mirror) |
 | Workflows | 9 theo lĩnh vực |
-| Skills | 46 skills (8 Process + 7 Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office) |
+| Skills | 49 skills (8 Process + 8 Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office + 1 Vibe Memory) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 
@@ -69,7 +69,7 @@
 
 - [x] `.memory/` — 13 initialisierte Speicherdateien (Index, Projekt, Architektur, Patterns, Bugs, Decisions, Preferences, Workflow, Prompt, Vibe, Snapshots, Timeline, Stats)
 - [x] `runtime/memory/README.md` — Memory Engine Dokumentation + Kategorien + Startup-Pipeline
-- [x] `runtime/memory/contracts.md` — 5 Memory-Contracts (Query, Result, Update, Reflection, SessionStart)
+- [x] Contracts merged into `runtime/memory/README.md` — 5 Memory-Contracts (Query, Result, Update, Reflection, SessionStart)
 - [x] `skills/vibe-memory/SKILL.md` — Skill für Agents: API, Token-Optimierung, Verification
 - [x] `opencode.json` — Instructions registriert, Skill-Pfad aktiviert
 - [x] `runtime/README.md` — Memory Engine in Übersicht referenziert

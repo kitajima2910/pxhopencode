@@ -42,7 +42,7 @@ Sau classify: `classified_workflow` quyết định workflow, `classified_skills
 | `/tool` | @pxh-expert | `workflows/tool.workflow.md` |
 | `/debug` | @pxh-fix-bugs | `workflows/debug.workflow.md` |
 | `/vibe` | @pxh-architect → @pxh-expert → loop | `workflows/company.workflow.md` |
-| `/ui-ux` | @pxh-ui-ux | `workflows/debug.workflow.md` |
+| `/ui-ux` | @pxh-ui-ux | Load `skills/ui-ux/SKILL.md` → chạy design workflow |
 | `/meeting` | @pxh-pm (họp) | `workflows/meeting.workflow.md` |
 | `/release` | @pxh-devops | `workflows/release.workflow.md` |
 

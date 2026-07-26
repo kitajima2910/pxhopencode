@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "version": "v76",
   "default_agent": "pxh-pm",
   "instructions": [
     "prompt-optimizer.md",
@@ -78,7 +79,7 @@
     },
     "office": {
       "description": "Open Virtual Office sidebar VSCode extension — real-time 4-tier visualization",
-      "template": "Load `skills/virtual-office/SKILL.md`. Cài extension: `pxh-install-extension.bat install`. Restart VS Code, sidebar PXH Virtual Office."
+      "template": "Load `skills/virtual-office/SKILL.md`. Sau đó load `workflows/office.workflow.md` → cài extension + restart VS Code."
     }
   }
 }
