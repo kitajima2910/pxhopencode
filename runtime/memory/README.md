@@ -2,13 +2,16 @@
 
 > ***BẮT BUỘC. Đọc và thực thi ngay đầu session. Bỏ qua = violation.***
 
-## STARTUP PIPELINE (execute in order)
+## STARTUP PIPELINE (execute in order — DO NOT SKIP)
+
+> ⚠️ **pxh-pm chạy bước này tự động đầu mỗi session.**
+> Nếu bạn là agent khác và thấy `.memory/` chưa có → chạy ngay lệnh bên dưới.
 
 ```
-Step 1: workspace_root = dir containing .opencode/
+Step 1: workspace_root = dir containing .opencode/ (hoặc CWD nếu standalone)
 Step 2: Check {workspace_root}/.memory/
   EXISTS → read index.json → check memory_count + confidence
-  MISSING → run AUTO-INIT script OR init manually from init.json
+  MISSING → chạy lệnh dưới đây (luôn chạy được — script tự detect mode)
 Step 3: Parse user prompt intent (dùng Prompt Compiler → IR → intent map bên dưới)
 Step 4: Lookup intent→categories (bảng bên dưới) → max 3 categories
 Step 5: Read selected .memory/ files → produce compact injection (định dạng bên dưới)
@@ -16,32 +19,31 @@ Step 6: Inject compact string vào context → thực thi task
 Step 7: SAU task → reflection → ghi .memory/ (xem ## MEMORY REFLECTION trong agent file)
 ```
 
-### AUTO-INIT (ưu tiên — deterministic, 0 agent token)
+### LỆNH AUTO-INIT (copy-paste — chạy 1 lần)
+
+Chỉ 1 lệnh duy nhất — script tự detect mode dựa trên vị trí của nó:
 
 ```powershell
-# Standalone (pxhopencode là project root)
 powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"
-
-# Embedded (pxhopencode trong .opencode/)
-powershell.exe -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/init-memory.ps1"
 ```
 
-Script tự động detect đúng `runtime/memory/init.json` dựa trên vị trí của script (không cần chỉnh path).
-
-Script này tự động:
-- Đọc `runtime/memory/init.json` → tạo 13 file JSON trong `.memory/`
+**Không cần đổi path.** Script ở `_shared/scripts/init-memory.ps1` tự động:
+- Tìm `runtime/memory/init.json` dựa trên vị trí của script
+- Đọc template → tạo 13 file JSON trong `.memory/` ở workspace root
 - Detect project type từ `package.json` / `Cargo.toml` / `pyproject.toml`
 - Điền `project_id`, `project_name`, `framework`, `language`, `runtime`, `folder_structure`, `build_tools`
+- Kiểm tra `.gitignore` ở workspace root — nếu chưa có `.opencode/` entry → thêm vào
+- Idempotent: chạy lại không sao
 
-**Luật**: Chạy script trước. Nếu script lỗi → agent init thủ công từ `init.json`.
+> Embedded mode: script path `.opencode/_shared/scripts/init-memory.ps1` cũng dùng chung lệnh trên khi CWD là workspace root (= thư mục chứa `.opencode/`).
+
+### Nếu script lỗi (fallback)
+
+Init thủ công từng file theo `init.json`:
 - Standalone: `{workspace_root}/runtime/memory/init.json`
 - Embedded: `{workspace_root}/.opencode/runtime/memory/init.json`
 
-Script cũng tự động:
-- Kiểm tra `.gitignore` ở workspace root
-- Nếu chưa có `.opencode/` entry → thêm vào (ngăn commit nhầm AI Company lên GitHub)
-
-> Không cần lo — script idempotent. Chạy lại không gây hại.
+Copy từng file object trong `init.json.files` vào `.memory/` tương ứng.
 
 ## INTENT → CATEGORIES MAP
 
