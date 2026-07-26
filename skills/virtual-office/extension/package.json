@@ -7,9 +7,9 @@
   "engines": {
     "vscode": "^1.85.0"
   },
-  "categories": ["Visualization", "Other"],
-  "activationEvents": [
-    "onView:pxh-office.officeView"
+  "categories": [
+    "Visualization",
+    "Other"
   ],
   "main": "./src/extension.js",
   "contributes": {
@@ -25,6 +25,7 @@
     "views": {
       "pxh-office": [
         {
+          "icon": "",
           "type": "webview",
           "id": "pxh-office.officeView",
           "name": "Virtual Office"
