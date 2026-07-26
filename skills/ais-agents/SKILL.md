@@ -5,6 +5,17 @@ description: AI Agent framework — tool registry, multi-step reasoning, memory,
 
 # ais-agents — AI Agents
 
+## Core Principle
+
+**Agents must never infinite loop. Every loop must have a hard timeout and max steps.**
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ chạy agent loop KHÔNG có timeout + max steps
+Mọi tool call phải có guard tràn token
+```
+
 ## Files
 
 | File | Mục đích |

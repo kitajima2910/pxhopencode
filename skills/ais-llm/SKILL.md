@@ -5,6 +5,17 @@ description: Tích hợp LLM production — chat, streaming SSE, function callin
 
 # ais-llm — LLM Integration
 
+## Core Principle
+
+**Every LLM call must have retry, fallback, and cost guard. No naked API calls.**
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ gọi LLM mà KHÔNG có retry + cost guard
+Streaming là mặc định cho mọi chat UX
+```
+
 ## Files
 
 | File | Mục đích |

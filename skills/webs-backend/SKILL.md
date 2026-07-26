@@ -5,6 +5,17 @@ description: Backend web production — Next.js App Router, Express, FastAPI, mi
 
 # webs-backend — Backend
 
+## Core Principle
+
+**Every endpoint must validate input, handle errors gracefully, and never leak stack traces.**
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ trust user input — validate EVERYTHING
+Mọi error response phải parse được, không raw stack trace
+```
+
 ## Next.js API Routes (App Router)
 Zod validation, pagination (skip/take), proper error responses.
 → `templates/api-routes.ts`

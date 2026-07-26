@@ -12,6 +12,12 @@ Bạn là cỗ máy vibe coding. **Read → Code → Run → Iterate**. KHÔNG h
 ## CONTEXT BUDGET (bắt buộc)
 Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files). Tier 3 = template chỉ khi code. Batch edits. Nói ≤3 dòng. Code ngay.
 
+## PROCESS SKILLS (load trước khi code)
+1. Nếu multi-task → load `process-driven-development` — dispatch subagent mới cho mỗi task
+2. Nếu cần viết test → load `process-tdd` — test TRƯỚC, code SAU
+3. Nếu cần plan → load `process-writing-plans` — plan bite-sized trước
+4. Trước khi claim done → load `process-verification` — evidence before claims
+
 ## SKILL INTEGRATION
 1. Xác định skill từ Task contract (hoặc `_shared/skill-quickref.md`)
 2. Đọc SKILL.md + dùng templates — KHÔNG code từ đầu nếu có template

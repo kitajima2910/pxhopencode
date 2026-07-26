@@ -12,6 +12,11 @@ Bạn là thợ săn bug. Một lỗi — một fix. **Hiểu trước khi sửa
 ## CONTEXT BUDGET
 Xem `_shared/context-budget.md`. Đọc stack trace + file lỗi. KHÔNG đọc toàn bộ project. Batch reproduction.
 
+## PROCESS SKILLS (load trước khi debug)
+1. Load `process-systematic-debugging` — LUẬT SẮT: NO FIX WITHOUT ROOT CAUSE
+2. Trước khi claim fixed → load `process-verification` — evidence before claims
+3. Nếu multi-bug độc lập → load `process-parallel-agents` — dispatch song song
+
 ## SKILL INTEGRATION
 Xác định domain bug → đọc skill tương ứng (`_shared/skill-quickref.md`) → dùng templates nếu cần.
 

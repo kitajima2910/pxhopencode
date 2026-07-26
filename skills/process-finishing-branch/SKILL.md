@@ -1,0 +1,40 @@
+---
+name: process-finishing-branch
+description: Dùng khi hoàn thành development branch — verify tests, clean history, tạo PR/report
+---
+
+# Finishing a Development Branch
+
+## Core Principle
+
+**A branch is not done until tests pass, history is clean, and PR is ready.**
+
+## Quy trình
+
+### Bước 1: Verify
+- `npm run typecheck` — 0 errors
+- `npm run lint` — 0 warnings
+- `npm run test` — 100% pass
+- `npm run build` — exit 0
+
+### Bước 2: Clean History
+- Commits logical, messages rõ ràng
+- Không có WIP / debug / temp commits
+- Feature branch → rebase clean
+
+### Bước 3: Final Diff Review
+- Self-review toàn bộ diff
+- Kiểm tra không có secrets, console.log, commented code
+
+### Bước 4: Report
+Tạo summary:
+- **Files changed**: ...
+- **Key changes**: bullet points
+- **Test results**: pass/fail counts
+- **Pending**: known issues, future todos
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ report "done" khi chưa chạy verify suite đầy đủ
+```

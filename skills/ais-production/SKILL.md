@@ -5,6 +5,17 @@ description: Production AI — caching, rate limit, fallback model, monitoring, 
 
 # ais-production — Production AI
 
+## Core Principle
+
+**The system must never crash when an external API is down. Graceful degradation is not optional.**
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ deploy AI feature KHÔNG có fallback chain + rate limiter
+Cache ALL responses — repeat queries are waste
+```
+
 ## Files
 
 | File | Mục đích |

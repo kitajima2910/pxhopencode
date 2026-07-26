@@ -5,6 +5,17 @@ description: Testing web — Vitest unit test, integration test, Playwright E2E,
 
 # webs-testing — Testing
 
+## Core Principle
+
+**If you didn't watch the test fail, you don't know if it tests the right thing.**
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ viết production code TRƯỚC test
+Coverage < 80% là chưa xong
+```
+
 ## Cài đặt Vitest
 > jsdom, globals, forks pool, timeout 10s, coverage > 80%.
 → `templates/vitest.config.ts`

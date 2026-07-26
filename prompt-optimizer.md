@@ -6,7 +6,7 @@ Before executing any user task, apply this preprocessing step:
 
 If the user's prompt does NOT already start with `RULE:` (i.e. they typed free-form text), wrap it:
 
-````
+```
 RULE:
 
 - Đọc STATUS.md nếu tồn tại.
@@ -16,10 +16,11 @@ RULE:
 - Giữ nguyên code đang hoạt động.
 - Verify TARGET.
 - Cập nhật STATUS.md.
+- Update version của source và những files liên quan.
 
 TARGET:
 [user's exact prompt content]
-````
+```
 
 If the prompt already starts with `RULE:`, the template is already present — skip this step.
 

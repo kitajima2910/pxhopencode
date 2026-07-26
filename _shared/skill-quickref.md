@@ -2,7 +2,21 @@
 
 Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 dòng.
 
-## Tổng quan: Web(7) + Game(12) + AI(5) + Tool(5) + UI/UX(1) + Virtual Office(1) = 31 skills (+1 built-in = 32 total)
+## Tổng quan: Process(8) + Web(7) + Game(12) + AI(5) + Tool(5) + UI/UX(1) + Virtual Office(1) = 39 skills (33→39 sau superpowers upgrade)
+
+## Process Skills (8) — Meta-Cognition & Workflow
+| Skill | Use when | Path |
+|-------|----------|------|
+| `process-driven-development` | Execute plan với subagent mới cho mỗi task, isolated context | skills/process-driven-development/ |
+| `process-parallel-agents` | 2+ task độc lập, chạy song song | skills/process-parallel-agents/ |
+| `process-systematic-debugging` | Any bug/test failure — root cause FIRST, no symptom fix | skills/process-systematic-debugging/ |
+| `process-writing-plans` | Multi-step task — viết plan bite-sized trước khi code | skills/process-writing-plans/ |
+| `process-tdd` | Feature/bugfix — test TRƯỚC, code SAU | skills/process-tdd/ |
+| `process-verification` | Trước khi claim done — evidence before claims | skills/process-verification/ |
+| `process-code-review` | Request/receive review — structured process, both sides | skills/process-code-review/ |
+| `process-finishing-branch` | Complete branch — verify, clean history, report | skills/process-finishing-branch/ |
+
+> **Rule:** Process skills là meta-skills — dùng TRƯỚC khi làm bất kỳ task technical nào. Load process skill → apply Iron Law → execute.
 
 ## Web Skills (7)
 | Skill | Use when | Deps | Path |

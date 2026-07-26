@@ -6,10 +6,10 @@
 |--------|---------|
 | Giai đoạn | PHÁT HÀNH ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime + Virtual Office |
-| Phiên bản | v73 |
+| Phiên bản | v74 |
 | Agents | 12 (10 Tầng 1-4 + Virtual + Mirror) |
 | Workflows | 9 theo lĩnh vực |
-| Skills | 33 skills (4 lĩnh vực + Virtual Office + Vibe Memory) |
+| Skills | 39 skills (8 Process + 7 Web + 12 Game + 5 AI + 5 Tool + 1 UI/UX + 1 Virtual Office) |
 | Contracts | 6 cấu trúc |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 
@@ -36,6 +36,14 @@
 ├── skills/                 # 5 lĩnh vực, 33 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
+
+## ✅ Process Skill Upgrade — Superpowers Reference
+- **Tham khảo**: [obra/superpowers/skills](https://github.com/obra/superpowers/tree/main/skills) — 14 process skills
+- **New skills (8)**: `process-driven-development`, `process-parallel-agents`, `process-systematic-debugging`, `process-writing-plans`, `process-tdd`, `process-verification`, `process-code-review`, `process-finishing-branch`
+- **Pattern adopted**: Iron Law (Luật sắt), Core Principle, Anti-Rationalization, When-to-Use decision
+- **Existing skills upgraded (6)**: ais-agents, ais-llm, ais-production, webs-frontend, webs-backend, webs-testing — thêm Iron Law + Core Principle
+- **Agents updated (4)**: pxh-pm, pxh-expert, pxh-fix-bugs, pxh-qa, pxh-review-code — reference process skills
+- **Total skill count**: 33 → **39** (+8 process skills, -2 merged)
 
 ## ✅ Token Optimization
 
@@ -75,6 +83,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-26 | v74 | **Superpowers Skill Upgrade** — Tham khảo [obra/superpowers](https://github.com/obra/superpowers/tree/main/skills). Tạo 8 process skills mới (driven-development, parallel-agents, systematic-debugging, writing-plans, tdd, verification, code-review, finishing-branch). Nâng cấp 6 existing skills với Iron Law + Core Principle. Update 5 agents reference process skills. Skill count: 33→39. |
 | 2026-07-26 | v73 | **Token Optimization V3.0** — Slim `workflow-hook.md` 159→43 dòng (-73%), merge `contracts.md` vào README (xóa file), trim `prompt-optimizer.md` 53→35 dòng (-34%), move README changelog → `_shared/changelog.md` (-124 dòng). Tổng savings: ~334 dòng + 1 file read mỗi session. |
 | 2026-07-26 | v72 | **Fix bugs + Clean project** — Xoá 23 dev artifact files (11 root .js + 12 _shared/), clear 3 runtime logs (free ~1.5MB), fix `/ui-ux` command bug (đang trỏ sai vào debug workflow), runtime logs thêm vào `.gitignore` |
 | 2026-07-26 | v71 | **Review + Refactor + Optimize** — Fix `pxh-expert.md` QUY_TRÌNH section bị split; sửa STATUS.md agent count (12) + skills count (33); thêm memory reflection step vào T3 worker layer; thêm step load skill vào memory startup |

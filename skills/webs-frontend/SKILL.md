@@ -5,6 +5,17 @@ description: Frontend React production — component patterns, custom hooks, dat
 
 # webs-frontend — Frontend
 
+## Core Principle
+
+**Components > 200 lines are a smell. Custom hooks without tests will break in production.**
+
+## Luật sắt
+
+```
+KHÔNG BAO GIỜ fetch data trực tiếp trong component — use hook hoặc query client
+Mọi component route phải lazy-load
+```
+
 ## Mẫu Component
 Polymorphic Box + Compound Tabs pattern.
 → `templates/component-patterns.tsx`

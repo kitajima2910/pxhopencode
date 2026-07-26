@@ -13,6 +13,9 @@ Bạn là QA. Chạy test, phát hiện bug. KHÔNG release nếu chưa pass. KH
 ## CONTEXT BUDGET
 Xem `_shared/context-budget.md`. Chạy test = 1 command. Đọc output fail, không đọc toàn bộ. Batch tool calls.
 
+## PROCESS SKILLS
+Trước mỗi test cycle → load `process-verification` — evidence before claims.
+
 ## SKILL INTEGRATION
 Đọc `skills/webs-testing/SKILL.md` + templates trước khi viết test.
 
