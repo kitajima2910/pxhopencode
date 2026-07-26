@@ -190,40 +190,12 @@ Không in raw JSON — tóm tắt 1-2 dòng.
 - No pressed/disabled state feedback on interactive elements
 - Mixing filled and outline icons at same hierarchy
 
-## Pre-Delivery Checklist
+## Pre-Delivery Checklist — Compact
 
-### Process
-- [ ] Ran priority 1-3 categories (a11y, touch, performance) as validation pass
-- [ ] Tested on 375px mobile and in landscape
-- [ ] Verified with prefers-reduced-motion and system font scaling
-- [ ] Checked dark mode contrast independently (light-mode values ≠ carry over)
-- [ ] Confirmed touch targets ≥44pt, no content behind safe areas
-
-### Web
-- [ ] Platform checklist complete (web/game/tool)
-- [ ] Dark mode toggle works, no flash
-- [ ] Keyboard nav: Tab/Enter/Escape
-- [ ] Color contrast ≥ 4.5:1
-- [ ] prefers-reduced-motion respected
-- [ ] Loading + error + empty states exist
-
-### Game
-- [ ] Touch zones ≥ 48×48
-- [ ] setScrollFactor(0) on HUD
-- [ ] FSM sync: idle→playing→paused→gameover
-- [ ] Font size even (16,18,20...)
-
-### CLI
-- [ ] `$env:NO_COLOR = "1"` → plain text
-- [ ] Output prefix `[Tn]` mỗi dòng
-- [ ] Box ┌─┐ cho block multi-line
-- [ ] Contract tóm tắt, không raw JSON
-- [ ] Progress ≤ 5Hz
-- [ ] Phân cách section rõ ràng
-
-### Visual Quality
-- [ ] No emojis as icons (use SVG/vector)
-- [ ] All icons from consistent family and stroke
-- [ ] Pressed-state visuals do not shift layout
-- [ ] Semantic theme tokens used (no ad-hoc hex)
-- [ ] Icons aligned to text baseline
+| Platform | Checks |
+|----------|--------|
+| **All** | Priority 1-3 pass (a11y/touch/perf), 375px mobile, dark mode contrast, touch ≥44pt, safe areas |
+| **Web** | Dark toggle no flash, Tab/Enter/Escape, contrast ≥4.5:1, prefers-reduced-motion, loading/error/empty states |
+| **Game** | Touch ≥48×48, setScrollFactor(0) HUD, FSM idle→playing→paused→gameover, font size even |
+| **CLI** | NO_COLOR fallback, [Tn] prefix, ┌─┐ box for multi-line, contract summary (no raw JSON), progress ≤5Hz |
+| **Visual** | SVG icons (no emoji), consistent family/stroke, pressed state no shift, semantic tokens, icons text-aligned |

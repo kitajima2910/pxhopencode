@@ -1,7 +1,6 @@
 # Game Design 2D H5
 
-## Tổng quan
-Skill design cho game 2D HTML5. Cung cấp guideline về gameplay, level design, UI/UX, visual style, và player experience.
+> Skill design cho game 2D HTML5 — gameplay, level, UI/UX, visual.
 
 ## 1. Gameplay Design
 
@@ -9,175 +8,65 @@ Skill design cho game 2D HTML5. Cung cấp guideline về gameplay, level design
 ```
 Player Action → Feedback → Reward → Progression
 ```
-Mỗi game 2D cần có core loop rõ ràng:
-- **Input**: nhấn, chạm, kéo, giữ
-- **Feedback**: âm thanh, animation, screen shake, điểm số
-- **Reward**: điểm, item mới, mở khóa, hiệu ứng
-- **Progression**: level khó hơn, enemy mới, skill mới
 
 ### Difficulty Curve
-```
-Độ khó
-  ↑
-  │   ╱╲
-  │  ╱  ╲╱╲
-  │ ╱      ╲
-  │╱        ╲
-  └─────────────────→ Thời gian
-    1   2   3   4   5  (level)
-```
-- Level 1: Tutorial (dễ, hướng dẫn)
-- Level 2-3: Tăng dần (thêm enemy mới)
-- Level 4: Peak (boss / thử thách)
-- Level 5: Nghỉ (level thưởng, dễ hơn)
+Level 1: Tutorial → Level 2-3: Tăng dần → Level 4: Peak → Level 5: Nghỉ
 
-### Game Modes phổ biến
-| Mode | Mô tả | Ví dụ |
-|------|-------|-------|
-| Classic | Chơi từ đầu đến cuối | Super Mario |
-| Endless | Chơi không giới hạn, điểm tăng dần | Flappy Bird |
-| Time Attack | Làm nhanh nhất trong thời gian | Speedrun |
-| Puzzle | Giải câu đố qua từng level | Cut the Rope |
-| Survival | Sống sót càng lâu càng tốt | Vampire Survivors |
+### Game Modes
+| Mode | Description | Example |
+|------|-------------|---------|
+| Classic | Play through | Super Mario |
+| Endless | Infinite scoring | Flappy Bird |
+| Time Attack | Speedrun | — |
+| Puzzle | Solve levels | Cut the Rope |
+| Survival | Stay alive | Vampire Survivors |
 
 ## 2. Level Design
 
 ### Grid-based level
 ```
 W W W W W W W W
-W . . . . . . W
-W . P . E . . W
-W . . . . . . W
-W . . G . . . W
+W . P . E . G . W
 W W W W W W W W
-
-P = Player, E = Enemy, G = Goal, W = Wall
 ```
 
-### Platformer level sections
-- **Introduction**: Giới thiệu mechanic mới (an toàn)
-- **Practice**: Áp dụng mechanic (ít enemy)
-- **Challenge**: Kết hợp mechanic + enemy
-- **Punishment**: Sai là chết / mất mạng
-- **Reward**: Khu vực bí mật, bonus item
+### Platformer sections: Introduction → Practice → Challenge → Punishment → Reward
 
-### Level pacing
-```
-Intensity
-  ↑
-  │   ╱╲    ╱╲
-  │  ╱  ╲  ╱  ╲
-  │ ╱    ╲╱    ╲
-  │╱            ╲
-  └─────────────────→
-    Intro ↑  Peak  End
-        Build-up  Cool-down
-```
+## 3. Visual & Resolution
 
-## 3. Visual Style
-
-### Color Palette (gợi ý)
-
-Xem: `templates/color-palettes.ts`
-
-### Resolution guidelines
-| Thiết bị | Resolution | Aspect |
-|-----------|-----------|--------|
+| Device | Resolution | Aspect |
+|--------|-----------|--------|
 | Desktop | 1280×720 | 16:9 |
 | Tablet | 1024×768 | 4:3 |
-| Mobile | 414×896 / 390×844 | portrait |
-| Universal | 800×600 | 4:3 (an toàn nhất) |
+| Mobile | 414×896 | portrait |
+| Universal | 800×600 | 4:3 (safest) |
 
-Dùng `Phaser.Scale.FIT` để tự động scale.
+Dùng `Phaser.Scale.FIT`. Xem templates: `color-palettes.ts`
 
-## 4. UI/UX cho Game 2D
-
-### HUD Layout
-```
-┌──────────────────────────┐
-│ ❤️❤️❤️      Điểm: 1234  │  ← Trên: máu, điểm
-│           Màn 3          │
-├──────────────────────────┤
-│                          │
-│                          │  ← Game area
-│                          │
-├──────────────────────────┤
-│ ← ○ →        🔫          │  ← Bottom: controls
-└──────────────────────────┘
-```
-
-### Touch Controls (mobile)
-```
-┌──────────────────────────┐
-│                          │
-│                          │
-│     [Game Area]          │
-│                          │
-│                          │
-│  ←  ↑  →      🔫 🔫     │
-│     ↓                    │
-│  [D-Pad]        [Shoot]  │
-└──────────────────────────┘
-```
-
-### Menu Flow
-```
-Menu chính
-├── Chơi → Chọn màn → Game → Tạm dừng
-│                              ├── Tiếp tục
-│                              ├── Chơi lại
-│                              ├── Cài đặt
-│                              └── Thoát
-├── Cài đặt
-│   ├── Âm thanh (SFX / BGM)
-│   ├── Đồ hoạ (Chất lượng)
-│   └── Điều khiển
-├── Cửa hàng (nếu có)
-└── Giới thiệu
-```
+## 4. UI/UX & Touch Controls
+- HUD: HP top-left, score top-right, controls bottom
+- Touch D-pad bottom-left, action buttons bottom-right
+- Menu flow: Main→Play/Setting/Shop/About → Pause overlay (Continue/Restart/Quit)
 
 ## 5. Feedback Systems
-
-### Visual Feedback
-| Hành động | Hiệu ứng |
-|-----------|---------|
-| Bắn | Muzzle flash, screen shake nhẹ |
-| Trúng địch | Hit flash (đỏ), particle, score popup |
-| Chết | Màn hình đỏ, slow motion, game over fade |
-| Nhặt item | Scale up + glow + particle gold |
-| Level up | Màn hình flash, text animation |
-
-### Audio Feedback
-| Sự kiện | SFX |
-|---------|-----|
-| Jump | Woosh ngắn, pitch cao |
-| Shoot | Tiếng nổ / laser ngắn |
-| Hit | Impact, trầm |
-| Collect | Ding, pitch cao dần |
-| Death | Explosion, fade out |
-| BGM | Loop vui cho menu, căng cho combat |
-
-### Screen Shake
-
-Xem: `templates/screen-shake.ts`
+| Event | Visual | Audio |
+|-------|--------|-------|
+| Shoot | Muzzle flash, shake | Laser |
+| Hit enemy | Hit flash, particle, score popup | Impact |
+| Death | Red screen, slow-mo, fade | Explosion |
+| Pickup | Scale+glow, particle | Ding |
+| Jump | — | Woosh |
 
 ## 6. Monetization (nếu cần)
+- Ads: Rewarded video (continue, double score)
+- IAP: Remove ads, skins, power-ups
+- Battle Pass: Tiered rewards
 
-- **Ads**: Rewarded video (tiếp tục chơi, nhân đôi điểm)
-- **IAP**: Remove ads, skin, power-up
-- **Gacha**: Random item (cần cân bằng)
-- **Battle Pass**: Phần thưởng theo cấp độ
+## Testing Checklist
+- [ ] 60 FPS stable, Touch controls work, No collision bug
+- [ ] Audio play/stop/restart, Restart clean (no memory leak)
+- [ ] Pause/Resume, Loading progress, Screen resize
 
-## 7. Testing Checklist
-
-- [ ] Game loop 60 FPS ổn định
-- [ ] Touch controls hoạt động trên mobile
-- [ ] Không có bug wall / collision
-- [ ] Audio phát đúng, không bị overlap
-- [ ] Restart game sạch sẽ (không memory leak)
-- [ ] Pause/Resume hoạt động
-- [ ] Loading screen hiển thị đúng progress
-
-### Tham khảo
+## Tham khảo
 - Implementation: `game-h5-2d.md`
-- Main game skill: `skills/games-core/SKILL.md`
+- Main: `skills/games-core/SKILL.md`
