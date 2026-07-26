@@ -12,5 +12,3 @@ target/
 .github/
 .vibe/
 .memory/
-package.json
-package-lock.json
