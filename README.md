@@ -13,7 +13,7 @@ Nhúng vào project có sẵn:
 
 ```bash
 cd project-của-bạn
-git clone https://github.com/<repo-url> .opencode
+git clone https://github.com/kitajima2910/pxhopencode.git .opencode
 opencode
 ```
 
@@ -75,20 +75,20 @@ flowchart TD
 
 Bỏ qua phân loại, route thẳng vào workflow tương ứng:
 
-| Lệnh | Ví dụ | Dùng khi |
-|------|-------|----------|
-| `/vibe` | `/vibe xây dựng app quản lý công việc` | Full pipeline 11 bước: phân tích → code → test → review → build |
-| `/web` | `/web làm landing page cho startup` | Web app: React, Next.js, Express, FastAPI |
-| `/3d` | `/3d tạo product configurator 3D với Three.js` | 3D web experience: Three.js, R3F, Spline, WebGL |
-| `/game` | `/game game bắn súng không gian 2D` | Game HTML5: Phaser 2D, Isometric, Three.js 3D |
-| `/ai` | `/ai tạo chatbot hỗ trợ khách hàng` | Chatbot, RAG, AI agent, LLM |
-| `/tool` | `/tool CLI tool đổi tên file hàng loạt` | CLI, extension, automation, package |
-| `/debug` | `/debug game bị giật FPS khi nhiều enemy` | Debug + root cause analysis |
-| `/ui-ux` | `/ui-ux thiết kế responsive navbar` | UI/UX design & responsive layout |
-| `/meeting` | `/meeting chọn tech stack cho dự án mới` | Họp agents thảo luận kiến trúc |
-| `/release` | `/release` | Build pipeline: lint → test → build |
-| `/preview` | `/preview` | Live preview game (Vite HMR) |
-| `/compile` | `/compile "xây dựng blog React"` | Prompt Compiler — phân tích intent, sinh IR, tối ưu prompt |
+| Lệnh       | Ví dụ                                          | Dùng khi                                                        |
+| ---------- | ---------------------------------------------- | --------------------------------------------------------------- |
+| `/vibe`    | `/vibe xây dựng app quản lý công việc`         | Full pipeline 11 bước: phân tích → code → test → review → build |
+| `/web`     | `/web làm landing page cho startup`            | Web app: React, Next.js, Express, FastAPI                       |
+| `/3d`      | `/3d tạo product configurator 3D với Three.js` | 3D web experience: Three.js, R3F, Spline, WebGL                 |
+| `/game`    | `/game game bắn súng không gian 2D`            | Game HTML5: Phaser 2D, Isometric, Three.js 3D                   |
+| `/ai`      | `/ai tạo chatbot hỗ trợ khách hàng`            | Chatbot, RAG, AI agent, LLM                                     |
+| `/tool`    | `/tool CLI tool đổi tên file hàng loạt`        | CLI, extension, automation, package                             |
+| `/debug`   | `/debug game bị giật FPS khi nhiều enemy`      | Debug + root cause analysis                                     |
+| `/ui-ux`   | `/ui-ux thiết kế responsive navbar`            | UI/UX design & responsive layout                                |
+| `/meeting` | `/meeting chọn tech stack cho dự án mới`       | Họp agents thảo luận kiến trúc                                  |
+| `/release` | `/release`                                     | Build pipeline: lint → test → build                             |
+| `/preview` | `/preview`                                     | Live preview game (Vite HMR)                                    |
+| `/compile` | `/compile "xây dựng blog React"`               | Prompt Compiler — phân tích intent, sinh IR, tối ưu prompt      |
 
 ### Cách 3: @mention — gọi thẳng agent
 
@@ -110,19 +110,19 @@ Biết chính xác cần agent nào? Gọi trực tiếp, bỏ qua classify & ro
 
 Pipeline hoàn chỉnh từ ý tưởng đến production:
 
-| # | Phase | Agent | Công việc |
-|---|-------|-------|-----------|
-| 1 | NHẬN | T1→T2 | Phân loại prompt, xác định loại dự án |
-| 2 | PHÂN TÍCH | T2 | Chọn tech stack, đánh giá quy mô |
-| 3 | HỌP | @meeting | Agent council đồng thuận kiến trúc |
-| 4 | KẾ HOẠCH | T2 | Feature list, milestones, acceptance criteria |
-| 5 | THIẾT KẾ | @pxh-architect | Schema DB, API contract, component tree |
-| 6 | CODE | @pxh-expert | Code, .gitignore + favicon |
-| 7 | KIỂM TRA | @pxh-qa | Viết test, coverage ≥ 85% |
-| 8 | SỬA | @pxh-fix-bugs | Root cause → fix → verify |
-| 9 | RÀ SOÁT | @pxh-review-code | Security audit, performance review |
-| 10 | PHÁT HÀNH | @pxh-devops | Lint → typecheck → test → build |
-| 11 | LƯU | @pxh-save-history | Session log, ADR, STATUS.md |
+| #   | Phase     | Agent             | Công việc                                     |
+| --- | --------- | ----------------- | --------------------------------------------- |
+| 1   | NHẬN      | T1→T2             | Phân loại prompt, xác định loại dự án         |
+| 2   | PHÂN TÍCH | T2                | Chọn tech stack, đánh giá quy mô              |
+| 3   | HỌP       | @meeting          | Agent council đồng thuận kiến trúc            |
+| 4   | KẾ HOẠCH  | T2                | Feature list, milestones, acceptance criteria |
+| 5   | THIẾT KẾ  | @pxh-architect    | Schema DB, API contract, component tree       |
+| 6   | CODE      | @pxh-expert       | Code, .gitignore + favicon                    |
+| 7   | KIỂM TRA  | @pxh-qa           | Viết test, coverage ≥ 85%                     |
+| 8   | SỬA       | @pxh-fix-bugs     | Root cause → fix → verify                     |
+| 9   | RÀ SOÁT   | @pxh-review-code  | Security audit, performance review            |
+| 10  | PHÁT HÀNH | @pxh-devops       | Lint → typecheck → test → build               |
+| 11  | LƯU       | @pxh-save-history | Session log, ADR, STATUS.md                   |
 
 **Tự động retry loop:** Test fail → quay lại bước 6 (max 3 lần). Critical issue → quay lại bước 8 (max 3 lần). Build fail → quay lại bước 6 (max 3 lần).
 
@@ -131,23 +131,29 @@ Pipeline hoàn chỉnh từ ý tưởng đến production:
 ## Ví dụ thực tế
 
 **Làm web app:**
+
 ```
 /vibe Xây dựng ứng dụng quản lý chi tiêu cá nhân với React + Express + PostgreSQL.
 Cho phép thêm/sửa/xóa giao dịch, phân loại thu/chi, xem biểu đồ thống kê theo tháng.
 ```
+
 → Hệ thống tự: phân tích → thiết kế schema → code frontend + backend → test → review → build.
 
 **Làm game:**
+
 ```
 /game Làm game platformer 2D. Nhân vật mèo chạy nhảy qua chướng ngại vật,
 thu thập coin, có 3 mạng. Enemy là chó bay qua lại. Background parallax rừng cây.
 ```
+
 → Hệ thống tự: tải assets → scaffold Phaser 3 → code game loop → test headless → polish → build.
 
 **Debug:**
+
 ```
 /debug Game bị crash khi spawn enemy thứ 50. Console báo "pool exhausted".
 ```
+
 → `pxh-fix-bugs`: root cause → fix object pool → verify.
 
 ---
@@ -172,38 +178,38 @@ flowchart TD
     T4 -.->|State| T2
 ```
 
-| Tầng | Agent | Vai trò | Rời bàn |
-|------|-------|---------|---------|
-| **T1** Interface | `pxh-help` | Validate & classify input | Khi TUI kết thúc |
-| **T2** Orchestration | `pxh-pm` | Route, policy, retry/recovery | Khi TUI kết thúc |
-| **T3** Workers | 7 agents | Code, test, fix, review, build, UI/UX | Xong việc → rời |
-| **T4** Infrastructure | `pxh-save-history` | State, checkpoint, log | Xong việc → rời |
+| Tầng                  | Agent              | Vai trò                               | Rời bàn          |
+| --------------------- | ------------------ | ------------------------------------- | ---------------- |
+| **T1** Interface      | `pxh-help`         | Validate & classify input             | Khi TUI kết thúc |
+| **T2** Orchestration  | `pxh-pm`           | Route, policy, retry/recovery         | Khi TUI kết thúc |
+| **T3** Workers        | 7 agents           | Code, test, fix, review, build, UI/UX | Xong việc → rời  |
+| **T4** Infrastructure | `pxh-save-history` | State, checkpoint, log                | Xong việc → rời  |
 
 ---
 
 ## Tham khảo: Tất cả Agents
 
-| Agent | Tầng | Chuyên môn | @mention khi |
-|-------|------|------------|-------------|
-| `pxh-help` | T1 | Interface | (tự động — classify input) |
-| `pxh-pm` | T2 | Orchestration | (tự động — route task) |
-| `pxh-architect` | T3 | Thiết kế | Cần DB schema, API design, chọn tech stack |
-| `pxh-expert` | T3 | Code | Cần code production |
-| `pxh-fix-bugs` | T3 | Debug | Có bug, cần root cause |
-| `pxh-qa` | T3 | Test | Cần viết test hoặc check coverage |
-| `pxh-review-code` | T3 | Review | Cần security audit hoặc perf review |
-| `pxh-devops` | T3 | Build | Cần lint → typecheck → test → build |
-| `pxh-ui-ux` | T3 | Thiết kế | Cần layout, responsive, accessibility |
-| `pxh-save-history` | T4 | Infrastructure | (tự động — save session) |
+| Agent              | Tầng | Chuyên môn     | @mention khi                               |
+| ------------------ | ---- | -------------- | ------------------------------------------ |
+| `pxh-help`         | T1   | Interface      | (tự động — classify input)                 |
+| `pxh-pm`           | T2   | Orchestration  | (tự động — route task)                     |
+| `pxh-architect`    | T3   | Thiết kế       | Cần DB schema, API design, chọn tech stack |
+| `pxh-expert`       | T3   | Code           | Cần code production                        |
+| `pxh-fix-bugs`     | T3   | Debug          | Có bug, cần root cause                     |
+| `pxh-qa`           | T3   | Test           | Cần viết test hoặc check coverage          |
+| `pxh-review-code`  | T3   | Review         | Cần security audit hoặc perf review        |
+| `pxh-devops`       | T3   | Build          | Cần lint → typecheck → test → build        |
+| `pxh-ui-ux`        | T3   | Thiết kế       | Cần layout, responsive, accessibility      |
+| `pxh-save-history` | T4   | Infrastructure | (tự động — save session)                   |
 
 ---
 
 ## Chính sách
 
-| Policy | Cơ chế | Giới hạn |
-|--------|--------|----------|
-| **Retry** | Exponential backoff (1s → 2s → 4s) | Max 3 lần |
-| **Recovery** | Checkpoint-based resume / rollback | Lỗi permanent |
+| Policy         | Cơ chế                                    | Giới hạn        |
+| -------------- | ----------------------------------------- | --------------- |
+| **Retry**      | Exponential backoff (1s → 2s → 4s)        | Max 3 lần       |
+| **Recovery**   | Checkpoint-based resume / rollback        | Lỗi permanent   |
 | **Reflection** | 4 mức: Task → Phase → Workflow → Incident | Ghi session log |
 
 ---
