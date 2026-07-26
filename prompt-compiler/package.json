@@ -1,6 +1,6 @@
 {
   "name": "@pxh/prompt-compiler",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Production-grade Prompt Compiler — transforms natural language to optimized LLM prompts via canonical IR. Zero AI, zero cloud, zero token consumption.",

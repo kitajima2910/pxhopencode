@@ -6,7 +6,7 @@
 |--------|---------|
 | Giai đoạn | PHÁT HÀNH ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v77 |
+| Phiên bản | v78 |
 | Agents | 10 (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
@@ -33,7 +33,7 @@
 ├── agents/                 # 10 agents (Tầng 1-4)
 ├── runtime/                # 4 tầng, memory, contracts, policies
 ├── workflows/              # 8 workflow templates
-├── skills/                 # 5 lĩnh vực, 33 skills + templates/
+├── skills/                 # 50 skills + templates/
 └── _shared/                # Dùng chung: templates, scripts, agent-listing
 ```
 
@@ -83,6 +83,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-27 | v78 | **Release v78** — Update all version numbers (v77→v78). README sync (214 commits, 50 skills, 154 templates). STATUS.md release readiness refresh. Chrome DevTools MCP integration docs refinements, build scripts enhancement. |
 | 2026-07-26 | v77 | **Token Optimization V4.0 — Ultra Compression** — Compress `game-genre-reference.md` 733→78d (-89%), `game-h5-3d-marble-racing.md` 494→72d (-85%), `3d-web-experience/SKILL.md` 252→100d (-60%), `game.workflow.md` 235→94d (-60%), `game-design-h5-2d.md` 183→63d (-66%), `game-design-h5-marble-racing.md` 147→63d (-57%), `game-design-h5-3d.md` 125→52d (-58%), `init.json` 136→30d (-78%), `debug.workflow.md` 131→60d (-54%), `ui-ux/SKILL.md` checklist trim (-39d). **Total savings: ~1.600+ dòng khỏi prompt context.** |
 | 2026-07-26 | v76 | **Agent Skills Hub Game Upgrade** — Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46. |
 | 2026-07-26 | v75 | **UI/UX Pro Max Upgrade** — Tham khảo [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill). Nâng cấp `skills/ui-ux/SKILL.md`: priority-based rule categories (1-10, Critical→Low), design system workflow (Analyze → Tokens → Supplement), design dials (variance/motion/density), design tokens section, pre-delivery checklist merge. Giữ nguyên game HUD, CLI design system, anti-rationalization. |
@@ -115,14 +116,14 @@
 
 | Hạng mục | Trạng thái |
 |----------|-----------|
-| package.json (name, version, description) | ✅ v77.0.0 |
+| package.json (name, version, description) | ✅ v78.0.0 |
 | README (setup, usage, architecture) | ✅ Đầy đủ |
 | LICENSE | ✅ MIT/ Apache 2.0 |
 | .gitignore | ✅ Đầy đủ |
-| opencode.json (agents, commands, skills) | ✅ 10 agents, 8 commands, 49 skills |
+| opencode.json (agents, commands, skills) | ✅ 10 agents, 8 commands, 50 skills |
 | Agents (10 files) | ✅ Đầy đủ, role-defined |
 | Workflows (8 files) | ✅ Đầy đủ |
-| Skills (49 skills) | ✅ Đầy đủ |
+| Skills (50 skills) | ✅ Đầy đủ |
 | Runtime (4 tầng + contracts + policies + memory) | ✅ Đầy đủ |
 | Token optimization | ✅ ~9.102 dòng saved khỏi prompt context |
 | Compaction config | ✅ auto, summary strategy |

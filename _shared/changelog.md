@@ -1,5 +1,8 @@
 # Changelog
 
+## v78 — Release v78
+Update all version numbers (v77→v78). README sync (214 commits, 50 skills, 154 templates). STATUS.md release readiness refresh. Chrome DevTools MCP integration documentation refinements, enhanced asset download scripts with license check, build scripts improvements for PowerShell execution policy.
+
 ## v76 — Agent Skills Hub Game Upgrade
 Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46.
 
