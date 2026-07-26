@@ -2,7 +2,7 @@
 
 Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 dòng.
 
-## Tổng quan: Process(8) + Web(8) + Game(12) + AI(5) + Tool(5) + UI/UX(1) + Virtual Office(1) + 3D Web(1) + Vibe Memory(1) = 42 skills
+## Tổng quan: Process(8) + Web(8) + Game(12+7+1) + AI(5) + Tool(5) + UI/UX(1) + 3D Web(1) + Vibe Memory(1) = 49 skills
 
 ## Process Skills (8) — Meta-Cognition & Workflow
 | Skill | Use when | Path |
@@ -18,7 +18,7 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 
 > **Rule:** Process skills là meta-skills — dùng TRƯỚC khi làm bất kỳ task technical nào. Load process skill → apply Iron Law → execute.
 
-## Web Skills (7)
+## Web Skills (8)
 | Skill | Use when | Deps | Path |
 |-------|----------|------|------|
 | `webs-auth` | Auth, OAuth, JWT, RBAC, CSRF | Auth.js, next-auth | skills/webs-auth/ |
@@ -26,6 +26,7 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 | `webs-database` | Prisma, PostgreSQL, query optimization, migration | Prisma | skills/webs-database/ |
 | `webs-deployment` | Docker, CI/CD, Vercel, monitoring, canary | Docker | skills/webs-deployment/ |
 | `webs-frontend` | React, components, hooks, data fetching, bundle | React, TanStack Query | skills/webs-frontend/ |
+| `webs-security` | Web security checklist — auth, XSS, CSRF, SQLi, rate limit, secure headers | — | skills/webs-security/ |
 | `webs-styling` | Tailwind, design system, responsive, dark mode | Tailwind | skills/webs-styling/ |
 | `webs-testing` | Vitest, Playwright, MSW, unit/integration/e2e | Vitest | skills/webs-testing/ |
 
@@ -34,7 +35,7 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 |-------|----------|------|------|
 | `3d-web-experience` | 3D website, Three.js, React Three Fiber, Spline, WebGL, 3D product configurator, interactive 3D scene | Three.js, R3F | skills/3d-web-experience/ |
 
-## Game Skills (12) — gồm Live Preview
+## Game Skills — Implementation (12)
 | Skill | Use when | Deps | Path |
 |-------|----------|------|------|
 | `games-2d` | 2D game, platformer, top-down, Phaser 3 | Phaser 3 | skills/games-2d/ |
@@ -49,7 +50,20 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 | `games-pwa` | Manifest, service worker, offline, install prompt | — | skills/games-pwa/ |
 | `games-preview` | Live preview real-time, Vite HMR, hot-reload, browser auto-open | Vite | skills/games-preview/ |
 | `games-testing` | Vitest, headless Phaser/Three.js, benchmark | Vitest | skills/games-testing/ |
-> Game dev: trước khi code, đọc `skills/_shared/game-genre-reference.md` — architecture + anti-patterns theo 20+ thể loại. Test headless với `games-testing` (Vitest + Phaser.HEADLESS / headless Three.js).
+
+## Game Skills — Orchestrator + Principles (8)
+| Skill | Use when | Path |
+|-------|----------|------|
+| `game-development` | Orchestrator — route implementation + principle sub-skills | skills/game-development/ |
+| `game-design` | GDD, core loop, difficulty balancing, progression | skills/game-design/ |
+| `game-art` | Art style, color theory, animation principles, asset pipeline | skills/game-art/ |
+| `web-games` | Web browser game principles — framework, WebGPU, PWA, audio | skills/web-games/ |
+| `mobile-games` | Mobile — touch input, battery, thermal, app stores | skills/mobile-games/ |
+| `pc-games` | PC/Console — engine, Steam, controller, optimization | skills/pc-games/ |
+| `multiplayer` | Networking, sync, security, matchmaking | skills/multiplayer/ |
+| `vr-ar` | VR/AR — comfort, interaction, performance, spatial | skills/vr-ar/ |
+
+> **Game dev**: trước khi code, đọc `workflows/game.workflow.md` → `skills/_shared/game-genre-reference.md` (Decision Tree + anti-patterns). Orchestrator: `skills/game-development/SKILL.md`.
 
 ## AI Skills (5)
 | Skill | Use when | Deps | Path |
