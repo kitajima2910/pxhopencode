@@ -1,7 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "pxh-pm",
-  "instructions": ["prompt-optimizer.md", "runtime/README.md", "_shared/workflow-hook.md"],
+  "instructions": [
+    "prompt-optimizer.md",
+    "runtime/README.md",
+    "runtime/memory/README.md",
+    "_shared/workflow-hook.md"
+  ],
 
   "compaction": {
     "auto": true,
@@ -16,7 +21,7 @@
   },
 
   "skills": {
-    "paths": ["skills", ".opencode/skills"],
+    "paths": ["skills", ".opencode/skills", "pxhopencode/skills"],
     "lazy": true
   },
 

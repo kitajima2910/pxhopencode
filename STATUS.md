@@ -52,10 +52,24 @@
 | **V2.0: Context budget + tiered loading** | **~-50% token/phiên** |
 | **Total** | **~6.300 + 984 = ~7.284 dòng khỏi prompt context** |
 
+## ✅ Vibe Coding Memory Engine v1.0
+
+- [x] `.memory/` — 13 initialisierte Speicherdateien (Index, Projekt, Architektur, Patterns, Bugs, Decisions, Preferences, Workflow, Prompt, Vibe, Snapshots, Timeline, Stats)
+- [x] `runtime/memory/README.md` — Memory Engine Dokumentation + Kategorien + Startup-Pipeline
+- [x] `runtime/memory/contracts.md` — 5 Memory-Contracts (Query, Result, Update, Reflection, SessionStart)
+- [x] `skills/vibe-memory/SKILL.md` — Skill für Agents: API, Token-Optimierung, Verification
+- [x] `opencode.json` — Instructions registriert, Skill-Pfad aktiviert
+- [x] `runtime/README.md` — Memory Engine in Übersicht referenziert
+- [x] Memory speichert NUR strukturiertes Wissen, keine Chat-Verläufe
+- [x] `.gitignore` chặn `.memory/` — mỗi user có memory riêng, không lẫn với pxhopencode dev
+- [x] `runtime/memory/init.json` — seed template cho agents auto-create `.memory/` ở workspace root
+- [x] 10 Memory-Kategorien | 5 Contracts | Startup-Pipeline | Reflection Engine | Confidence-System | Token-Optimierung
+
 ## 🚀 Changelog
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
+| 2026-07-26 | v70 | **Vibe Coding Memory Engine v1.0** — 13 file `.memory/` storage, 10 memory categories (project, architecture, patterns, bugs, decisions, preferences, workflow, prompt, vibe, snapshots), timeline + stats, `runtime/memory/` module with README + 5 contracts, `skills/vibe-memory/SKILL.md` for agent integration, Startup-Pipeline, Reflection Engine, Confidence System, Token-Optimierung, auto-project-detection |
 | 2026-07-25 | v69 | **Per-agent log dialog boxes khi agents ngồi bàn làm việc** — Thêm function `drawAgentLogDialog()` vẽ panel log trong suốt gần desk mỗi agent, hiển thị 5 dòng log gần nhất từ `_monitorLog` kết hợp speech bubble. `drawComicBubble` mở rộng từ 2 lên 5 dòng. Timeout speech bubble kéo dài 8s cho active agents (giữ nguyên 3s cho idle). `_msgs` tăng từ 2 lên 5 entry. Restore office.js từ git HEAD~1 + VSCode Bridge. **Fix v69a**: Sitting agents (ngồi bàn) cũng hiển thị `drawAgentLogDialog` — trước đó chỉ standing/walking agents mới có enhanced dialog, agents tại desk chỉ dùng `drawComicBubble` cũ thiếu `_monitorLog`.
 | 2026-07-25 | v69b | **Fix missing `drawMonitor()` function** — `office.js` gọi `drawMonitor()` để vẽ màn hình lớn tại desk CEO và PXHOpenCode, nhưng function chưa từng được định nghĩa → `ReferenceError`. Thêm function vẽ màn hình 68x44 với dark screen + label "PXH2910 • Terminal". |
 | 2026-07-25 | v69c | **Fix animation không xảy ra trong Virtual Office** — Root cause: `opencode-state.json` ở trạng thái `idle` → eventWatcher không phát hiện activity → `applyStateDiff` không được gọi → agents không nhận lệnh ngồi bàn. Fix: ghi state `workflow_start` và activity log markers. Ngoài ra fix `_lastEvt:performance.now()` thành `Date.now()` để đồng bộ timebase với `applyStateDiff` (dù speech bubble timeout đang bị comment out). | |

@@ -22,7 +22,7 @@ Event    any→T4 {version, type, phase, reflection}
 State    T4→T2  {version, checkpoint, session_id}
 ```
 
-Chi tiết: `runtime/layers/` (4 tầng), `policies/` (retry, recovery, reflection)
+Chi tiết: `runtime/layers/` (4 tầng), `runtime/memory/` (Vibe Coding Memory Engine), `policies/` (retry, recovery, reflection)
 
 ## Workers: tự kiểm tra, không tự quyết định
 
