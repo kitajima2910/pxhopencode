@@ -190,6 +190,13 @@ Không in raw JSON — tóm tắt 1-2 dòng.
 - No pressed/disabled state feedback on interactive elements
 - Mixing filled and outline icons at same hierarchy
 
+## Verification
+- [ ] Platform: web/game/tool category applied
+- [ ] Priority rules (1-10) checked
+- [ ] Design tokens consistent
+- [ ] Accessibility (a11y) basics covered
+- [ ] Responsive / adaptive layout verified
+
 ## Pre-Delivery Checklist — Compact
 
 | Platform | Checks |

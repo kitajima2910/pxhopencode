@@ -41,6 +41,11 @@ KHÔNG review NẾU CHƯA self-review trước
 | "Merge trước, review sau" | Merge trước = technical debt |
 | "Code của tôi không cần review" | Everyone needs review |
 
+## Red Flags
+- Request review không kèm context
+- File change count > 20 files cho 1 review
+- Critical issue bị postpone thành nit
+
 ## Verification
 
 - [ ] Self-review hoàn tất trước khi request review
