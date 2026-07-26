@@ -28,6 +28,20 @@ function startWatcher(workspaceRoot, onEvent) {
 
   let lastEventsActivity = 0;
 
+  // Rotate events log if > 100KB to prevent unbounded growth
+  const MAX_EVENTS_LOG_SIZE = 100 * 1024;
+  function rotateEventsLogIfNeeded() {
+    try {
+      if (fs.existsSync(eventsFile)) {
+        const st = fs.statSync(eventsFile);
+        if (st.size > MAX_EVENTS_LOG_SIZE) {
+          fs.writeFileSync(eventsFile, "");
+          eventsSize = 0;
+        }
+      }
+    } catch {}
+  }
+
   function readNewEvents() {
     try {
       if (!fs.existsSync(eventsFile)) return;
@@ -86,6 +100,8 @@ function startWatcher(workspaceRoot, onEvent) {
       if (st.state === "workflow_start") {
         if (!fallbackWorkflowActive) {
           fallbackWorkflowActive = true;
+          // Truncate events log on new workflow — prevent stale event replay
+          try { fs.writeFileSync(eventsFile, ""); eventsSize = 0; } catch {}
           onEvent({ type: "workflow_start", message: st.message || "Workflow started", ts: new Date().toISOString() });
         }
         prevState = st.state;
@@ -248,6 +264,7 @@ function startWatcher(workspaceRoot, onEvent) {
 
   const pollTimer = setInterval(() => {
     if (disposed) return;
+    rotateEventsLogIfNeeded();
     readNewEvents();
     readStateFallback();
     checkActivityLog();

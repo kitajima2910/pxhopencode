@@ -168,6 +168,8 @@ try {
       if (st.state === 'workflow_start') {
         if (!watcherWorkflowActive) {
           watcherWorkflowActive = true
+          // Truncate events log — prevent stale event replay
+          try { fs.writeFileSync(EVENTS_FILE, ''); } catch {}
           console.log(`[Office] workflow:start from state file`)
           emit({ type: 'workflow_start', message: st.message || 'Workflow started' })
         }
@@ -198,6 +200,8 @@ try {
         // First activity after idle → emit workflow_start
         if (prevState === null || prevState === 'idle' || !prevState) {
           watcherWorkflowActive = true
+          // Truncate events log — prevent stale event replay
+          try { fs.writeFileSync(EVENTS_FILE, ''); } catch {}
           console.log(`[Office] State file: first activity ${st.state}`)
           emit({ type: 'workflow_start', message: 'User prompt submitted' })
         }

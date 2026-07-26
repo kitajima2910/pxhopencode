@@ -37,6 +37,12 @@ Validate JSON trước khi ghi (sai syntax = eventWatcher không đọc được
 | pxh-ui-ux | polish, design, ui, ux |
 | pxh-save-history | save |
 
+## Hard rules (bắt buộc, KHÔNG ĐƯỢC quên)
+- **MỖI prompt** — dù có tool call hay không — PHẢI ghi lifecycle: `workflow_start → ... → idle`
+- Nếu prompt KHÔNG cần tool call → ghi `workflow_start` rồi ghi `idle` ngay
+- Nếu quên = Virtual Office không hoạt động = users report bug = chết tôi
+- Viết state NHƯ PHẢN XẠ — giây đầu tiên của mỗi response
+
 ## Best practices
 - Ghi state TRƯỚC tool call, message < 80 ký tự
 - Cùng state liên tiếp → vẫn ghi, đổi message

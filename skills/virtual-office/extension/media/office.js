@@ -704,7 +704,8 @@ function applyStateDiff(diff){
       sfx('task_start')
       if(sess.message) addLog(sess.message,'#3fb950')
       // Reset ALL agents to desk — prevent wandering during active session
-      AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+60000;if(cc.state!=='typing'){cc.state='idle';cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.x;cc.ty=cc.y}}})      }else if(!sess.active&&wasActive){
+      // Clear stale dialog logs from previous session
+      AL.forEach(function(aa){var cc=chars[aa.n];if(cc){cc._wanderScheduled=false;cc.it=now+60000;if(cc.state!=='typing'){cc.state='idle';cc.x=cc.ix;cc.y=cc.iy;cc.tx=cc.x;cc.ty=cc.y};if(cc._msgs)cc._msgs=[];if(cc._monitorLog)cc._monitorLog=[];cc.tsm='';cc.ts=''}})      }else if(!sess.active&&wasActive){
         // Session ended
         state.phase='idle';state.workflow='—'
         document.getElementById('wfVal').textContent='—';document.getElementById('phVal').textContent='idle'
