@@ -21,9 +21,21 @@ if ($isEmbedded) {
 # Embedded mode: remove nested .git to avoid nested repo
 if ($isEmbedded) {
   $nestedGit = Join-Path $PxhopencodeRoot ".git"
-  if (Test-Path $nestedGit) {
-    Remove-Item -Recurse -Force $nestedGit
-    Write-Output "🗑️ Removed .opencode/.git (nested repo)"
+  if (Test-Path -LiteralPath $nestedGit) {
+    Write-Output "🗑️ Removing .opencode/.git..."
+    # Strip readonly/hidden so deletion can proceed
+    & cmd /c "attrib -R -H -S ""$nestedGit"" /S /D 2>nul"
+    # Try 1: PowerShell Remove-Item with \\?\ prefix (bypasses MAX_PATH 260 limit)
+    $extPath = "\\?\$nestedGit"
+    Remove-Item -LiteralPath $extPath -Recurse -Force -ErrorAction SilentlyContinue 2>$null
+    if (-not (Test-Path -LiteralPath $nestedGit)) {
+      Write-Output "   ✅ Removed"
+    } else {
+      # Fallback: cmd rmdir
+      & cmd /c "rmdir /s /q ""$nestedGit"" 2>nul"
+      if (-not (Test-Path -LiteralPath $nestedGit)) { Write-Output "   ✅ Removed" }
+      else { Write-Output "   ⚠️ Could not remove .opencode/.git (files may be in use)" }
+    }
   }
 }
 
