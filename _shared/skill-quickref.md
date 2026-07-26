@@ -2,7 +2,7 @@
 
 Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 dòng.
 
-## Tổng quan: Process(8) + Web(8) + Game(12+7+1) + AI(5) + Tool(5) + UI/UX(1) + 3D Web(1) + Vibe Memory(1) = 49 skills
+## Tổng quan: Process(8) + Web(8) + Game(12+7+1) + AI(5) + Tool(5) + UI/UX(1) + 3D Web(1) + PromptCompiler(1) + Vibe Memory(1) = 50 skills
 
 ## Process Skills (8) — Meta-Cognition & Workflow
 | Skill | Use when | Path |
@@ -62,6 +62,11 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 | `pc-games` | PC/Console — engine, Steam, controller, optimization | skills/pc-games/ |
 | `multiplayer` | Networking, sync, security, matchmaking | skills/multiplayer/ |
 | `vr-ar` | VR/AR — comfort, interaction, performance, spatial | skills/vr-ar/ |
+
+## Prompt Compiler (1)
+| Skill | Use when | Path |
+|-------|----------|------|
+| `prompt-compiler` | Tối ưu prompt, phân tích intent, extract constraints, sinh IR, compile prompt cho LLM | skills/prompt-compiler/ |
 
 > **Game dev**: trước khi code, đọc `workflows/game.workflow.md` → `skills/_shared/game-genre-reference.md` (Decision Tree + anti-patterns). Orchestrator: `skills/game-development/SKILL.md`.
 

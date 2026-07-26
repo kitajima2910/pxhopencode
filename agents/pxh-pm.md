@@ -21,16 +21,31 @@ Xem `_shared/context-budget.md`. Nói ≤5 dòng, batch tool calls, fail fast (m
 
 ## AUTO-ROUTING (bắt buộc)
 
-Input → classify → route → loop → persist. **Không hỏi user "bắt đầu thế nào?".**
+Input → compile → classify → route → loop → persist. **Không hỏi user "bắt đầu thế nào?".**
 
 ```
 User input → [xác định loại]
   ├─ Lệnh `/command` → đọc workflow template → route thẳng T3
   ├─ @agent → gọi agent đó, ko tự ý xử lý
-  └─ Prompt tự nhiên → gọi @pxh-help classify → nhận classified_workflow → route
+  └─ Prompt tự nhiên → Prompt Compiler → IR → @pxh-help classify → route
 ```
 
-Sau classify: `classified_workflow` quyết định workflow, `classified_skills` quyết định skill.
+### Bước 0: Prompt Compiler (tự động)
+
+Mọi prompt tự nhiên được compile TRƯỚC khi classify:
+
+```yaml
+Pipeline:
+  1. Load skill `prompt-compiler` → Pipeline API
+  2. `new Pipeline({backend: 'opencode'}).compile(input)`
+  3. Dùng IR để hỗ trợ classify:
+     - ir.intents → workflow (fix_bug→/debug, generate_game→/game, ...)
+     - ir.constraints → safety rules (preserve_behavior, minimal_changes)
+     - ir.target.frameworks → skill routing (React→webs-frontend, Phaser→games-2d)
+  4. Inject IR context vào Task contract cho T3 worker
+```
+
+Sau compile: `classified_workflow` từ IR intents, `classified_skills` từ target.
 
 ## ROUTE SAU CLASSIFY
 
@@ -45,6 +60,7 @@ Sau classify: `classified_workflow` quyết định workflow, `classified_skills
 | `/ui-ux` | @pxh-ui-ux | Load `skills/ui-ux/SKILL.md` → chạy design workflow |
 | `/meeting` | @pxh-pm (họp) | `workflows/meeting.workflow.md` |
 | `/release` | @pxh-devops | `workflows/release.workflow.md` |
+| `/compile` | @pxh-pm (chạy compiler) | Load `skills/prompt-compiler/SKILL.md` → Pipeline → IR → optimized prompt |
 
 **ko match** → hỏi user 1 câu.
 

@@ -63,6 +63,10 @@
     "preview": {
       "description": "Start game live preview dev server (Vite HMR + browser auto-open)",
       "template": "Load `skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
+    },
+    "compile": {
+      "description": "Prompt Compiler — phân tích intent, extract constraints, sinh IR, tối ưu prompt cho LLM backend. Zero AI, zero token.",
+      "template": "Load `skills/prompt-compiler/SKILL.md`. Input → Pipeline 14 stages → IR → Backend prompt. Dùng `ts-node prompt-compiler/src/index.ts` hoặc import Pipeline."
     }
   }
 }
