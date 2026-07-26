@@ -1,6 +1,5 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "version": "v76",
   "default_agent": "pxh-pm",
   "instructions": [
     "prompt-optimizer.md",
@@ -24,16 +23,6 @@
   "skills": {
     "paths": ["skills", ".opencode/skills", "pxhopencode/skills"],
     "lazy": true
-  },
-  "skill_aliases": {
-    "game-art": "skills/game-art",
-    "game-design": "skills/game-design",
-    "multiplayer": "skills/multiplayer",
-    "vr-ar": "skills/vr-ar",
-    "web-games": "skills/web-games",
-    "mobile-games": "skills/mobile-games",
-    "pc-games": "skills/pc-games",
-    "game-dev": "skills/game-development"
   },
 
   "agent": {
@@ -72,7 +61,10 @@
     },
     "ai": { "template": "workflows/ai.workflow.md" },
     "tool": { "template": "workflows/tool.workflow.md" },
-    "ui-ux": { "description": "UI/UX design — web (React/Tailwind), game HUD, CLI output", "template": "Load `skills/ui-ux/SKILL.md`. Chạy design workflow." },
+    "ui-ux": {
+      "description": "UI/UX design — web (React/Tailwind), game HUD, CLI output",
+      "template": "Load `skills/ui-ux/SKILL.md`. Chạy design workflow."
+    },
     "preview": {
       "description": "Start game live preview dev server (Vite HMR + browser auto-open)",
       "template": "Load `skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
