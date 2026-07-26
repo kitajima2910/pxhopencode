@@ -41,6 +41,15 @@ Xem `_shared/context-budget.md`. Báo cáo ≤10 dòng, dùng bullet points, kh�
 - API design không có error contract
 - Tech stack chọn vì "mới", không vì "phù hợp"
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/architecture.json` → update modules, services, flows, dependencies
+2. Mở `{workspace_root}/.memory/decisions.json` → ghi ADR: `{id, title, context, decision, alternatives}`
+3. Mở `{workspace_root}/.memory/project.json` → update framework, language, runtime, ui_library
+4. Mở `{workspace_root}/.memory/stats.json` → increment `total_decisions`, update `last_session`
+
+Red Flag: Architecture/decision không ghi memory → team sau không biết tại sao. Không bao giờ skip.
+
 ## Verification
 - [ ] ADR cho mọi decision quan trọng
 - [ ] Tech stack decision matrix (time/perf/maintain/scale/cost)

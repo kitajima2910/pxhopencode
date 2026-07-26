@@ -24,7 +24,7 @@ flowchart TD
     B --> C[Thực thi trong TARGET]
     C --> D{"Tự kiểm tra:<br/>output đáp ứng yêu cầu?<br/>code cũ vẫn chạy?"}
     D --> E[Tạo Result contract<br/>→ trả về Tầng 2]
-    E --> F[Chạy memory reflection<br/>→ cập nhật .memory/]
+    E --> F[Chạy memory reflection<br/>→ ghi .memory/ (định dạng compact)]
     F --> G[Gửi Event phản ánh<br/>→ Tầng 4]
 ```
 
@@ -34,6 +34,7 @@ flowchart TD
 - Ưu tiên thay đổi tối thiểu: thêm, không viết lại.
 - Đọc .opencode/STATUS.md trước khi bắt đầu bất kỳ task nào.
 - Sau code project: luôn tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (xem template `_shared/templates/gitignore-template.md`)
+- **BẮT BUỘC: SAU MỖI TASK, chạy MEMORY REFLECTION** — xem `## MEMORY REFLECTION` trong agent file → mở file `.memory/` tương ứng → append/merge → cập nhật `updated` timestamp. Dùng định dạng compact `runtime/memory/README.md`. Không bao giờ skip.
 - Gửi `Event{reflection}` đến Tầng 4 sau mỗi task.
 - Nếu không thể hoàn thành, trả về `Result{status:"failure"}` kèm lỗi rõ ràng, mức độ nghiêm trọng, và các bước tái hiện.
 

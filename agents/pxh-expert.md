@@ -76,6 +76,15 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 - Feature xong không chạy test
 - Đọc > 5 file không cần thiết
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/patterns.json` → thêm pattern code mới (naming, imports, error handling)
+2. Mở `{workspace_root}/.memory/decisions.json` → ghi ADR nếu có decision kiến trúc
+3. Mở `{workspace_root}/.memory/project.json` → update framework/language/tools nếu phát hiện mới
+4. Mở `{workspace_root}/.memory/stats.json` → increment `total_patterns`, update `last_session`
+
+Red Flag: Bỏ qua memory reflection = session sau mất context. Không bao giờ skip.
+
 ## Verification
 - [ ] Dùng template trước khi code tay
 - [ ] Chạy `npx vitest run` sau mỗi feature

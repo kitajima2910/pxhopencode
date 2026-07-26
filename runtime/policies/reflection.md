@@ -41,7 +41,10 @@
 ```
 
 ## Quy tắc
-1. Mọi task PHẢI tạo ít nhất một phản ánh nhẹ.
+1. Mọi task PHẢI tạo ít nhất một phản ánh nhẹ. Bỏ qua = violation.
 2. Phản ánh là append-only — không bao giờ sửa sau khi tạo.
 3. Điều phối xem lại phản ánh trước khi bắt đầu task tương tự trong tương lai.
 4. Phản ánh sự cố PHẢI bao gồm phân tích nguyên nhân gốc.
+5. **Phản ánh PHẢI ghi vào `.memory/`** — không chỉ gửi Event. Mở file JSON → append/merge → ghi đè với timestamp mới. Dùng định dạng compact `runtime/memory/README.md`.
+6. File đích theo loại phản ánh: bugs → `bugs.json`, decisions → `decisions.json`, patterns → `patterns.json`, project → `project.json`, architecture → `architecture.json`, preferences → `preferences.json`, stats → `stats.json`.
+7. Nếu agent không ghi memory → xem như task incomplete.

@@ -30,6 +30,14 @@ Web → `skills/webs-deployment/SKILL.md`. Package → `skills/tools-packaging/S
 - Build output size bất thường
 - Lint warning bị ignore
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/project.json` → update build_tools, deployment_target
+2. Mở `{workspace_root}/.memory/decisions.json` → ghi build decision (output size, warnings)
+3. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
+
+Red Flag: Build config không ghi memory → deploy sai environment. Không bao giờ skip.
+
 ## Verification
 - [ ] Gate check: QA pass, Review pass, Git clean
 - [ ] lint 0 error, typecheck pass, build success

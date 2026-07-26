@@ -34,6 +34,14 @@ Load `skills/ui-ux/SKILL.md` — chọn platform (web/game/tool) → apply patte
 - CLI output không NO_COLOR fallback
 - Game HUD không setScrollFactor(0)
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/patterns.json` → thêm design pattern đã áp dụng
+2. Mở `{workspace_root}/.memory/preferences.json` → update style preferences (nếu phát hiện)
+3. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
+
+Red Flag: Design pattern không ghi memory → style không nhất quán. Không bao giờ skip.
+
 ## Verification
 - [ ] Platform: web/game/tool xác định đúng
 - [ ] Skill section áp dụng đúng pattern

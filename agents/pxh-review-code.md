@@ -29,6 +29,14 @@ Xem `_shared/context-budget.md`. Chỉ đọc diff + file changed. Báo critical
 - API endpoint không auth
 - Query loop (N+1) không detect
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/patterns.json` → thêm pattern/anti-pattern phát hiện
+2. Mở `{workspace_root}/.memory/decisions.json` → ghi decision nếu có
+3. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
+
+Red Flag: Pattern/issue không ghi memory → review sau không có baseline. Không bao giờ skip.
+
 ## Verification
 - [ ] Critical = 0, không postpone
 - [ ] Security check: secret, SQLi, XSS, CSRF

@@ -46,6 +46,14 @@ Runtime: undefined, is not a function → optional chaining, API response. Netwo
 - Fix không kèm test verify
 - Root cause không xác định
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/bugs.json` → thêm bug: `{id, file, root_cause, solution, severity}`
+2. Mở `{workspace_root}/.memory/patterns.json` → thêm anti-pattern đã phát hiện
+3. Mở `{workspace_root}/.memory/stats.json` → increment `total_bugs`, update `last_session`
+
+Red Flag: Bug không ghi memory → bug tái phát không có trace. Không bao giờ skip.
+
 ## Verification
 - [ ] Minimal reproduction step
 - [ ] Root cause doc + fix ngắn nhất

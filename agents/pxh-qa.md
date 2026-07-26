@@ -42,6 +42,14 @@ Trước mỗi test cycle → load `process-verification` — evidence before cl
 - Bug report không có reproduction steps
 - Regression test không chạy sau fix
 
+## MEMORY REFLECTION (bắt buộc — sau mỗi task)
+Theo định dạng compact `runtime/memory/README.md`. Thực thi:
+1. Mở `{workspace_root}/.memory/bugs.json` → thêm bug tìm được: `{id, file, type, steps}`
+2. Mở `{workspace_root}/.memory/patterns.json` → thêm test pattern đã dùng
+3. Mở `{workspace_root}/.memory/stats.json` → increment `total_bugs` (nếu có), update `last_session`
+
+Red Flag: Bug phát hiện không ghi memory → QA vô hiệu. Không bao giờ skip.
+
 ## Verification
 - [ ] Coverage ≥ 80%
 - [ ] Bug report: type, file, steps, expected/actual
