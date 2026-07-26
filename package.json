@@ -2,6 +2,5 @@
   "name": "pxhopencode",
   "version": "50.0.0",
   "private": true,
-  "description": "AI Company cho Vibe Coding — 4-tier enterprise AI runtime, 11 agents, 9 workflows, 32 skills, Virtual Office VSCode extension",
-  "workspaces": ["skills/virtual-office/extension"]
+  "description": "AI Company cho Vibe Coding — 4-tier enterprise AI runtime"
 }

@@ -69,10 +69,5 @@ Dùng để chọn skill NHANH mà không cần đọc SKILL.md. Mỗi skill 1 d
 | `tools-extensions` | VS Code extension, commands, views, providers | VS Code API | skills/tools-extensions/ |
 | `tools-packaging` | npm/Cargo/PyPI/Docker/Homebrew packaging | — | skills/tools-packaging/ |
 
-## Virtual Office Skill (1)
-| Skill | Use when | Deps | Path |
-|-------|----------|------|------|
-| `virtual-office` + Bridge | Visualize 4-tier architecture real-time; auto-detect workspace activity via bridge (polling 3s) + SSE broadcast to webview | Node.js 18+ | skills/virtual-office/ |
-
 ## Templates per Skill
 Chi tiết template trong `skills/<skill>/templates/`. Chỉ đọc khi cần code feature cụ thể — lazy load.

@@ -199,38 +199,6 @@ flowchart TD
 | `pxh-devops` | T3 | Build | Cần lint → typecheck → test → build |
 | `pxh-ui-ux` | T3 | Thiết kế | Cần layout, responsive, accessibility |
 | `pxh-save-history` | T4 | Infrastructure | (tự động — save session) |
-| `pxh-office` | Virtual | Office | Visual dashboard real-time |
-
----
-
-## Virtual Office — VS Code Extension
-
-Visual hóa văn phòng mở real-time với 11 nhân vật pixel-art, thú cưng, speech bubbles:
-
-### Cài đặt Extension
-
-```powershell
-.\pxh-install-extension.bat install          # VS Code Stable
-.\pxh-install-extension.bat install insiders  # VS Code Insiders
-.\pxh-install-extension.bat uninstall         # Gỡ cài đặt
-```
-
-Restart VS Code → Virtual Office xuất hiện ở sidebar.
-
-### Tính năng
-
-- **11 pixel-art agents** với trang phục + phụ kiện riêng, ngồi làm việc tại bàn
-- **Mèo 🐱 + Chó 🐕** đi dạo tự do trong văn phòng
-- **Speech bubbles** real-time hiển thị log của từng agent
-- **Dashed signals** nối agents theo data flow
-- **State badges** nhấp nháy cạnh tên — biết agent nào đang làm gì ngay lập tức
-
-### PXH Terminal — nhập lệnh trực tiếp từ Virtual Office
-
-Bạn có thể gõ lệnh trực tiếp vào terminal PXHOpenCode trong Virtual Office:
-- Click vào màn hình PXHOpenCode → gõ lệnh (VD: `opencode build web app`, `npm test`)
-- Kết quả hiển thị real-time trên terminal
-- Khi lệnh kết thúc, agents tự động rời bàn
 
 ---
 
