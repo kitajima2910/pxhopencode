@@ -6,7 +6,7 @@
 |--------|---------|
 | Giai đoạn | 10/10 TOÀN DIỆN ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v80 |
+| Phiên bản | v80.1 |
 | Agents | 10 (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
@@ -85,7 +85,8 @@
 |------|-----------|----------|
 | 2026-07-27 | v79 | **Architecture Integrity Fix** — 6 violations fixed: storage paths (→.memory/), reflection dual-path resolved, STATUS.md aligned, architecture.json populated, Event→T4 chain complete, cross-ref audit. Future-proof. |
 | 2026-07-27 | v79.1 | **GitGuard — auto .gitignore for .opencode/** — init-memory.ps1 now also ensures parent project's `.gitignore` has `.opencode/` entry. Creates if missing, appends if present, skips if covered. AI Company never leaked to GitHub. |
-| 2026-07-27 | v80 | **10/10 Audit Cleanup** — Fixed all 29 issues: C1-C6 (pxh-save-history → .memory/ + Event contracts, MEMORY REFLECTION for all agents, quickref tables, counts), H1-H10 (11 skills sections, memory contradictions, workflow loop/failover + post-code routing, T1 doc, language rules), M1-M7 (T4 table, init.json, 3d-web-experience, references). Score: 10/10. |
+| 2026-07-27 | v80 | **10/10 Audit Cleanup** — Fixed all 29 issues: C1-C6, H1-H10, M1-M7. Score: 10/10. |
+| 2026-07-27 | v80.1 | **Embedded mode path fix** — init-memory.ps1 now derives pxhopencode root from `$PSScriptRoot` instead of `$WorkspaceRoot`. Works correctly when cloned into `.opencode/` (Scenario B). README documents both standalone + embedded paths. |
 | 2026-07-26 | v77 | **Token Optimization V4.0 — Ultra Compression** — Compress `game-genre-reference.md` 733→78d (-89%), `game-h5-3d-marble-racing.md` 494→72d (-85%), `3d-web-experience/SKILL.md` 252→100d (-60%), `game.workflow.md` 235→94d (-60%), `game-design-h5-2d.md` 183→63d (-66%), `game-design-h5-marble-racing.md` 147→63d (-57%), `game-design-h5-3d.md` 125→52d (-58%), `init.json` 136→30d (-78%), `debug.workflow.md` 131→60d (-54%), `ui-ux/SKILL.md` checklist trim (-39d). **Total savings: ~1.600+ dòng khỏi prompt context.** |
 | 2026-07-26 | v76 | **Agent Skills Hub Game Upgrade** — Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46. |
 | 2026-07-26 | v75 | **UI/UX Pro Max Upgrade** — Tham khảo [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill). Nâng cấp `skills/ui-ux/SKILL.md`: priority-based rule categories (1-10, Critical→Low), design system workflow (Analyze → Tokens → Supplement), design dials (variance/motion/density), design tokens section, pre-delivery checklist merge. Giữ nguyên game HUD, CLI design system, anti-rationalization. |
@@ -121,7 +122,7 @@
 
 | Hạng mục | Trạng thái |
 |----------|-----------|
-| package.json (name, version, description) | ✅ v80.0.0 |
+| package.json (name, version, description) | ✅ v80.1.0 |
 | README (setup, usage, architecture) | ✅ Đầy đủ |
 | LICENSE | ✅ MIT/ Apache 2.0 |
 | .gitignore | ✅ Đầy đủ |

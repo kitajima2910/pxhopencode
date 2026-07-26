@@ -43,10 +43,10 @@ Xem `_shared/context-budget.md`. Báo cáo ≤10 dòng, dùng bullet points, kh�
 
 ## MEMORY REFLECTION (bắt buộc — sau mỗi task)
 Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `{workspace_root}/.memory/architecture.json` → update modules, services, flows, dependencies
-2. Mở `{workspace_root}/.memory/decisions.json` → ghi ADR: `{id, title, context, decision, alternatives}`
-3. Mở `{workspace_root}/.memory/project.json` → update framework, language, runtime, ui_library
-4. Mở `{workspace_root}/.memory/stats.json` → increment `total_decisions`, update `last_session`
+1. Mở `.memory/architecture.json` → update modules, services, flows, dependencies
+2. Mở `.memory/decisions.json` → ghi ADR: `{id, title, context, decision, alternatives}`
+3. Mở `.memory/project.json` → update framework, language, runtime, ui_library
+4. Mở `.memory/stats.json` → increment `total_decisions`, update `last_session`
 5. Gửi `Event{type:"reflection", phase:"architect", categories:["architecture","decisions","project","stats"]}` → T4
 
 Red Flag: Architecture/decision không ghi memory → team sau không biết tại sao. Không bao giờ skip.

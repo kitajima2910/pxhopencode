@@ -70,8 +70,8 @@ reason: "User muốn web app, có cả frontend lẫn API"
 
 ## MEMORY REFLECTION (bắt buộc — sau mỗi task)
 Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
-2. Mở `{workspace_root}/.memory/preferences.json` → update habits nếu phát hiện mới
+1. Mở `.memory/stats.json` → update `last_session`
+2. Mở `.memory/preferences.json` → update habits nếu phát hiện mới
 3. Gửi `Event{type:"reflection", phase:"classify", categories:["stats","preferences"]}` → T4
 
 Red Flag: Classification decision không ghi memory → mất pattern học từ prompt. Không bao giờ skip.

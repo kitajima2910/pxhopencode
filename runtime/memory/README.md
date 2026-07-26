@@ -19,8 +19,14 @@ Step 7: SAU task → reflection → ghi .memory/ (xem ## MEMORY REFLECTION trong
 ### AUTO-INIT (ưu tiên — deterministic, 0 agent token)
 
 ```powershell
+# Standalone (pxhopencode là project root)
 powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"
+
+# Embedded (pxhopencode trong .opencode/)
+powershell.exe -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/init-memory.ps1"
 ```
+
+Script tự động detect đúng `runtime/memory/init.json` dựa trên vị trí của script (không cần chỉnh path).
 
 Script này tự động:
 - Đọc `runtime/memory/init.json` → tạo 13 file JSON trong `.memory/`
@@ -28,6 +34,8 @@ Script này tự động:
 - Điền `project_id`, `project_name`, `framework`, `language`, `runtime`, `folder_structure`, `build_tools`
 
 **Luật**: Chạy script trước. Nếu script lỗi → agent init thủ công từ `init.json`.
+- Standalone: `{workspace_root}/runtime/memory/init.json`
+- Embedded: `{workspace_root}/.opencode/runtime/memory/init.json`
 
 Script cũng tự động:
 - Kiểm tra `.gitignore` ở workspace root

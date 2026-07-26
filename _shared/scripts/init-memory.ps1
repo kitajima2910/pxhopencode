@@ -4,7 +4,11 @@ param(
 
 $ErrorActionPreference = "Stop"
 $memoryDir = Join-Path $WorkspaceRoot ".memory"
-$initJson = Join-Path $WorkspaceRoot "runtime\memory\init.json"
+
+# Derive pxhopencode root from script location (handles both standalone + embedded in .opencode/)
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$PxhopencodeRoot = Resolve-Path (Join-Path $ScriptDir "..\..")
+$initJson = Join-Path $PxhopencodeRoot "runtime\memory\init.json"
 
 # Check if .memory/ already exists
 if (Test-Path $memoryDir) {

@@ -36,9 +36,9 @@ Load `skills/ui-ux/SKILL.md` — chọn platform (web/game/tool) → apply patte
 
 ## MEMORY REFLECTION (bắt buộc — sau mỗi task)
 Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `{workspace_root}/.memory/patterns.json` → thêm design pattern đã áp dụng
-2. Mở `{workspace_root}/.memory/preferences.json` → update style preferences (nếu phát hiện)
-3. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
+1. Mở `.memory/patterns.json` → thêm design pattern đã áp dụng
+2. Mở `.memory/preferences.json` → update style preferences (nếu phát hiện)
+3. Mở `.memory/stats.json` → update `last_session`
 4. Gửi `Event{type:"reflection", phase:"ui-ux", categories:["patterns","preferences","stats"]}` → T4
 
 Red Flag: Design pattern không ghi memory → style không nhất quán. Không bao giờ skip.

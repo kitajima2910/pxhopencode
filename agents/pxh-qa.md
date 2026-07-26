@@ -44,9 +44,9 @@ Trước mỗi test cycle → load `process-verification` — evidence before cl
 
 ## MEMORY REFLECTION (bắt buộc — sau mỗi task)
 Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `{workspace_root}/.memory/bugs.json` → thêm bug tìm được: `{id, file, type, steps}`
-2. Mở `{workspace_root}/.memory/patterns.json` → thêm test pattern đã dùng
-3. Mở `{workspace_root}/.memory/stats.json` → increment `total_bugs` (nếu có), update `last_session`
+1. Mở `.memory/bugs.json` → thêm bug tìm được: `{id, file, type, steps}`
+2. Mở `.memory/patterns.json` → thêm test pattern đã dùng
+3. Mở `.memory/stats.json` → increment `total_bugs` (nếu có), update `last_session`
 4. Gửi `Event{type:"reflection", phase:"test", categories:["bugs","patterns","stats"]}` → T4
 
 Red Flag: Bug phát hiện không ghi memory → QA vô hiệu. Không bao giờ skip.

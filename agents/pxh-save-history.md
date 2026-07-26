@@ -31,10 +31,10 @@ Chủ quản duy nhất. Cập nhật sau mỗi Event. Đọc hiện tại → c
 
 ## MEMORY REFLECTION (bắt buộc — sau mỗi task)
 Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `{workspace_root}/.memory/stats.json` → increment `total_memories`, update `last_session`, `updated`
-2. Mở `{workspace_root}/.memory/snapshots.json` → snapshot nếu checkpoint
-3. Mở `{workspace_root}/.memory/timeline.json` → thêm entry nếu phase change
-4. Mở `{workspace_root}/.memory/index.json` → update `memory_count`, `updated`
+1. Mở `.memory/stats.json` → increment `total_memories`, update `last_session`, `updated`
+2. Mở `.memory/snapshots.json` → snapshot nếu checkpoint
+3. Mở `.memory/timeline.json` → thêm entry nếu phase change
+4. Mở `.memory/index.json` → update `memory_count`, `updated`
 5. Gửi `Event{type:"reflection", phase:"persist", categories:["stats","snapshots","timeline","index"]}` → T4 (tự thân)
 
 Red Flag: Event không ghi memory → mất audit trail. Không bao giờ skip.

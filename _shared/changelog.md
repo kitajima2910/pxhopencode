@@ -1,5 +1,8 @@
 # Changelog
 
+## v80.1 — Embedded mode path fix
+init-memory.ps1 now derives pxhopencode root from `$PSScriptRoot` instead of `$WorkspaceRoot`. Works correctly in both standalone mode and when cloned into `.opencode/`. README documents both path variants.
+
 ## v80 — 10/10 Audit Cleanup
 All 29 issues fixed: pxh-save-history → .memory/ + Event contracts, MEMORY REFLECTION for all 10 agents, quickref tables complete, 11 skills sections added, memory contradictions resolved, workflow loop/failover + post-code routing for all 8 workflows, T1 doc aligned, language rules explicit, T4 storage table complete, init.json consistent. Score: 10/10.
 

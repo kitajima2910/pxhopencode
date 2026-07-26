@@ -78,10 +78,10 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 
 ## MEMORY REFLECTION (bắt buộc — sau mỗi task)
 Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `{workspace_root}/.memory/patterns.json` → thêm pattern code mới (naming, imports, error handling)
-2. Mở `{workspace_root}/.memory/decisions.json` → ghi ADR nếu có decision kiến trúc
-3. Mở `{workspace_root}/.memory/project.json` → update framework/language/tools nếu phát hiện mới
-4. Mở `{workspace_root}/.memory/stats.json` → increment `total_patterns`, update `last_session`
+1. Mở `.memory/patterns.json` → thêm pattern code mới (naming, imports, error handling)
+2. Mở `.memory/decisions.json` → ghi ADR nếu có decision kiến trúc
+3. Mở `.memory/project.json` → update framework/language/tools nếu phát hiện mới
+4. Mở `.memory/stats.json` → increment `total_patterns`, update `last_session`
 5. Gửi `Event{type:"reflection", phase:"code", categories:["patterns","decisions","project","stats"]}` → T4
 
 Red Flag: Bỏ qua memory reflection = session sau mất context. Không bao giờ skip.
