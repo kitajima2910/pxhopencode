@@ -12,7 +12,7 @@
 flowchart TD
     A[Nhận Event từ bất kỳ tầng nào] --> B["Xác định loại:<br/>phase_start / phase_end / error<br/>decision / checkpoint / reflection"]
     B --> C["Lưu vào vị trí phù hợp"]
-    C --> D["STATUS.md: trạng thái<br/>docs/reflections/: phản ánh<br/>docs/decisions/: ADR<br/>docs/bugs/: báo cáo lỗi<br/>docs/changelog/: log phiên"]
+    C --> D["STATUS.md: trạng thái<br/>.memory/{category}.json: phản ánh/ADR/bugs<br/>STATUS.md: checkpoint"]
     D --> E["Xác nhận<br/>→ Event{status: confirmed}"]
 ```
 
@@ -20,12 +20,12 @@ flowchart TD
 
 | Loại Event | Vị trí lưu | Định dạng |
 |-----------|-----------|----------|
-| phase_start / phase_end | .opencode/STATUS.md | Markdown |
-| error | .opencode/STATUS.md + `.opencode/docs/bugs/` | Markdown |
-| decision | `.opencode/docs/decisions/ADR-*.md` | Markdown |
-| checkpoint | .opencode/STATUS.md (snapshot) | Markdown |
-| reflection | `.opencode/docs/reflections/` | JSON |
-| task_result | .opencode/STATUS.md (mục artifacts) | Markdown |
+| phase_start / phase_end | STATUS.md | Markdown |
+| error | STATUS.md + `.memory/bugs.json` | JSON |
+| decision | `.memory/decisions.json` (ADR entry) | JSON |
+| checkpoint | STATUS.md (snapshot) | Markdown |
+| reflection | `.memory/{category}.json` (theo loại) | JSON |
+| task_result | STATUS.md (mục artifacts) | Markdown |
 
 ## Tham chiếu chéo
 - **Contracts:** `runtime/contracts/README.md` — Event (đầu vào), State (đầu ra)
@@ -44,10 +44,10 @@ flowchart TD
 | `artifact_size > 100MB` | Event{type:artifact} | Cảnh báo dung lượng |
 | `no_checkpoint > 30min` | Timer | Ghi cảnh báo, tự động checkpoint |
 
-Mỗi metric ghi vào `Event{type:"alert", phase: "observability"}` → lưu `.opencode/STATUS.md` mục `[Alerts]`.
+Mỗi metric ghi vào `Event{type:"alert", phase: "observability"}` → lưu `STATUS.md` mục `[Alerts]`.
 
 ## Quy tắc
-- Không bao giờ sửa dữ liệu — append-only cho log, ghi đè `.opencode/STATUS.md` cho trạng thái hiện tại.
-- Khi được yêu cầu checkpoint, serialize toàn bộ trạng thái Tầng 2 vào `.opencode/STATUS.md`.
+- Không bao giờ sửa dữ liệu — append-only cho `.memory/` JSON, ghi đè `STATUS.md` cho trạng thái hiện tại.
+- Khi được yêu cầu checkpoint, serialize toàn bộ trạng thái Tầng 2 vào `STATUS.md`.
 - Khi được yêu cầu phục hồi, trả về trạng thái checkpoint cuối cùng dưới dạng State contract.
 - Mọi ghi phải idempotent nếu có thể.

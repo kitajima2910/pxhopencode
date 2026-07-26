@@ -35,6 +35,7 @@ Theo định dạng compact `runtime/memory/README.md`. Thực thi:
 1. Mở `{workspace_root}/.memory/project.json` → update build_tools, deployment_target
 2. Mở `{workspace_root}/.memory/decisions.json` → ghi build decision (output size, warnings)
 3. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
+4. Gửi `Event{type:"reflection", phase:"build", categories:["project","decisions","stats"]}` → T4
 
 Red Flag: Build config không ghi memory → deploy sai environment. Không bao giờ skip.
 

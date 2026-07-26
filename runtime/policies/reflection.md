@@ -12,10 +12,10 @@
 
 | Mức | Khi nào | Loại | Đích xuất |
 |-----|---------|------|-----------|
-| Task hoàn tất | Sau mỗi Result Worker | Nhẹ | `.opencode/docs/reflections/` (inline) |
-| Phase hoàn tất | Sau mọi task trong phase | Tiêu chuẩn | `.opencode/docs/reflections/` |
-| Workflow hoàn tất | Sau phase cuối | Đầy đủ | `.opencode/docs/reflections/` + .opencode/STATUS.md |
-| Lỗi lặp lại | 3+ lỗi cùng phase | Sự cố | `.opencode/docs/reflections/` + `.opencode/docs/bugs/` |
+| Task hoàn tất | Sau mỗi Result Worker | Nhẹ | `.memory/{category}.json` (merge) |
+| Phase hoàn tất | Sau mọi task trong phase | Tiêu chuẩn | `.memory/{category}.json` + Event→T4 |
+| Workflow hoàn tất | Sau phase cuối | Đầy đủ | `.memory/` + STATUS.md + Event→T4 |
+| Lỗi lặp lại | 3+ lỗi cùng phase | Sự cố | `.memory/bugs.json` + `.memory/stats.json` |
 
 ## Lược đồ
 
@@ -41,10 +41,18 @@
 ```
 
 ## Quy tắc
-1. Mọi task PHẢI tạo ít nhất một phản ánh nhẹ. Bỏ qua = violation.
-2. Phản ánh là append-only — không bao giờ sửa sau khi tạo.
-3. Điều phối xem lại phản ánh trước khi bắt đầu task tương tự trong tương lai.
-4. Phản ánh sự cố PHẢI bao gồm phân tích nguyên nhân gốc.
-5. **Phản ánh PHẢI ghi vào `.memory/`** — không chỉ gửi Event. Mở file JSON → append/merge → ghi đè với timestamp mới. Dùng định dạng compact `runtime/memory/README.md`.
-6. File đích theo loại phản ánh: bugs → `bugs.json`, decisions → `decisions.json`, patterns → `patterns.json`, project → `project.json`, architecture → `architecture.json`, preferences → `preferences.json`, stats → `stats.json`.
-7. Nếu agent không ghi memory → xem như task incomplete.
+1. `.memory/` là SINGLE SOURCE OF TRUTH cho mọi persistent knowledge. KHÔNG có dual-path.
+2. Mọi task PHẢI tạo ít nhất một phản ánh nhẹ vào `.memory/`. Bỏ qua = violation.
+3. Phản ánh là merge/append vào file JSON — không bao giờ xoá dữ liệu cũ.
+4. Điều phối xem lại `.memory/` trước khi bắt đầu task tương tự trong tương lai.
+5. Phản ánh sự cố PHẢI bao gồm phân tích nguyên nhân gốc.
+6. File đích theo loại phản ánh:
+   - `bugs.json` — bug/error details
+   - `decisions.json` — ADR entries
+   - `patterns.json` — code/design patterns phát hiện
+   - `project.json` — framework, tools, conventions
+   - `architecture.json` — modules, services, flows
+   - `preferences.json` — style preferences, habits
+   - `stats.json` — counters, timestamps
+7. Sau khi ghi `.memory/`, gửi `Event{type:"reflection", phase, category}` → T4 để T4 cập nhật STATUS.md nếu cần.
+8. Nếu agent không ghi memory → xem như task incomplete.

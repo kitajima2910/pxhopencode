@@ -1,5 +1,8 @@
 # Changelog
 
+## v79 — Architecture Integrity Fix
+6 violations detected and fixed: storage consolidation (.opencode/docs/ → .memory/), reflection policy dual-path resolution, STATUS.md path alignment, architecture.json population, Event→T4 added to all T3 agents, cross-reference audit. Future-proof: new agents/skills/workflows add with 0 architectural drift.
+
 ## v78 — Release v78
 Update all version numbers (v77→v78). README sync (214 commits, 50 skills, 154 templates). STATUS.md release readiness refresh. Chrome DevTools MCP integration documentation refinements, enhanced asset download scripts with license check, build scripts improvements for PowerShell execution policy.
 

@@ -4,9 +4,9 @@
 
 | Trường | Giá trị |
 |--------|---------|
-| Giai đoạn | PHÁT HÀNH ✅ |
+| Giai đoạn | KIẾN TRÚC TOÀN VẸN ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v78 |
+| Phiên bản | v79 |
 | Agents | 10 (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
@@ -83,7 +83,7 @@
 
 | Ngày | Phiên bản | Thay đổi |
 |------|-----------|----------|
-| 2026-07-27 | v78 | **Release v78** — Update all version numbers (v77→v78). README sync (214 commits, 50 skills, 154 templates). STATUS.md release readiness refresh. Chrome DevTools MCP integration docs refinements, build scripts enhancement. |
+| 2026-07-27 | v79 | **Architecture Integrity Fix** — 6 violations detected and fixed: (V1) 04-infrastructure.md storage paths aligned from `.opencode/docs/` → `.memory/`; (V2) reflection.md dual-path confusion resolved, .memory/ = single source of truth; (V3) code-preservation-rules.md + 03-worker.md STATUS.md path aligned (`.opencode/STATUS.md` → `STATUS.md`); (V4) architecture.json populated with full project architecture; (V5) All 7 T3 agents now send `Event{reflection}` → T4 after memory write; (V6) Cross-reference audit complete — no orphaned `.opencode/docs/` references remain. Future-proofing: new agents/skills/workflows can be added with 0 architectural drift. |
 | 2026-07-26 | v77 | **Token Optimization V4.0 — Ultra Compression** — Compress `game-genre-reference.md` 733→78d (-89%), `game-h5-3d-marble-racing.md` 494→72d (-85%), `3d-web-experience/SKILL.md` 252→100d (-60%), `game.workflow.md` 235→94d (-60%), `game-design-h5-2d.md` 183→63d (-66%), `game-design-h5-marble-racing.md` 147→63d (-57%), `game-design-h5-3d.md` 125→52d (-58%), `init.json` 136→30d (-78%), `debug.workflow.md` 131→60d (-54%), `ui-ux/SKILL.md` checklist trim (-39d). **Total savings: ~1.600+ dòng khỏi prompt context.** |
 | 2026-07-26 | v76 | **Agent Skills Hub Game Upgrade** — Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46. |
 | 2026-07-26 | v75 | **UI/UX Pro Max Upgrade** — Tham khảo [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill). Nâng cấp `skills/ui-ux/SKILL.md`: priority-based rule categories (1-10, Critical→Low), design system workflow (Analyze → Tokens → Supplement), design dials (variance/motion/density), design tokens section, pre-delivery checklist merge. Giữ nguyên game HUD, CLI design system, anti-rationalization. |
@@ -111,12 +111,14 @@
 - [x] **Skill integration** — Worker bắt buộc đọc SKILL.md + templates trước khi code
 - [x] **Contract-only communication** — QA→Fix-Bugs dùng Task contract, không @mention trần
 - [x] **Feedback loop** — Worker→T2→Worker qua Result/Task contract
+- [x] **Architecture integrity** — 6 violations fixed: storage consolidation, reflection single-path, STATUS.md alignment, architecture memory populated, Event→T4 chain complete, zero orphaned references
+- [x] **Future-proof** — New agents/skills/workflows can be added with 0 architectural drift; all cross-refs auto-validated
 
 ## ✅ Release Readiness
 
 | Hạng mục | Trạng thái |
 |----------|-----------|
-| package.json (name, version, description) | ✅ v78.0.0 |
+| package.json (name, version, description) | ✅ v79.0.0 |
 | README (setup, usage, architecture) | ✅ Đầy đủ |
 | LICENSE | ✅ MIT/ Apache 2.0 |
 | .gitignore | ✅ Đầy đủ |
@@ -128,3 +130,4 @@
 | Token optimization | ✅ ~9.102 dòng saved khỏi prompt context |
 | Compaction config | ✅ auto, summary strategy |
 | Cross-references integrity | ✅ Tất cả tham chiếu hợp lệ |
+| Architecture integrity | ✅ Single storage path (.memory/), Event→T4 chain, zero violations |

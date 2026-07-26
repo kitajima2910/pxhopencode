@@ -32,7 +32,7 @@ flowchart TD
 - KHÔNG BAO GIỜ sửa code ngoài phạm vi TARGET.
 - KHÔNG BAO GIỜ tự quyết định thử lại hoặc hủy bỏ — trả Result và để Điều phối quyết định.
 - Ưu tiên thay đổi tối thiểu: thêm, không viết lại.
-- Đọc .opencode/STATUS.md trước khi bắt đầu bất kỳ task nào.
+- Đọc `STATUS.md` trước khi bắt đầu bất kỳ task nào.
 - Sau code project: luôn tạo `.gitignore` trong TARGET với `.opencode/` và `.github/` (xem template `_shared/templates/gitignore-template.md`)
 - **BẮT BUỘC: SAU MỖI TASK, chạy MEMORY REFLECTION** — xem `## MEMORY REFLECTION` trong agent file → mở file `.memory/` tương ứng → append/merge → cập nhật `updated` timestamp. Dùng định dạng compact `runtime/memory/README.md`. Không bao giờ skip.
 - Gửi `Event{reflection}` đến Tầng 4 sau mỗi task.

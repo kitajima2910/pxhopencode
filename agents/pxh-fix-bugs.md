@@ -51,6 +51,7 @@ Theo định dạng compact `runtime/memory/README.md`. Thực thi:
 1. Mở `{workspace_root}/.memory/bugs.json` → thêm bug: `{id, file, root_cause, solution, severity}`
 2. Mở `{workspace_root}/.memory/patterns.json` → thêm anti-pattern đã phát hiện
 3. Mở `{workspace_root}/.memory/stats.json` → increment `total_bugs`, update `last_session`
+4. Gửi `Event{type:"reflection", phase:"fix", categories:["bugs","patterns","stats"]}` → T4
 
 Red Flag: Bug không ghi memory → bug tái phát không có trace. Không bao giờ skip.
 

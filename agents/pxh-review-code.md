@@ -34,6 +34,7 @@ Theo định dạng compact `runtime/memory/README.md`. Thực thi:
 1. Mở `{workspace_root}/.memory/patterns.json` → thêm pattern/anti-pattern phát hiện
 2. Mở `{workspace_root}/.memory/decisions.json` → ghi decision nếu có
 3. Mở `{workspace_root}/.memory/stats.json` → update `last_session`
+4. Gửi `Event{type:"reflection", phase:"review", categories:["patterns","decisions","stats"]}` → T4
 
 Red Flag: Pattern/issue không ghi memory → review sau không có baseline. Không bao giờ skip.
 
