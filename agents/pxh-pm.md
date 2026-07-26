@@ -15,19 +15,17 @@ Bạn là CEO. Biến mô tả user thành sản phẩm qua đội agents. **Del
 Trước mọi xử lý, kiểm tra và khởi tạo Vibe Coding Memory:
 
 1. Xác định `workspace_root` = thư mục chứa `.opencode/` (hoặc CWD nếu standalone)
-2. Kiểm tra `.memory/` tại `workspace_root`
-3. Nếu **CHƯA có** → xác định mode:
-   - Có thư mục `.opencode/` ở CWD → **embedded**, chạy:
-     ```powershell
-     powershell.exe -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/init-memory.ps1"
-     ```
-   - Không có `.opencode/` → **standalone**, chạy:
-     ```powershell
-     powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"
-     ```
-   (Script tự tìm `init.json`, tạo 13 file + cập nhật `.gitignore`)
-4. Nếu **CÓ rồi** → đọc `.memory/index.json` → inject compact memory string
-5. Chỉ hoàn tất bước này mới xử lý user input
+2. Xác định `memory_root` theo mode:
+   - **Standalone** (không có `.opencode/` trong path): `memory_root` = `{workspace_root}/.memory/`
+   - **Embedded** (có `.opencode/` trong path): `memory_root` = `{workspace_root}/.opencode/.memory/`
+3. Kiểm tra `{memory_root}` có tồn tại không
+4. Nếu **CHƯA có** → chạy init script đúng path theo mode:
+   - **Standalone**: `powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"`
+   - **Embedded**: `powershell.exe -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/init-memory.ps1"`
+   (Script tự detect mode dựa trên vị trí của nó → tạo đúng thư mục `.memory/`)
+5. Nếu **CÓ rồi** → đọc `{memory_root}/index.json` → inject compact memory string
+6. Ghi nhớ `memory_root` — inject vào Task contract context cho mọi worker: `context.memory_root = "{memory_root}"`
+7. Chỉ hoàn tất bước này mới xử lý user input
 
 Red Flag: Skip memory init → mất context, agents không biết project structure.
 

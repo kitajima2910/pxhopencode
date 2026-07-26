@@ -26,10 +26,10 @@ Skill này đã được load tự động qua instruction. Chỉ cần load th�
 ## Startup checklist (đã có trong instruction)
 
 ```
-[ ] Xác định workspace_root
-[ ] .memory/ tồn tại? → load index
-[ ] .memory/ chưa tồn tại? → chạy `powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"`
-[ ] Nếu script lỗi → init thủ công từ runtime/memory/init.json
+[ ] Xác định workspace_root + memory_root theo mode
+[ ] .memory/ tồn tại? (standalone: workspace_root/.memory/, embedded: .opencode/.memory/) → load index
+[ ] .memory/ chưa tồn tại? → chạy init script (script tự detect mode)
+[ ] Nếu script lỗi → init thủ công từ runtime/memory/init.json → copy vào đúng thư mục .memory/
 [ ] Task intent → dùng Prompt Compiler IR → lookup intent→categories
 [ ] Task → reflection → update memory
 ```
@@ -44,13 +44,14 @@ Skill này đã được load tự động qua instruction. Chỉ cần load th�
 
 ## Red Flags
 
-- `.memory/` không tồn tại ở workspace_root → chưa chạy startup step
+- `.memory/` không tồn tại (standalone: workspace_root, embedded: .opencode/) → chưa chạy startup step
 - Index có confidence = 0 → chưa có dữ liệu, cần học dần
 - Không chạy reflection sau task → memory không tiến hóa
+- Dùng sai path cho mode (vd: dùng `.opencode/.memory/` ở standalone mode)
 
 ## Verification
 
-- [ ] .memory/ tồn tại ở workspace_root
+- [ ] .memory/ tồn tại ở đúng path theo mode (standalone: workspace_root, embedded: .opencode/)
 - [ ] index.json loaded với memory_count + confidence
 - [ ] Intent matched ≥ 1 category (fallback: unknown)
 - [ ] Injected ≤ 3 categories, ≤ 1 dòng/category

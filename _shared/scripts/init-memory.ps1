@@ -3,12 +3,20 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$memoryDir = Join-Path $WorkspaceRoot ".memory"
 
 # Derive pxhopencode root from script location (handles both standalone + embedded in .opencode/)
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $PxhopencodeRoot = Resolve-Path (Join-Path $ScriptDir "..\..")
 $initJson = Join-Path $PxhopencodeRoot "runtime\memory\init.json"
+
+# Detect mode: embedded (.opencode/) vs standalone
+$isEmbedded = $PxhopencodeRoot -match '\\.opencode$'
+if ($isEmbedded) {
+  $memoryDir = Join-Path $PxhopencodeRoot ".memory"
+  Write-Output "📁 Embedded mode: .memory/ inside .opencode/"
+} else {
+  $memoryDir = Join-Path $WorkspaceRoot ".memory"
+}
 
 # Check if .memory/ already exists
 if (Test-Path $memoryDir) {
