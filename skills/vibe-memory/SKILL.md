@@ -28,7 +28,8 @@ Skill này đã được load tự động qua instruction. Chỉ cần load th�
 ```
 [ ] Xác định workspace_root
 [ ] .memory/ tồn tại? → load index
-[ ] .memory/ chưa tồn tại? → tạo từ runtime/memory/init.json
+[ ] .memory/ chưa tồn tại? → chạy `powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"`
+[ ] Nếu script lỗi → init thủ công từ runtime/memory/init.json
 [ ] Task intent → semantic search → inject context
 [ ] Task → reflection → update memory
 ```

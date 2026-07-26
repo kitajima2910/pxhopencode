@@ -8,13 +8,26 @@
 Step 1: workspace_root = dir containing .opencode/
 Step 2: Check {workspace_root}/.memory/
   EXISTS → read index.json → check memory_count + confidence
-  MISSING → init from runtime/memory/init.json → write all files → log
+  MISSING → run AUTO-INIT script OR init manually from init.json
 Step 3: Parse user prompt intent (regex match bảng bên dưới)
 Step 4: Lookup intent→categories (bảng bên dưới) → max 3 categories
 Step 5: Read selected .memory/ files → produce compact injection (định dạng bên dưới)
 Step 6: Inject compact string vào context → thực thi task
 Step 7: SAU task → reflection → ghi .memory/ (xem ## MEMORY REFLECTION trong agent file)
 ```
+
+### AUTO-INIT (ưu tiên — deterministic, 0 agent token)
+
+```powershell
+powershell.exe -ExecutionPolicy Bypass -File "_shared/scripts/init-memory.ps1"
+```
+
+Script này tự động:
+- Đọc `runtime/memory/init.json` → tạo 13 file JSON trong `.memory/`
+- Detect project type từ `package.json` / `Cargo.toml` / `pyproject.toml`
+- Điền `project_id`, `project_name`, `framework`, `language`, `runtime`, `folder_structure`, `build_tools`
+
+**Luật**: Chạy script trước. Nếu script lỗi → agent init thủ công từ `init.json`.
 
 ## INTENT → CATEGORIES MAP
 
