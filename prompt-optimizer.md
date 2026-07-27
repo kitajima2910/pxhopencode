@@ -47,6 +47,7 @@ RULE:
 - Preserve all existing working code.
 - Verify the TARGET after making changes.
 - Update STATUS.md with the completed work.
+- Update version: đồng bộ STATUS.md → package.json → README.md → docs-vibe/index.html nếu có version bump.
 
 TARGET:
 [compiled + optimized prompt]
