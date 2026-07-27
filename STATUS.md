@@ -6,7 +6,7 @@
 |--------|---------|
 | Giai đoạn | 10/10 TOÀN DIỆN ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v81.2 |
+| Phiên bản | v82.1 |
 | Agents | 10 (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
@@ -92,6 +92,7 @@
 | 2026-07-27 | v81.2 | **Prompt Compiler zero-dep — ship pre-compiled dist/** — Build `prompt-compiler` → `dist/` (136 files JS+`d.ts`). Fix `tsconfig.json` lib `["ES2022","DOM"]`. Fix `benchmark.ts` xoá `process` dependency → 0 runtime deps. `.gitignore`: `dist/`→`/dist/` (chỉ ignore root), thêm `prompt-compiler/node_modules/`. Clone → dùng ngay, không cần `npm install`. |
 | 2026-07-27 | v82 | **UI/UX Design System — kill "AI Studio" look** — Tạo `_shared/design-system/` với `design-tokens.css` (OKLCH colors, light/dark mode, spacing, shadow, animation), `game-tokens.css` (game HUD tokens), `design-tokens.ts` (typed tokens). Fix `docs-vibe/index.html` (mobile nav, light mode, CSS variables), `docs-vibe/galaga.html` (GAME_COLORS palette, glow effects, OKLCH), `games-core/templates/index.html` (gradient loading, OKLCH), `games-2d/color-palettes.ts` (Palette type, NEON+RETRO palettes), `games-preview/index.html` (FPS counter, OKLCH). Nâng cấp `webs-styling/templates/` (full OKLCH brand scale, glow shadow, animations), `webs-frontend/component-patterns.tsx` (Button 4 variants, Card, Modal, Toast, Skeleton). Cập nhật 7 game templates (main.ts, ui-billboard.ts, phaser-iso-config.ts, audio-pool.ts, placeholders.ts, animation-config.ts, game-engine.ts). — **Token saver:** Shared DS giúp mỗi game/web template tiết kiệm ~15-25 dòng color/cấu hình lặp lại. ~200 dòng saved khỏi prompt context khi sinh code mới. |
 | 2026-07-27 | v82.1 | **UI/UX Quality Gate enforced in agents** — Thêm UI/UX QUALITY GATE vào `pxh-expert.md` + `pxh-ui-ux.md`: cấm hardcode hex, bắt buộc dùng shared DS (OKLCH tokens, 5 game palettes, Tailwind config + components). Agent tự check output trước khi trả về. Mọi output vào project user đều qua gate này. |
+| 2026-07-27 | v82.2 | **Prompt Log final release** — `prompt-optimizer.md` Step 4 ghi final prompt vào `__prompt-log__.md` (overwrite, git-ignored). Agent bắt buộc ghi prompt cuối cùng (RULE+TARGET+IR) vào file này trước khi xử lý. Xoá `docs-vibe/galaga.html` + gỡ link nav. Final audit PASS — 0 lỗi. |
 | 2026-07-26 | v77 | **Token Optimization V4.0 — Ultra Compression** — Compress `game-genre-reference.md` 733→78d (-89%), `game-h5-3d-marble-racing.md` 494→72d (-85%), `3d-web-experience/SKILL.md` 252→100d (-60%), `game.workflow.md` 235→94d (-60%), `game-design-h5-2d.md` 183→63d (-66%), `game-design-h5-marble-racing.md` 147→63d (-57%), `game-design-h5-3d.md` 125→52d (-58%), `init.json` 136→30d (-78%), `debug.workflow.md` 131→60d (-54%), `ui-ux/SKILL.md` checklist trim (-39d). **Total savings: ~1.600+ dòng khỏi prompt context.** |
 | 2026-07-26 | v76 | **Agent Skills Hub Game Upgrade** — Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46. |
 | 2026-07-26 | v75 | **UI/UX Pro Max Upgrade** — Tham khảo [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill). Nâng cấp `skills/ui-ux/SKILL.md`: priority-based rule categories (1-10, Critical→Low), design system workflow (Analyze → Tokens → Supplement), design dials (variance/motion/density), design tokens section, pre-delivery checklist merge. Giữ nguyên game HUD, CLI design system, anti-rationalization. |
@@ -136,7 +137,7 @@
 | Workflows (8 files) | ✅ Đầy đủ |
 | Skills (50 skills, 11 sections fixed) | ✅ Đầy đủ, 50/50 hoàn chỉnh |
 | Runtime (4 tầng + contracts + policies + memory) | ✅ Đầy đủ |
-| Token optimization | ✅ ~9.102 dòng saved khỏi prompt context |
+| Token optimization | ✅ ~9.302 dòng saved khỏi prompt context |
 | Compaction config | ✅ auto, summary strategy |
 | Cross-references integrity | ✅ Tất cả tham chiếu hợp lệ |
 | Architecture integrity | ✅ Single storage path (.memory/), Event→T4 chain, zero violations |
@@ -145,3 +146,6 @@
 | Workflow resilience | ✅ All 8 workflows have loop/failover + language rules + post-code routing |
 | T4 protocol | ✅ Event contracts, .memory/ storage, no custom commands |
 | Memory engine | ✅ 13/13 files active, no dead paths, compiler-aligned |
+| UI/UX Design System | ✅ Shared DS `_shared/design-system/` (OKLCH tokens, light/dark, game HUD) |
+| UI/UX Quality Gate | ✅ Enforced in `pxh-expert.md` + `pxh-ui-ux.md` — no AI Studio look |
+| Prompt Log | ✅ `__prompt-log__.md` — overwrite mode, git-ignored |
