@@ -1,11 +1,23 @@
 class AudioPool {
   private pool: AudioBufferSourceNode[] = [];
   private ctx: AudioContext;
+  private masterGain: GainNode;
   private buffers = new Map<string, AudioBuffer>();
   private activeSources = new Set<AudioBufferSourceNode>();
 
   constructor() {
     this.ctx = new AudioContext();
+    this.masterGain = this.ctx.createGain();
+    this.masterGain.gain.value = 1;
+    this.masterGain.connect(this.ctx.destination);
+  }
+
+  get masterVolume(): number {
+    return this.masterGain.gain.value;
+  }
+
+  set masterVolume(v: number) {
+    this.masterGain.gain.value = Math.max(0, Math.min(1, v));
   }
 
   async load(key: string, url: string): Promise<void> {
@@ -27,13 +39,12 @@ class AudioPool {
     const gain = this.ctx.createGain();
     gain.gain.value = options.volume ?? 1;
 
-    source.connect(gain).connect(this.ctx.destination);
+    source.connect(gain).connect(this.masterGain);
     source.start(0);
     source.onended = () => this.release(source);
 
     this.activeSources.add(source);
 
-    // Auto-release nếu onended không fire
     setTimeout(() => {
       if (this.activeSources.has(source)) {
         this.release(source);
@@ -62,9 +73,5 @@ class AudioPool {
     if (this.ctx.state === "suspended") {
       this.ctx.resume();
     }
-  }
-
-  get masterVolume(): number {
-    return this.ctx.destination.channelInterpretation === "speakers" ? 1 : 0.5;
   }
 }

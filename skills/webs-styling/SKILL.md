@@ -12,6 +12,7 @@ Dark mode class-based. OKLCH colors, custom keyframes. `content` trỏ đúng sr
 ## Design System Tokens
 Spacing, radius, shadow, fontSize, breakpoint — dùng JS object để đồng bộ design system.
 → `templates/design-tokens.ts`
+Shared CSS design system → `_shared/design-system/design-tokens.css` (OKLCH brand scale 50-950, surface colors, text tokens, glow shadows, animations, light/dark mode).
 
 ## Mẫu Responsive
 Grid responsive + Container Query + Aspect Ratio component.

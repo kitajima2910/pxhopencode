@@ -10,6 +10,9 @@ Xem file chi tiết:
 - `game-h5-2d.md` — Implementation (Phaser 3 scenes, player, enemy, collision, HUD, audio, optimization)
 - `game-design-h5-2d.md` — Game design (core loop, difficulty curve, level design, color palette, touch controls, feedback systems)
 
+## Color Palettes
+5 game palettes (VIBRANT/PASTEL/DARK/NEON/RETRO) → `templates/color-palettes.ts` — dùng `import { palettes } from './color-palettes'`. CSS design tokens → `_shared/design-system/design-tokens.css`.
+
 ## Bắt đầu nhanh
 
 ```bash

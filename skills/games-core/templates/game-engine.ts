@@ -1,11 +1,12 @@
 class GameEngine {
   private lastTime = 0;
   private accumulator = 0;
-  private readonly TICK_RATE = 1000 / 60; // 60 FPS
+  private readonly TICK_RATE = 1000 / 60;
   private running = false;
   private frameId = 0;
 
   start() {
+    this.hideLoading();
     this.running = true;
     this.lastTime = performance.now();
     this.frameId = requestAnimationFrame(this.loop.bind(this));
@@ -14,6 +15,11 @@ class GameEngine {
   stop() {
     this.running = false;
     cancelAnimationFrame(this.frameId);
+  }
+
+  private hideLoading() {
+    const el = document.getElementById("loading");
+    if (el) el.classList.add("hide");
   }
 
   private loop(now: number) {

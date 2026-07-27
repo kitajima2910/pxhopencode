@@ -24,6 +24,17 @@ description: UI/UX design production — web (React/Tailwind), game HUD (Phaser/
 | 9 | **Navigation** | HIGH | Predictable back, Bottom nav ≤5, Deep linking, Tab order matches visual | Broken back, No deep links, Overloaded nav |
 | 10 | **Charts & Data** | LOW | Legends, Tooltips, Accessible colors, Loading/empty/error states | Color-only meaning, No fallback for missing data |
 
+## Shared Design System
+pxhopencode có sẵn design system tại `_shared/design-system/`:
+- `design-tokens.css` — OKLCH colors, light/dark mode, spacing, shadow, animation
+- `game-tokens.css` — game HUD tokens (HP, score, combo, shield, glow)
+- `design-tokens.ts` — typed tokens cho JS/TS projects
+
+Web templates → `skills/webs-styling/templates/` (Tailwind config + design tokens + component patterns)
+Game templates → `skills/games-2d/templates/color-palettes.ts` (5 palettes: VIBRANT/PASTEL/DARK/NEON/RETRO)
+
+Always reference these before generating new tokens to avoid duplication.
+
 ## Design System Workflow (3 steps)
 
 ### Step 1: Analyze
