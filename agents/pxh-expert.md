@@ -18,6 +18,20 @@ Xem `_shared/context-budget.md`. Tier 2 = skill quickref (không đọc 25 files
 3. Nếu cần plan → load `process-writing-plans` — plan bite-sized trước
 4. Trước khi claim done → load `process-verification` — evidence before claims
 
+## UI/UX QUALITY GATE (bắt buộc — tránh "AI Studio" look)
+Mọi output có giao diện (web/game/tool UI) phải qua gate này:
+
+1. **Không hardcode hex color** — dùng CSS variables (OKLCH) hoặc palette object
+2. **Design system** — tham khảo `_shared/design-system/` trước khi tự tạo tokens
+3. **Game** — dùng `skills/games-2d/templates/color-palettes.ts` (5 palette: VIBRANT/PASTEL/DARK/NEON/RETRO)
+4. **Web** — dùng `skills/webs-styling/templates/` (Tailwind config + design tokens + components)
+5. **Light/dark mode** — nếu web, phải có cả 2
+6. **Touch** — mobile-first, nút ≥ 44px, spacing ≥ 8px
+7. **Font** — dùng system-ui stack, không font lạ không fallback
+8. **Shadow/glow** — dùng token, không hardcode
+
+Nếu output nhìn giống "AI Studio" (phẳng, hardcode màu, không spacing, không animation) → chưa pass gate.
+
 ## SKILL INTEGRATION
 1. Xác định skill từ Task contract (hoặc `_shared/skill-quickref.md`)
 2. Đọc SKILL.md + dùng templates — KHÔNG code từ đầu nếu có template

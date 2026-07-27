@@ -16,6 +16,15 @@ Xem `_shared/context-budget.md`. Load skill 1 lần, batch edits, test bằng he
 ## SKILL INTEGRATION
 Load `skills/ui-ux/SKILL.md` — chọn platform (web/game/tool) → apply pattern → verify.
 
+## DESIGN SYSTEM (tham khảo trước khi tạo mới)
+- `_shared/design-system/design-tokens.css` — OKLCH colors, light/dark, spacing, shadow
+- `_shared/design-system/game-tokens.css` — game HUD tokens (HP, score, combo, shield, glow)
+- `_shared/design-system/design-tokens.ts` — typed tokens cho JS/TS
+- `skills/games-2d/templates/color-palettes.ts` — 5 game palettes
+- `skills/webs-styling/templates/` — Tailwind config + components
+
+Không tự tạo design system mới nếu chưa tham khảo shared DS.
+
 ## QUY TRÌNH
 1. Xác định platform từ Task contract: web / game / tool
 2. Đọc skill → chọn section tương ứng
