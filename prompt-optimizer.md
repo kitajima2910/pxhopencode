@@ -59,3 +59,26 @@ IR Context:
 ```
 
 If already starts with `RULE:` → skip. Use ONLY final prompt.
+
+## Step 4: Log final prompt for review
+
+Ghi final prompt vào `__prompt-log__.md` (overwrite, luôn là prompt cuối cùng).
+Định dạng:
+
+```
+## Prompt Log — {YYYY-MM-DD HH:mm}
+
+RULE:
+... (nếu có)
+TARGET:
+... (prompt gốc)
+IR:
+  Intents: ...
+  Constraints: ...
+  Priority: ...
+  Safety: ...
+
+────────────────────────────────────────
+```
+
+File này ở workspace root, git-ignored. Mục đích: user review prompt optimizer đã wrap cái gì trước khi gửi xuống agent.

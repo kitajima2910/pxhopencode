@@ -12,3 +12,4 @@ target/
 .github/
 .vibe/
 .memory/
+__prompt-log__.md
