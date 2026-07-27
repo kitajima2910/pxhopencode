@@ -61,11 +61,14 @@ export class Benchmark {
 }
 
 export function measureMemory(fn: () => void): number {
-  if (typeof global !== 'undefined' && typeof (global as any).gc === 'function') {
-    (global as any).gc();
+  try {
+    const proc = globalThis as any;
+    if (proc.gc?.()) { }
+    const before = typeof proc.process?.memoryUsage === 'function' ? proc.process.memoryUsage().heapUsed : 0;
+    fn();
+    const after = typeof proc.process?.memoryUsage === 'function' ? proc.process.memoryUsage().heapUsed : 0;
+    return Math.max(0, after - before);
+  } catch {
+    return 0;
   }
-  const before = process.memoryUsage().heapUsed;
-  fn();
-  const after = process.memoryUsage().heapUsed;
-  return Math.max(0, after - before);
 }
