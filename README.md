@@ -14,10 +14,12 @@ Nhúng vào project có sẵn:
 ```bash
 cd project-của-bạn
 git clone https://github.com/kitajima2910/pxhopencode.git .opencode
-opencode
+powershell -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/start.ps1"
 ```
 
-> `.opencode/` tự động được thêm vào `.gitignore` project của bạn (bởi init script khi chạy lần đầu). Không lo commit nhầm AI Company lên GitHub.
+Hoặc chỉ clone rồi chạy `opencode` — init script tự động chạy ở prompt đầu tiên.
+
+> Init script tự động: xoá `.opencode/.git/` (tránh nested repo), merge toàn bộ entries từ `.gitignore` template vào parent project (`.opencode/`, `.github/`, `.vibe/`, `.memory/`, `__prompt-log__.md`, ...), tạo 13 files `.memory/`.
 
 > **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html)
 
@@ -29,15 +31,17 @@ pxhopencode/
 ├── package.json         # Project metadata v82.3
 ├── README.md            # Hướng dẫn sử dụng
 ├── STATUS.md            # Dashboard tiến độ
-├── prompt-optimizer.md  # Prompt optimization pipeline
-├── agents/              # 10 AI agents
+├── prompt-optimizer.md  # Prompt optimization 4-step pipeline
+├── __prompt-log__.md    # Prompt cuối cùng (overwrite, git-ignored)
+├── agents/              # 10 AI agents (T1-T4)
 ├── runtime/             # 4 tầng + contracts + policies + memory
 ├── workflows/           # 8 workflow templates
 ├── skills/              # 50 skills theo lĩnh vực
 ├── prompt-compiler/     # TypeScript Prompt Compiler (34 files)
 ├── docs-vibe/           # Tài liệu kiến trúc
-├── _shared/             # Scripts, templates dùng chung
-└── .memory/             # Vibe Coding Memory Engine (tự động)
+├── _shared/             # Scripts, templates, design-system dùng chung
+│   └── design-system/   # OKLCH design tokens (CSS + TS)
+├── .memory/             # Vibe Coding Memory Engine (13 files, tự động)
 ```
 
 ---
@@ -217,12 +221,15 @@ flowchart TD
 ## Key Concepts
 
 - **Prompt Compiler TypeScript Engine**: `prompt-compiler/` — 11-stage pipeline, 7 backends (DeepSeek, Claude, GPT, Gemini, GeminiCodex, OpenCode), 6 dictionaries, Trie/Aho-Corasick/FSM matching. Zero-AI, zero-token optimization.
+- **Prompt Optimizer Pipeline**: `prompt-optimizer.md` — 4 steps: Memory Init → Compiler → Optimize → Auto-wrap RULE+TARGET+IR. Mọi prompt đều được chuẩn hoá, thêm rules, log vào `__prompt-log__.md`.
 - **Contract Communication**: Agents giao tiếp qua typed contracts, không @mention trần
 - **Context Budget**: Lazy-load skills, compaction tự động, giới hạn 50 line/4096 byte output
+- **UI/UX Design System**: `_shared/design-system/` — OKLCH design tokens, light/dark mode, game HUD tokens, typed TS exports. UI/UX Quality Gate enforced ở T3 agents — không hardcode hex, không AI Studio look.
 - **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
-- **Portable**: Copy pxhopencode vào project — hoạt động ngay. Hoặc dùng source trực tiếp.
+- **Portable**: Copy pxhopencode vào project — chạy `start.ps1` init. Hoặc dùng source trực tiếp.
 - **Vibe Coding Memory Engine**: Hệ thống knowledge tự động — 13 file JSON (`index.json`, `project.json`, `architecture.json`, `patterns.json`, `bugs.json`, `decisions.json`, `preferences.json`, `workflow.json`, `prompt.json`, `vibe.json`, `snapshots.json`, `timeline.json`, `stats.json`). Agents tự học project structure, architecture, patterns, bugs, decisions, preferences qua từng session. `.memory/` được auto-create ở workspace root, không cần cấu hình. Chi tiết: `runtime/memory/README.md`
 - **169 Skill Templates**: 164 templates trong `skills/**/templates/` + 5 shared templates trong `_shared/templates/` — ADR, bug report, session log, status, gitignore.
+- **First-time Setup Script**: `_shared/scripts/start.ps1` — xoá `.opencode/.git/`, merge `.gitignore` entries, tạo 13 `.memory/` files. Chạy 1 lần duy nhất.
 
 ---
 
