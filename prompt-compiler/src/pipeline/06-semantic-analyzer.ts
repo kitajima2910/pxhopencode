@@ -19,13 +19,13 @@ export function analyzeSemantics(
     if (applied.has(match.output)) continue;
     applied.add(match.output);
 
-    const mapping = inferMapping(match.output);
+    const category = dict.classifyOutput(match.output);
 
-    if (mapping.category === 'action' || mapping.category === 'intent') {
+    if (category === 'action' || category === 'intent') {
       actions.push(match.output);
     }
 
-    if (mapping.category === 'constraint') {
+    if (category === 'constraint') {
       const constraintMatch = constraints.find(c => c.toLowerCase().includes(match.output.slice(0, 10)));
       if (!constraintMatch) actions.push(match.output);
     }
@@ -37,38 +37,6 @@ export function analyzeSemantics(
     actions: [...new Set(actions)],
     metric: { name: 'SemanticAnalyzer', ms, inputLength: input.length, outputLength: actions.length },
   };
-}
-
-function inferMapping(output: string): { phrase: string; output: string; category: 'intent' | 'constraint' | 'action' } {
-  const intentPhrases = [
-    'analyze project', 'analyze codebase', 'read codebase', 'examine',
-    'fix bug', 'debug', 'identify root cause', 'review code',
-    'add feature', 'new feature', 'write tests', 'generate API',
-    'implement API', 'build API', 'generate UI', 'implement UI',
-    'generate game', 'implement game', 'build web app', 'build application',
-    'optimize', 'refactor', 'deploy', 'publish', 'release', 'build',
-    'package', 'migrate', 'upgrade', 'security audit', 'explain',
-    'write documentation', 'search codebase', 'find file',
-  ];
-
-  if (intentPhrases.includes(output)) {
-    return { phrase: output, output, category: 'intent' };
-  }
-
-  const constraintPhrases = [
-    'preserve existing behavior', 'do not modify', 'do not touch',
-    'minimal changes', 'modify only', 'avoid new dependencies',
-    'use existing utilities', 'backward compatible', 'no breaking changes',
-    'offline only', 'token efficient', 'keep coding style',
-    'follow architecture', 'mobile first', 'cross platform',
-    'modularization', 'split into modules',
-  ];
-
-  if (constraintPhrases.includes(output)) {
-    return { phrase: output, output, category: 'constraint' };
-  }
-
-  return { phrase: output, output, category: 'action' };
 }
 
 export function normalizeDevPhrases(input: string): { output: string; replacements: number } {
@@ -88,6 +56,29 @@ export function normalizeDevPhrases(input: string): { output: string; replacemen
     [/đọc (?:project|source|code|mã nguồn)/gi, 'analyze codebase'],
     [/sửa (?:bug|lỗi)/gi, 'fix bug'],
     [/rà soát/gi, 'review'],
+
+    [/make it pop/gi, 'enhance visual appeal'],
+    [/give it some sauce/gi, 'enhance visual appeal'],
+    [/the vibes are off/gi, 'fix aesthetic UX issues'],
+    [/ship it/gi, 'prepare for deployment'],
+    [/glue (?:together|code)/gi, 'integrate components'],
+    [/wire it up/gi, 'connect integrate'],
+    [/clean it up/gi, 'refactor for clarity'],
+    [/make it work/gi, 'ensure functionality'],
+    [/throw (?:something )?together/gi, 'rapid prototype'],
+    [/cobble together/gi, 'implement with available resources'],
+    [/just get it done/gi, 'implement with minimal ceremony'],
+
+    [/chạy tạm/gi, 'ensure functionality'],
+    [/đập đi xây lại/gi, 'rewrite from scratch'],
+    [/chắp vá/gi, 'integrate disparate components'],
+    [/làm cho (?:đẹp|pro|xịn)/gi, 'enhance visual appeal'],
+    [/nối dây|đấu nối/gi, 'connect integrate'],
+    [/fix đê|sửa đê/gi, 'fix bug'],
+    [/lên production|đẩy lên/gi, 'prepare for deployment'],
+    [/làm nhanh|làm tạm/gi, 'rapid prototype'],
+    [/code cứt/gi, 'poor quality code'],
+    [/xịn xò/gi, 'high quality implementation'],
   ];
 
   for (const [pattern, replacement] of devPhrases) {

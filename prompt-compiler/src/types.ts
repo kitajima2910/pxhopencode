@@ -8,7 +8,9 @@ export type Intent =
   | 'dependency_analysis' | 'migration' | 'deployment'
   | 'packaging' | 'release' | 'git_operations'
   | 'mcp_operations' | 'workspace_management'
-  | 'multi_agent_coordination' | 'unknown';
+  | 'multi_agent_coordination'
+  | 'enhance_ui' | 'rapid_prototype' | 'integrate_systems' | 'refactor_vibe'
+  | 'unknown';
 
 export type Constraint =
   | 'minimal_changes' | 'preserve_behavior' | 'backward_compatible'

@@ -116,6 +116,49 @@ const phraseEntries: Array<[string, string, number]> = [
   ['mobile first', 'mobile first', 1.0],
   ['cross-platform', 'cross platform', 1.0],
   ['đa nền tảng', 'cross platform', 0.9],
+
+  ['make it pop', 'enhance visual appeal', 1.0],
+  ['give it some sauce', 'enhance visual appeal', 1.0],
+  ['make it look cool', 'improve UI/UX design', 1.0],
+  ['make it pretty', 'improve UI/UX design', 1.0],
+  ['the vibes are off', 'fix aesthetic UX issues', 1.0],
+  ['ship it', 'prepare for deployment', 1.0],
+  ['just ship it', 'prepare for deployment', 1.0],
+  ['janky', 'unpolished implementation', 0.9],
+  ['spicy code', 'complex implementation', 0.9],
+  ['glue together', 'integrate components', 1.0],
+  ['wire it up', 'connect integrate', 1.0],
+  ['hook it up', 'connect integrate', 1.0],
+  ['piece of cake', 'trivial task', 1.0],
+  ['easy peasy', 'trivial task', 1.0],
+  ['clean it up', 'refactor for clarity', 1.0],
+  ['make it work', 'ensure functionality', 1.0],
+  ['just make it work', 'ensure functionality', 1.0],
+  ['throw together', 'rapid prototype', 1.0],
+  ['cobble together', 'implement with available resources', 1.0],
+  ['slap together', 'rapid prototype', 0.9],
+  ['just get it done', 'implement with minimal ceremony', 1.0],
+  ['pave the cow path', 'refactor existing pattern', 1.0],
+
+  ['chạy tạm', 'ensure functionality', 1.0],
+  ['cho nó chạy đã', 'ensure functionality', 1.0],
+  ['đập đi xây lại', 'rewrite from scratch', 1.0],
+  ['chắp vá', 'integrate disparate components', 1.0],
+  ['làm cho đẹp', 'enhance visual appeal', 1.0],
+  ['làm cho nó pro', 'enhance visual appeal', 1.0],
+  ['nối dây', 'connect integrate', 1.0],
+  ['đấu nối', 'connect integrate', 1.0],
+  ['fix đê', 'fix bug', 1.0],
+  ['sửa đê', 'fix bug', 1.0],
+  ['lên production', 'prepare for deployment', 1.0],
+  ['đẩy lên', 'prepare for deployment', 0.8],
+  ['làm nhanh', 'rapid prototype', 1.0],
+  ['làm tạm', 'rapid prototype', 1.0],
+  ['dựng nhanh', 'rapid prototype', 1.0],
+  ['code cứt', 'poor quality code', 1.0],
+  ['xịn xò', 'high quality implementation', 1.0],
+  ['cấu hình', 'initial setup', 0.8],
+  ['tích hợp', 'integrate systems', 1.0],
 ];
 
 export function buildPhraseMatcher(): AhoCorasick {
@@ -124,4 +167,14 @@ export function buildPhraseMatcher(): AhoCorasick {
 
 export function getPhraseEntries(): Array<[string, string, number]> {
   return [...phraseEntries];
+}
+
+export function classifyOutput(output: string): 'intent' | 'constraint' | 'action' {
+  if (/^(analyze|fix|debug|identify|review|add|new|write|generate|implement|build|optimize|refactor|deploy|publish|release|package|migrate|upgrade|security|explain|search|find|enhance|prototype|integrate|polish|cleanup|ensure|rewrite|improve|connect)/i.test(output)) {
+    return 'intent';
+  }
+  if (/^(preserve|do not|minimal|modify|avoid|use existing|backward|no breaking|offline|token|keep|follow|mobile|cross|modularization|split)/i.test(output)) {
+    return 'constraint';
+  }
+  return 'action';
 }

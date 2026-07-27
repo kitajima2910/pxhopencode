@@ -52,6 +52,9 @@ function mapLexemeToIntent(word: string): Intent | null {
     search: 'search', find: 'find_root_cause',
     migrate: 'migration', deploy: 'deployment',
     release: 'release',
+    enhance: 'enhance_ui', prototype: 'rapid_prototype',
+    integrate: 'integrate_systems', glue: 'integrate_systems',
+    polish: 'refactor_vibe', cleanup: 'refactor_vibe',
   };
   return map[word.toLowerCase()] || null;
 }

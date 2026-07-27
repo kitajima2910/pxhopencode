@@ -20,6 +20,8 @@ Step 6: Inject compact string vào context → thực thi task
 Step 7: SAU task → reflection → ghi .memory/ (xem ## MEMORY REFLECTION trong agent file)
 ```
 
+**Guard token:** Sau Step 6, output `[MEMORY_INIT_DONE]` — nếu chưa output token này, user prompt KHÔNG được xử lý.
+
 ### LỆNH AUTO-INIT (copy-paste — chạy 1 lần)
 
 Script tự detect standalone vs embedded dựa trên vị trí của nó:
@@ -57,6 +59,7 @@ Copy từng file object trong `init.json.files` vào thư mục `.memory/` tươ
 | performance_optimization | patterns.json + bugs.json |
 | deployment, release, packaging | project.json + decisions.json |
 | explain, read_codebase, search, analyze_project | index.json + project.json |
+| enhance_ui, rapid_prototype, integrate_systems, refactor_vibe | patterns.json + decisions.json + project.json |
 | unknown (no match) | index.json + project.json (minimal) |
 
 ## COMPACT INJECTION FORMAT
@@ -86,6 +89,7 @@ MEMORY empty   ← khi memory_count = 0
 - Inject > 1 dòng/category
 - Confidence < 60 nhưng vẫn inject
 - Quên Step 7 (reflection) sau task
+- **Chưa output "[MEMORY_INIT_DONE]" nhưng đã xử lý user prompt**
 
 ## VERIFICATION
 
@@ -93,3 +97,4 @@ MEMORY empty   ← khi memory_count = 0
 - [ ] Injected ≤ 3 categories, ≤ 1 dòng/category
 - [ ] Confidence filter applied (skip < 60)
 - [ ] .memory/ updated sau task
+- [ ] Guard token `[MEMORY_INIT_DONE]` output trước khi xử lý prompt

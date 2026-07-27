@@ -18,6 +18,10 @@ export function buildIR(params: {
     ['preserve_behavior', 'no_breaking_changes', 'security_first', 'no_hallucination'].includes(c)
   );
 
+  const hasHighPriorityIntent = params.intents.some(i =>
+    ['rapid_prototype', 'integrate_systems'].includes(i)
+  );
+
   return {
     version: '1.0',
     raw: params.raw,
@@ -27,14 +31,14 @@ export function buildIR(params: {
     target: { frameworks, languages, platforms, libraries },
     files,
     actions: params.actions,
-    priority: hasCritical ? 'critical' : params.constraints.length > 3 ? 'high' : 'medium',
+    priority: hasCritical ? 'critical' : hasHighPriorityIntent ? 'high' : params.constraints.length > 3 ? 'high' : 'medium',
     safety: {
       preserveBehavior: params.constraints.includes('preserve_behavior'),
       noBreakingChanges: params.constraints.includes('no_breaking_changes'),
       backwardCompatible: params.constraints.includes('backward_compatible'),
       noHallucination: params.constraints.includes('no_hallucination'),
     },
-    outputStyle: params.intents.includes('explain') ? 'detailed' : 'concise',
+    outputStyle: params.intents.includes('explain') || params.intents.includes('refactor_vibe') || params.intents.includes('enhance_ui') ? 'detailed' : 'concise',
     optimizationLevel: 2,
     context: {
       projectType: detectProjectType({ frameworks, languages, platforms, libraries }),

@@ -248,6 +248,43 @@ const patterns: IntentPattern[] = [
     ],
     priority: 5,
   },
+  {
+    intent: 'enhance_ui',
+    patterns: [
+      /(make it pop|give it some sauce|make it look cool|make it pretty|it's giving)/i,
+      /(làm cho đẹp|làm cho nó pro|làm cho nó xịn|thiết kế lại giao diện)/i,
+      /(enhance.*(ui|visual|aesthetic)|improve.*(ui|look|appearance))/i,
+    ],
+    priority: 7,
+  },
+  {
+    intent: 'rapid_prototype',
+    patterns: [
+      /(throw together|cobble together|slap on|slap together)/i,
+      /(làm nhanh|làm tạm|chạy tạm|dựng nhanh|demo nhanh)/i,
+      /(rapid prototype|prototype nhanh|mvp|proof of concept|poc)/i,
+      /(just.*get.*done|quick.*dirty|make.*quick)/i,
+    ],
+    priority: 8,
+  },
+  {
+    intent: 'integrate_systems',
+    patterns: [
+      /(glue.*(together|code)|wire.*up|hook.*up|stitch.*together)/i,
+      /(nối dây|đấu nối|chắp vá|kết nối.*(hệ thống|module|các))|tích hợp/i,
+      /(integrate.*(system|service|api|component))/i,
+    ],
+    priority: 8,
+  },
+  {
+    intent: 'refactor_vibe',
+    patterns: [
+      /(clean it up|clean up|tidy up|pave the cow path)/i,
+      /(refactor.*(vibe|clean|aesthetic|đẹp))/i,
+      /(làm cho.*sạch|dọn.*code|clean.*code.*đẹp)/i,
+    ],
+    priority: 7,
+  },
 ];
 
 export function getIntentPatterns(): IntentPattern[] {

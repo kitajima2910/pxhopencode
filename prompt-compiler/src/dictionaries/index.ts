@@ -1,7 +1,7 @@
 import { Trie } from '../engine/trie.js';
 import { AhoCorasick } from '../engine/aho-corasick.js';
 import { buildTechnicalTrie } from './technical.js';
-import { buildPhraseMatcher } from './phrases.js';
+import { buildPhraseMatcher, classifyOutput, getPhraseEntries } from './phrases.js';
 import { getIntentPatterns } from './intents.js';
 import { getConstraintPatterns } from './constraints.js';
 import { buildFillerMatcher } from './fillers.js';
@@ -27,6 +27,8 @@ export class DictionaryManager {
   getFillerMatcher(): AhoCorasick { return this.fillerMatcher; }
   getIntentPatterns(): IntentPattern[] { return this.intentPatterns; }
   getConstraintPatterns(): ConstraintPattern[] { return this.constraintPatterns; }
+  classifyOutput(output: string): 'intent' | 'constraint' | 'action' { return classifyOutput(output); }
+  getPhraseEntries(): Array<[string, string, number]> { return getPhraseEntries(); }
 
   reload(): void {
     this.technicalTrie = buildTechnicalTrie();
