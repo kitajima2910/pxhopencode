@@ -14,8 +14,14 @@ Nhúng vào project có sẵn:
 ```bash
 cd project-của-bạn
 git clone https://github.com/kitajima2910/pxhopencode.git .opencode
-powershell -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/start.ps1"
 ```
+
+Sau đó chạy init (chọn 1 trong 2 cách):
+
+| Cách | Lệnh |
+|------|------|
+| **CMD** | `.opencode\start.bat` |
+| **PowerShell** | `powershell -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/start.ps1"` |
 
 Hoặc chỉ clone rồi chạy `opencode` — init script tự động chạy ở prompt đầu tiên.
 
@@ -31,6 +37,7 @@ pxhopencode/
 ├── package.json         # Project metadata v82.3
 ├── README.md            # Hướng dẫn sử dụng
 ├── STATUS.md            # Dashboard tiến độ
+├── start.bat            # Init script (chạy từ cmd hoặc double-click)
 ├── prompt-optimizer.md  # Prompt optimization 4-step pipeline
 ├── __prompt-log__.md    # Prompt cuối cùng (overwrite, git-ignored)
 ├── agents/              # 10 AI agents (T1-T4)
