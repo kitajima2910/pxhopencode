@@ -4,70 +4,58 @@
 
 $ErrorActionPreference = "Stop"
 
-# Derive pxhopencode root from script location (handles both standalone + embedded in .opencode/)
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $PxhopencodeRoot = Resolve-Path (Join-Path $ScriptDir "..\..")
 $initJson = Join-Path $PxhopencodeRoot "runtime\memory\init.json"
 
-# Detect mode: embedded (.opencode/) vs standalone
 $isEmbedded = $PxhopencodeRoot -match '\\.opencode$'
 if ($isEmbedded) {
+  $parentRoot = Split-Path $PxhopencodeRoot -Parent
+  if ($WorkspaceRoot -eq (Get-Location).Path) {
+    $WorkspaceRoot = $parentRoot
+  }
   $memoryDir = Join-Path $PxhopencodeRoot ".memory"
-  Write-Output "📁 Embedded mode: .memory/ inside .opencode/"
+  Write-Output "[MODE] Embedded: .memory/ at $memoryDir"
 } else {
   $memoryDir = Join-Path $WorkspaceRoot ".memory"
 }
 
-# Embedded mode: remove nested .git to avoid nested repo
 if ($isEmbedded) {
   $nestedGit = Join-Path $PxhopencodeRoot ".git"
   if (Test-Path -LiteralPath $nestedGit) {
-    Write-Output "🗑️ Removing .opencode/.git..."
-    # Strip readonly/hidden so deletion can proceed
+    Write-Output "[CLEAN] Removing .opencode/.git..."
     & cmd /c "attrib -R -H -S ""$nestedGit"" /S /D 2>nul"
-    # Try 1: PowerShell Remove-Item with \\?\ prefix (bypasses MAX_PATH 260 limit)
     $extPath = "\\?\$nestedGit"
     Remove-Item -LiteralPath $extPath -Recurse -Force -ErrorAction SilentlyContinue 2>$null
     if (-not (Test-Path -LiteralPath $nestedGit)) {
-      Write-Output "   ✅ Removed"
+      Write-Output "   [OK] Removed"
     } else {
-      # Fallback: cmd rmdir
       & cmd /c "rmdir /s /q ""$nestedGit"" 2>nul"
-      if (-not (Test-Path -LiteralPath $nestedGit)) { Write-Output "   ✅ Removed" }
-      else { Write-Output "   ⚠️ Could not remove .opencode/.git (files may be in use)" }
+      if (-not (Test-Path -LiteralPath $nestedGit)) { Write-Output "   [OK] Removed" }
+      else { Write-Output "   [WARN] Could not remove .opencode/.git" }
     }
   }
 }
 
-# Check if .memory/ already exists
 if (Test-Path $memoryDir) {
   $idx = Join-Path $memoryDir "index.json"
   if (Test-Path $idx) {
-    Write-Output "⏭️ .memory/ exists, skip init"
+    Write-Output "[SKIP] .memory/ exists, skip init"
     exit 0
   }
 }
 
-# Validate init.json exists
 if (-not (Test-Path $initJson)) {
-  Write-Error "❌ init.json not found at $initJson"
+  Write-Error "[FAIL] init.json not found at $initJson"
   exit 1
 }
 
-# Read init.json as raw text (keep exact JSON formatting)
 $initRaw = Get-Content $initJson -Raw
 $init = $initRaw | ConvertFrom-Json
 $now = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 $projectName = Split-Path $WorkspaceRoot -Leaf
 
-# Detect project metadata
-$fw = $null
-$lang = $null
-$rt = $null
-$bt = @()
-$tf = $null
-$li = $null
-$dt = @()
+$fw = $null; $lang = $null; $rt = $null; $bt = @(); $tf = $null; $li = $null; $dt = @()
 
 if (Test-Path (Join-Path $WorkspaceRoot "package.json")) {
   $lang = "TypeScript"; $rt = "node"; $bt = @("npm")
@@ -85,7 +73,6 @@ if (Test-Path (Join-Path $WorkspaceRoot "package.json")) {
   $lang = "Python"; $rt = "python"; $li = "ruff"; $tf = "pytest"; $bt = @("pip")
 }
 
-# Detect folder structure
 $fs = @()
 foreach ($d in @("src","agents","runtime","workflows","skills","_shared","components","pages","api","lib","hooks","styles","server","public","docs","tests","e2e")) {
   if (Test-Path (Join-Path $WorkspaceRoot $d)) { $fs += "$d/" }
@@ -93,25 +80,23 @@ foreach ($d in @("src","agents","runtime","workflows","skills","_shared","compon
 
 $projectId = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($WorkspaceRoot.ToUpper()))
 
-# Helper: write JSON file with proper formatting
 function Write-JsonFile {
   param($Path, $Content)
   $Content | Set-Content -Path $Path -Encoding UTF8 -NoNewline
 }
 
-# Build custom JSON strings for index.json and project.json
 $fwList = if ($fw) { "`"$fw`"" } else { "" }
 $indexJson = @"
 {"version":"1.0","project_id":"$projectId","project_name":"$projectName","created":"$now","updated":"$now","memory_count":0,"confidence":{},"tags":[],"frameworks":[$fwList]}
 "@
-$indexJson = $indexJson -replace '"frameworks":[""]', '"frameworks":[]'
-$indexJson = $indexJson -replace '"frameworks":[,]', '"frameworks":[]'
+$indexJson = $indexJson -replace '"frameworks":\[""\]', '"frameworks":[]'
+$indexJson = $indexJson -replace '"frameworks":\[,\]', '"frameworks":[]'
 
 $projectConfidence = if ($fw -or $lang) { 70 } else { 0 }
 $fStr = if ($fw) { "`"$fw`"" } else { "null" }
 $lStr = if ($lang) { "`"$lang`"" } else { "null" }
 $rStr = if ($rt) { "`"$rt`"" } else { "null" }
-$pmStr = "null"  # default, we export from pj if needed
+$pmStr = "null"
 $btStr = if ($bt.Count -gt 0) { '["' + ($bt -join '","') + '"]' } else { "[]" }
 $dtStr = if ($dt.Count -gt 0) { '["' + ($dt -join '","') + '"]' } else { "[]" }
 $tfStr = if ($tf) { "`"$tf`"" } else { "null" }
@@ -124,24 +109,18 @@ $projectJson = @"
 $projectJson = $projectJson -replace '"build_tools":\[""\]', '"build_tools":[]'
 $projectJson = $projectJson -replace '"build_tools":\[,', '"build_tools":['
 
-# Create .memory/ directory
 New-Item -ItemType Directory -Force -Path $memoryDir | Out-Null
 
-# Write all 13 files
 $count = 0
 $pm = $init.files.PSObject.Properties
 foreach ($entry in $pm) {
   $name = $entry.Name
   $path = Join-Path $memoryDir $name
 
-  if ($name -eq "index.json") {
-    Write-JsonFile $path $indexJson
-  } elseif ($name -eq "project.json") {
-    Write-JsonFile $path $projectJson
-  } else {
-    # Other files: write raw JSON string directly from init.json
+  if ($name -eq "index.json") { Write-JsonFile $path $indexJson }
+  elseif ($name -eq "project.json") { Write-JsonFile $path $projectJson }
+  else {
     $raw = $entry.Value | ConvertTo-Json -Depth 10 -Compress
-    # Fix empty arrays: PS converts [] to {} in some cases
     $raw = $raw -replace '"confidence":\s*\{\}', '"confidence":{}'
     $raw = $raw -replace '"bugs":\s*\{\}', '"bugs":[]'
     $raw = $raw -replace '"decisions":\s*\{\}', '"decisions":[]'
@@ -183,10 +162,8 @@ foreach ($entry in $pm) {
   $count++
 }
 
-Write-Output "✅ .memory/ initialized: $count files created"
+Write-Output "[OK] .memory/ initialized: $count files created"
 
-# ──────────────────────────────────────────────
-# Step 2: Ensure pxhopencode entries in parent .gitignore
 $gitignorePath = Join-Path $WorkspaceRoot ".gitignore"
 $templateGitignore = Join-Path $PxhopencodeRoot ".gitignore"
 
@@ -202,17 +179,14 @@ if (-not (Test-Path $gitignorePath)) {
   Write-Output "[OK] .gitignore created from pxhopencode template ($($templateEntries.Count) entries)"
 } else {
   $current = Get-Content $gitignorePath -Raw
-  $lineBreak = if ($current -match "\r\n") { "
-" } else { "
-" }
+  $lineBreak = if ($current -match "\r\n") { "`r`n" } else { "`n" }
   $appendCount = 0
   $linesToAppend = @()
 
   foreach ($entry in $templateEntries) {
     $escaped = [regex]::Escape($entry.Trim())
     $covered = $current -match "(^|$lineBreak)$escaped($|$lineBreak)"
-    $hasIgnoreAll = $current -match "(^|
-)\s*\*\s*(\n|\$)"
+    $hasIgnoreAll = $current -match "(^|`n)\s*\*\s*(`n|`$)"
     if (-not $covered -and -not $hasIgnoreAll) {
       $linesToAppend += $entry
       $appendCount++

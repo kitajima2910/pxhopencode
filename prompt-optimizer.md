@@ -4,14 +4,18 @@
 
 ```
 GATE: Memory Init
-1. Mode: có .opencode/opencode.json? → embedded | không → standalone
-2. memory_root = standalone: {CWD}/.memory/ | embedded: {CWD}/.opencode/.memory/
-3. Check {memory_root}/index.json exists
-   NO  → run: powershell -File "_shared/scripts/init-memory.ps1" (hoặc .opencode/_shared/...)
+1. Mode: Test-Path ".opencode/opencode.json" → embedded | không → standalone
+2. script_path = standalone: "_shared/scripts/init-memory.ps1" | embedded: ".opencode/_shared/scripts/init-memory.ps1"
+3. memory_root = standalone: "{CWD}/.memory/" | embedded: "{CWD}/.opencode/.memory/"
+4. Check Test-Path "{memory_root}/index.json"
+   NO  → CHẠY init script: powershell -ExecutionPolicy Bypass -File "{script_path}"
+         Script tự động: xoá .opencode/.git, merge .gitignore entries, tạo 13 files .memory/
    YES → read index.json → note memory_count + confidence
-4. Parse user intent → lookup intent→categories (tối đa 3)
-5. Read selected .memory/ files → inject 1-line compact string
-6. Output "[MEMORY_INIT_DONE]" — only then process user prompt
+5. Parse user intent → lookup intent→categories (tối đa 3)
+6. Read selected .memory/ files → inject 1-line compact string
+7. Output "[MEMORY_INIT_DONE]" — only then process user prompt
+
+⚠️ KHÔNG tạo .memory/ thủ công. Luôn chạy script. Script tự detect mode (standalone/embedded) dựa trên path của nó.
 ```
 
 **Skip gate = violation. Stop. Chạy lại từ đầu.**

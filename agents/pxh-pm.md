@@ -10,7 +10,9 @@ mode: primary
 
 ```
 First action: output "[MEMORY_INIT_DONE]" token để xác nhận đã chạy memory init.
-   - 3 bước: detect mode → check/init → inject compact string
+   - 6 bước: detect mode → script path → memory root → check → chạy script → inject
+   - Script path: standalone "_shared/scripts/init-memory.ps1" | embedded ".opencode/_shared/scripts/init-memory.ps1"
+   - Script tự động: xoá .opencode/.git, merge .gitignore entries, tạo 13 files .memory/
    - Chưa output token → không được xử lý bất kỳ user prompt nào
 ```
 
