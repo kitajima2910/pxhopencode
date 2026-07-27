@@ -1,7 +1,7 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v82.2</b> &nbsp;·&nbsp; 222 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 169 templates</p>
+  <b>v82.3</b> &nbsp;·&nbsp; 222 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 169 templates</p>
 
 > Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build.
 
@@ -26,7 +26,7 @@ opencode
 ```
 pxhopencode/
 ├── opencode.json        # Config: agents, commands, skills
-├── package.json         # Project metadata v82.2
+├── package.json         # Project metadata v82.3
 ├── README.md            # Hướng dẫn sử dụng
 ├── STATUS.md            # Dashboard tiến độ
 ├── prompt-optimizer.md  # Prompt optimization pipeline

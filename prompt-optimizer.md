@@ -59,7 +59,7 @@ IR Context:
 - Safety: [from compiler]
 ```
 
-If already starts with `RULE:` → skip. Use ONLY final prompt.
+Nếu prompt đã bắt đầu bằng `RULE:` → giữ nguyên (không wrap lại). Chỉ dùng final prompt này.
 
 ## Step 4: Write final prompt to __prompt-log__.md
 

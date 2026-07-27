@@ -186,28 +186,46 @@ foreach ($entry in $pm) {
 Write-Output "✅ .memory/ initialized: $count files created"
 
 # ──────────────────────────────────────────────
-# Step 2: Ensure .opencode/ is in parent .gitignore
+# Step 2: Ensure pxhopencode entries in parent .gitignore
 # ──────────────────────────────────────────────
 $gitignorePath = Join-Path $WorkspaceRoot ".gitignore"
-$opencodeEntry = ".opencode/  # AI Company - pxhopencode"
-$needsUpdate = $false
+$templateGitignore = Join-Path $PxhopencodeRoot ".gitignore"
+
+# Read template .gitignore lines (skip comments & blanks)
+$templateEntries = @()
+if (Test-Path $templateGitignore) {
+  $templateEntries = Get-Content $templateGitignore | Where-Object {
+    $_ -match '\S' -and $_ -notmatch '^\s*#'
+  }
+}
 
 if (-not (Test-Path $gitignorePath)) {
-  # No .gitignore — create one
-  $opencodeEntry | Set-Content -Path $gitignorePath -Encoding UTF8
-  Write-Output "✅ .gitignore created with .opencode/ entry"
+  # No .gitignore — create from template
+  $templateEntries | Set-Content -Path $gitignorePath -Encoding UTF8
+  Write-Output "✅ .gitignore created from pxhopencode template ($($templateEntries.Count) entries)"
 } else {
   $current = Get-Content $gitignorePath -Raw
-  # Check if .opencode/ is already covered
-  $hasOpendcode = $current -match '(^|\n)\s*\.opencode(\/|$)'
-  $hasIgnoreAll = $current -match '(^|\n)\s*\*\s*(\n|$)'
-  if (-not $hasOpendcode -and -not $hasIgnoreAll) {
-    # Append .opencode/ entry
-    $nl = if ($current -match '\r\n') { "`r`n" } else { "`n" }
-    Add-Content -Path $gitignorePath -Value "$($nl)$opencodeEntry" -Encoding UTF8 -NoNewline
-    Write-Output "✅ .gitignore updated: added .opencode/ entry"
+  $nl = if ($current -match '\r\n') { "`r`n" } else { "`n" }
+  $appendCount = 0
+  $linesToAppend = @()
+
+  foreach ($entry in $templateEntries) {
+    $escaped = [regex]::Escape($entry.Trim())
+    $covered = $current -match "(^|$nl)\s*$escaped(\s|$|$nl)"
+    $hasIgnoreAll = $current -match '(^|\n)\s*\*\s*(\n|$)'
+    if (-not $covered -and -not $hasIgnoreAll) {
+      $linesToAppend += $entry
+      $appendCount++
+    }
+  }
+
+  if ($appendCount -gt 0) {
+    $separator = if ((Get-Content $gitignorePath)[-1] -match '\S') { $nl } else { "" }
+    $toAdd = ($linesToAppend -join $nl).Trim()
+    Add-Content -Path $gitignorePath -Value "$separator$nl# pxhopencode$nl$toAdd" -Encoding UTF8 -NoNewline
+    Write-Output "✅ .gitignore updated: added $appendCount entries from pxhopencode template"
   } else {
-    Write-Output "⏭️ .gitignore already covers .opencode/"
+    Write-Output "⏭️ .gitignore already covers all pxhopencode entries"
   }
 }
 

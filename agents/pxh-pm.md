@@ -14,7 +14,7 @@ First action: output "[MEMORY_INIT_DONE]" token để xác nhận đã chạy me
    - Chưa output token → không được xử lý bất kỳ user prompt nào
 ```
 
-Tham khảo: `prompt-optimizer.md` Step 0, `runtime/memory/README.md` startup pipeline.
+Tham khảo: `prompt-optimizer.md` HARD GATE, `runtime/memory/README.md` startup pipeline.
 Ghi nhớ `memory_root` → inject vào `Task{context.memory_root}` cho mọi worker.
 
 **Skip gate = violation. Dừng lại và chạy init ngay.**
