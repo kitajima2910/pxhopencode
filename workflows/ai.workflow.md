@@ -1,6 +1,7 @@
 # Workflow AI — Phát triển ứng dụng AI
 
 > **LUẬT NGÔN NGỮ**: UI text (chat message, label, thông báo) = **tiếng Việt**. Code, variable, comments = **tiếng Anh**.
+> **ENFORCEMENT GATE:** Mỗi phase BẮT BUỘC chạy `enforce run <phase>` TRƯỚC, `enforce pass/fail <phase>` SAU. Bỏ qua = violation.
 
 ## Bước 1: Stack
 **Backend**: FastAPI + LangChain (mặc định), FastAPI + LlamaIndex, Django + Celery

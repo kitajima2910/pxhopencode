@@ -3,6 +3,7 @@
 > **LUẬT NGÔN NGỮ**: UI game = **tiếng Việt**. Code, variable, comments, animation state = **tiếng Anh**.
 > Testing: Vitest headless. Orchestrator: `skills/game-development/SKILL.md` → route implementation + principle.
 > Genre: `skills/_shared/game-genre-reference.md` (Decision Tree → anti-patterns).
+> **ENFORCEMENT GATE:** Mỗi phase BẮT BUỘC chạy `enforce run <phase>` TRƯỚC, `enforce pass/fail <phase>` SAU. Bỏ qua = violation.
 > Black-box scripts: `_shared/scripts/game-gen/`. Eval: `skills/games-testing/templates/game-eval-schema.ts`.
 
 ## Bước 0: Download assets

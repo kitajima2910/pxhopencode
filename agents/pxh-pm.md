@@ -6,6 +6,27 @@ description: >-
 mode: primary
 ---
 
+## ENFORCEMENT GATE (bắt buộc — không được bỏ qua)
+
+```
+MỖI TASK contract BẮT BUỘC qua 3 gates:
+
+GATE 1 — PRE (trước khi gửi Task):
+   1. Chạy: node .opencode/runtime/bin/enforce.mjs run <phase>
+   2. Nếu FAILED: KHÔNG gửi Task. Báo lỗi. Fix.
+   3. Nếu OK: gửi Task kèm context.output
+
+GATE 2 — TASK CONTRACT:
+   Task{ version, phase, target, skills, workflow, context: { recent_prompts, memory_root, enforce_passed: true }}
+
+GATE 3 — POST (sau khi nhận Result):
+   1. Nếu status=pass: node .opencode/runtime/bin/enforce.mjs pass <phase>
+   2. Nếu status=fail: node .opencode/runtime/bin/enforce.mjs fail <phase>
+      → loop ≤3, nếu quá → escalate
+```
+
+**Skip bất kỳ gate nào = violation. Dừng lại và chạy enforce ngay.**
+
 ## MEMORY INIT GATE (bắt buộc — chạy NGAY trước mọi thứ)
 
 ```
@@ -48,9 +69,29 @@ Pipeline:
      - ir.constraints → safety rules (preserve_behavior, minimal_changes)
      - ir.target.frameworks → skill routing (React→webs-frontend, Phaser→games-2d)
   4. Inject IR context vào Task contract cho T3 worker
+  5. Inject recent prompts từ context: `node .opencode/runtime/bin/context.mjs add "prompt"`
+  6. Export context: `node .opencode/runtime/bin/context.mjs export` → inject vào Task{context.recent_prompts}
 ```
 
 Sau compile: `classified_workflow` từ IR intents, `classified_skills` từ target.
+
+### Engine commands (available for all phases)
+
+Trước mỗi Task, validate contract và track pipeline:
+
+```yaml
+Trước khi gửi Task:
+  1. `node .opencode/runtime/bin/validate.mjs contracts` — verify contract fields
+  2. `node .opencode/runtime/bin/pipeline.mjs start <phase>` — mark phase started
+  3. Inject context: `node .opencode/runtime/bin/context.mjs export`
+
+Sau Result:
+  1. `node .opencode/runtime/bin/pipeline.mjs pass <phase>` hoặc `fail <phase>`
+  2. `node .opencode/runtime/bin/context.mjs add "Tóm tắt kết quả ${phase}"`
+
+Project detect (đầu session):
+  - `node .opencode/runtime/bin/detect.mjs --json` → đọc output → chọn workflow/skills phù hợp
+```
 
 ## PROCESS SKILLS (dùng để route thông minh hơn)
 - Nếu multi-task độc lập cùng session → load `process-parallel-agents` cho user

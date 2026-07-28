@@ -31,22 +31,9 @@ h3{font-size:1.05em;margin:24px 0 8px;color:var(--t1);font-weight:500}
 p{margin:10px 0;font-size:.95em}
 code{background:var(--code-bg);padding:2px 7px;border-radius:4px;font-size:.88em;font-family:'Consolas',monospace}
 pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:.85em;margin:12px 0;font-family:'Consolas',monospace}
-.badge-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
-.badge{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 14px;font-size:.82em}
-.badge b{color:var(--t1)}
-.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin:16px 0}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;transition:border-color .2s}
-.card:hover{border-color:var(--t1)}
-.card h4{font-size:.95em;margin-bottom:6px;font-weight:600}
 table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9em}
 th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
 th{color:var(--muted);font-size:.78em;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-.tier-box{padding:16px 20px;border-radius:10px;margin:12px 0;border-left:4px solid;transition:transform .2s}
-.tier-box:hover{transform:translateX(4px)}
-.t1{border-color:var(--t1);background:oklch(0.6 0.2 256 / 0.04)}
-.t2{border-color:var(--t2);background:oklch(0.7 0.2 85 / 0.04)}
-.t3{border-color:var(--t3);background:oklch(0.6 0.2 140 / 0.04)}
-.t4{border-color:var(--t4);background:oklch(0.65 0.2 300 / 0.04)}
 footer{text-align:center;padding:48px 24px;color:var(--muted);font-size:.8em;border-top:1px solid var(--border);margin-top:80px}
 @media(max-width:768px){
   body.docs{flex-direction:column}
@@ -58,163 +45,108 @@ footer{text-align:center;padding:48px 24px;color:var(--muted);font-size:.8em;bor
 <body class="docs">
 
 <nav>
-  <h2>pxhopencode Docs</h2>
+  <h2>pxhopencode</h2>
+  <a href="#install">Cài đặt</a>
+  <a href="#usage">Sử dụng</a>
+  <a href="#commands">Commands</a>
+  <a href="#engine">Runtime Engine</a>
   <a href="#architecture">Kiến trúc</a>
   <a href="#agents">Agents</a>
-  <a href="#workflows">Workflows</a>
-  <a href="#runtime">Runtime Engine</a>
-  <a href="#cli">CLI Tools</a>
-  <a href="#tests">Self-Tests</a>
-  <a href="#contracts">Contracts</a>
-  <a href="#install">Cài đặt</a>
 </nav>
 
 <main>
 
 <section id="hero">
-  <h1>pxhopencode — AI Company</h1>
-  <p>Kiến trúc Runtime 4 Tầng cho Vibe Coding với OpenCode</p>
-  <div class="badge-row">
-    <div class="badge">v82.4</div>
-    <div class="badge">10 agents</div>
-    <div class="badge">8 workflows</div>
-    <div class="badge">50 skills</div>
-    <div class="badge">6 contracts</div>
-    <div class="badge">49 self-tests</div>
-  </div>
+  <h1>pxhopencode v82.4</h1>
+  <p>AI Company cho Vibe Coding — nhúng vào project, gõ prompt, AI làm phần còn lại.</p>
+</section>
+
+<section id="install">
+  <h2>Cài đặt</h2>
+  <pre>cd project-của-bạn
+git clone https://github.com/kitajima2910/pxhopencode.git .opencode
+.opencode\start.bat</pre>
+  <p><code>start.bat</code>: remove nested .git, init memory, merge .gitignore, launch opencode.</p>
+</section>
+
+<section id="usage">
+  <h2>Sử dụng</h2>
+  <p>Trong opencode, gõ prompt tiếng Việt:</p>
+  <pre>"Xây dựng web blog với React"</pre>
+  <p>Hoặc lệnh <code>/</code>:</p>
+  <pre>/detect           # Auto-detect project framework
+/status           # Memory + pipeline state
+/diff             # Xem thay đổi
+/rollback src/    # Rollback file
+/feedback         # Gửi feedback
+/secret set OPENAI_KEY=sk-...  # Lưu secret</pre>
+</section>
+
+<section id="commands">
+  <h2>All Commands</h2>
+  <table>
+    <tr><th>Command</th><th>Chức năng</th><th>Gọi khi</th></tr>
+    <tr><td><code>/vibe</code></td><td>Full pipeline 11 bước</td><td>Dự án mới</td></tr>
+    <tr><td><code>/web</code></td><td>Web app</td><td>React, Next.js</td></tr>
+    <tr><td><code>/game</code></td><td>Game HTML5</td><td>Phaser, Three.js</td></tr>
+    <tr><td><code>/ai</code></td><td>Chatbot, RAG</td><td>LLM project</td></tr>
+    <tr><td><code>/debug</code></td><td>Debug + fix</td><td>Có bug</td></tr>
+    <tr><td><code>/status</code></td><td>Memory + pipeline state</td><td>Bất kỳ lúc</td></tr>
+    <tr><td><code>/diff</code></td><td>Xem file changes</td><td>Trước khi commit</td></tr>
+    <tr><td><code>/rollback &lt;file&gt;</code></td><td>Rollback file</td><td>Sai code</td></tr>
+    <tr><td><code>/secret set K=V</code></td><td>Lưu API key</td><td>Cần API key</td></tr>
+    <tr><td><code>/detect</code></td><td>Auto-detect framework</td><td>Đầu session</td></tr>
+    <tr><td><code>/pipeline watch</code></td><td>Live pipeline status</td><td>Theo dõi real-time</td></tr>
+    <tr><td><code>/validate</code></td><td>Check engine integrity</td><td>Verify setup</td></tr>
+    <tr><td><code>/context</code></td><td>Xem session context</td><td>Quên prompt cũ</td></tr>
+    <tr><td><code>/feedback</code></td><td>Gửi feedback</td><td>Sau session</td></tr>
+  </table>
+</section>
+
+<section id="engine">
+  <h2>Runtime Engine</h2>
+  <table>
+    <tr><th>Script</th><th>Path</th><th>Chức năng</th></tr>
+    <tr><td>validate</td><td><code>runtime/bin/validate.mjs</code></td><td>Check contracts/pipeline/memory integrity</td></tr>
+    <tr><td>pipeline</td><td><code>runtime/bin/pipeline.mjs</code></td><td>Track phase, live watch, pass/fail</td></tr>
+    <tr><td>diff</td><td><code>runtime/bin/diff.mjs</code></td><td>Git diff + rollback</td></tr>
+    <tr><td>secret</td><td><code>runtime/bin/secret.mjs</code></td><td>Key-value secrets → .opencode/.env</td></tr>
+    <tr><td>detect</td><td><code>runtime/bin/detect.mjs</code></td><td>Read package.json, Cargo.toml, pyproject.toml</td></tr>
+    <tr><td>context</td><td><code>runtime/bin/context.mjs</code></td><td>Recent prompts + session context</td></tr>
+  </table>
+  <p>49 self-tests: <code>vitest run .opencode/runtime/engine</code></p>
 </section>
 
 <section id="architecture">
-  <h2>Runtime 4 Tầng</h2>
-  <p>Kiến trúc phân tầng Microsoft Agent Mode. Giao tiếp qua typed contracts.</p>
-
-  <div class="tier-box t1">
-    <h3 style="color:var(--t1)">T1 — INTERFACE</h3>
-    <p>Validate input, classify prompt, format output.</p>
-    <p><code>pxh-help</code></p>
-  </div>
-  <div class="tier-box t2">
-    <h3 style="color:var(--t2)">T2 — ORCHESTRATION</h3>
-    <p>Auto-route task via runtime engine, enforce retry/recovery/reflection.</p>
-    <p><code>pxh-pm</code></p>
-  </div>
-  <div class="tier-box t3">
-    <h3 style="color:var(--t3)">T3 — WORKERS</h3>
-    <p>7 workers: architect, expert, fix-bugs, qa, review-code, devops, ui-ux.</p>
-  </div>
-  <div class="tier-box t4">
-    <h3 style="color:var(--t4)">T4 — INFRASTRUCTURE</h3>
-    <p>Persist state, checkpoint, log, metrics, alerting.</p>
-    <p><code>pxh-save-history</code></p>
-  </div>
+  <h2>Kiến trúc 4 Tầng</h2>
+  <table>
+    <tr><th>Tầng</th><th>Agent</th><th>Trách nhiệm</th></tr>
+    <tr><td>T1 Interface</td><td>pxh-help</td><td>Validate & classify prompt</td></tr>
+    <tr><td>T2 Orchestration</td><td>pxh-pm</td><td>Route, retry, context injection, pipeline track</td></tr>
+    <tr><td>T3 Workers</td><td>7 agents</td><td>Code, test, fix, review, build, UI/UX</td></tr>
+    <tr><td>T4 Infrastructure</td><td>pxh-save-history</td><td>State, checkpoint, log, metrics</td></tr>
+  </table>
 </section>
 
 <section id="agents">
   <h2>10 Agents</h2>
   <table>
-    <tr><th>Agent</th><th>Vai trò</th><th>@mention khi</th></tr>
-    <tr><td><code>pxh-help</code></td><td>Interface — classify input</td><td>(tự động)</td></tr>
-    <tr><td><code>pxh-pm</code></td><td>Orchestration — route, policy</td><td>(tự động)</td></tr>
-    <tr><td><code>pxh-architect</code></td><td>Thiết kế tech stack, DB, API</td><td>Cần schema</td></tr>
-    <tr><td><code>pxh-expert</code></td><td>Vibe code production</td><td>Cần code</td></tr>
-    <tr><td><code>pxh-fix-bugs</code></td><td>Root cause → fix</td><td>Có bug</td></tr>
-    <tr><td><code>pxh-qa</code></td><td>Viết & chạy test</td><td>Cần coverage</td></tr>
-    <tr><td><code>pxh-review-code</code></td><td>Security, perf audit</td><td>Cần review</td></tr>
-    <tr><td><code>pxh-devops</code></td><td>Lint → typecheck → build</td><td>Cần build</td></tr>
-    <tr><td><code>pxh-ui-ux</code></td><td>Layout, responsive</td><td>Cần design</td></tr>
-    <tr><td><code>pxh-save-history</code></td><td>State, checkpoint</td><td>(tự động)</td></tr>
+    <tr><th>Agent</th><th>Vai trò</th></tr>
+    <tr><td><code>pxh-help</code></td><td>Interface — classify input</td></tr>
+    <tr><td><code>pxh-pm</code></td><td>Orchestration — route, policy, engine commands</td></tr>
+    <tr><td><code>pxh-architect</code></td><td>Thiết kế tech stack, DB, API</td></tr>
+    <tr><td><code>pxh-expert</code></td><td>Vibe code production</td></tr>
+    <tr><td><code>pxh-fix-bugs</code></td><td>Root cause → fix</td></tr>
+    <tr><td><code>pxh-qa</code></td><td>Viết & chạy test</td></tr>
+    <tr><td><code>pxh-review-code</code></td><td>Security, perf audit</td></tr>
+    <tr><td><code>pxh-devops</code></td><td>Lint → typecheck → build</td></tr>
+    <tr><td><code>pxh-ui-ux</code></td><td>Layout, responsive</td></tr>
+    <tr><td><code>pxh-save-history</code></td><td>State, checkpoint</td></tr>
   </table>
-</section>
-
-<section id="workflows">
-  <h2>Workflows</h2>
-  <table>
-    <tr><th>Lệnh</th><th>Mục đích</th><th>Pipeline</th></tr>
-    <tr><td><code>/vibe</code></td><td>Full pipeline</td><td>11 bước: analyze → design → code → test → fix → review → build → persist</td></tr>
-    <tr><td><code>/web</code></td><td>Web app</td><td>React/Vite/Tailwind → API → DB → Deploy</td></tr>
-    <tr><td><code>/game</code></td><td>Game HTML5</td><td>Phaser/Three.js → assets → preview → polish</td></tr>
-    <tr><td><code>/ai</code></td><td>Chatbot, RAG</td><td>LLM → prompt → vector DB → deploy</td></tr>
-    <tr><td><code>/debug</code></td><td>Debug + Fix</td><td>Reproduce → root cause → fix → verify</td></tr>
-    <tr><td><code>/release</code></td><td>Build pipeline</td><td>Lint → typecheck → test → build</td></tr>
-  </table>
-</section>
-
-<section id="runtime">
-  <h2>Runtime Engine</h2>
-  <p><code>runtime/engine/</code> — Executable runtime với type-safe contracts.</p>
-  <table>
-    <tr><th>Module</th><th>File</th><th>Chức năng</th></tr>
-    <tr><td>Types</td><td><code>src/types.ts</code></td><td>6 contract interfaces + MemoryCategory + PipelineStep</td></tr>
-    <tr><td>Contracts</td><td><code>src/contracts/*.ts</code></td><td>Zod schemas: Request, Task, Result, Response, Event, State</td></tr>
-    <tr><td>Validator</td><td><code>src/validator.ts</code></td><td><code>validateContract()</code>, <code>assertContract()</code></td></tr>
-    <tr><td>Pipeline</td><td><code>src/pipeline.ts</code></td><td>Phase executor, checkpoint/resume, 10 phases</td></tr>
-    <tr><td>Router</td><td><code>src/router.ts</code></td><td><code>route()</code>, <code>classifyPrompt()</code>, <code>workflowToPhases()</code></td></tr>
-    <tr><td>Memory I/O</td><td><code>src/memory.ts</code></td><td><code>readMemory()</code>, <code>writeMemory()</code>, <code>mergeMemory()</code></td></tr>
-  </table>
-</section>
-
-<section id="cli">
-  <h2>CLI Tools</h2>
-  <table>
-    <tr><th>Lệnh</th><th>Chức năng</th></tr>
-    <tr><td><code>npm run vibe -- init</code></td><td>Tạo project mới (web/game/ai/tool)</td></tr>
-    <tr><td><code>npm run vibe -- status</code></td><td>Dashboard: memory entries + pipeline state</td></tr>
-    <tr><td><code>npm run vibe -- resume</code></td><td>Tiếp tục session dang dở</td></tr>
-    <tr><td><code>npm run vibe -- feedback</code></td><td>Ghi feedback → .memory/feedback.json</td></tr>
-    <tr><td><code>npm run vibe -- scaffold</code></td><td>Scaffold từ template</td></tr>
-    <tr><td><code>npm run onboard</code></td><td>First-run wizard</td></tr>
-    <tr><td><code>npm run status</code></td><td>Terminal dashboard (tương tự)</td></tr>
-    <tr><td><code>npm run test</code></td><td>49 architecture self-tests</td></tr>
-  </table>
-</section>
-
-<section id="tests">
-  <h2>Self-Tests</h2>
-  <p>49 tests verify architecture integrity:</p>
-  <ul>
-    <li><strong>13 contract tests</strong> — validation pass/fail cho 6 contracts</li>
-    <li><strong>6 pipeline tests</strong> — phase order, agent mapping</li>
-    <li><strong>14 router tests</strong> — intent classification, workflow routing</li>
-    <li><strong>16 architecture tests</strong> — agents, workflows, skills, config integrity</li>
-  </ul>
-  <pre>npm test</pre>
-</section>
-
-<section id="contracts">
-  <h2>Contracts</h2>
-  <table>
-    <tr><th>Contract</th><th>Hướng</th><th>Validation</th></tr>
-    <tr><td>Request</td><td>T1→T2</td><td>version, type, target, context</td></tr>
-    <tr><td>Task</td><td>T2→T3</td><td>version, phase, target, skills, workflow</td></tr>
-    <tr><td>Result</td><td>T3→T2</td><td>version, status, artifacts[]</td></tr>
-    <tr><td>Response</td><td>T2→T1</td><td>version, status, summary</td></tr>
-    <tr><td>Event</td><td>any→T4</td><td>version, type, phase, reflection</td></tr>
-    <tr><td>State</td><td>T4→T2</td><td>version, checkpoint, session_id</td></tr>
-  </table>
-  <p>All validated via Zod schemas — invalid contracts rejected at parse time.</p>
-</section>
-
-<section id="install">
-  <h2>Cài đặt</h2>
-  <p>Chỉ 2 lệnh — sau đó chỉ cần gõ prompt.</p>
-  <pre>cd project-của-bạn
-git clone &lt;url&gt; .opencode
-.opencode\start.bat</pre>
-  <p><code>start.bat</code> tự động init memory + launch <code>opencode</code>.</p>
-</section>
-
-<section id="usage">
-  <h2>Sử dụng</h2>
-  <p>Trong <code>opencode</code>, gõ prompt tiếng Việt:</p>
-  <pre>"Xây dựng web blog với React"</pre>
-  <p>Hoặc lệnh <code>/</code>:</p>
-  <pre>/status
-/feedback
-/vibe Làm game platformer</pre>
 </section>
 
 <footer>
-  pxhopencode v82.4 · 2 lệnh cài đặt · 0 lệnh cần nhớ
+  pxhopencode v82.4 · Clone → start.bat → prompt
 </footer>
 
 </main>

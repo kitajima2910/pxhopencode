@@ -2,6 +2,7 @@
 
 > **LUẬT NGÔN NGỮ**: UI text = **tiếng Việt**. Code, log, debug messages = **tiếng Anh**. Debug game: headless test (`skills/games-testing/`).
 > Eval: `skills/games-testing/templates/game-eval-schema.ts`.
+> **ENFORCEMENT GATE:** Mỗi phase BẮT BUỘC chạy `enforce run <phase>` TRƯỚC, `enforce pass/fail <phase>` SAU. Bỏ qua = violation.
 
 ## Quy trình (8 bước)
 | # | Bước | Làm | Verify Gate |

@@ -1,6 +1,7 @@
 # Workflow Tool — CLI, Automation, Extension, Package
 
 > **LUẬT NGÔN NGỮ**: UI text = tiếng Việt. Code = tiếng Anh.
+> **ENFORCEMENT GATE:** Mỗi phase BẮT BUỘC chạy `enforce run <phase>` TRƯỚC, `enforce pass/fail <phase>` SAU. Bỏ qua = violation.
 
 ## Bước 1: Xác định loại tool
 

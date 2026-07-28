@@ -105,3 +105,26 @@ Red Flag: Bỏ qua memory reflection = session sau mất context. Không bao gi�
 - [ ] Chạy `npx vitest run` sau mỗi feature
 - [ ] .gitignore có .opencode/ + .github/
 
+## ENGINE COMMANDS (bắt buộc)
+
+Các lệnh engine có sẵn để dùng trong task:
+
+```yaml
+Validate contract:  node .opencode/runtime/bin/validate.mjs contracts
+Pipeline status:    node .opencode/runtime/bin/pipeline.mjs status
+Diff changes:       node .opencode/runtime/bin/diff.mjs diff <file>
+Rollback file:      node .opencode/runtime/bin/diff.mjs rollback <file>
+Detect project:     node .opencode/runtime/bin/detect.mjs
+Context export:     node .opencode/runtime/bin/context.mjs export
+Secrets get:        node .opencode/runtime/bin/secret.mjs get <key>
+```
+
+## ENFORCEMENT RULES
+
+1. Task contract PHẢI có `context.enforce_passed = true` — nếu thiếu, báo T2.
+2. Trước khi code/fix: chạy `detect.mjs` để biết project framework.
+3. Sau khi code xong: dùng `diff.mjs diff` để kiểm tra thay đổi.
+4. Nếu cần rollback: dùng `diff.mjs rollback <file>` (có git).
+5. Secret KHÔNG bao giờ hardcode — dùng `secret.mjs get <key>`.
+6. KHÔNG BAO GIỜ tự quyết định retry/hủy — trả Result cho T2.
+

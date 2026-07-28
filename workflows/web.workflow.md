@@ -2,6 +2,7 @@
 
 > **LUẬT NGÔN NGỮ**: UI text (nút, tiêu đề, label, placeholder, menu, error message) = **tiếng Việt**. Code, variable, comments, API routes = **tiếng Anh**.
 > **KHÔNG START SERVER**: Tuyệt đối không tự ý chạy `npm run dev`, `npx vite`, `npx serve`, hay bất kỳ dev server nào. Chỉ hướng dẫn user cách chạy. Để user tự quyết định khi nào start server.
+> **ENFORCEMENT GATE:** Mỗi phase BẮT BUỘC chạy `enforce run <phase>` TRƯỚC, `enforce pass/fail <phase>` SAU. Bỏ qua = violation.
 
 ## Bước 1: Tech stack
 
