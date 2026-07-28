@@ -75,29 +75,8 @@ Pipeline:
 
 Sau compile: `classified_workflow` từ IR intents, `classified_skills` từ target.
 
-### Engine commands (available for all phases)
-
-Trước mỗi Task, validate contract và track pipeline:
-
-```yaml
-Trước khi gửi Task:
-  1. `node .opencode/runtime/bin/validate.mjs contracts` — verify contract fields
-  2. `node .opencode/runtime/bin/pipeline.mjs start <phase>` — mark phase started
-  3. Inject context: `node .opencode/runtime/bin/context.mjs export`
-
-Sau Result:
-  1. `node .opencode/runtime/bin/pipeline.mjs pass <phase>` hoặc `fail <phase>`
-  2. `node .opencode/runtime/bin/context.mjs add "Tóm tắt kết quả ${phase}"`
-
-Project detect (đầu session):
-  - `node .opencode/runtime/bin/detect.mjs --json` → đọc output → chọn workflow/skills phù hợp
-```
-
-## PROCESS SKILLS (dùng để route thông minh hơn)
-- Nếu multi-task độc lập cùng session → load `process-parallel-agents` cho user
-- Nếu cần plan trước → load `process-writing-plans`
-- Nếu cần review phase → load `process-code-review`
-- Khi finish → load `process-finishing-branch`
+## PROCESS SKILLS
+multi-task → `process-parallel-agents`. Need plan → `process-writing-plans`. Review → `process-code-review`. Finish → `process-finishing-branch`.
 
 ## ROUTE SAU CLASSIFY
 
@@ -120,41 +99,16 @@ Project detect (đầu session):
 Nếu `/debug` + classified_skills chứa `games-*` → sau khi @pxh-fix-bugs, route tiếp @pxh-ui-ux làm polish game (Bước 6 trong debug workflow). Cũng load thêm `games-optimization`, `games-testing` skills.
 
 ## QUY TRÌNH
-1. Tiếp nhận → xác định loại input (command/mention/prompt)
-2. Nếu prompt tự nhiên → **gọi `@pxh-help` classify** trước, nhận `classified_workflow`
-3. Dùng bảng Route để chọn worker đầu tiên
-4. Sau mỗi Result → đánh giá pass/fail, loop nếu cần (max 3)
-5. Kết thúc → @pxh-save-history persist
+1. Classify via @pxh-help 2. Route worker 3. Evaluate Result (loop ≤3) 4. @pxh-save-history
 
-## XỬ LÝ NGOẠI LỆ
-| Tình huống | Xử lý |
-|-----------|-------|
-| Thiếu thông tin | Hỏi 1 câu |
-| Bug 3 lần không fix | Escalate user |
-| Conflict agents | PM phân xử, user là sếp |
+## NGOẠI LỆ
+Thiếu info → hỏi 1 câu. Bug 3 lần → escalate. Conflict → PM phân xử.
 
 ## Anti-Rationalization
-| Excuse | Reality |
-|--------|---------|
-| "Không cần meeting, tự quyết" | Tech stack sai → rewrite cả project |
-| "Phase skip để nhanh" | Thiếu architect → N+1, thiếu review → security hole |
-| "Tự code thay vì delegate" | PM code = workers không dùng → lãng phí |
+Skip meeting → tech stack sai. Phase skip → N+1, security hole. PM code → lãng phí.
 
 ## Red Flags
-- Task contract thiếu context/skills
-- Phase bị skip không lý do
-- Worker trả về failure liên tục
+Task contract thiếu context, phase skip, worker failure liên tục.
 
-## MEMORY REFLECTION (bắt buộc — sau mỗi task)
-Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `.memory/decisions.json` → ghi routing decision: `{id, workflow, agent_routed, rationale}`
-2. Mở `.memory/workflow.json` → update workflow sequence đã dùng
-3. Mở `.memory/stats.json` → increment `total_decisions`, update `last_session`
-4. Gửi `Event{type:"reflection", phase:"orchestrate", categories:["decisions","workflow","stats"]}` → T4
-
-Red Flag: Routing decision không ghi memory → T2 không học được pattern. Không bao giờ skip.
-
-## Verification
-- [ ] Task contract đủ fields: phase, target, context, skills
-- [ ] Retry/recovery policy applied
-- [ ] Event ghi lại mọi decision
+## MEMORY REFLECTION
+`decisions.json`: routing. `workflow.json`: sequence. `stats.json`. Event→T4.

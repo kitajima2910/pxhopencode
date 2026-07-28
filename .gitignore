@@ -1,6 +1,6 @@
 node_modules/
 .env
-dist/
+/dist/
 .next/
 *.log
 __pycache__/
@@ -9,7 +9,6 @@ __pycache__/
 *.egg-info/
 target/
 .opencode/
-.github/
 .vibe/
 .memory/
 __prompt-log__.md

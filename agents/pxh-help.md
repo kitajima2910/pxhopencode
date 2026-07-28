@@ -58,26 +58,10 @@ T1 không chạy engine scripts trực tiếp, nhưng BẮT BUỘC:
 - Request contract PHẢI có `context.enforce_ready = true` để T2 biết có thể chạy enforce
 
 ## Anti-Rationalization
-| Excuse | Reality |
-|--------|---------|
-| "Tự phân tích prompt, không cần quickref" | Chọn sai workflow → code sai hướng |
-| "Xác nhận với user tốn thời gian" | Sai ngay từ đầu → làm lại |
-| "Hỏi 1 câu là đủ" | Thiếu context → agent không biết làm gì |
+Không quickref → sai workflow. Không confirm → sai hướng. 1 câu hỏi → thiếu context.
 
 ## Red Flags
-- Chọn workflow không dựa trên prompt keywords
-- Request contract thiếu classified_workflow
-- User không hiểu agent đang làm gì
+Workflow không từ prompt, request thiếu classified_workflow, user không hiểu.
 
-## Verification
-- [ ] Workflow + skill chọn từ quickref
-- [ ] classified_workflow + classified_skills đủ
-- [ ] User confirm nếu < 80% confidence
-
-## MEMORY REFLECTION (bắt buộc — sau mỗi task)
-Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `.memory/stats.json` → update `last_session`
-2. Mở `.memory/preferences.json` → update habits nếu phát hiện mới
-3. Gửi `Event{type:"reflection", phase:"classify", categories:["stats","preferences"]}` → T4
-
-Red Flag: Classification decision không ghi memory → mất pattern học từ prompt. Không bao giờ skip.
+## MEMORY REFLECTION
+`stats.json`: last_session. `preferences.json`: habits. Event→T4.

@@ -6,17 +6,17 @@
 |--------|---------|
 | Giai đoạn | 10/10 TOÀN DIỆN ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v82.4 |
-| Agents | 10 (Tầng 1-4) |
+| Phiên bản | v82.5 |
+| Agents | 10 (Tầng 1-4, đã ultra-compression -446 dòng) |
 | Workflows | 8 theo lĩnh vực |
-| Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
+| Skills | 50 skills |
 | Contracts | 6 cấu trúc (Zod-validated) |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 | Runtime Engine | ✅ Zod contracts, pipeline executor, intent router, memory I/O |
-| Self-tests | ✅ 49 tests (contracts, pipeline, router, architecture) |
-| CLI Tools | ✅ vibe.mjs (init/status/resume/feedback/scaffold), status.mjs, onboard.mjs |
-| Dashboard | ✅ Terminal dashboard + Web dashboard (HTML+JS+CSS) |
-| MCP | ✅ `.opencode/mcp.json` (filesystem + GitHub) |
+| Self-tests | ✅ 49/49 pass |
+| CLI Tools | ✅ vibe.mjs, enforce.mjs, pipeline.mjs, diff.mjs + 6 tools |
+| CI/CD | ✅ GitHub Actions test workflow |
+| Dashboard | ✅ Web dashboard (OKLCH design tokens) |
 
 ## 🔗 Ma trận liên kết
 
@@ -60,6 +60,7 @@
 | Workflow trim + shared includes | -400 dòng |
 | runtime/README.md, README.md trim | -179 dòng |
 | **V2.0: Agent slim (9 files)** | **-227 dòng (-39%)** |
+| **V82.5: Agent ultra-compression (10 files)** | **-446 dòng (-47%)** |
 
 | **V2.0: Contracts schema concise** | **-29 dòng** |
 | **V2.0: Skill quickref → 29 SKILL.md reads avoided** | **-728 dòng (-96%)** |
@@ -68,7 +69,7 @@
 | **V3.0: prompt-optimizer.md trim (53→35 dòng)** | **-18 dòng (-34%)** |
 | **V3.0: README.md changelog → _shared/** | **-124 dòng (-35% README)** |
 | **V4.0: Ultra compression (10 files)** | **-1.600+ dòng** |
-| **Total** | **~9.102 dòng khỏi prompt context** |
+| **Total** | **~9.548 dòng khỏi prompt context** |
 
 ## ✅ Vibe Coding Memory Engine v1.0
 
@@ -100,6 +101,7 @@
 | 2026-07-27 | v82.2 | **Prompt Log final release** — `prompt-optimizer.md` Step 4 ghi final prompt vào `__prompt-log__.md` (overwrite, git-ignored). Agent bắt buộc ghi prompt cuối cùng (RULE+TARGET+IR) vào file này trước khi xử lý. Xoá `docs-vibe/galaga.html` + gỡ link nav. Final audit PASS — 0 lỗi. |
 | 2026-07-27 | v82.3 | **First-time setup hoàn chỉnh** — `init-memory.ps1` Step 2 nâng cấp: merge toàn bộ entries từ template `.gitignore` (`.opencode/`, `.github/`, `.vibe/`, `.memory/`, `__prompt-log__.md`) vào parent project. Phiên bản đồng bộ STATUS.md → package.json → README.md → docs-vibe/index.html. |
 | 2026-07-27 | v82.4 | **start.bat + init-memory.ps1 overhaul** — thêm `start.bat` để chạy init từ cmd/double-click. Fix parser bug PSv5.1 (đổi `'\S'` → `"\S"`). Step 2: merge toàn bộ 15 entries từ template `.gitignore`. Embedded mode: tự detect parent project qua `Split-Path $PxhopencodeRoot`, đảm bảo `.memory/` luôn trong `.opencode/`, xoá `.opencode/.git/`, `.gitignore` ở project root. Tested: 4/4 checks PASS. |
+| 2026-07-28 | v82.5 | **Vibe Code Upgrade — zero-friction** (6 upgrades). Agent ultra-compression: 10 agents 953→507 dòng (-47%). Memory auto-seed: init script tự populate architecture/patterns/preferences, `memory_count > 0`. Vibe Profile: auto-detect linter, test framework, UI lib → ghi `preferences.json`. Prompt-compiler dist/ rebuilt (136 files), gitignore fixed (`dist/→/dist/`). CI/CD: `.github/workflows/test.yml`. Auto-build prompt-compiler khi init nếu dist/ missing. `.github/` removed from .gitignore. |
 | 2026-07-26 | v77 | **Token Optimization V4.0 — Ultra Compression** — Compress `game-genre-reference.md` 733→78d (-89%), `game-h5-3d-marble-racing.md` 494→72d (-85%), `3d-web-experience/SKILL.md` 252→100d (-60%), `game.workflow.md` 235→94d (-60%), `game-design-h5-2d.md` 183→63d (-66%), `game-design-h5-marble-racing.md` 147→63d (-57%), `game-design-h5-3d.md` 125→52d (-58%), `init.json` 136→30d (-78%), `debug.workflow.md` 131→60d (-54%), `ui-ux/SKILL.md` checklist trim (-39d). **Total savings: ~1.600+ dòng khỏi prompt context.** |
 | 2026-07-26 | v76 | **Agent Skills Hub Game Upgrade** — Tham khảo [agent-skills-hub/game-development](https://github.com/agent-skills-hub/agent-skills-hub/tree/main/skills/game-development). Tạo orchestrator `skills/game-development/SKILL.md` bridge implementation (pxhopencode) + principles (agent-skills-hub). Tạo 7 principle sub-skills mới: `game-art`, `game-design`, `multiplayer`, `vr-ar`, `web-games`, `mobile-games`, `pc-games`. Update `/game` command, `game.workflow.md`, `opencode.json`. Skill count: 39→46. |
 | 2026-07-26 | v75 | **UI/UX Pro Max Upgrade** — Tham khảo [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill). Nâng cấp `skills/ui-ux/SKILL.md`: priority-based rule categories (1-10, Critical→Low), design system workflow (Analyze → Tokens → Supplement), design dials (variance/motion/density), design tokens section, pre-delivery checklist merge. Giữ nguyên game HUD, CLI design system, anti-rationalization. |

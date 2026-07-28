@@ -42,36 +42,14 @@ Nếu output nhìn giống "AI Studio" (phẳng, hardcode màu, không spacing, 
    - (Chạy + đọc output — KHÔNG đọc source script)
 5. Chỉ code tay khi template không đáp ứng
 
-## HEADLESS TESTING (không server)
-Dùng headless testing thay vì chạy server + chrome-devtools preview:
-
-```bash
-npx vitest run              # Unit + integration tests
-npx vitest --coverage       # Coverage check (≥ 80%)
-```
-
-Sau mỗi feature: viết test → `npx vitest run` verify logic. Dùng `skills/games-testing/` cho game (headless Phaser/Three.js helpers), `skills/webs-testing/` cho web (jsdom/happy-dom).
-
-Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpointTrigger, assertFPS, assertMemoryLeak) + `node _shared/scripts/game-gen/eval-grader.js --input report.json --threshold 0.8`.
+## HEADLESS TESTING
+`npx vitest run` (unit). `npx vitest --coverage` (≥80%). Game: `skills/games-testing/`. Web: `skills/webs-testing/`. Game quality: `eval-grader.js --threshold 0.8`.
 
 ## VIBE CODE PROTOCOL
-1. Đọc `_shared/code-preservation-rules.md` + STATUS.md + project structure + skill SKILL.md + templates (batch read)
-2. Nếu workflow có download assets → chạy script ngay: `powershell.exe -ExecutionPolicy Bypass -File "..."`
-3. Code ngay — 1 file chạy được trước. Dùng template có sẵn.
-4. Sau mỗi feature: chạy `npx vitest run` để verify logic. Code → Test → Fix (max 3 lần).
-5. 1 feature/lần. MVP trước, polish sau (theo Polish Checklist trong game workflow)
-6. Tạo `.gitignore` với `.opencode/`, `.github/`
-7. 3 lần lỗi → báo user + hypothesis
+1. Batch read: STATUS.md + SKILL.md + templates 2. Download assets nếu có 3. Code 1 file chạy được trước 4. Sau feature: `npx vitest run` 5. MVP → polish 6. `.gitignore` đủ 7. 3 lỗi → báo user
 
-## CODE PRESERVATION (bắt buộc từ `_shared/code-preservation-rules.md`)
-1. Đọc STATUS.md nếu tồn tại.
-2. Không rewrite project — chỉ sửa/thêm trong phạm vi TARGET.
-3. Chỉ tác động trong TARGET — nếu TARGET trống, không tự ý thay đổi.
-4. Ưu tiên thay đổi tối thiểu — thêm đúng chỗ cần, không refactor lung tung.
-5. Giữ nguyên code đang hoạt động — không touch code không liên quan.
-6. Verify TARGET — đảm bảo code chạy đúng trước khi kết thúc.
-7. Cập nhật STATUS.md sau mỗi thay đổi.
-8. **Không tự ý start server** — tuyệt đối không `npm run dev`, `npx vite`, `npx serve`. Chỉ hướng dẫn user.
+## CODE PRESERVATION
+Read STATUS.md. Only modify TARGET. Minimal changes. Preserve working code. Verify. Update STATUS.md. **No `npm run dev`/`npx vite`.**
 
 ## QUY TRÌNH
 1. Xác định loại + workflow + skill
@@ -79,52 +57,14 @@ Game quality: dùng `game-eval-schema.ts` (assertPhysicsStable, assertCheckpoint
 3. Result → T2 (feedback loop). Bug/T2 route. KHÔNG gọi worker trực tiếp.
 
 ## Anti-Rationalization
-| Excuse | Reality |
-|--------|---------|
-| "Template không cần, tự code nhanh hơn" | Template đã battle-tested, code tay dễ bug |
-| "Skip test, feature nhỏ mà" | Feature nhỏ + bug nhỏ = production incident |
-| "Context budget thì kệ, đọc hết project" | Token tràn → agent mất focus, output kém |
+Template có sẵn → code tay dễ bug. Feature nhỏ + bug nhỏ = incident. Token tràn → mất focus.
 
 ## Red Flags
-- Code không theo template có sẵn
-- Feature xong không chạy test
-- Đọc > 5 file không cần thiết
+Code không template, feature xong không test, đọc >5 file không cần.
 
-## MEMORY REFLECTION (bắt buộc — sau mỗi task)
-Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `.memory/patterns.json` → thêm pattern code mới (naming, imports, error handling)
-2. Mở `.memory/decisions.json` → ghi ADR nếu có decision kiến trúc
-3. Mở `.memory/project.json` → update framework/language/tools nếu phát hiện mới
-4. Mở `.memory/stats.json` → increment `total_patterns`, update `last_session`
-5. Gửi `Event{type:"reflection", phase:"code", categories:["patterns","decisions","project","stats"]}` → T4
-
-Red Flag: Bỏ qua memory reflection = session sau mất context. Không bao giờ skip.
+## MEMORY REFLECTION
+`patterns.json`: naming/imports. `decisions.json`: ADR. `project.json`: framework update. `stats.json`. Event→T4.
 
 ## Verification
-- [ ] Dùng template trước khi code tay
-- [ ] Chạy `npx vitest run` sau mỗi feature
-- [ ] .gitignore có .opencode/ + .github/
-
-## ENGINE COMMANDS (bắt buộc)
-
-Các lệnh engine có sẵn để dùng trong task:
-
-```yaml
-Validate contract:  node .opencode/runtime/bin/validate.mjs contracts
-Pipeline status:    node .opencode/runtime/bin/pipeline.mjs status
-Diff changes:       node .opencode/runtime/bin/diff.mjs diff <file>
-Rollback file:      node .opencode/runtime/bin/diff.mjs rollback <file>
-Detect project:     node .opencode/runtime/bin/detect.mjs
-Context export:     node .opencode/runtime/bin/context.mjs export
-Secrets get:        node .opencode/runtime/bin/secret.mjs get <key>
-```
-
-## ENFORCEMENT RULES
-
-1. Task contract PHẢI có `context.enforce_passed = true` — nếu thiếu, báo T2.
-2. Trước khi code/fix: chạy `detect.mjs` để biết project framework.
-3. Sau khi code xong: dùng `diff.mjs diff` để kiểm tra thay đổi.
-4. Nếu cần rollback: dùng `diff.mjs rollback <file>` (có git).
-5. Secret KHÔNG bao giờ hardcode — dùng `secret.mjs get <key>`.
-6. KHÔNG BAO GIỜ tự quyết định retry/hủy — trả Result cho T2.
+Template trước code tay. `npx vitest run` sau feature. .gitignore đủ.
 

@@ -29,39 +29,15 @@ Tiếp nhận `Event{version, type, phase, reflection, category}` từ bất k�
 ## STATUS.md
 Chủ quản duy nhất. Cập nhật sau mỗi Event. Đọc hiện tại → cập nhật section → ghi đè.
 
-## MEMORY REFLECTION (bắt buộc — sau mỗi task)
-Theo định dạng compact `runtime/memory/README.md`. Thực thi:
-1. Mở `.memory/stats.json` → increment `total_memories`, update `last_session`, `updated`
-2. Mở `.memory/snapshots.json` → snapshot nếu checkpoint
-3. Mở `.memory/timeline.json` → thêm entry nếu phase change
-4. Mở `.memory/index.json` → update `memory_count`, `updated`
-5. Gửi `Event{type:"reflection", phase:"persist", categories:["stats","snapshots","timeline","index"]}` → T4 (tự thân)
-
-Red Flag: Event không ghi memory → mất audit trail. Không bao giờ skip.
-
-## ENFORCEMENT GATE
-T4 không chạy engine scripts, nhưng BẮT BUỘC:
-- Event contract PHẢI có `phase` tương ứng với pipeline phase
-- Chỉ persist sau khi T2 confirm enforce post-hook đã chạy
-
 ## Anti-Rationalization
-| Excuse | Reality |
-|--------|---------|
-| "Không cần STATUS.md, nhớ hết mà" | Session sau không biết đang ở phase nào |
-| "Ghi ADR sau" | Quyết định không doc = mất context |
-| "Bug report không cần, fix rồi" | Bug tái phát → không có trace |
-| "Dùng custom protocol nhanh hơn" | Custom command không ai biết → mất event chain |
+Không STATUS.md → mất phase. Ghi ADR sau → mất context. Bug report skip → không trace. Custom protocol → mất event chain.
 
 ## Red Flags
-- STATUS.md không cập nhật sau mỗi Event
-- Event contract thiếu field (version/type/phase)
-- Ghi vào `docs/` thay vì `.memory/` — `.memory/` là single source of truth
+STATUS.md không update, Event thiếu field, ghi vào `docs/` thay vì `.memory/`.
 
-## Verification
-- [ ] Event contract đủ fields: version, type, phase, category
-- [ ] .memory/{category}.json updated tương ứng
-- [ ] STATUS.md updated nếu event là phase_start/end/error/checkpoint
+## MEMORY REFLECTION
+`stats.json`: total_memories. `snapshots.json`: checkpoint. `timeline.json`: phase. `index.json`: memory_count. Event→T4.
 
 ## NGUYÊN TẮC
-Chính xác. Đầy đủ. Có tổ chức. Không spam. `.memory/` là single source of truth. Không ghi vào `docs/`.
+`.memory/` single source of truth. Không ghi `docs/`. Chính xác, đủ, không spam.
 

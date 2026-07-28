@@ -41,7 +41,22 @@ if (Test-Path $memoryDir) {
   $idx = Join-Path $memoryDir "index.json"
   if (Test-Path $idx) {
     Write-Output "[SKIP] .memory/ exists, skip init"
-    exit 0
+# ── PROMPT COMPILER AUTO-BUILD ────────────────────────────────
+$compilerDist = Join-Path $PxhopencodeRoot "prompt-compiler" "dist" "index.js"
+if (-not (Test-Path $compilerDist)) {
+  Write-Output "[BUILD] prompt-compiler dist/ missing — building..."
+  Push-Location (Join-Path $PxhopencodeRoot "prompt-compiler")
+  & "npm" install --silent 2>&1 | Out-Null
+  & "npx" tsc 2>&1 | Out-Null
+  Pop-Location
+  if (Test-Path $compilerDist) {
+    Write-Output "[OK] prompt-compiler built (dist/)"
+  } else {
+    Write-Output "[WARN] prompt-compiler build failed — compile command will use source"
+  }
+}
+
+exit 0
   }
 }
 
@@ -164,6 +179,86 @@ foreach ($entry in $pm) {
 }
 
 Write-Output "[OK] .memory/ initialized: $count files created"
+
+# ── MEMORY AUTO-SEED ──────────────────────────────────────────
+# Populate architecture + patterns + preferences so memory_count > 0
+$seedCount = 0
+
+# 1. Architecture: scan top-level dirs
+$archDirs = @()
+foreach ($d in @("src","agents","runtime","workflows","skills","components","pages","api","lib","hooks","styles","server","public","docs","tests","e2e")) {
+  $full = Join-Path $WorkspaceRoot $d
+  if (Test-Path $full) { $archDirs += "$d/" }
+}
+if ($archDirs.Count -gt 0) {
+  $archPath = Join-Path $memoryDir "architecture.json"
+  $archData = Get-Content $archPath -Raw | ConvertFrom-Json
+  $archData | Add-Member -MemberType NoteProperty -Name "directories" -Value ($archDirs -join ",") -Force
+  $archData | Add-Member -MemberType NoteProperty -Name "depth" -Value 2 -Force
+  Write-JsonFile $archPath ($archData | ConvertTo-Json -Compress)
+  $seedCount++
+}
+
+# 2. Preferences: detect tools beyond framework
+$prefPath = Join-Path $memoryDir "preferences.json"
+$pref = Get-Content $prefPath -Raw | ConvertFrom-Json
+$pref | Add-Member -MemberType NoteProperty -Name "language" -Value $lang -Force
+$pref | Add-Member -MemberType NoteProperty -Name "runtime" -Value $rt -Force
+$pref | Add-Member -MemberType NoteProperty -Name "build_tools" -Value ($bt -join ",") -Force
+$pref | Add-Member -MemberType NoteProperty -Name "testing_framework" -Value $tf -Force
+$pref | Add-Member -MemberType NoteProperty -Name "linter" -Value $li -Force
+$pref | Add-Member -MemberType NoteProperty -Name "framework" -Value $fw -Force
+$pref | Add-Member -MemberType NoteProperty -Name "deployment" -Value ($dt -join ",") -Force
+$pref | Add-Member -MemberType NoteProperty -Name "project_name" -Value $projectName -Force
+Write-JsonFile $prefPath ($pref | ConvertTo-Json -Compress)
+$seedCount++
+
+# 3. Patterns: detect naming conventions from src/ files
+$namingKebab = 0; $namingCamel = 0; $namingPascal = 0; $namingSnake = 0
+$srcDir = Join-Path $WorkspaceRoot "src"
+if (Test-Path $srcDir) {
+  Get-ChildItem $srcDir -Recurse -File -Name -Include *.ts,*.tsx,*.js,*.jsx,*.vue,*.css,*.scss -ErrorAction SilentlyContinue | ForEach-Object {
+    $base = [System.IO.Path]::GetFileNameWithoutExtension($_)
+    if ($base -cmatch '^[a-z][a-z0-9]*(-[a-z0-9]+)+$') { $namingKebab++ }
+    elseif ($base -cmatch '^[a-z][a-zA-Z0-9]*$') { $namingCamel++ }
+    elseif ($base -cmatch '^[A-Z][a-zA-Z0-9]*$') { $namingPascal++ }
+    elseif ($base -cmatch '^[a-z][a-z0-9]*(_[a-z0-9]+)+$') { $namingSnake++ }
+  }
+}
+$convention = if ($namingPascal -gt $namingCamel -and $namingPascal -gt $namingKebab) { "PascalCase" }
+  elseif ($namingCamel -gt $namingPascal -and $namingCamel -gt $namingKebab) { "camelCase" }
+  elseif ($namingKebab -gt $namingPascal -and $namingKebab -gt $namingCamel) { "kebab-case" }
+  elseif ($namingSnake -gt 0) { "snake_case" }
+  else { "unknown" }
+$patternsPath = Join-Path $memoryDir "patterns.json"
+$patterns = Get-Content $patternsPath -Raw | ConvertFrom-Json
+$patterns | Add-Member -MemberType NoteProperty -Name "naming" -Value $convention -Force
+$patterns | Add-Member -MemberType NoteProperty -Name "framework" -Value $fw -Force
+$patterns | Add-Member -MemberType NoteProperty -Name "language" -Value $lang -Force
+Write-JsonFile $patternsPath ($patterns | ConvertTo-Json -Compress)
+$seedCount++
+
+# 4. Populate project.json with detailed framework detection
+$projPath = Join-Path $memoryDir "project.json"
+$projData = Get-Content $projPath -Raw | ConvertFrom-Json
+$projData | Add-Member -MemberType NoteProperty -Name "naming_convention" -Value $convention -Force
+if ($archDirs.Count -gt 0) {
+  $projData | Add-Member -MemberType NoteProperty -Name "directories" -Value ($archDirs -join ",") -Force
+}
+Write-JsonFile $projPath ($projData | ConvertTo-Json -Compress)
+
+# 5. Update index.json memory_count
+$idxPath = Join-Path $memoryDir "index.json"
+$idxData = Get-Content $idxPath -Raw | ConvertFrom-Json
+$idxData.memory_count = $seedCount
+$idxData.confidence = @{
+  "project" = $projectConfidence
+  "patterns" = if ($convention -ne "unknown") { 70 } else { 0 }
+  "preferences" = if ($fw) { 80 } else { 30 }
+}
+$idxData.updated = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+Write-JsonFile $idxPath ($idxData | ConvertTo-Json -Compress)
+Write-Output "[SEED] .memory/ populated: $seedCount categories (architecture, preferences, patterns)"
 
 $gitignorePath = Join-Path $WorkspaceRoot ".gitignore"
 $templateGitignore = Join-Path $PxhopencodeRoot ".gitignore"
