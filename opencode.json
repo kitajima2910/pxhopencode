@@ -20,8 +20,6 @@
     "max_bytes": 4096
   },
 
-  "mcp_servers": ".opencode/mcp.json",
-
   "skills": {
     "paths": ["skills", ".opencode/skills", "pxhopencode/skills"],
     "lazy": true
