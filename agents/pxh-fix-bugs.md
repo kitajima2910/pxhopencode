@@ -44,5 +44,5 @@ Stack trace đọc trên xuống → sai. Fix intuition → không biết đúng
 Không reproduce, fix không test, root cause không rõ.
 
 ## MEMORY REFLECTION
-`bugs.json`: id, file, root_cause, solution. `patterns.json`: anti-pattern. `stats.json`. Event→T4.
+`{memory_root}/bugs.json`: id, file, root_cause. `{memory_root}/patterns.json`: anti-pattern. `{memory_root}/stats.json`. Event→T4.
 

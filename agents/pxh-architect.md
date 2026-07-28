@@ -39,5 +39,5 @@ Mới nhất → unstable. Schema không index → query chết. ADR skip → m�
 Schema thiếu index, API không error contract, tech stack chọn vì "mới".
 
 ## MEMORY REFLECTION
-`architecture.json`: modules, services. `decisions.json`: ADR. `project.json`: framework. `stats.json`. Event→T4.
+`{memory_root}/architecture.json`: modules. `{memory_root}/decisions.json`: ADR. `{memory_root}/project.json`: framework. `{memory_root}/stats.json`. Event→T4. `memory_root` từ Task contract context.
 

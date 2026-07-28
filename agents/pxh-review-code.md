@@ -24,7 +24,7 @@ Critical postpone → incident. N+1 không review → DB chết. Code nhỏ → 
 Secret hardcode, API không auth, N+1 không detect.
 
 ## MEMORY REFLECTION
-`patterns.json`: anti-pattern. `decisions.json`. `stats.json`. Event→T4.
+`{memory_root}/patterns.json`: anti-pattern. `{memory_root}/decisions.json`. `{memory_root}/stats.json`. Event→T4.
 
 ## QUY TẮC
 Security ≥ Critical. Respect author. `edit: deny`.

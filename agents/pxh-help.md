@@ -64,4 +64,4 @@ Không quickref → sai workflow. Không confirm → sai hướng. 1 câu hỏi 
 Workflow không từ prompt, request thiếu classified_workflow, user không hiểu.
 
 ## MEMORY REFLECTION
-`stats.json`: last_session. `preferences.json`: habits. Event→T4.
+`{memory_root}/stats.json`: last_session. `{memory_root}/preferences.json`: habits. Event→T4.

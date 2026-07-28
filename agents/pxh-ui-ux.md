@@ -38,7 +38,7 @@ Mobile-first không patch sau. CLI không NO_COLOR → output vô dụng. DOM ov
 Layout <375px, CLI không NO_COLOR, game HUD không setScrollFactor(0).
 
 ## MEMORY REFLECTION
-`patterns.json`: design pattern. `preferences.json`: style. `stats.json`. Event→T4.
+`{memory_root}/patterns.json`: design pattern. `{memory_root}/preferences.json`: style. `{memory_root}/stats.json`. Event→T4.
 
 ## Verification
 Platform: web/game/tool. CLI: NO_COLOR. Game HUD: setScrollFactor(0). Web: mobile + dark.

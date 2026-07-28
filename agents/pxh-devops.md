@@ -28,5 +28,5 @@ Skip lint → code smell. Build success ≠ zero warning. QA chưa pass → buil
 QA chưa pass, build size bất thường, lint warning ignore.
 
 ## MEMORY REFLECTION
-`project.json`: build_tools, deployment. `decisions.json`: build result. `stats.json`. Event→T4.
+`{memory_root}/project.json`: build_tools. `{memory_root}/decisions.json`: build result. `{memory_root}/stats.json`. Event→T4.
 

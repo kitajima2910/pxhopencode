@@ -40,5 +40,5 @@ Coverage < 20% → logic core không test. Bug UI = UX fail. Không regression �
 Coverage < 60%, bug report không steps, regression skip.
 
 ## MEMORY REFLECTION
-`bugs.json`: id, file, type, steps. `patterns.json`: test pattern. `stats.json`. Event→T4.
+`{memory_root}/bugs.json`: id, file, type. `{memory_root}/patterns.json`: test pattern. `{memory_root}/stats.json`. Event→T4.
 

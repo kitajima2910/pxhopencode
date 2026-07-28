@@ -99,7 +99,7 @@ multi-task → `process-parallel-agents`. Need plan → `process-writing-plans`.
 Nếu `/debug` + classified_skills chứa `games-*` → sau khi @pxh-fix-bugs, route tiếp @pxh-ui-ux làm polish game (Bước 6 trong debug workflow). Cũng load thêm `games-optimization`, `games-testing` skills.
 
 ## QUY TRÌNH
-1. Classify via @pxh-help 2. Route worker 3. Evaluate Result (loop ≤3) 4. @pxh-save-history
+1. Classify via @pxh-help 2. Route worker (kèm `memory_root` trong Task contract) 3. Evaluate Result (loop ≤3) 4. @pxh-save-history
 
 ## NGOẠI LỆ
 Thiếu info → hỏi 1 câu. Bug 3 lần → escalate. Conflict → PM phân xử.
@@ -111,4 +111,4 @@ Skip meeting → tech stack sai. Phase skip → N+1, security hole. PM code → 
 Task contract thiếu context, phase skip, worker failure liên tục.
 
 ## MEMORY REFLECTION
-`decisions.json`: routing. `workflow.json`: sequence. `stats.json`. Event→T4.
+`{memory_root}/decisions.json`: routing. `{memory_root}/workflow.json`: sequence. `{memory_root}/stats.json`. Event→T4. Truyền `memory_root` vào mọi Task contract.
