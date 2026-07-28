@@ -13,18 +13,18 @@ Xem `_shared/context-budget.md`. Chỉ đọc template 1 lần, cache. Ghi 1 l�
 
 ## Event Contract Protocol (T4 entry point)
 
-Tiếp nhận `Event{version, type, phase, reflection, category}` từ bất kỳ tầng nào. Dùng `memory_root` từ Event context — thay `.memory/` bằng `{memory_root}/`:
+Tiếp nhận `Event{version, type, phase, reflection, category}`. Dùng `persist.mjs` để ghi:
 
-| Event type | Hành động | Đích ghi |
-|------------|-----------|----------|
-| `phase_start` / `phase_end` | Cập nhật phase trong STATUS.md | STATUS.md |
-| `decision` | Append decision | `{memory_root}/decisions.json` |
-| `bug` | Append bug + STATUS.md | `{memory_root}/bugs.json` |
-| `checkpoint` | Snapshot state | STATUS.md |
-| `reflection` | Merge vào category | `{memory_root}/{category}.json` |
-| `error` | Ghi error + STATUS.md | `{memory_root}/bugs.json` |
-| `alert` | Ghi vào [Alerts] | STATUS.md |
-| `task_result` | Ghi artifact | STATUS.md |
+| Event type | Hành động |
+|------------|-----------|
+| `phase_start` / `phase_end` | `persist.mjs pipe start/pass <phase>` + STATUS.md |
+| `decision` | `persist.mjs append decisions '{"id":"...","decision":"..."}'` |
+| `bug` | `persist.mjs append bugs '{"id":"...","file":"...","cause":"..."}'` + STATUS.md |
+| `checkpoint` | `persist.mjs append snapshots '{"ts":"...","state":"..."}'` + STATUS.md |
+| `reflection` | `persist.mjs reflect <category> <key> "<val>"` |
+| `error` | `persist.mjs append bugs '{"type":"error","msg":"..."}'` + STATUS.md |
+| `alert` | Ghi vào STATUS.md [Alerts] |
+| `task_result` | Ghi artifact STATUS.md |
 
 ## STATUS.md
 Chủ quản duy nhất. Cập nhật sau mỗi Event. Đọc hiện tại → cập nhật section → ghi đè.
@@ -36,7 +36,10 @@ Không STATUS.md → mất phase. Ghi ADR sau → mất context. Bug report skip
 STATUS.md không update, Event thiếu field, ghi vào `docs/` thay vì `.memory/`.
 
 ## MEMORY REFLECTION
-`{memory_root}/stats.json`: total_memories. `{memory_root}/snapshots.json`: checkpoint. `{memory_root}/timeline.json`: phase. `{memory_root}/index.json`: memory_count. Event→T4.
+- `persist.mjs reflect stats total_memories "{n}"`
+- `persist.mjs append snapshots '{"ts":"...","state":"..."}'`
+- `persist.mjs append timeline '{"phase":"...","status":"..."}'`
+- `persist.mjs reflect index memory_count "{n}"`
 
 ## NGUYÊN TẮC
 `.memory/` single source of truth. Không ghi `docs/`. Chính xác, đủ, không spam.

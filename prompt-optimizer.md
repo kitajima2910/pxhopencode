@@ -67,7 +67,7 @@ Nếu prompt đã bắt đầu bằng `RULE:` → giữ nguyên (không wrap l�
 
 ## Step 4: Write final prompt to __prompt-log__.md
 
-Sau khi wrap xong, final prompt (RULE + TARGET + IR Context) được **T1 (pxh-help)** ghi vào `__prompt-log__.md`.
-**Overwrite** — file luôn chứa đúng 1 prompt cuối cùng, không history, không timestamp.
-Định dạng: copy-paste chính xác prompt sẽ gửi xuống agent.
+Sau khi wrap xong, final prompt (RULE + TARGET + IR Context) được **T1 (pxh-help)** ghi:
+- `node .opencode/runtime/bin/persist.mjs log "<final prompt>"`
+**Overwrite** — file luôn chứa đúng 1 prompt cuối cùng.
 File ở workspace root, git-ignored. Xem `agents/pxh-help.md` QUY TRÌNH bước 0.

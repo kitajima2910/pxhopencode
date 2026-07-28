@@ -111,4 +111,8 @@ Skip meeting → tech stack sai. Phase skip → N+1, security hole. PM code → 
 Task contract thiếu context, phase skip, worker failure liên tục.
 
 ## MEMORY REFLECTION
-`{memory_root}/decisions.json`: routing. `{memory_root}/workflow.json`: sequence. `{memory_root}/stats.json`. Event→T4. Truyền `memory_root` vào mọi Task contract.
+Chạy sau mỗi task:
+- `persist.mjs reflect decisions routing "{route}"`
+- `persist.mjs reflect workflow sequence "{wf}"`
+- `persist.mjs reflect stats last_session "$(date)"`
+Truyền `memory_root` vào mọi Task contract.

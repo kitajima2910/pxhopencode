@@ -63,7 +63,10 @@ Template có sẵn → code tay dễ bug. Feature nhỏ + bug nhỏ = incident. 
 Code không template, feature xong không test, đọc >5 file không cần.
 
 ## MEMORY REFLECTION
-`{memory_root}/patterns.json`: naming/imports. `{memory_root}/decisions.json`: ADR. `{memory_root}/project.json`: framework. `{memory_root}/stats.json`. Event→T4.
+- `persist.mjs reflect patterns naming "{convention}"`
+- `persist.mjs append decisions '{"id":"adr_...","decision":"..."}'`
+- `persist.mjs reflect project framework "{fw}"`
+- `persist.mjs reflect stats last_session "$(date)"`
 
 ## Verification
 Template trước code tay. `npx vitest run` sau feature. .gitignore đủ.

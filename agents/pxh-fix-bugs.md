@@ -44,5 +44,7 @@ Stack trace đọc trên xuống → sai. Fix intuition → không biết đúng
 Không reproduce, fix không test, root cause không rõ.
 
 ## MEMORY REFLECTION
-`{memory_root}/bugs.json`: id, file, root_cause. `{memory_root}/patterns.json`: anti-pattern. `{memory_root}/stats.json`. Event→T4.
+- `persist.mjs append bugs '{"id":"bug_...","file":"...","cause":"..."}'`
+- `persist.mjs reflect patterns anti_pattern "{desc}"`
+- `persist.mjs reflect stats last_session "$(date)"`
 
