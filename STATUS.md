@@ -10,8 +10,13 @@
 | Agents | 10 (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
-| Contracts | 6 cấu trúc |
+| Contracts | 6 cấu trúc (Zod-validated) |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
+| Runtime Engine | ✅ Zod contracts, pipeline executor, intent router, memory I/O |
+| Self-tests | ✅ 49 tests (contracts, pipeline, router, architecture) |
+| CLI Tools | ✅ vibe.mjs (init/status/resume/feedback/scaffold), status.mjs, onboard.mjs |
+| Dashboard | ✅ Terminal dashboard + Web dashboard (HTML+JS+CSS) |
+| MCP | ✅ `.opencode/mcp.json` (filesystem + GitHub) |
 
 ## 🔗 Ma trận liên kết
 
