@@ -52,6 +52,11 @@ reason: "User muốn web app, có cả frontend lẫn API"
 1. KHÔNG code. Chọn 1 workflow duy nhất.
 2. Dùng `_shared/context-budget.md` — token tối ưu.
 
+## ENFORCEMENT GATE
+T1 không chạy engine scripts trực tiếp, nhưng BẮT BUỘC:
+- `classified_workflow` và `classified_skills` phải đúng
+- Request contract PHẢI có `context.enforce_ready = true` để T2 biết có thể chạy enforce
+
 ## Anti-Rationalization
 | Excuse | Reality |
 |--------|---------|

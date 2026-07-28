@@ -1,6 +1,7 @@
 # Workflow Phát hành — Build Pipeline
 
 > **LUẬT NGÔN NGỮ**: UI text (thông báo user) = **tiếng Việt**. Script code, commit messages, tags = **tiếng Anh**.
+> **ENFORCEMENT GATE:** Phase build BẮT BUỘC `enforce run build` TRƯỚC, `enforce pass/fail build` SAU.
 
 Pipeline: lint → typecheck → test → build/tag → báo user.
 

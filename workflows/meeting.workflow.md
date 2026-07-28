@@ -1,6 +1,7 @@
 # Workflow Họp — Agents thảo luận & quyết định
 
 > **LUẬT NGÔN NGỮ**: Nội dung họp, biên bản, quyết định = **tiếng Việt**. Code snippets, technical terms, decision matrix = **tiếng Anh**.
+> **ENFORCEMENT GATE:** Phase meeting BẮT BUỘC `enforce run meeting` TRƯỚC, `enforce pass meeting` SAU.
 
 Triệu tập agents thảo luận, phản biện, quyết định chung.
 

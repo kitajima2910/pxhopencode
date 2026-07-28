@@ -39,6 +39,11 @@ Theo định dạng compact `runtime/memory/README.md`. Thực thi:
 
 Red Flag: Event không ghi memory → mất audit trail. Không bao giờ skip.
 
+## ENFORCEMENT GATE
+T4 không chạy engine scripts, nhưng BẮT BUỘC:
+- Event contract PHẢI có `phase` tương ứng với pipeline phase
+- Chỉ persist sau khi T2 confirm enforce post-hook đã chạy
+
 ## Anti-Rationalization
 | Excuse | Reality |
 |--------|---------|

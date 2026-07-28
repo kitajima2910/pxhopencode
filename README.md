@@ -1,5 +1,9 @@
 # pxhopencode — Vibe Coding with OpenCode
 
+<p align="center">
+  <b>v82.4</b> · 10 AI agents · 4-tier runtime · 8 workflows · 50 skills · 49 self-tests · 6 contracts · 23 commands
+</p>
+
 > Nhúng vào project → chạy 1 lệnh → gõ prompt tiếng Việt. AI team tự động code, test, fix, review.
 
 ---
