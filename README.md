@@ -40,26 +40,15 @@ Init script tự động:
 - Tạo 13 file `.opencode/.memory/` với project info
 - Merge `.gitignore` entries (`.opencode/`, `.github/`, `.vibe/`, `.memory/`, `__prompt-log__.md`)
 
-Sau đó chạy `opencode` ở **project root** — pxhopencode tự động detect embedded mode:
+Sau đó chạy:
 
 ```bash
-opencode
-```
-
-### Hoặc: Clone độc lập
-
-```bash
-git clone <url> pxhopencode
-cd pxhopencode
-start.bat
-npm run setup
 opencode
 ```
 
 ## Lần chạy đầu tiên
 
 ```bash
-# Ở project root:
 node .opencode\runtime\bin\onboard.mjs
 ```
 
@@ -129,21 +118,12 @@ Bỏ qua phân loại, route thẳng vào workflow:
 Các lệnh CLI chạy độc lập, không cần opencode:
 
 ```bash
-# Embedded (từ project root):
 node .opencode\runtime\bin\vibe.mjs init       # Tạo project mới
 node .opencode\runtime\bin\vibe.mjs status     # Dashboard: memory + pipeline
 node .opencode\runtime\bin\vibe.mjs resume     # Tiếp tục session dang dở
 node .opencode\runtime\bin\vibe.mjs feedback   # Gửi feedback
 node .opencode\runtime\bin\vibe.mjs scaffold   # Scaffold từ template
 node .opencode\runtime\bin\status.mjs           # Terminal dashboard
-
-# Standalone (trong thư mục pxhopencode):
-npm run vibe -- init
-npm run vibe -- status
-npm run vibe -- resume
-npm run vibe -- feedback
-npm run vibe -- scaffold
-npm run status
 ```
 
 **Ví dụ output `vibe status`:**
@@ -170,11 +150,7 @@ npm run status
 49 tests verify architecture integrity — agents, workflows, contracts, skills, config:
 
 ```bash
-# Embedded:
 node .opencode\runtime\engine\node_modules\.bin\vitest run .opencode\runtime\engine
-
-# Standalone:
-npm test
 ```
 
 Kỳ vọng:
@@ -202,12 +178,8 @@ Các tests kiểm tra:
 Sau mỗi session, bạn có thể gửi feedback:
 
 ```bash
-# Embedded:
 node .opencode\runtime\bin\vibe.mjs feedback
 # "Cái game bị chậm, nên dùng object pool cho đạn"
-
-# Standalone:
-npm run vibe -- feedback
 ```
 
 Feedback được ghi vào `.memory/feedback.json`. Lần session sau, memory engine tự động load context — agent biết project bạn đang ở đâu, patterns gì, bugs gì.
