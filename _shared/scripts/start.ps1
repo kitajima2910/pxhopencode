@@ -20,8 +20,10 @@ You can also just run "opencode" — the agent will auto-init on first prompt.
   exit 0
 }
 
-# Step 1: Detect mode
-$isEmbedded = Test-Path ".opencode/opencode.json"
+# Step 1: Detect mode (path-based, giống init-memory.ps1)
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$PxhopencodeRoot = Resolve-Path (Join-Path $ScriptDir "..\..")
+$isEmbedded = $PxhopencodeRoot -match '\\.opencode$'
 
 if ($isEmbedded) {
   $scriptPath = ".opencode/_shared/scripts/init-memory.ps1"

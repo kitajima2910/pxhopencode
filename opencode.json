@@ -72,15 +72,19 @@
     },
     "init": {
       "description": "Khởi tạo project mới với scaffold wizard",
-      "template": "Chạy: `node runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File scripts/scaffold.ps1`"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File .opencode/scripts/scaffold.ps1`"
     },
     "status": {
       "description": "Xem trạng thái session, memory, pipeline",
-      "template": "Chạy: `node runtime/bin/vibe.mjs status` hoặc `node runtime/bin/status.mjs`"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs status`"
     },
-    "onboard": {
-      "description": "Onboarding wizard cho người dùng mới",
-      "template": "Chạy: `node runtime/bin/onboard.mjs`"
+    "feedback": {
+      "description": "Gửi feedback về session hiện tại",
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs feedback` — nhập nội dung feedback"
+    },
+    "resume": {
+      "description": "Tiếp tục session dang dở",
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs resume` — kiểm tra pipeline state và tiếp tục"
     }
   }
 }

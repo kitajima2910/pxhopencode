@@ -196,24 +196,25 @@ footer{text-align:center;padding:48px 24px;color:var(--muted);font-size:.8em;bor
 
 <section id="install">
   <h2>Cài đặt</h2>
+  <p>Chỉ 2 lệnh — sau đó chỉ cần gõ prompt.</p>
   <pre>cd project-của-bạn
 git clone &lt;url&gt; .opencode
-cd .opencode
-.\start.bat
-cd ..
-opencode</pre>
+.opencode\start.bat</pre>
+  <p><code>start.bat</code> tự động init memory + launch <code>opencode</code>.</p>
 </section>
 
-<section id="cli-ref">
-  <h2>CLI (embedded)</h2>
-  <pre>node .opencode\runtime\bin\vibe.mjs status
-node .opencode\runtime\bin\vibe.mjs feedback
-node .opencode\runtime\bin\vibe.mjs init
-node .opencode\runtime\bin\status.mjs</pre>
+<section id="usage">
+  <h2>Sử dụng</h2>
+  <p>Trong <code>opencode</code>, gõ prompt tiếng Việt:</p>
+  <pre>"Xây dựng web blog với React"</pre>
+  <p>Hoặc lệnh <code>/</code>:</p>
+  <pre>/status
+/feedback
+/vibe Làm game platformer</pre>
 </section>
 
 <footer>
-  pxhopencode v82.4 · AI Company for Vibe Coding · <code>opencode</code>
+  pxhopencode v82.4 · 2 lệnh cài đặt · 0 lệnh cần nhớ
 </footer>
 
 </main>
