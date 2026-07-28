@@ -11,4 +11,5 @@ target/
 .opencode/
 .vibe/
 .memory/
+.pipeline-state.json
 __prompt-log__.md
