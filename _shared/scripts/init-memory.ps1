@@ -82,7 +82,8 @@ $projectId = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($Workspace
 
 function Write-JsonFile {
   param($Path, $Content)
-  $Content | Set-Content -Path $Path -Encoding UTF8 -NoNewline
+  $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+  [System.IO.File]::WriteAllText([System.IO.Path]::GetFullPath($Path), $Content, $utf8NoBom)
 }
 
 $fwList = if ($fw) { "`"$fw`"" } else { "" }

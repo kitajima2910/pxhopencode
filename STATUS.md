@@ -6,7 +6,7 @@
 |--------|---------|
 | Giai đoạn | 10/10 TOÀN DIỆN ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v82.3 |
+| Phiên bản | v82.4 |
 | Agents | 10 (Tầng 1-4) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills (8 Process + 8 Web + 1 3D Web + 12 Game + 7 Game Principle + 1 Game Orchestrator + 5 AI + 5 Tool + 1 UI/UX + 1 Prompt Compiler + 1 Vibe Memory) |
@@ -107,6 +107,38 @@
 | 2026-07-24 | v49 | **User Guide Rewrite** — README repositioned as user guide, 3 cách vibe code front-and-center, commit count sync |
 | 2026-07-24 | v48 | **Prompt Optimizer** — `prompt-optimizer.md` auto-rewrite prompt mơ hồ, collapsible details panel, integration vào opencode.json |
 | 2026-06-23 | v44 | Context budget, skill quickref, agent slim (-39%), contracts concise, tiered loading, build script thật, workflow, favicon, fix cross-refs |
+
+## ✅ Runtime Engine Executable (NEW v82.4)
+
+| Thành phần | Chi tiết | Trạng thái |
+|-----------|---------|-----------|
+| **Contract types + Zod validators** | 6 contract schemas (Request, Task, Result, Response, Event, State) | ✅ 13/13 tests |
+| **Validator** | `validateContract()`, `assertContract()` với error messages chi tiết | ✅ |
+| **Pipeline executor** | Track phases, checkpoint/resume, agent mapping | ✅ 6 tests |
+| **Intent Router** | `route()` + `classifyPrompt()` + `workflowToPhases()` | ✅ 14 tests |
+| **Memory I/O** | `readMemory()`, `writeMemory()`, `mergeMemory()` với BOM-safe | ✅ |
+| **Architecture self-tests** | 16 integration tests verify agents, workflows, contracts, skills, config | ✅ |
+| **Total tests** | 49 tests, 4 test files | ✅ 49/49 pass |
+
+## ✅ Vibe CLI Tools (NEW)
+
+| Tool | Chức năng | Trạng thái |
+|------|----------|-----------|
+| `vibe init` | Create new project with scaffold wizard | ✅ |
+| `vibe status` | Show session & memory status with terminal dashboard | ✅ |
+| `vibe resume` | Detect unfinished phases & suggest resume | ✅ |
+| `vibe feedback` | Collect user feedback → `.memory/feedback.json` | ✅ |
+| `vibe scaffold` | Scaffold from `_shared/templates/` | ✅ |
+| `onboard` | Interactive first-run wizard | ✅ |
+
+## ✅ End-to-End Fixes
+
+| Fix | Why | Impact |
+|-----|-----|--------|
+| UTF-8 BOM stripped | `init-memory.ps1` wrote BOM → broke `JSON.parse` everywhere | All 13 `.memory/` files now BOM-free |
+| `Write-JsonFile` → .NET UTF8 no-BOM | PowerShell `Set-Content -Encoding UTF8` emits BOM in PS5.1 | Future init runs safe |
+| `memory.ts` BOM-safe | `stripBOM()` before `JSON.parse` | Defense-in-depth |
+| All 4 CLI tools BOM-safe | `readJSON()` helper in each tool | Zero JSON parse errors |
 
 ## ✅ Điều kiện hoàn thành
 

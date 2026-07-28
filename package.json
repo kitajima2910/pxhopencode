@@ -1,6 +1,25 @@
 {
   "name": "pxhopencode",
-  "version": "82.3.0",
+  "version": "82.4.0",
   "private": true,
-  "description": "AI Company cho Vibe Coding — 4-tier enterprise AI runtime"
+  "description": "AI Company cho Vibe Coding — 4-tier enterprise AI runtime",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:engine && npm run test:arch",
+    "test:engine": "cd runtime\\engine && npx vitest run",
+    "test:arch": "cd runtime\\engine && npx vitest run __tests__/architecture.test.ts",
+    "test:watch": "cd runtime\\engine && npx vitest",
+    "build:engine": "cd runtime\\engine && npx tsc",
+    "vibe": "node runtime/bin/vibe.mjs",
+    "onboard": "node runtime/bin/onboard.mjs",
+    "status": "node runtime/bin/status.mjs",
+    "dashboard": "echo Open dashboard/index.html in browser",
+    "setup": "npm install && cd runtime\\engine && npm install",
+    "scaffold": "powershell -ExecutionPolicy Bypass -File scripts/scaffold.ps1"
+  },
+  "bin": {
+    "vibe": "./runtime/bin/vibe.mjs",
+    "vibe-status": "./runtime/bin/status.mjs",
+    "vibe-onboard": "./runtime/bin/onboard.mjs"
+  }
 }

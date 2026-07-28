@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="PXH2910 — AI Company Architecture Docs for Vibe Coding with OpenCode">
-<title>PXH2910 — AI Company Docs</title>
+<title>pxhopencode — AI Company Docs</title>
 <style>
 :root{
   --bg:oklch(0.07 0 0);--surface:oklch(0.12 0 0);--border:oklch(1 0 0 / 0.06);
@@ -17,36 +16,28 @@
   --t1:oklch(0.5 0.2 256);--t2:oklch(0.55 0.2 85);--t3:oklch(0.5 0.2 140);--t4:oklch(0.55 0.2 300);
   --text:oklch(0.15 0 0);--muted:oklch(0.5 0 0);--code-bg:oklch(0 0 0 / 0.04);}
 }
-@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 body.docs{display:flex}
-nav{position:fixed;top:0;left:0;width:var(--nav-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 20px;overflow-y:auto;z-index:200}
+nav{position:fixed;top:0;left:0;width:var(--nav-w);height:100vh;background:var(--surface);border-right:1px solid var(--border);padding:24px 20px;overflow-y:auto}
 nav h2{font-size:.95em;margin-bottom:20px;font-weight:600;background:linear-gradient(90deg,var(--t1),var(--t4));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 nav a{display:block;color:var(--muted);text-decoration:none;padding:7px 0;font-size:.85em;transition:color .2s}
 nav a:hover{color:var(--t1)}
-nav .section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border)}
 main{flex:1;margin-left:var(--nav-w);padding:48px 64px;max-width:960px}
 section{margin:48px 0}
 h1{font-size:2.2em;margin-bottom:10px;font-weight:700;background:linear-gradient(135deg,var(--t1),var(--t3),var(--t4));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 h2{font-size:1.35em;margin:36px 0 14px;padding-bottom:8px;border-bottom:1px solid var(--border);font-weight:600}
 h3{font-size:1.05em;margin:24px 0 8px;color:var(--t1);font-weight:500}
-p{margin:10px 0;font-size:.95em;color:var(--text)}
-p.hero-sub{color:var(--muted);font-size:1.05em}
-code{background:var(--code-bg);padding:2px 7px;border-radius:4px;font-size:.88em;font-family:'JetBrains Mono','Consolas',monospace}
-pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:.85em;line-height:1.6;margin:12px 0;font-family:'JetBrains Mono','Consolas',monospace}
+p{margin:10px 0;font-size:.95em}
+code{background:var(--code-bg);padding:2px 7px;border-radius:4px;font-size:.88em;font-family:'Consolas',monospace}
+pre{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-size:.85em;margin:12px 0;font-family:'Consolas',monospace}
 .badge-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
 .badge{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 14px;font-size:.82em}
 .badge b{color:var(--t1)}
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin:16px 0}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;transition:border-color .2s,transform .2s}
-.card:hover{border-color:var(--t1);transform:translateY(-1px)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;transition:border-color .2s}
+.card:hover{border-color:var(--t1)}
 .card h4{font-size:.95em;margin-bottom:6px;font-weight:600}
-.card .tag{display:inline-block;font-size:.7em;padding:2px 8px;border-radius:4px;margin-right:4px;font-weight:500}
-.tag-t1{background:oklch(0.6 0.2 256 / 0.15);color:var(--t1)}
-.tag-t2{background:oklch(0.7 0.2 85 / 0.15);color:var(--t2)}
-.tag-t3{background:oklch(0.6 0.2 140 / 0.15);color:var(--t3)}
-.tag-t4{background:oklch(0.65 0.2 300 / 0.15);color:var(--t4)}
 table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.9em}
 th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
 th{color:var(--muted);font-size:.78em;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
@@ -56,19 +47,10 @@ th{color:var(--muted);font-size:.78em;text-transform:uppercase;letter-spacing:.6
 .t2{border-color:var(--t2);background:oklch(0.7 0.2 85 / 0.04)}
 .t3{border-color:var(--t3);background:oklch(0.6 0.2 140 / 0.04)}
 .t4{border-color:var(--t4);background:oklch(0.65 0.2 300 / 0.04)}
-.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:14px 0;font-size:.85em}
-.flow-step{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 12px;text-align:center;min-width:60px;font-size:.85em}
-.flow-arrow{color:var(--muted);font-weight:bold;font-size:1.1em}
 footer{text-align:center;padding:48px 24px;color:var(--muted);font-size:.8em;border-top:1px solid var(--border);margin-top:80px}
-footer a{color:var(--t1);text-decoration:none}
-footer a:hover{text-decoration:underline}
 @media(max-width:768px){
   body.docs{flex-direction:column}
-  nav{position:relative;width:100%;height:auto;border-right:none;border-bottom:1px solid var(--border);padding:16px 20px;z-index:100}
-  nav h2{margin-bottom:12px}
-  nav .nav-links{display:flex;flex-wrap:wrap;gap:6px}
-  nav a{padding:4px 10px;font-size:.8em;border:1px solid var(--border);border-radius:6px;margin:0}
-  nav .section{border-top:none;padding-top:0;margin-top:0}
+  nav{position:relative;width:100%;height:auto;border-bottom:1px solid var(--border);padding:16px 20px}
   main{margin-left:0;padding:24px 20px}
 }
 </style>
@@ -76,129 +58,160 @@ footer a:hover{text-decoration:underline}
 <body class="docs">
 
 <nav>
-  <h2>PXH2910 Docs</h2>
-  <div class="nav-links">
-    <a href="#architecture">Kiến trúc</a>
-    <a href="#agents">Agents</a>
-    <a href="#workflows">Workflows</a>
-    <a href="#install">Cài đặt</a>
-    <a href="#policies">Chính sách</a>
-
-  </div>
+  <h2>pxhopencode Docs</h2>
+  <a href="#architecture">Kiến trúc</a>
+  <a href="#agents">Agents</a>
+  <a href="#workflows">Workflows</a>
+  <a href="#runtime">Runtime Engine</a>
+  <a href="#cli">CLI Tools</a>
+  <a href="#tests">Self-Tests</a>
+  <a href="#contracts">Contracts</a>
+  <a href="#install">Cài đặt</a>
 </nav>
 
 <main>
 
 <section id="hero">
-  <h1>PXH2910 — AI Company</h1>
-  <p class="hero-sub">Kiến trúc Runtime 4 Tầng cho Vibe Coding với OpenCode</p>
+  <h1>pxhopencode — AI Company</h1>
+  <p>Kiến trúc Runtime 4 Tầng cho Vibe Coding với OpenCode</p>
   <div class="badge-row">
-    <div class="badge">Version <b>v82.3</b></div>
-    <div class="badge">Agents <b>10</b></div>
-    <div class="badge">Workflows <b>8</b></div>
-    <div class="badge">Skills <b>49</b></div>
-    <div class="badge">Contracts <b>6</b></div>
+    <div class="badge">v82.4</div>
+    <div class="badge">10 agents</div>
+    <div class="badge">8 workflows</div>
+    <div class="badge">50 skills</div>
+    <div class="badge">6 contracts</div>
+    <div class="badge">49 self-tests</div>
   </div>
 </section>
 
 <section id="architecture">
-  <h2>Kiến trúc Runtime 4 Tầng</h2>
-  <p>Kiến trúc phân tầng theo Microsoft Agent Mode. Giao tiếp qua contract — không gọi trực tiếp giữa các tầng.</p>
+  <h2>Runtime 4 Tầng</h2>
+  <p>Kiến trúc phân tầng Microsoft Agent Mode. Giao tiếp qua typed contracts.</p>
 
   <div class="tier-box t1">
     <h3 style="color:var(--t1)">T1 — INTERFACE</h3>
-    <p>Validate input, classify prompt, format output. Cửa tiếp nhận mọi yêu cầu từ người dùng.</p>
-    <p><strong>Agent:</strong> <code>pxh-help</code> <span class="tag tag-t1">INTERFACE</span></p>
+    <p>Validate input, classify prompt, format output.</p>
+    <p><code>pxh-help</code></p>
   </div>
-
   <div class="tier-box t2">
     <h3 style="color:var(--t2)">T2 — ORCHESTRATION</h3>
-    <p>Auto-route task, track state, enforce retry/recovery/reflection. Bộ não trung tâm.</p>
-    <p><strong>Agent:</strong> <code>pxh-pm</code> <span class="tag tag-t2">ORCHESTRATION</span></p>
+    <p>Auto-route task via runtime engine, enforce retry/recovery/reflection.</p>
+    <p><code>pxh-pm</code></p>
   </div>
-
   <div class="tier-box t3">
     <h3 style="color:var(--t3)">T3 — WORKERS</h3>
-    <p>Thực thi domain: code, test, fix bug, review, build, UI/UX. 7 agents chuyên biệt.</p>
+    <p>7 workers: architect, expert, fix-bugs, qa, review-code, devops, ui-ux.</p>
   </div>
-
   <div class="tier-box t4">
     <h3 style="color:var(--t4)">T4 — INFRASTRUCTURE</h3>
-    <p>Persist state, checkpoint, log, alerting. Ghi nhận mọi sự kiện, không quyết định.</p>
-    <p><strong>Agent:</strong> <code>pxh-save-history</code> <span class="tag tag-t4">INFRASTRUCTURE</span></p>
-  </div>
-
-  <h3>Flow xử lý</h3>
-  <div class="flow-row">
-    <div class="flow-step">👤 Prompt</div><div class="flow-arrow">→</div>
-    <div class="flow-step">T1 Classify</div><div class="flow-arrow">→</div>
-    <div class="flow-step">T2 Route</div><div class="flow-arrow">→</div>
-    <div class="flow-step">T3 Work</div><div class="flow-arrow">→</div>
-    <div class="flow-step">T4 Persist</div><div class="flow-arrow">→</div>
-    <div class="flow-step">✅ Response</div>
+    <p>Persist state, checkpoint, log, metrics, alerting.</p>
+    <p><code>pxh-save-history</code></p>
   </div>
 </section>
 
 <section id="agents">
-  <h2>10 AI Agents</h2>
-  <div class="card-grid">
-    <div class="card"><h4>pxh-help <span class="tag tag-t1">T1</span></h4><p style="color:var(--muted);font-size:.85em">Help Desk — Validate & classify input.</p></div>
-    <div class="card"><h4>pxh-pm <span class="tag tag-t2">T2</span></h4><p style="color:var(--muted);font-size:.85em">CEO PXH — Route, policy enforcement.</p></div>
-    <div class="card"><h4>pxh-architect <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Architect — Thiết kế tech stack, DB, API.</p></div>
-    <div class="card"><h4>pxh-expert <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Developer — Vibe code production.</p></div>
-    <div class="card"><h4>pxh-fix-bugs <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Bug Hunter — Root cause → fix.</p></div>
-    <div class="card"><h4>pxh-qa <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">QA Engineer — Viết & chạy test.</p></div>
-    <div class="card"><h4>pxh-review-code <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">Reviewer — Security, perf audit.</p></div>
-    <div class="card"><h4>pxh-devops <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">DevOps — Lint → build pipeline.</p></div>
-    <div class="card"><h4>pxh-ui-ux <span class="tag tag-t3">T3</span></h4><p style="color:var(--muted);font-size:.85em">UI/UX Designer — Layout, responsive.</p></div>
-    <div class="card"><h4>pxh-save-history <span class="tag tag-t4">T4</span></h4><p style="color:var(--muted);font-size:.85em">Historian — State, checkpoint.</p></div>
-  </div>
+  <h2>10 Agents</h2>
+  <table>
+    <tr><th>Agent</th><th>Vai trò</th><th>@mention khi</th></tr>
+    <tr><td><code>pxh-help</code></td><td>Interface — classify input</td><td>(tự động)</td></tr>
+    <tr><td><code>pxh-pm</code></td><td>Orchestration — route, policy</td><td>(tự động)</td></tr>
+    <tr><td><code>pxh-architect</code></td><td>Thiết kế tech stack, DB, API</td><td>Cần schema</td></tr>
+    <tr><td><code>pxh-expert</code></td><td>Vibe code production</td><td>Cần code</td></tr>
+    <tr><td><code>pxh-fix-bugs</code></td><td>Root cause → fix</td><td>Có bug</td></tr>
+    <tr><td><code>pxh-qa</code></td><td>Viết & chạy test</td><td>Cần coverage</td></tr>
+    <tr><td><code>pxh-review-code</code></td><td>Security, perf audit</td><td>Cần review</td></tr>
+    <tr><td><code>pxh-devops</code></td><td>Lint → typecheck → build</td><td>Cần build</td></tr>
+    <tr><td><code>pxh-ui-ux</code></td><td>Layout, responsive</td><td>Cần design</td></tr>
+    <tr><td><code>pxh-save-history</code></td><td>State, checkpoint</td><td>(tự động)</td></tr>
+  </table>
 </section>
 
 <section id="workflows">
-  <h2>9 Workflows</h2>
+  <h2>Workflows</h2>
   <table>
     <tr><th>Lệnh</th><th>Mục đích</th><th>Pipeline</th></tr>
-    <tr><td><code>/vibe</code></td><td>Toàn bộ quy trình</td><td>Classify → Route → Design → Code → Test → Review → Build → Persist</td></tr>
-    <tr><td><code>/web</code></td><td>Web app</td><td>Design → Code → Style → Test → Deploy</td></tr>
-    <tr><td><code>/game</code></td><td>Game HTML5</td><td>Design → Code → Preview → Polish → Deploy</td></tr>
-    <tr><td><code>/ai</code></td><td>Chatbot, RAG, Agent</td><td>Design → Code → Test → Deploy</td></tr>
-    <tr><td><code>/tool</code></td><td>CLI, Extension</td><td>Design → Code → Package → Test</td></tr>
-    <tr><td><code>/debug</code></td><td>Debug + Fix</td><td>Reproduce → Root Cause → Fix → Verify</td></tr>
-    <tr><td><code>/ui-ux</code></td><td>UI/UX Design</td><td>Audit → Design → Implement → Verify</td></tr>
-    <tr><td><code>/release</code></td><td>Build Pipeline</td><td>Lint → Typecheck → Test → Build → Deploy</td></tr>
-    <tr><td><code>/meeting</code></td><td>Họp agents</td><td>Agenda → Discuss → Decision → Action</td></tr>
+    <tr><td><code>/vibe</code></td><td>Full pipeline</td><td>11 bước: analyze → design → code → test → fix → review → build → persist</td></tr>
+    <tr><td><code>/web</code></td><td>Web app</td><td>React/Vite/Tailwind → API → DB → Deploy</td></tr>
+    <tr><td><code>/game</code></td><td>Game HTML5</td><td>Phaser/Three.js → assets → preview → polish</td></tr>
+    <tr><td><code>/ai</code></td><td>Chatbot, RAG</td><td>LLM → prompt → vector DB → deploy</td></tr>
+    <tr><td><code>/debug</code></td><td>Debug + Fix</td><td>Reproduce → root cause → fix → verify</td></tr>
+    <tr><td><code>/release</code></td><td>Build pipeline</td><td>Lint → typecheck → test → build</td></tr>
   </table>
+</section>
+
+<section id="runtime">
+  <h2>Runtime Engine</h2>
+  <p><code>runtime/engine/</code> — Executable runtime với type-safe contracts.</p>
+  <table>
+    <tr><th>Module</th><th>File</th><th>Chức năng</th></tr>
+    <tr><td>Types</td><td><code>src/types.ts</code></td><td>6 contract interfaces + MemoryCategory + PipelineStep</td></tr>
+    <tr><td>Contracts</td><td><code>src/contracts/*.ts</code></td><td>Zod schemas: Request, Task, Result, Response, Event, State</td></tr>
+    <tr><td>Validator</td><td><code>src/validator.ts</code></td><td><code>validateContract()</code>, <code>assertContract()</code></td></tr>
+    <tr><td>Pipeline</td><td><code>src/pipeline.ts</code></td><td>Phase executor, checkpoint/resume, 10 phases</td></tr>
+    <tr><td>Router</td><td><code>src/router.ts</code></td><td><code>route()</code>, <code>classifyPrompt()</code>, <code>workflowToPhases()</code></td></tr>
+    <tr><td>Memory I/O</td><td><code>src/memory.ts</code></td><td><code>readMemory()</code>, <code>writeMemory()</code>, <code>mergeMemory()</code></td></tr>
+  </table>
+</section>
+
+<section id="cli">
+  <h2>CLI Tools</h2>
+  <table>
+    <tr><th>Lệnh</th><th>Chức năng</th></tr>
+    <tr><td><code>npm run vibe -- init</code></td><td>Tạo project mới (web/game/ai/tool)</td></tr>
+    <tr><td><code>npm run vibe -- status</code></td><td>Dashboard: memory entries + pipeline state</td></tr>
+    <tr><td><code>npm run vibe -- resume</code></td><td>Tiếp tục session dang dở</td></tr>
+    <tr><td><code>npm run vibe -- feedback</code></td><td>Ghi feedback → .memory/feedback.json</td></tr>
+    <tr><td><code>npm run vibe -- scaffold</code></td><td>Scaffold từ template</td></tr>
+    <tr><td><code>npm run onboard</code></td><td>First-run wizard</td></tr>
+    <tr><td><code>npm run status</code></td><td>Terminal dashboard (tương tự)</td></tr>
+    <tr><td><code>npm run test</code></td><td>49 architecture self-tests</td></tr>
+  </table>
+</section>
+
+<section id="tests">
+  <h2>Self-Tests</h2>
+  <p>49 tests verify architecture integrity:</p>
+  <ul>
+    <li><strong>13 contract tests</strong> — validation pass/fail cho 6 contracts</li>
+    <li><strong>6 pipeline tests</strong> — phase order, agent mapping</li>
+    <li><strong>14 router tests</strong> — intent classification, workflow routing</li>
+    <li><strong>16 architecture tests</strong> — agents, workflows, skills, config integrity</li>
+  </ul>
+  <pre>npm test</pre>
+</section>
+
+<section id="contracts">
+  <h2>Contracts</h2>
+  <table>
+    <tr><th>Contract</th><th>Hướng</th><th>Validation</th></tr>
+    <tr><td>Request</td><td>T1→T2</td><td>version, type, target, context</td></tr>
+    <tr><td>Task</td><td>T2→T3</td><td>version, phase, target, skills, workflow</td></tr>
+    <tr><td>Result</td><td>T3→T2</td><td>version, status, artifacts[]</td></tr>
+    <tr><td>Response</td><td>T2→T1</td><td>version, status, summary</td></tr>
+    <tr><td>Event</td><td>any→T4</td><td>version, type, phase, reflection</td></tr>
+    <tr><td>State</td><td>T4→T2</td><td>version, checkpoint, session_id</td></tr>
+  </table>
+  <p>All validated via Zod schemas — invalid contracts rejected at parse time.</p>
 </section>
 
 <section id="install">
   <h2>Cài đặt</h2>
-
-  <h3>Cách A — Dùng source trực tiếp</h3>
-  <pre>git clone &lt;repo-url&gt; pxhopencode
+  <h3>Standalone</h3>
+  <pre>git clone &lt;url&gt; pxhopencode
 cd pxhopencode
+start.bat
+npm run setup
 opencode</pre>
-
-  <h3>Cách B — Nhúng vào project có sẵn</h3>
-  <pre>cd project-của-bạn
-git clone &lt;repo-url&gt; .opencode
+  <h3>Nhúng vào project</h3>
+  <pre>cd project
+git clone &lt;url&gt; .opencode
+.opencode\start.bat
+cd ..
 opencode</pre>
-
-  <p style="color:var(--muted);font-size:.85em">Portable: copy pxhopencode vào bất kỳ project nào — hoạt động ngay lập tức.</p>
-</section>
-
-<section id="policies">
-  <h2>Chính sách</h2>
-  <table>
-    <tr><th>Policy</th><th>Cơ chế</th><th>Giới hạn</th></tr>
-    <tr><td>Retry</td><td>Exponential backoff 1s→2s→4s</td><td>Max 3 lần</td></tr>
-    <tr><td>Recovery</td><td>Checkpoint-based resume / rollback</td><td>Lỗi permanent</td></tr>
-    <tr><td>Reflection</td><td>4 mức: Task → Phase → Workflow → Incident</td><td>Ghi session log</td></tr>
-  </table>
 </section>
 
 <footer>
-  PXH2910 v82.3 · AI Company for Vibe Coding · <a href="https://github.com/anomalyco/opencode">opencode</a>
+  pxhopencode v82.4 · AI Company for Vibe Coding · <code>npm run vibe -- status</code>
 </footer>
 
 </main>

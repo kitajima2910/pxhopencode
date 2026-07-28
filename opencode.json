@@ -19,6 +19,8 @@
     "max_bytes": 4096
   },
 
+  "mcp_servers": ".opencode/mcp.json",
+
   "skills": {
     "paths": ["skills", ".opencode/skills", "pxhopencode/skills"],
     "lazy": true
@@ -67,6 +69,18 @@
     "compile": {
       "description": "Prompt Compiler — phân tích intent, extract constraints, sinh IR, tối ưu prompt cho LLM backend. Zero AI, zero token.",
       "template": "Load `skills/prompt-compiler/SKILL.md`. Input → Pipeline 14 stages → IR → Backend prompt. Dùng `ts-node prompt-compiler/src/index.ts` hoặc import Pipeline."
+    },
+    "init": {
+      "description": "Khởi tạo project mới với scaffold wizard",
+      "template": "Chạy: `node runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File scripts/scaffold.ps1`"
+    },
+    "status": {
+      "description": "Xem trạng thái session, memory, pipeline",
+      "template": "Chạy: `node runtime/bin/vibe.mjs status` hoặc `node runtime/bin/status.mjs`"
+    },
+    "onboard": {
+      "description": "Onboarding wizard cho người dùng mới",
+      "template": "Chạy: `node runtime/bin/onboard.mjs`"
     }
   }
 }

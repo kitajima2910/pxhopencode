@@ -1,109 +1,106 @@
 # pxhopencode — Vibe Coding with OpenCode
 
 <p align="center">
-  <b>v82.3</b> &nbsp;·&nbsp; 222 commits &nbsp;·&nbsp; 10 AI agents &nbsp;·&nbsp; 4-tier runtime &nbsp;·&nbsp; 8 workflows &nbsp;·&nbsp; 50 skills &nbsp;·&nbsp; 169 templates</p>
+  <b>v82.4</b> · 10 AI agents · 4-tier runtime · 8 workflows · 50 skills · 49 self-tests · 6 contracts
+</p>
 
-> Clone vào project của bạn → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build.
+> Clone → `start.bat` → `opencode` → mô tả ý tưởng bằng tiếng Việt. AI team tự động phân tích, code, test, fix, review, build.
 
 ---
 
-## Cài đặt (30 giây)
+## Mục lục
 
-Nhúng vào project có sẵn:
+- [Cài đặt](#cài-đặt)
+- [Lần chạy đầu tiên](#lần-chạy-đầu-tiên)
+- [3 Cách Vibe Code](#3-cách-vibe-code)
+- [Runtime CLI](#runtime-cli)
+- [Self-Tests](#self-tests)
+- [Feedback Loop](#feedback-loop)
+- [3 Cách Vibe Code Chi Tiết](#3-cách-vibe-code-chi-tiết)
+- [Kiến trúc 4 Tầng](#kiến-trúc-4-tầng)
+- [Tham khảo Agents](#tham-khảo-agents)
+- [Changelog](#changelog)
+
+---
+
+## Cài đặt
+
+### Option A: Standalone (pxhopencode là workspace)
+
+```bash
+git clone <url> pxhopencode
+cd pxhopencode
+start.bat                          # init .memory/ + .gitignore
+npm run setup                      # install runtime engine deps
+npm run test                       # verify architecture (49 tests)
+```
+
+### Option B: Nhúng vào project có sẵn
 
 ```bash
 cd project-của-bạn
-git clone https://github.com/kitajima2910/pxhopencode.git .opencode
+git clone <url> .opencode
+cd .opencode
+.\start.bat
 ```
 
-Sau đó chạy init (chọn 1 trong 2 cách):
+Init script tự động:
+- Xoá `.opencode/.git/` (tránh nested repo)
+- Tạo 13 file `.memory/` với project info
+- Merge `.gitignore` entries vào project root
 
-| Cách | Lệnh |
-|------|------|
-| **CMD** | `.opencode\start.bat` |
-| **PowerShell** | `powershell -ExecutionPolicy Bypass -File ".opencode/_shared/scripts/start.ps1"` |
+## Lần chạy đầu tiên
 
-Hoặc chỉ clone rồi chạy `opencode` — init script tự động chạy ở prompt đầu tiên.
-
-> Init script tự động: xoá `.opencode/.git/` (tránh nested repo), merge toàn bộ entries từ `.gitignore` template vào parent project (`.opencode/`, `.github/`, `.vibe/`, `.memory/`, `__prompt-log__.md`, ...), tạo 13 files `.memory/`.
-
-> **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html)
-
-## Cấu trúc source
-
-```
-pxhopencode/
-├── opencode.json        # Config: agents, commands, skills
-├── package.json         # Project metadata v82.3
-├── README.md            # Hướng dẫn sử dụng
-├── STATUS.md            # Dashboard tiến độ
-├── start.bat            # Init script (chạy từ cmd hoặc double-click)
-├── prompt-optimizer.md  # Prompt optimization 4-step pipeline
-├── __prompt-log__.md    # Prompt cuối cùng (overwrite, git-ignored)
-├── agents/              # 10 AI agents (T1-T4)
-├── runtime/             # 4 tầng + contracts + policies + memory
-├── workflows/           # 8 workflow templates
-├── skills/              # 50 skills theo lĩnh vực
-├── prompt-compiler/     # TypeScript Prompt Compiler (34 files)
-├── docs-vibe/           # Tài liệu kiến trúc
-├── _shared/             # Scripts, templates, design-system dùng chung
-│   └── design-system/   # OKLCH design tokens (CSS + TS)
-├── .memory/             # Vibe Coding Memory Engine (13 files, tự động)
+```bash
+npm run onboard   # hoặc: node runtime/bin/onboard.mjs
 ```
 
----
+Wizard hiện ra hỏi bạn muốn làm web/game/ai/tool — chọn xong là có project scaffold sẵn.
+
+```bash
+opencode          # bắt đầu vibe coding
+```
+
+Output kỳ vọng:
+
+```
+[MEMORY_INIT_DONE]
+→ Memory loaded: 13 categories, confidence 70%
+→ Ready. Mô tả ý tưởng của bạn bằng tiếng Việt.
+```
 
 ## 3 Cách Vibe Code
 
-Bạn mô tả ý tưởng. Hệ thống lo toàn bộ phần còn lại. Không cần biết agent nào, skill nào — hệ thống tự quyết định.
-
 ### Cách 1: Prompt tự nhiên (khuyên dùng)
 
-Gõ thẳng mô tả công việc bằng tiếng Việt. Hệ thống tự phân loại → chọn workflow → route agent → thực thi:
+Gõ thẳng mô tả bằng tiếng Việt. Hệ thống tự phân loại → chọn workflow → route agent:
 
 ```
 "Xây dựng web blog cá nhân với React, có dark mode"
-"Làm game platformer 2D, nhân vật mèo nhảy qua chướng ngại vật, thu thập coin"
-"Tạo chatbot RAG trả lời câu hỏi từ tài liệu PDF nội bộ"
-```
-
-**Luồng tự động phía sau:**
-
-```mermaid
-flowchart TD
-    A[Prompt] --> B["T1 — pxh-help<br/>Phân loại workflow + skill"]
-    B --> C["T2 — pxh-pm<br/>Chọn worker, tạo Task contract"]
-    C --> D["T3 — pxh-expert<br/>Code"]
-    D --> E["T3 — pxh-qa<br/>Viết & chạy test"]
-    E -->|fail| F["T3 — pxh-fix-bugs<br/>Sửa lỗi"]
-    F --> E
-    E -->|pass| G["T3 — pxh-review<br/>Audit security + performance"]
-    G --> H["T3 — pxh-devops<br/>Lint → typecheck → test → build"]
-    H --> I["T4 — pxh-save<br/>Lưu session log"]
+"Làm game platformer 2D, nhân vật mèo nhảy qua chướng ngại vật"
+"Tạo chatbot RAG trả lời câu hỏi từ tài liệu PDF"
 ```
 
 ### Cách 2: Lệnh `/` — đi thẳng vào workflow
 
-Bỏ qua phân loại, route thẳng vào workflow tương ứng:
+Bỏ qua phân loại, route thẳng vào workflow:
 
-| Lệnh       | Ví dụ                                          | Dùng khi                                                        |
-| ---------- | ---------------------------------------------- | --------------------------------------------------------------- |
-| `/vibe`    | `/vibe xây dựng app quản lý công việc`         | Full pipeline 11 bước: phân tích → code → test → review → build |
-| `/web`     | `/web làm landing page cho startup`            | Web app: React, Next.js, Express, FastAPI                       |
-| `/3d`      | `/3d tạo product configurator 3D với Three.js` | 3D web experience: Three.js, R3F, Spline, WebGL                 |
-| `/game`    | `/game game bắn súng không gian 2D`            | Game HTML5: Phaser 2D, Isometric, Three.js 3D                   |
-| `/ai`      | `/ai tạo chatbot hỗ trợ khách hàng`            | Chatbot, RAG, AI agent, LLM                                     |
-| `/tool`    | `/tool CLI tool đổi tên file hàng loạt`        | CLI, extension, automation, package                             |
-| `/debug`   | `/debug game bị giật FPS khi nhiều enemy`      | Debug + root cause analysis                                     |
-| `/ui-ux`   | `/ui-ux thiết kế responsive navbar`            | UI/UX design & responsive layout                                |
-| `/meeting` | `/meeting chọn tech stack cho dự án mới`       | Họp agents thảo luận kiến trúc                                  |
-| `/release` | `/release`                                     | Build pipeline: lint → test → build                             |
-| `/preview` | `/preview`                                     | Live preview game (Vite HMR)                                    |
-| `/compile` | `/compile "xây dựng blog React"`               | Prompt Compiler — phân tích intent, sinh IR, tối ưu prompt      |
+| Lệnh | Ví dụ | Dùng khi |
+|------|-------|----------|
+| `/vibe` | `/vibe xây dựng app quản lý công việc` | Full pipeline 11 bước |
+| `/web` | `/web làm landing page` | Web app |
+| `/3d` | `/3d tạo product configurator Three.js` | 3D web experience |
+| `/game` | `/game game bắn súng 2D` | Game HTML5 |
+| `/ai` | `/ai tạo chatbot hỗ trợ khách hàng` | AI/LLM |
+| `/tool` | `/tool CLI tool đổi tên file` | CLI, automation |
+| `/debug` | `/debug game bị giật FPS` | Debug + root cause |
+| `/ui-ux` | `/ui-ux thiết kế responsive navbar` | UI/UX design |
+| `/meeting` | `/meeting chọn tech stack` | Họp agents |
+| `/release` | `/release` | Build pipeline |
+| `/init` | Khởi tạo project mới | Scaffold wizard |
+| `/status` | Xem trạng thái session | Dashboard |
 
 ### Cách 3: @mention — gọi thẳng agent
-
-Biết chính xác cần agent nào? Gọi trực tiếp, bỏ qua classify & routing:
 
 ```
 @pxh-expert       viết API endpoint /api/users với CRUD
@@ -117,129 +114,153 @@ Biết chính xác cần agent nào? Gọi trực tiếp, bỏ qua classify & ro
 
 ---
 
-## Quy trình `/vibe` đầy đủ (11 bước)
+## Runtime CLI
 
-Pipeline hoàn chỉnh từ ý tưởng đến production:
+Các lệnh CLI chạy độc lập, không cần opencode:
 
-| #   | Phase     | Agent             | Công việc                                     |
-| --- | --------- | ----------------- | --------------------------------------------- |
-| 1   | NHẬN      | T1→T2             | Phân loại prompt, xác định loại dự án         |
-| 2   | PHÂN TÍCH | T2                | Chọn tech stack, đánh giá quy mô              |
-| 3   | HỌP       | @meeting          | Agent council đồng thuận kiến trúc            |
-| 4   | KẾ HOẠCH  | T2                | Feature list, milestones, acceptance criteria |
-| 5   | THIẾT KẾ  | @pxh-architect    | Schema DB, API contract, component tree       |
-| 6   | CODE      | @pxh-expert       | Code, .gitignore + favicon                    |
-| 7   | KIỂM TRA  | @pxh-qa           | Viết test, coverage ≥ 85%                     |
-| 8   | SỬA       | @pxh-fix-bugs     | Root cause → fix → verify                     |
-| 9   | RÀ SOÁT   | @pxh-review-code  | Security audit, performance review            |
-| 10  | PHÁT HÀNH | @pxh-devops       | Lint → typecheck → test → build               |
-| 11  | LƯU       | @pxh-save-history | Session log, ADR, STATUS.md                   |
+```bash
+npm run vibe -- init          # Tạo project mới (web/game/ai/tool)
+npm run vibe -- status        # Dashboard: memory entries, pipeline state
+npm run vibe -- resume        # Tiếp tục session dang dở
+npm run vibe -- feedback      # Gửi feedback → memory học
+npm run vibe -- scaffold      # Scaffold từ template có sẵn
+npm run status                # Terminal dashboard (tương tự)
+```
 
-**Tự động retry loop:** Test fail → quay lại bước 6 (max 3 lần). Critical issue → quay lại bước 8 (max 3 lần). Build fail → quay lại bước 6 (max 3 lần).
+**Ví dụ output `vibe status`:**
+
+```
+> vibe status -- Session status
+
+  architecture    count:0    conf:0    updated:2026-07-28
+  project         count:5    conf:70   updated:2026-07-28
+  patterns        count:3    conf:85   updated:2026-07-28
+  bugs            count:1    conf:90   updated:2026-07-28
+  ...
+
+  Pipeline:
+  OK architect -> pxh-architect
+  OK code     -> pxh-expert
+  -- fix      -> pxh-fix-bugs
+```
 
 ---
 
-## Ví dụ thực tế
+## Self-Tests
 
-**Làm web app:**
+49 tests verify architecture integrity — agents, workflows, contracts, skills, config:
 
-```
-/vibe Xây dựng ứng dụng quản lý chi tiêu cá nhân với React + Express + PostgreSQL.
-Cho phép thêm/sửa/xóa giao dịch, phân loại thu/chi, xem biểu đồ thống kê theo tháng.
-```
-
-→ Hệ thống tự: phân tích → thiết kế schema → code frontend + backend → test → review → build.
-
-**Làm game:**
-
-```
-/game Làm game platformer 2D. Nhân vật mèo chạy nhảy qua chướng ngại vật,
-thu thập coin, có 3 mạng. Enemy là chó bay qua lại. Background parallax rừng cây.
+```bash
+npm test
 ```
 
-→ Hệ thống tự: tải assets → scaffold Phaser 3 → code game loop → test headless → polish → build.
-
-**Debug:**
+Kỳ vọng:
 
 ```
-/debug Game bị crash khi spawn enemy thứ 50. Console báo "pool exhausted".
+> vitest run
+  ✓ __tests__/contracts.test.ts   (13 tests)
+  ✓ __tests__/pipeline.test.ts    (6 tests)
+  ✓ __tests__/router.test.ts      (14 tests)
+  ✓ __tests__/architecture.test.ts (16 tests)
+  Test Files  4 passed (4)
+  Tests       49 passed (49)
 ```
 
-→ `pxh-fix-bugs`: root cause → fix object pool → verify.
+Các tests kiểm tra:
+- **Contracts**: 6 contract schemas (Request, Task, Result, Response, Event, State) — validation pass/fail
+- **Pipeline**: Phase order, agent mapping, no duplicates
+- **Router**: Intent classification, workflow routing, phase sequencing
+- **Architecture**: 10 agents có đủ sections, 8 workflows có Anti-Rationalization + Loop, opencode.json hợp lệ
+
+---
+
+## Feedback Loop
+
+Sau mỗi session, bạn có thể gửi feedback:
+
+```bash
+npm run vibe -- feedback
+# "Cái game bị chậm, nên dùng object pool cho đạn"
+```
+
+Feedback được ghi vào `.memory/feedback.json`. Lần session sau, memory engine tự động load context — agent biết project bạn đang ở đâu, patterns gì, bugs gì.
 
 ---
 
 ## Kiến trúc 4 Tầng
 
-```mermaid
-flowchart TD
-    User((User))
-    T1["T1 — INTERFACE<br/>pxh-help<br/>validate & classify"]
-    T2["T2 — ORCHESTRATION<br/>pxh-pm<br/>route, retry, recovery"]
-    T3["T3 — WORKERS (7)<br/>code · test · fix · review · build · design"]
-    T4["T4 — INFRASTRUCTURE<br/>pxh-save-history<br/>checkpoint, log, state"]
-
-    User -->|Prompt| T1
-    T1 -->|Request| T2
-    T2 -->|Task| T3
-    T3 -->|Result| T2
-    T2 -->|Response| T1
-    T1 -->|Output| User
-    T3 -.->|Event| T4
-    T4 -.->|State| T2
+```
+T1 — INTERFACE      pxh-help        Validate & classify prompt
+T2 — ORCHESTRATION  pxh-pm          Route, retry, recovery, reflection
+T3 — WORKERS        7 agents        Code, test, fix, review, build, UI/UX
+T4 — INFRASTRUCTURE pxh-save-history State, checkpoint, log, alerting
 ```
 
-| Tầng                  | Agent              | Vai trò                               | Rời bàn          |
-| --------------------- | ------------------ | ------------------------------------- | ---------------- |
-| **T1** Interface      | `pxh-help`         | Validate & classify input             | Khi TUI kết thúc |
-| **T2** Orchestration  | `pxh-pm`           | Route, policy, retry/recovery         | Khi TUI kết thúc |
-| **T3** Workers        | 7 agents           | Code, test, fix, review, build, UI/UX | Xong việc → rời  |
-| **T4** Infrastructure | `pxh-save-history` | State, checkpoint, log                | Xong việc → rời  |
+Giao tiếp qua typed contracts (Zod-validated):
+
+| Contract | Hướng | Fields |
+|----------|-------|--------|
+| Request | T1→T2 | version, type, target, context |
+| Task | T2→T3 | version, phase, target, skills, workflow |
+| Result | T3→T2 | version, status, artifacts[] |
+| Response | T2→T1 | version, status, summary |
+| Event | any→T4 | version, type, phase, reflection |
+| State | T4→T2 | version, checkpoint, session_id |
 
 ---
 
-## Tham khảo: Tất cả Agents
+## Tham khảo Agents
 
-| Agent              | Tầng | Chuyên môn     | @mention khi                               |
-| ------------------ | ---- | -------------- | ------------------------------------------ |
-| `pxh-help`         | T1   | Interface      | (tự động — classify input)                 |
-| `pxh-pm`           | T2   | Orchestration  | (tự động — route task)                     |
-| `pxh-architect`    | T3   | Thiết kế       | Cần DB schema, API design, chọn tech stack |
-| `pxh-expert`       | T3   | Code           | Cần code production                        |
-| `pxh-fix-bugs`     | T3   | Debug          | Có bug, cần root cause                     |
-| `pxh-qa`           | T3   | Test           | Cần viết test hoặc check coverage          |
-| `pxh-review-code`  | T3   | Review         | Cần security audit hoặc perf review        |
-| `pxh-devops`       | T3   | Build          | Cần lint → typecheck → test → build        |
-| `pxh-ui-ux`        | T3   | Thiết kế       | Cần layout, responsive, accessibility      |
-| `pxh-save-history` | T4   | Infrastructure | (tự động — save session)                   |
-
----
-
-## Chính sách
-
-| Policy         | Cơ chế                                    | Giới hạn        |
-| -------------- | ----------------------------------------- | --------------- |
-| **Retry**      | Exponential backoff (1s → 2s → 4s)        | Max 3 lần       |
-| **Recovery**   | Checkpoint-based resume / rollback        | Lỗi permanent   |
-| **Reflection** | 4 mức: Task → Phase → Workflow → Incident | Ghi session log |
+| Agent | Tầng | Chuyên môn | @mention khi |
+|-------|------|-----------|-------------|
+| `pxh-help` | T1 | Interface | (tự động) |
+| `pxh-pm` | T2 | Orchestration | (tự động) |
+| `pxh-architect` | T3 | Thiết kế | Cần DB schema, API design |
+| `pxh-expert` | T3 | Code | Cần code production |
+| `pxh-fix-bugs` | T3 | Debug | Có bug, cần root cause |
+| `pxh-qa` | T3 | Test | Cần viết test |
+| `pxh-review-code` | T3 | Review | Cần security audit |
+| `pxh-devops` | T3 | Build | Cần build pipeline |
+| `pxh-ui-ux` | T3 | UI/UX | Cần layout, responsive |
+| `pxh-save-history` | T4 | Infrastructure | (tự động) |
 
 ---
 
-## Key Concepts
+## Cấu trúc source
 
-- **Prompt Compiler TypeScript Engine**: `prompt-compiler/` — 11-stage pipeline, 7 backends (DeepSeek, Claude, GPT, Gemini, GeminiCodex, OpenCode), 6 dictionaries, Trie/Aho-Corasick/FSM matching. Zero-AI, zero-token optimization.
-- **Prompt Optimizer Pipeline**: `prompt-optimizer.md` — 4 steps: Memory Init → Compiler → Optimize → Auto-wrap RULE+TARGET+IR. Mọi prompt đều được chuẩn hoá, thêm rules, log vào `__prompt-log__.md`.
-- **Contract Communication**: Agents giao tiếp qua typed contracts, không @mention trần
-- **Context Budget**: Lazy-load skills, compaction tự động, giới hạn 50 line/4096 byte output
-- **UI/UX Design System**: `_shared/design-system/` — OKLCH design tokens, light/dark mode, game HUD tokens, typed TS exports. UI/UX Quality Gate enforced ở T3 agents — không hardcode hex, không AI Studio look.
-- **Live Preview**: `skills/games-preview/` — Vite HMR, hot-reload < 50ms
-- **Portable**: Copy pxhopencode vào project — chạy `start.ps1` init. Hoặc dùng source trực tiếp.
-- **Vibe Coding Memory Engine**: Hệ thống knowledge tự động — 13 file JSON (`index.json`, `project.json`, `architecture.json`, `patterns.json`, `bugs.json`, `decisions.json`, `preferences.json`, `workflow.json`, `prompt.json`, `vibe.json`, `snapshots.json`, `timeline.json`, `stats.json`). Agents tự học project structure, architecture, patterns, bugs, decisions, preferences qua từng session. `.memory/` được auto-create ở workspace root, không cần cấu hình. Chi tiết: `runtime/memory/README.md`
-- **169 Skill Templates**: 164 templates trong `skills/**/templates/` + 5 shared templates trong `_shared/templates/` — ADR, bug report, session log, status, gitignore.
-- **First-time Setup Script**: `_shared/scripts/start.ps1` — xoá `.opencode/.git/`, merge `.gitignore` entries, tạo 13 `.memory/` files. Chạy 1 lần duy nhất.
+```
+pxhopencode/
+├── opencode.json          # Config: agents, commands, skills, MCP
+├── package.json           # Scripts: test, vibe, onboard, status
+├── README.md              # Hướng dẫn sử dụng
+├── STATUS.md              # Dashboard tiến độ
+├── start.bat              # Init script (cmd / double-click)
+├── prompt-optimizer.md     # Prompt optimization pipeline
+├── runtime/
+│   ├── engine/            # Runtime engine: types, contracts, pipeline, router
+│   │   ├── src/           # TypeScript: Zod schemas, validators, memory I/O
+│   │   └── __tests__/     # 49 self-tests (vitest)
+│   ├── bin/               # CLI: vibe.mjs, status.mjs, onboard.mjs
+│   ├── layers/            # 4 tầng (spec)
+│   ├── contracts/         # 6 contracts (spec)
+│   ├── memory/            # Memory engine docs
+│   └── policies/          # Retry, recovery, reflection
+├── agents/                # 10 AI agents (T1-T4)
+├── workflows/             # 8 workflow templates
+├── skills/                # 50 skills theo lĩnh vực
+├── prompt-compiler/       # TypeScript Prompt Compiler
+├── dashboard/             # Web dashboard (HTML + JS + CSS)
+├── docs-vibe/             # Tài liệu kiến trúc
+├── _shared/               # Scripts, templates, design-system
+│   └── scripts/           # init-memory.ps1, scaffold.ps1
+│   └── design-system/     # OKLCH design tokens
+├── .memory/               # Vibe Coding Memory Engine (tự động)
+└── .opencode/
+    └── mcp.json            # MCP server config (filesystem, GitHub)
+```
 
 ---
 
 ## Changelog
 
-Xem chi tiết: `_shared/changelog.md`
+Xem chi tiết: `_shared/changelog.md` · `STATUS.md`
