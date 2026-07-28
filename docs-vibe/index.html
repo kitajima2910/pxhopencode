@@ -196,22 +196,31 @@ footer{text-align:center;padding:48px 24px;color:var(--muted);font-size:.8em;bor
 
 <section id="install">
   <h2>Cài đặt</h2>
-  <h3>Standalone</h3>
+  <h3>Nhúng vào project của bạn (khuyên dùng)</h3>
+  <pre>cd project-của-bạn
+git clone &lt;url&gt; .opencode
+cd .opencode
+.\start.bat
+cd ..
+opencode</pre>
+  <h3>Hoặc clone độc lập</h3>
   <pre>git clone &lt;url&gt; pxhopencode
 cd pxhopencode
 start.bat
 npm run setup
 opencode</pre>
-  <h3>Nhúng vào project</h3>
-  <pre>cd project
-git clone &lt;url&gt; .opencode
-.opencode\start.bat
-cd ..
-opencode</pre>
+</section>
+
+<section id="cli-ref">
+  <h2>CLI (embedded)</h2>
+  <pre>node .opencode\runtime\bin\vibe.mjs status
+node .opencode\runtime\bin\vibe.mjs feedback
+node .opencode\runtime\bin\vibe.mjs init
+node .opencode\runtime\bin\status.mjs</pre>
 </section>
 
 <footer>
-  pxhopencode v82.4 · AI Company for Vibe Coding · <code>npm run vibe -- status</code>
+  pxhopencode v82.4 · AI Company for Vibe Coding · <code>opencode</code>
 </footer>
 
 </main>
