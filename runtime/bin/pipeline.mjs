@@ -2,13 +2,15 @@
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
+const ROOT = join(import.meta.dirname, "..", "..");
+
 function err(s) { return "\x1b[31m" + s + "\x1b[0m"; }
 function ok(s) { return "\x1b[32m" + s + "\x1b[0m"; }
 function dim(s) { return "\x1b[2m" + s + "\x1b[0m"; }
 function cyan(s) { return "\x1b[36m" + s + "\x1b[0m"; }
 function yell(s) { return "\x1b[33m" + s + "\x1b[0m"; }
 
-const PIPEFILE = ".pipeline-state.json";
+const PIPEFILE = join(ROOT, ".pipeline-state.json");
 const PHASES = ["analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist"];
 const AGENTS = {
   analyze: "pxh-pm", meeting: "pxh-pm", architect: "pxh-architect",

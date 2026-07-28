@@ -3,7 +3,8 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const PREFIX = existsSync(".opencode/runtime/bin") ? ".opencode" : "";
+const ROOT = join(import.meta.dirname, "..", "..");
+const PREFIX = existsSync(join(ROOT, ".opencode", "runtime", "bin")) ? ".opencode" : "";
 function bin(name) { return join(PREFIX, "runtime", "bin", name + ".mjs"); }
 
 function run(script, args) {
@@ -108,7 +109,7 @@ function cmdFail(phase) {
 function cmdPhase() {
   const phases = ["analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist"];
   console.log(dim("Available phases: ") + phases.map(p => cyan(p)).join(", ") + "\n");
-  const file = ".pipeline-state.json";
+  const file = join(ROOT, ".pipeline-state.json");
   if (existsSync(file)) {
     try {
       const pipe = JSON.parse(readFileSync(file, "utf-8"));

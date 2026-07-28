@@ -34,7 +34,7 @@ function memoryStatus() {
 }
 
 function pipelineStatus() {
-  var fp = join(process.cwd(), ".pipeline-state.json");
+  var fp = join(ROOT, ".pipeline-state.json");
   if (!existsSync(fp)) return null;
   return readJSON(fp);
 }

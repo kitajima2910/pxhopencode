@@ -73,7 +73,7 @@ async function cmdStatus() {
       }
     }
   }
-  var pipeFile = join(process.cwd(), ".pipeline-state.json");
+  var pipeFile = join(ROOT, ".pipeline-state.json");
   if (existsSync(pipeFile)) {
     var pipe = readJSON(pipeFile);
     if (pipe && pipe.length) {
@@ -91,7 +91,7 @@ async function cmdStatus() {
 
 async function cmdResume() {
   console.log("\n  " + cyan(">") + " vibe resume " + dim("-- Resume session") + "\n");
-  var pipeFile = join(process.cwd(), ".pipeline-state.json");
+  var pipeFile = join(ROOT, ".pipeline-state.json");
   if (!existsSync(pipeFile)) { console.log("  " + yellow("No session to resume.") + "\n"); return; }
     var pipe = readJSON(pipeFile);
   if (!pipe || pipe.length === 0) { console.log("  " + yellow("No session to resume.") + "\n"); return; }
