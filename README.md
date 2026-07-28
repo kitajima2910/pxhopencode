@@ -1,10 +1,6 @@
 # pxhopencode — Vibe Coding with OpenCode
 
-<p align="center">
-  <b>v82.4</b> · 10 AI agents · 4-tier runtime · 8 workflows · 50 skills · 49 self-tests · 6 contracts
-</p>
-
-> Nhúng vào project → mô tả ý tưởng bằng tiếng Việt → AI team tự động phân tích, code, test, fix, review, build.
+> Nhúng vào project → chạy 1 lệnh → gõ prompt tiếng Việt. AI team tự động code, test, fix, review.
 
 ---
 
@@ -16,100 +12,89 @@ git clone https://github.com/kitajima2910/pxhopencode.git .opencode
 .opencode\start.bat
 ```
 
-Init script tự động: xoá `.opencode/.git/`, merge `.gitignore`, tạo 13 files `.opencode/.memory/`, launch `opencode`.
-
-> **Docs đầy đủ:** [docs-vibe/index.html](docs-vibe/index.html)
+`start.bat` tự động: xoá `.git` nested, init memory, merge `.gitignore` → launch `opencode`.
 
 ---
 
-## Sử dụng
+## Cách dùng
 
-Sau khi `start.bat` launch `opencode`, chỉ cần gõ prompt tiếng Việt:
+### 1. Gõ prompt — mọi thứ tự động
 
+Sau khi `opencode` launch, **chỉ cần gõ ý tưởng bằng tiếng Việt**:
+
+```text
+Xây dựng web blog cá nhân với React, có dark mode
 ```
-"Xây dựng web blog với React, có dark mode"
-"Làm game platformer 2D, mèo nhảy qua chướng ngại vật"
-"Tạo chatbot RAG trả lời câu hỏi từ PDF"
+
+→ pxh-pm tự động: detect project → chọn workflow → `enforce run` → route worker → `enforce pass`.
+
+Bạn không cần biết agent nào làm gì. Mỗi phase tự động validate contract + inject context + track pipeline + detect framework.
+
+### 2. Khi cần kiểm tra
+
+| Bạn gõ | Kết quả |
+|--------|---------|
+| `/status` | Xem memory entries + pipeline đang ở phase nào |
+| `/pipeline watch` | Live cập nhật real-time từng phase |
+| `/context` | Xem session context (prompt gần đây) |
+| `/diff` | Xem những file đã thay đổi |
+| `/detect` | Phát hiện framework project (React, Phaser, ...) |
+
+### 3. Khi cần sửa
+
+| Bạn gõ | Kết quả |
+|--------|---------|
+| `/rollback src/App.tsx` | Hoàn tác file về commit cuối |
+| `/diff src/App.tsx` | Xem chi tiết thay đổi trong file |
+
+### 4. Khi cần secrets
+
+```text
+/secret set OPENAI_KEY=sk-...
 ```
 
-### Lệnh `/` trong opencode
+Lưu vào `.opencode/.env`, tự động gitignored. Agent dùng `secret.mjs get` để đọc — không bao giờ hardcode.
 
-| Lệnh | Chức năng |
-|------|-----------|
-| `/vibe` | Full pipeline 11 bước |
-| `/web` | Web app |
-| `/game` | Game HTML5 |
-| `/ai` | Chatbot, RAG |
-| `/debug` | Debug + fix |
-| `/status` | Xem memory + pipeline state |
-| `/feedback` | Gửi feedback |
-| `/diff` | Xem file changes |
-| `/rollback <file>` | Rollback file |
-| `/secret set KEY=VALUE` | Lưu secret |
-| `/secret list` | Xem secrets |
-| `/detect` | Auto-detect project framework |
-| `/pipeline watch` | Live pipeline status |
-| `/validate` | Kiểm tra engine integrity |
-| `/context` | Xem session context |
+### 5. Khi muốn góp ý
+
+```text
+/feedback Game bị chậm, nên dùng object pool
+```
+
+Ghi vào `.opencode/.memory/feedback.json`. Session sau memory engine tự động load.
 
 ---
 
-## Runtime Engine
+## Luồng thực tế (agent tự động, user không thấy)
 
 ```
-.opencode/runtime/
-├── engine/           # Zod contracts, validators, pipeline, router, memory I/O
-│   ├── src/          # TypeScript (28 files)
-│   └── __tests__/    # 49 self-tests (vitest)
-├── bin/              # CLI tools
-│   ├── vibe.mjs      # init, status, resume, feedback, scaffold
-│   ├── status.mjs    # Terminal dashboard
-│   ├── onboard.mjs   # First-run wizard
-│   ├── validate.mjs  # Engine integrity check
-│   ├── pipeline.mjs  # Pipeline tracker + live watch
-│   ├── diff.mjs      # Git diff + rollback
-│   ├── secret.mjs    # Secrets management
-│   ├── detect.mjs    # Project auto-detect
-│   └── context.mjs   # Session context
+Bạn gõ: "Làm game platformer 2D"
+
+Phía sau:
+  1. pxh-pm classify → /game workflow
+  2. enforce run architect → validate + context + pipeline + detect
+  3. pxh-architect thiết kế
+  4. enforce pass architect
+  5. enforce run code
+  6. pxh-expert code + enforce pass code
+  7. enforce run test → pxh-qa test → enforce pass/fail
+  8. (nếu fail) enforce run fix → pxh-fix-bugs → enforce pass/fail
+  ... cho đến build → persist
 ```
 
-49 tests verify contracts, pipeline, router, architecture:
-
-```
-.opencode\node_modules\.bin\vitest run .opencode\runtime\engine
-```
+Mỗi phase đều qua ENFORCEMENT GATE: nếu pre-hook lỗi, KHÔNG proceed.
 
 ---
 
-## Kiến trúc 4 Tầng
+## Tổng quan
 
-```
-T1 — INTERFACE      pxh-help        Validate & classify prompt
-T2 — ORCHESTRATION  pxh-pm          Route, retry, recovery, context injection
-T3 — WORKERS        7 agents        Code, test, fix, review, build, UI/UX
-T4 — INFRASTRUCTURE pxh-save-history State, checkpoint, log, metrics
-```
+| Thành phần | Số lượng |
+|-----------|---------|
+| Agents | 10 (T1-T4) |
+| Workflows | 8 |
+| Skills | 50 |
+| Contracts | 6 (Zod-validated) |
+| Self-tests | 49 |
+| Commands | 23 |
 
-Giao tiếp qua typed contracts (Zod-validated):
-
-| Contract | Hướng | Validation |
-|----------|-------|-----------|
-| Request | T1→T2 | version, type, target, context |
-| Task | T2→T3 | version, phase, target, skills, workflow |
-| Result | T3→T2 | version, status, artifacts[] |
-| Response | T2→T1 | version, status, summary |
-| Event | any→T4 | version, type, phase, reflection |
-| State | T4→T2 | version, checkpoint, session_id |
-
----
-
-## Tham khảo
-
-| Nội dung | Xem ở |
-|----------|-------|
-| 10 agents | `agents/*.md` |
-| 50 skills | `skills/*/SKILL.md` |
-| 8 workflows | `workflows/*.md` |
-| Contracts | `runtime/contracts/README.md` |
-| Memory Engine | `runtime/memory/README.md` |
-| Changelog | `STATUS.md` |
+Docs đầy đủ: `docs-vibe/index.html` · Changelog: `STATUS.md`
