@@ -42,36 +42,36 @@
   },
 
   "command": {
-    "vibe": { "template": "workflows/company.workflow.md" },
-    "meeting": { "template": "workflows/meeting.workflow.md" },
-    "release": { "template": "workflows/release.workflow.md" },
-    "debug": { "template": "workflows/debug.workflow.md" },
-    "web": { "template": "workflows/web.workflow.md" },
+    "vibe": { "template": ".opencode/workflows/company.workflow.md" },
+    "meeting": { "template": ".opencode/workflows/meeting.workflow.md" },
+    "release": { "template": ".opencode/workflows/release.workflow.md" },
+    "debug": { "template": ".opencode/workflows/debug.workflow.md" },
+    "web": { "template": ".opencode/workflows/web.workflow.md" },
     "3d": {
       "description": "3D web experience — Three.js, React Three Fiber, Spline, WebGL, interactive 3D scenes, product configurators",
-      "template": "Load `skills/3d-web-experience/SKILL.md`. Dùng `workflows/web.workflow.md` với `classified_skills: 3d-web-experience`."
+      "template": "Load `.opencode/skills/3d-web-experience/SKILL.md`. Dùng `.opencode/workflows/web.workflow.md` với `classified_skills: 3d-web-experience`."
     },
     "game": {
       "description": "Phát triển game HTML5 — support 2D (Phaser), 3D (Three.js), Isometric. Load orchestrator + workflow.",
-      "template": "Load `skills/game-development/SKILL.md` → route đến đúng sub-skill theo platform/dimension. Sau đó chạy `workflows/game.workflow.md`."
+      "template": "Load `.opencode/skills/game-development/SKILL.md` → route đến đúng sub-skill theo platform/dimension. Sau đó chạy `.opencode/workflows/game.workflow.md`."
     },
-    "ai": { "template": "workflows/ai.workflow.md" },
-    "tool": { "template": "workflows/tool.workflow.md" },
+    "ai": { "template": ".opencode/workflows/ai.workflow.md" },
+    "tool": { "template": ".opencode/workflows/tool.workflow.md" },
     "ui-ux": {
       "description": "UI/UX design — web (React/Tailwind), game HUD, CLI output",
-      "template": "Load `skills/ui-ux/SKILL.md`. Chạy design workflow."
+      "template": "Load `.opencode/skills/ui-ux/SKILL.md`. Chạy design workflow."
     },
     "preview": {
       "description": "Start game live preview dev server (Vite HMR + browser auto-open)",
-      "template": "Load `skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
+      "template": "Load `.opencode/skills/games-preview/SKILL.md`. Then run: `npm run dev` (hoặc `npx vite --open --host` nếu chưa có script)."
     },
     "compile": {
       "description": "Prompt Compiler — phân tích intent, extract constraints, sinh IR, tối ưu prompt cho LLM backend. Zero AI, zero token.",
-      "template": "Load `skills/prompt-compiler/SKILL.md`. Input → Pipeline 14 stages → IR → Backend prompt. Dùng `ts-node prompt-compiler/src/index.ts` hoặc import Pipeline."
+      "template": "Load `.opencode/skills/prompt-compiler/SKILL.md`. Input → Pipeline 14 stages → IR → Backend prompt."
     },
     "init": {
       "description": "Khởi tạo project mới với scaffold wizard",
-      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File .opencode/scripts/scaffold.ps1`"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File .opencode/_shared/scripts/start.ps1 -Help`"
     },
     "status": {
       "description": "Xem trạng thái session, memory, pipeline",
