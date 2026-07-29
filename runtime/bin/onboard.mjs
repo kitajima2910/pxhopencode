@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 
 import { readFileSync, existsSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import * as readline from "node:readline";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = join(__dirname, "..", "..");
-const MEMORY_ROOT = join(ROOT, ".memory");
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const OC_ROOT = resolveOpenCodeRoot();
+const MEMORY_ROOT = join(OC_ROOT, ".memory");
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 function ask(q) {
@@ -64,7 +68,7 @@ function readJSON(p) {
 }
 
 function readPackageVersion() {
-  var pkg = readJSON(join(ROOT, "package.json"));
+  var pkg = readJSON(join(OC_ROOT, "package.json"));
   return pkg ? pkg.version || "?" : "?";
 }
 

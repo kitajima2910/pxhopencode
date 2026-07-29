@@ -3,9 +3,15 @@ import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..", "..");
-const PREFIX = existsSync(join(ROOT, ".opencode", "runtime", "bin")) ? ".opencode" : "";
-const phasesConfig = JSON.parse(readFileSync(join(ROOT, "_shared", "phases.json"), "utf-8"));
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const OC_ROOT = resolveOpenCodeRoot();
+const PREFIX = OC_ROOT === process.cwd() ? "" : ".opencode";
+const phasesConfig = JSON.parse(readFileSync(join(OC_ROOT, "_shared", "phases.json"), "utf-8"));
 const VALID_PHASES = phasesConfig.phases;
 function bin(name) { return join(PREFIX, "runtime", "bin", name + ".mjs"); }
 
@@ -109,7 +115,7 @@ function cmdFail(phase) {
 
 function cmdPhase() {
   console.log(dim("Available phases: ") + VALID_PHASES.map(p => cyan(p)).join(", ") + "\n");
-  const file = join(ROOT, ".pipeline-state.json");
+  const file = join(process.cwd(), ".pipeline-state.json");
   if (existsSync(file)) {
     try {
       const pipe = JSON.parse(readFileSync(file, "utf-8"));

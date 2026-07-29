@@ -2,7 +2,13 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..", "..");
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const OC_ROOT = resolveOpenCodeRoot();
 const MEMORY_ROOT = (() => {
   if (process.cwd().includes(".opencode")) return join(process.cwd(), ".memory");
   if (existsSync(join(process.cwd(), ".opencode", ".memory"))) return join(process.cwd(), ".opencode", ".memory");
@@ -34,13 +40,13 @@ function memoryStatus() {
 }
 
 function pipelineStatus() {
-  var fp = join(ROOT, ".pipeline-state.json");
+  var fp = join(process.cwd(), ".pipeline-state.json");
   if (!existsSync(fp)) return null;
   return readJSON(fp);
 }
 
 console.log("\n  " + c("=== pxhopencode status ===", "36") + "  v" + (function() {
-  var p = readJSON(join(ROOT, "package.json"));
+  var p = readJSON(join(process.cwd(), "package.json"));
   return p ? p.version || "?" : "?";
 })() + "\n");
 
@@ -71,7 +77,7 @@ if (pipe) {
 }
 console.log();
 
-var pkg = readJSON(join(ROOT, "package.json"));
+var pkg = readJSON(join(process.cwd(), "package.json"));
 if (pkg) {
   console.log("  " + c("System", "33"));
   console.log("  " + c("version".padEnd(14), "2") + " " + pkg.version);

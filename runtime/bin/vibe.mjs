@@ -11,7 +11,13 @@ function readJSON(p) {
   } catch { return null; }
 }
 
-const ROOT = join(import.meta.dirname, "..", "..");
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const OC_ROOT = resolveOpenCodeRoot();
 const MEMORY_ROOT = (() => {
   if (process.cwd().includes(".opencode")) return join(process.cwd(), ".memory");
   if (existsSync(join(process.cwd(), ".opencode", ".memory"))) return join(process.cwd(), ".opencode", ".memory");
@@ -73,7 +79,7 @@ async function cmdStatus() {
       }
     }
   }
-  var pipeFile = join(ROOT, ".pipeline-state.json");
+  var pipeFile = join(process.cwd(), ".pipeline-state.json");
   if (existsSync(pipeFile)) {
     var pipe = readJSON(pipeFile);
     if (pipe && pipe.length) {
@@ -91,7 +97,7 @@ async function cmdStatus() {
 
 async function cmdResume() {
   console.log("\n  " + cyan(">") + " vibe resume " + dim("-- Resume session") + "\n");
-  var pipeFile = join(ROOT, ".pipeline-state.json");
+  var pipeFile = join(process.cwd(), ".pipeline-state.json");
   if (!existsSync(pipeFile)) { console.log("  " + yellow("No session to resume.") + "\n"); return; }
     var pipe = readJSON(pipeFile);
   if (!pipe || pipe.length === 0) { console.log("  " + yellow("No session to resume.") + "\n"); return; }
@@ -119,7 +125,7 @@ async function cmdFeedback() {
 
 async function cmdScaffold() {
   console.log("\n  " + cyan(">") + " vibe scaffold " + dim("-- Project scaffold") + "\n");
-  var templates = join(ROOT, "_shared", "templates");
+  var templates = join(OC_ROOT, "_shared", "templates");
   if (!existsSync(templates)) { console.log("  " + yellow("No templates found.") + "\n"); return; }
   var dirs = readdirSync(templates).filter(function(d) {
     try { return readdirSync(join(templates, d)).length > 0; } catch { return false; }

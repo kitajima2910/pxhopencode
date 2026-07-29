@@ -2,7 +2,13 @@
 import { readFileSync, existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..", "..");
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const OC_ROOT = resolveOpenCodeRoot();
 
 function err(s) { return "\x1b[31m" + s + "\x1b[0m"; }
 function ok(s) { return "\x1b[32m" + s + "\x1b[0m"; }
@@ -10,8 +16,8 @@ function dim(s) { return "\x1b[2m" + s + "\x1b[0m"; }
 function cyan(s) { return "\x1b[36m" + s + "\x1b[0m"; }
 function yell(s) { return "\x1b[33m" + s + "\x1b[0m"; }
 
-const phasesConfig = JSON.parse(readFileSync(join(ROOT, "_shared", "phases.json"), "utf-8"));
-const PIPEFILE = join(ROOT, ".pipeline-state.json");
+const phasesConfig = JSON.parse(readFileSync(join(OC_ROOT, "_shared", "phases.json"), "utf-8"));
+const PIPEFILE = join(process.cwd(), ".pipeline-state.json");
 const PHASES = phasesConfig.phases;
 const AGENTS = phasesConfig.agents;
 

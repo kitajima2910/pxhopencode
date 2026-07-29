@@ -2,9 +2,17 @@
 import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 
-const ROOT = join(import.meta.dirname, "..", "..");
 const CMD = process.argv[2];
 const ARG = process.argv[3];
+
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const OC_ROOT = resolveOpenCodeRoot();
+const WS_ROOT = process.cwd();
 
 function readJSON(p) {
   try {
@@ -19,11 +27,8 @@ function writeJSON(p, data) {
   writeFileSync(p, JSON.stringify(data, null, 2) + "\n");
 }
 
-const PIPEFILE = join(ROOT, ".pipeline-state.json");
-const MEMORY_ROOT = (() => {
-  if (existsSync(join(ROOT, ".opencode", ".memory"))) return join(ROOT, ".opencode", ".memory");
-  return join(ROOT, ".memory");
-})();
+const PIPEFILE = join(WS_ROOT, ".pipeline-state.json");
+const MEMORY_ROOT = join(OC_ROOT, ".memory");
 
 switch (CMD) {
   // ── Pipeline ───────────────────────────────────────────────
@@ -76,7 +81,7 @@ switch (CMD) {
   case "log": {
     const content = process.argv.slice(3).join(" ");
     if (!content) { console.error("Usage: persist.mjs log <content>"); process.exit(1); }
-    const logFile = join(ROOT, "__prompt-log__.md");
+    const logFile = join(WS_ROOT, "__prompt-log__.md");
     writeFileSync(logFile, content + "\n");
     console.log("[LOG] __prompt-log__.md written");
     break;
@@ -85,8 +90,8 @@ switch (CMD) {
   // ── Status ─────────────────────────────────────────────────
   case "status": {
     console.log("\n  Memory root:", MEMORY_ROOT);
-    console.log("  Pipeline:", existsSync(PIPEFILE) ? readJSON(PIPEFILE)?.length + " entries" : "none");
-    console.log("  Prompt log:", existsSync(join(ROOT, "__prompt-log__.md")) ? "exists" : "none");
+  console.log("  Pipeline:", existsSync(PIPEFILE) ? readJSON(PIPEFILE)?.length + " entries" : "none");
+  console.log("  Prompt log:", existsSync(join(WS_ROOT, "__prompt-log__.md")) ? "exists" : "none");
     break;
   }
 
