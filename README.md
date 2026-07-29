@@ -8,6 +8,11 @@
 
 ---
 
+## Yêu cầu
+
+- **Node.js** ≥ 18 (đã cài `node` + `npm` trong PATH)
+- **opencode CLI**: `npm install -g @opencode/cli` (xem [opencode.ai](https://opencode.ai))
+
 ## Cài đặt (30 giây)
 
 ```bash
@@ -16,7 +21,7 @@ git clone https://github.com/kitajima2910/pxhopencode.git .opencode
 .opencode\start.bat
 ```
 
-`start.bat` tự động: xoá `.git` nested, init memory, merge `.gitignore` → launch `opencode`.
+`start.bat` tự động: init memory, merge `.gitignore` → launch `opencode`.
 
 ---
 
