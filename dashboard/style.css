@@ -1,12 +1,12 @@
 :root {
-  --bg: #0f0f1a;
-  --card: #1a1a2e;
-  --text: #e0e0e0;
-  --dim: #666;
-  --accent: #6366f1;
-  --green: #22c55e;
-  --red: #ef4444;
-  --yellow: #eab308;
+  --bg: oklch(0.06 0.02 260);
+  --card: oklch(0.1 0.03 260);
+  --text: oklch(0.88 0.01 260);
+  --dim: oklch(0.5 0 0);
+  --accent: oklch(0.55 0.22 256);
+  --green: oklch(0.6 0.2 140);
+  --red: oklch(0.65 0.25 30);
+  --yellow: oklch(0.7 0.2 85);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { background: var(--bg); color: var(--text); font: 14px/1.5 system-ui, monospace; padding: 20px; }

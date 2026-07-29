@@ -64,5 +64,5 @@ Không quickref → sai workflow. Không confirm → sai hướng. 1 câu hỏi 
 Workflow không từ prompt, request thiếu classified_workflow, user không hiểu.
 
 ## MEMORY REFLECTION
-`persist.mjs reflect stats last_session "$(date)"`
-`persist.mjs log "## Prompt $(date)\n\n$(prompt)"` — ghi prompt cuối.
+`node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+`node runtime/bin/persist.mjs log "## Prompt $(date)\n\n$(prompt)"` — ghi prompt cuối.

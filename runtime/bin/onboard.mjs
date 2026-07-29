@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, existsSync, writeFileSync, mkdirSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as readline from "node:readline";
@@ -25,7 +25,7 @@ async function main() {
   console.log(`  v${readPackageVersion()}\n`);
 
   if (existsSync(MEMORY_ROOT)) {
-    const files = readdirSync(MEMORY_ROOT).filter(f => f.endsWith(".json")).length;
+    const files = readDir(MEMORY_ROOT).filter(f => f.endsWith(".json")).length;
     console.log(`  ${color("✓", "green")} Memory initialized (${files} files)`);
   } else {
     console.log(`  ${color("!", "yellow")} Memory not initialized — run start.bat first`);
@@ -68,8 +68,8 @@ function readPackageVersion() {
   return pkg ? pkg.version || "?" : "?";
 }
 
-function readdirSync(p) {
-  try { const fs = require("node:fs"); return fs.readdirSync(p); } catch { return []; }
+function readDir(p) {
+  try { return readdirSync(p); } catch { return []; }
 }
 
 async function scaffold(type, name) {

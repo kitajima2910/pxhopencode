@@ -112,7 +112,7 @@ Task contract thiếu context, phase skip, worker failure liên tục.
 
 ## MEMORY REFLECTION
 Chạy sau mỗi task:
-- `persist.mjs reflect decisions routing "{route}"`
-- `persist.mjs reflect workflow sequence "{wf}"`
-- `persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/node runtime/bin/persist.mjs reflect decisions routing "{route}"`
+- `node runtime/bin/node runtime/bin/persist.mjs reflect workflow sequence "{wf}"`
+- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 Truyền `memory_root` vào mọi Task contract.

@@ -9,10 +9,10 @@ $isPython = Test-Path "pyproject.toml" -or (Test-Path "requirements.txt")
 
 function Invoke-LintAndTypeCheck {
   if ($isNode) {
-    npm run lint 2>$null
-    if ($?) { Write-Output "✅ Lint pass" } else { Write-Warning "⚠ No lint script, skip" }
-    npx tsc --noEmit 2>$null
-    if ($?) { Write-Output "✅ TypeCheck pass" } else { Write-Warning "⚠ tsc fail or not configured" }
+    $lintOut = npm run lint 2>&1
+    if ($LASTEXITCODE -eq 0) { Write-Output "✅ Lint pass" } else { Write-Warning "⚠ Lint issues (exit $LASTEXITCODE)" }
+    $tscOut = npx tsc --noEmit 2>&1
+    if ($LASTEXITCODE -eq 0) { Write-Output "✅ TypeCheck pass" } else { Write-Warning "⚠ tsc issues (exit $LASTEXITCODE)" }
   } elseif ($isRust) {
     cargo clippy
     if (-not $?) { exit 1 }
@@ -39,8 +39,8 @@ function Invoke-Test {
     if (-not $?) { exit 1 }
     Write-Output "✅ Tests pass"
   } elseif ($isPython) {
-    pytest 2>$null
-    if ($?) { Write-Output "✅ Tests pass" } else { Write-Warning "⚠ No pytest or test fail" }
+    $pytestOut = pytest 2>&1
+    if ($LASTEXITCODE -eq 0) { Write-Output "✅ Tests pass" } else { Write-Warning "⚠ pytest fail (exit $LASTEXITCODE)" }
   }
 }
 
@@ -66,8 +66,8 @@ function Invoke-Build {
       Write-Output "✅ Build success ($($size.ToString('N1'))MB)"
     } else { exit 1 }
   } elseif ($isPython) {
-    python -m build 2>$null
-    if ($?) { Write-Output "✅ Build success" } else { Write-Warning "⚠ Build not configured, skip" }
+    $buildOut = python -m build 2>&1
+    if ($LASTEXITCODE -eq 0) { Write-Output "✅ Build success" } else { Write-Warning "⚠ Build not configured, skip" }
   }
 }
 

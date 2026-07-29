@@ -1,35 +1,42 @@
+async function loadJSON(path) {
+  try {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error("fetch failed");
+    return await res.json();
+  } catch { return null; }
+}
+
 async function loadMemory() {
   const el = document.getElementById("memory-list");
-  try {
-    const res = await fetch("/.memory/index.json");
-    if (!res.ok) throw new Error("no memory");
-    const data = await res.json();
+  const data = await loadJSON("/.memory/index.json")
+    || await loadJSON("../.memory/index.json")
+    || await loadJSON("../../.memory/index.json");
+  if (data) {
     el.innerHTML = `<div class="mem-item"><span class="mem-name">index</span><span class="mem-meta">${data.memory_count ?? 0} entries · conf ${data.confidence ?? "?"}%</span></div>`;
-  } catch {
+  } else {
     el.innerHTML = '<p class="dim">No memory. Start a session first.</p>';
   }
 }
 
 async function loadPipeline() {
   const el = document.getElementById("pipeline-list");
-  try {
-    const res = await fetch("/.pipeline-state.json");
-    if (!res.ok) throw new Error("no pipeline");
-    const data = await res.json();
+  const data = await loadJSON("/.pipeline-state.json")
+    || await loadJSON("../.pipeline-state.json")
+    || await loadJSON("../../.pipeline-state.json");
+  if (data) {
     el.innerHTML = data.map(s =>
       `<div class="mem-item"><span class="mem-name">${s.phase}</span><span class="mem-meta">→ ${s.agent ?? "?"} · ${s.status ?? "pending"}</span></div>`
     ).join("");
-  } catch {
+  } else {
     el.innerHTML = '<p class="dim">No active pipeline.</p>';
   }
 }
 
 async function loadVersion() {
-  try {
-    const res = await fetch("/package.json");
-    const data = await res.json();
-    document.getElementById("version").textContent = `v${data.version}`;
-  } catch { /* ignore */ }
+  const data = await loadJSON("/package.json")
+    || await loadJSON("../package.json")
+    || await loadJSON("../../package.json");
+  if (data) document.getElementById("version").textContent = `v${data.version}`;
 }
 
 loadMemory();

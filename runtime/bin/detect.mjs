@@ -93,6 +93,7 @@ function detect(root) {
 function main() {
   const args = process.argv.slice(2).filter(a => !a.startsWith("--"));
   const root = args[0] || process.cwd();
+  if (!existsSync(root)) { console.log(err("Path not found: " + root)); process.exit(1); }
   console.log(dim("\n  -- Project Detect --"));
   const r = detect(root);
   console.log("  Type:       " + cyan(r.type));

@@ -5,6 +5,8 @@ import { join } from "node:path";
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const PREFIX = existsSync(join(ROOT, ".opencode", "runtime", "bin")) ? ".opencode" : "";
+const phasesConfig = JSON.parse(readFileSync(join(ROOT, "_shared", "phases.json"), "utf-8"));
+const VALID_PHASES = phasesConfig.phases;
 function bin(name) { return join(PREFIX, "runtime", "bin", name + ".mjs"); }
 
 function run(script, args) {
@@ -85,8 +87,7 @@ function postHook(phase, status) {
 }
 
 function cmdRun(phase) {
-  const valid = ["analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist"];
-  if (!valid.includes(phase)) { console.log(err("Invalid phase: " + phase + " (use: " + valid.join("|") + ")")); process.exit(1); }
+  if (!VALID_PHASES.includes(phase)) { console.log(err("Invalid phase: " + phase + " (use: " + VALID_PHASES.join("|") + ")")); process.exit(1); }
   console.log(cyan("\n  === ENFORCE: " + phase + " ==="));
   const pre = preHook(phase);
   if (pre.failed > 0) {
@@ -107,8 +108,7 @@ function cmdFail(phase) {
 }
 
 function cmdPhase() {
-  const phases = ["analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist"];
-  console.log(dim("Available phases: ") + phases.map(p => cyan(p)).join(", ") + "\n");
+  console.log(dim("Available phases: ") + VALID_PHASES.map(p => cyan(p)).join(", ") + "\n");
   const file = join(ROOT, ".pipeline-state.json");
   if (existsSync(file)) {
     try {

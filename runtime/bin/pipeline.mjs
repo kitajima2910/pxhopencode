@@ -10,13 +10,10 @@ function dim(s) { return "\x1b[2m" + s + "\x1b[0m"; }
 function cyan(s) { return "\x1b[36m" + s + "\x1b[0m"; }
 function yell(s) { return "\x1b[33m" + s + "\x1b[0m"; }
 
+const phasesConfig = JSON.parse(readFileSync(join(ROOT, "_shared", "phases.json"), "utf-8"));
 const PIPEFILE = join(ROOT, ".pipeline-state.json");
-const PHASES = ["analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist"];
-const AGENTS = {
-  analyze: "pxh-pm", meeting: "pxh-pm", architect: "pxh-architect",
-  code: "pxh-expert", fix: "pxh-fix-bugs", test: "pxh-qa",
-  review: "pxh-review-code", build: "pxh-devops", "ui-ux": "pxh-ui-ux", persist: "pxh-save-history"
-};
+const PHASES = phasesConfig.phases;
+const AGENTS = phasesConfig.agents;
 
 function readPipe() {
   try { return JSON.parse(readFileSync(PIPEFILE, "utf-8")); } catch { return []; }

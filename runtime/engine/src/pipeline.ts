@@ -1,23 +1,24 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import type { PipelineStep, TaskPhase, TaskStatus } from "./types";
 
-export const PIPELINE_ORDER: TaskPhase[] = [
-  "analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist",
-];
+function resolvePhasesConfig() {
+  const candidates = [
+    join(process.cwd(), "_shared", "phases.json"),
+    join(process.cwd(), "..", "_shared", "phases.json"),
+    join(process.cwd(), "..", "..", "_shared", "phases.json"),
+  ];
+  for (const p of candidates) {
+    if (existsSync(p)) return JSON.parse(readFileSync(p, "utf-8"));
+  }
+  return { phases: ["analyze", "meeting", "architect", "code", "fix", "test", "review", "build", "ui-ux", "persist"], agents: { analyze: "pxh-pm", meeting: "pxh-pm", architect: "pxh-architect", code: "pxh-expert", fix: "pxh-fix-bugs", test: "pxh-qa", review: "pxh-review-code", build: "pxh-devops", "ui-ux": "pxh-ui-ux", persist: "pxh-save-history" } };
+}
 
-export const AGENT_MAP: Record<TaskPhase, string> = {
-  analyze: "pxh-pm",
-  meeting: "pxh-pm",
-  architect: "pxh-architect",
-  code: "pxh-expert",
-  fix: "pxh-fix-bugs",
-  test: "pxh-qa",
-  review: "pxh-review-code",
-  build: "pxh-devops",
-  "ui-ux": "pxh-ui-ux",
-  persist: "pxh-save-history",
-};
+const phasesConfig = resolvePhasesConfig();
+
+export const PIPELINE_ORDER: TaskPhase[] = phasesConfig.phases;
+export const AGENT_MAP: Record<TaskPhase, string> = phasesConfig.agents;
 
 export class Pipeline {
   private steps: PipelineStep[] = [];

@@ -20,7 +20,11 @@ function writeCtx(d) {
 
 function cmdAdd(prompt) {
   const ctx = readCtx();
-  ctx.prompts.push({ text: prompt, timestamp: new Date().toISOString() });
+  const trimmed = prompt.trim();
+  if (!trimmed) { console.log(err("Empty prompt, ignoring")); return; }
+  const isDuplicate = ctx.prompts.some(p => p.text === trimmed);
+  if (isDuplicate) { console.log(dim("Duplicate prompt, skipped")); return; }
+  ctx.prompts.push({ text: trimmed, timestamp: new Date().toISOString() });
   if (ctx.prompts.length > MAX_ENTRIES) ctx.prompts = ctx.prompts.slice(-MAX_ENTRIES);
   if (!ctx.session_id) ctx.session_id = "sess_" + Date.now().toString(36);
   writeCtx(ctx);

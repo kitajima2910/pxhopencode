@@ -1,4 +1,5 @@
-import { readFile as fsReadFile, writeFile, access } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { readFile as fsReadFile, writeFile } from "node:fs/promises";
 
 function stripBOM(s: string): string {
   return s.charCodeAt(0) === 0xFEFF ? s.slice(1) : s;
@@ -14,19 +15,22 @@ const ALL_CATEGORIES: MemoryCategory[] = [
 const CATEGORY_MAP: Record<string, MemoryCategory> = {};
 for (const c of ALL_CATEGORIES) CATEGORY_MAP[c] = c;
 
+function resolveMode(): "embedded" | "standalone" {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, ".opencode", "runtime"))) return "embedded";
+  return "standalone";
+}
+
 export function getMemoryRoot(): string {
   const cwd = process.cwd();
-  if (cwd.includes(".opencode")) {
-    return join(cwd, ".memory");
+  if (resolveMode() === "embedded") {
+    return join(cwd, ".opencode", ".memory");
   }
-  const embedded = join(cwd, ".opencode", ".memory");
-  return embedded;
+  return join(cwd, ".memory");
 }
 
 async function memoryDir(): Promise<string> {
-  const dir = getMemoryRoot();
-  try { await access(dir); } catch { return join(process.cwd(), ".memory"); }
-  return dir;
+  return getMemoryRoot();
 }
 
 export async function readMemory<T = unknown>(cat: MemoryCategory): Promise<MemoryFile<T> | null> {

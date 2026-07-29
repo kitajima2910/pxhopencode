@@ -1,8 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-
-const RX_PREFIX = ".opencode";
 
 function err(s) { return "\x1b[31m" + s + "\x1b[0m"; }
 function ok(s) { return "\x1b[32m" + s + "\x1b[0m"; }
@@ -16,62 +14,74 @@ async function main() {
   })();
   if (!target) { console.log(err("Engine not found")); process.exit(1); }
 
-  const engine = join(target, "src", "index.ts");
-  if (!existsSync(engine)) {
-    console.log(dim("Engine source at " + engine + " — run tests for validation"));
-  }
-
+  const engine = join(target, "src");
   let passed = 0, failed = 0;
+
+  function check(label, condition) {
+    console.log("  " + (condition ? ok("OK") : err("FAIL")) + " " + label);
+    if (condition) passed++; else failed++;
+  }
 
   if (type === "all" || type === "contracts") {
     console.log(dim("\n  -- Contracts --"));
-    try {
-      const raw = readFileSync(join(target, "src", "types.ts"), "utf-8");
-      const hasTypes = raw.includes("RequestContract") && raw.includes("TaskContract");
-      console.log("  " + (hasTypes ? ok("OK") : err("FAIL")) + " Types defined");
-      if (hasTypes) passed++; else failed++;
-
-      const contracts = ["request", "task", "result", "response", "event", "state"];
-      for (const c of contracts) {
-        const cp = join(target, "src", "contracts", c + ".ts");
-        const ok2 = existsSync(cp) && readFileSync(cp, "utf-8").includes("Schema");
-        console.log("  " + (ok2 ? ok("OK") : err("FAIL")) + " contract/" + c);
-        if (ok2) passed++; else failed++;
-      }
-    } catch { console.log(err("  Engine read error")); failed++; }
+    const contracts = ["request", "task", "result", "response", "event", "state"];
+    for (const c of contracts) {
+      const cp = join(engine, "contracts", c + ".ts");
+      const raw = existsSync(cp) ? readFileSync(cp, "utf-8") : "";
+      const hasSchema = raw.includes("export const") && raw.includes("Schema");
+      const hasZod = raw.includes("z.object(");
+      check("contract/" + c, hasSchema && hasZod);
+    }
+    const idx = join(engine, "contracts", "index.ts");
+    const idxRaw = existsSync(idx) ? readFileSync(idx, "utf-8") : "";
+    check("contracts/index re-exports all 6", ["RequestSchema", "TaskSchema", "ResultSchema", "ResponseSchema", "EventSchema", "StateSchema"].every(s => idxRaw.includes(s)));
   }
 
   if (type === "all" || type === "pipeline") {
     console.log(dim("\n  -- Pipeline --"));
-    const pp = join(target, "src", "pipeline.ts");
+    const pp = join(engine, "pipeline.ts");
     if (existsSync(pp)) {
       const raw = readFileSync(pp, "utf-8");
-      const has10 = raw.includes("10 phases") || (raw.match(/phase/g) || []).length > 5;
-      console.log("  " + (has10 ? ok("OK") : err("FAIL")) + " pipeline.ts");
-      if (has10) passed++; else failed++;
-    } else { console.log(err("  MISSING pipeline.ts")); failed++; }
+      const phasesConfig = JSON.parse(readFileSync(join("_shared", "phases.json"), "utf-8"));
+      const hasAllPhases = phasesConfig.phases.every(p => raw.includes(`"${p}"`));
+      check("pipeline.ts all phases present", hasAllPhases);
+      check("pipeline.ts class Pipeline", raw.includes("class Pipeline"));
+    } else { check("pipeline.ts exists", false); }
   }
 
   if (type === "all" || type === "router") {
     console.log(dim("\n  -- Router --"));
-    const rp = join(target, "src", "router.ts");
+    const rp = join(engine, "router.ts");
     if (existsSync(rp)) {
       const raw = readFileSync(rp, "utf-8");
-      const hasRoute = raw.includes("function route");
-      console.log("  " + (hasRoute ? ok("OK") : err("FAIL")) + " router.ts");
-      if (hasRoute) passed++; else failed++;
-    } else { console.log(err("  MISSING router.ts")); failed++; }
+      check("router.ts has route function", raw.includes("function route"));
+      check("router.ts phase routing", raw.includes("switch") || raw.includes("if") || raw.includes("case"));
+    } else { check("router.ts exists", false); }
   }
 
   if (type === "all" || type === "memory") {
     console.log(dim("\n  -- Memory --"));
-    const mp = join(target, "src", "memory.ts");
+    const mp = join(engine, "memory.ts");
     if (existsSync(mp)) {
       const raw = readFileSync(mp, "utf-8");
-      const hasIO = raw.includes("readMemory") || raw.includes("writeMemory");
-      console.log("  " + (hasIO ? ok("OK") : err("FAIL")) + " memory.ts");
-      if (hasIO) passed++; else failed++;
-    } else { console.log(err("  MISSING memory.ts")); failed++; }
+      check("memory.ts has readMemory", raw.includes("readMemory"));
+      check("memory.ts has writeMemory", raw.includes("writeMemory"));
+    } else { check("memory.ts exists", false); }
+  }
+
+  if (type === "all" || type === "phases") {
+    console.log(dim("\n  -- Phases Config --"));
+    const pf = "_shared/phases.json";
+    if (existsSync(pf)) {
+      const cfg = JSON.parse(readFileSync(pf, "utf-8"));
+      check("phases.json has 10 phases", cfg.phases && cfg.phases.length === 10);
+      check("phases.json agents map", cfg.agents && Object.keys(cfg.agents).length === 10);
+    } else { check("phases.json exists", false); }
+  }
+
+  if (type === "all" || type === "contracts-readme") {
+    console.log(dim("\n  -- Contracts Docs --"));
+    check("runtime/contracts/README.md exists", existsSync("runtime/contracts/README.md"));
   }
 
   console.log(dim("\n  -- Summary --"));

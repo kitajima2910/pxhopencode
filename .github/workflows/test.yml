@@ -12,4 +12,4 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: runtime/engine/package-lock.json
-      - run: cd runtime/engine && npm ci && npx vitest run
+      - run: cd runtime/engine && npm ci && npx tsc --noEmit && npx vitest run

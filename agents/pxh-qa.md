@@ -40,7 +40,7 @@ Coverage < 20% → logic core không test. Bug UI = UX fail. Không regression �
 Coverage < 60%, bug report không steps, regression skip.
 
 ## MEMORY REFLECTION
-- `persist.mjs append bugs '{"id":"bug_...","type":"...","steps":"..."}'`
-- `persist.mjs reflect patterns test_pattern "{desc}"`
-- `persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/node runtime/bin/persist.mjs append bugs '{"id":"bug_...","type":"...","steps":"..."}'`
+- `node runtime/bin/node runtime/bin/persist.mjs reflect patterns test_pattern "{desc}"`
+- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 

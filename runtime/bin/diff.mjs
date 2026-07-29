@@ -10,8 +10,13 @@ function cyan(s) { return "\x1b[36m" + s + "\x1b[0m"; }
 function red(s) { return "\x1b[31m" + s + "\x1b[0m"; }
 function green(s) { return "\x1b[32m" + s + "\x1b[0m"; }
 
+function sanitize(v) {
+  if (!v) return "";
+  return String(v).replace(/[;&|`$(){}[\]!#~<>]/g, "");
+}
+
 function runGit(args) {
-  try { return execSync("git " + args, { encoding: "utf-8", cwd: process.cwd() }); }
+  try { return execSync("git " + sanitize(args), { encoding: "utf-8", cwd: process.cwd() }); }
   catch { return null; }
 }
 
@@ -44,7 +49,7 @@ function cmdRollback(file) {
   if (!isGit) { console.log(err("Not a git repository")); return; }
   if (!file) { console.log(err("Usage: rollback <file>")); return; }
   try {
-    execSync("git checkout -- " + file, { cwd: process.cwd() });
+    execSync("git checkout -- " + sanitize(file), { cwd: process.cwd() });
     console.log(ok("Rolled back: " + file));
   } catch { console.log(err("Failed to rollback: " + file)); }
 }
