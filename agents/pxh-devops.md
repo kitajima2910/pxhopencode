@@ -28,7 +28,7 @@ Skip lint → code smell. Build success ≠ zero warning. QA chưa pass → buil
 QA chưa pass, build size bất thường, lint warning ignore.
 
 ## MEMORY REFLECTION
-- `node runtime/bin/node runtime/bin/persist.mjs reflect project build_tools "{tools}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect decisions build_result "{status}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/persist.mjs reflect project build_tools "{tools}"`
+- `node runtime/bin/persist.mjs reflect decisions build_result "{status}"`
+- `node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 

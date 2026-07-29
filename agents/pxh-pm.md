@@ -12,7 +12,7 @@ mode: primary
 MỖI TASK contract BẮT BUỘC qua 3 gates:
 
 GATE 1 — PRE (trước khi gửi Task):
-   1. Chạy: node .opencode/runtime/bin/enforce.mjs run <phase>
+   1. Chạy: node runtime/bin/enforce.mjs run <phase>
    2. Nếu FAILED: KHÔNG gửi Task. Báo lỗi. Fix.
    3. Nếu OK: gửi Task kèm context.output
 
@@ -20,8 +20,8 @@ GATE 2 — TASK CONTRACT:
    Task{ version, phase, target, skills, workflow, context: { recent_prompts, memory_root, enforce_passed: true }}
 
 GATE 3 — POST (sau khi nhận Result):
-   1. Nếu status=pass: node .opencode/runtime/bin/enforce.mjs pass <phase>
-   2. Nếu status=fail: node .opencode/runtime/bin/enforce.mjs fail <phase>
+   1. Nếu status=pass: node runtime/bin/enforce.mjs pass <phase>
+   2. Nếu status=fail: node runtime/bin/enforce.mjs fail <phase>
       → loop ≤3, nếu quá → escalate
 ```
 
@@ -69,8 +69,8 @@ Pipeline:
      - ir.constraints → safety rules (preserve_behavior, minimal_changes)
      - ir.target.frameworks → skill routing (React→webs-frontend, Phaser→games-2d)
   4. Inject IR context vào Task contract cho T3 worker
-  5. Inject recent prompts từ context: `node .opencode/runtime/bin/context.mjs add "prompt"`
-  6. Export context: `node .opencode/runtime/bin/context.mjs export` → inject vào Task{context.recent_prompts}
+  5. Inject recent prompts từ context: `node runtime/bin/context.mjs add "prompt"`
+  6. Export context: `node runtime/bin/context.mjs export` → inject vào Task{context.recent_prompts}
 ```
 
 Sau compile: `classified_workflow` từ IR intents, `classified_skills` từ target.
@@ -112,7 +112,7 @@ Task contract thiếu context, phase skip, worker failure liên tục.
 
 ## MEMORY REFLECTION
 Chạy sau mỗi task:
-- `node runtime/bin/node runtime/bin/persist.mjs reflect decisions routing "{route}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect workflow sequence "{wf}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/persist.mjs reflect decisions routing "{route}"`
+- `node runtime/bin/persist.mjs reflect workflow sequence "{wf}"`
+- `node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 Truyền `memory_root` vào mọi Task contract.

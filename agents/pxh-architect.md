@@ -39,8 +39,8 @@ Mới nhất → unstable. Schema không index → query chết. ADR skip → m�
 Schema thiếu index, API không error contract, tech stack chọn vì "mới".
 
 ## MEMORY REFLECTION
-- `node runtime/bin/node runtime/bin/persist.mjs reflect architecture modules "{modules}"`
-- `node runtime/bin/node runtime/bin/persist.mjs append decisions '{"id":"adr_001","decision":"..."}'`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect project framework "{fw}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/persist.mjs reflect architecture modules "{modules}"`
+- `node runtime/bin/persist.mjs append decisions '{"id":"adr_001","decision":"..."}'`
+- `node runtime/bin/persist.mjs reflect project framework "{fw}"`
+- `node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 

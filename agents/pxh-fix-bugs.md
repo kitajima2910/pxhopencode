@@ -44,7 +44,7 @@ Stack trace đọc trên xuống → sai. Fix intuition → không biết đúng
 Không reproduce, fix không test, root cause không rõ.
 
 ## MEMORY REFLECTION
-- `node runtime/bin/node runtime/bin/persist.mjs append bugs '{"id":"bug_...","file":"...","cause":"..."}'`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect patterns anti_pattern "{desc}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/persist.mjs append bugs '{"id":"bug_...","file":"...","cause":"..."}'`
+- `node runtime/bin/persist.mjs reflect patterns anti_pattern "{desc}"`
+- `node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 

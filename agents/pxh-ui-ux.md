@@ -38,9 +38,9 @@ Mobile-first không patch sau. CLI không NO_COLOR → output vô dụng. DOM ov
 Layout <375px, CLI không NO_COLOR, game HUD không setScrollFactor(0).
 
 ## MEMORY REFLECTION
-- `node runtime/bin/node runtime/bin/persist.mjs reflect patterns design_pattern "{pattern}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect preferences style "{style}"`
-- `node runtime/bin/node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+- `node runtime/bin/persist.mjs reflect patterns design_pattern "{pattern}"`
+- `node runtime/bin/persist.mjs reflect preferences style "{style}"`
+- `node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 
 ## Verification
 Platform: web/game/tool. CLI: NO_COLOR. Game HUD: setScrollFactor(0). Web: mobile + dark.

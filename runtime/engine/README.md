@@ -6,12 +6,12 @@
 
 | Script | Command | Purpose |
 |--------|---------|---------|
-| **validate** | `node .opencode/runtime/bin/validate.mjs` | Validate contracts, pipeline, router |
-| **pipeline** | `node .opencode/runtime/bin/pipeline.mjs` | Track phases, mark pass/fail, watch live |
-| **diff** | `node .opencode/runtime/bin/diff.mjs` | Show git diff, rollback files |
-| **secret** | `node .opencode/runtime/bin/secret.mjs` | Get/set secrets from `.opencode/.env` |
-| **detect** | `node .opencode/runtime/bin/detect.mjs` | Auto-detect project framework |
-| **context** | `node .opencode/runtime/bin/context.mjs` | Read/write session context |
+| **validate** | `node runtime/bin/validate.mjs` | Validate contracts, pipeline, router |
+| **pipeline** | `node runtime/bin/pipeline.mjs` | Track phases, mark pass/fail, watch live |
+| **diff** | `node runtime/bin/diff.mjs` | Show git diff, rollback files |
+| **secret** | `node runtime/bin/secret.mjs` | Get/set secrets from `.opencode/.env` |
+| **detect** | `node runtime/bin/detect.mjs` | Auto-detect project framework |
+| **context** | `node runtime/bin/context.mjs` | Read/write session context |
 
 ## Contract validation flow
 
@@ -33,6 +33,6 @@ Pipeline start → mỗi phase: pipeline.mjs start <phase>
 Trước mỗi Task contract, inject recent prompts:
 
 ```
-node .opencode/runtime/bin/context.mjs export
+node runtime/bin/context.mjs export
 → inject output vào Task{context.recent_prompts}
 ```
