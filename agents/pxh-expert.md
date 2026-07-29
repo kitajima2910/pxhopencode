@@ -63,10 +63,10 @@ Template có sẵn → code tay dễ bug. Feature nhỏ + bug nhỏ = incident. 
 Code không template, feature xong không test, đọc >5 file không cần.
 
 ## MEMORY REFLECTION
-- `node runtime/bin/persist.mjs reflect patterns naming "{convention}"`
-- `node runtime/bin/persist.mjs append decisions '{"id":"adr_...","decision":"..."}'`
-- `node runtime/bin/persist.mjs reflect project framework "{fw}"`
-- `node runtime/bin/persist.mjs reflect stats last_session "$(date)"`
+- `node .opencode/runtime/bin/persist.mjs reflect patterns naming "{convention}"`
+- `node .opencode/runtime/bin/persist.mjs append decisions '{"id":"adr_...","decision":"..."}'`
+- `node .opencode/runtime/bin/persist.mjs reflect project framework "{fw}"`
+- `node .opencode/runtime/bin/persist.mjs reflect stats last_session "$(date)"`
 
 ## Verification
 Template trước code tay. `npx vitest run` sau feature. .gitignore đủ.

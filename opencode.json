@@ -71,47 +71,47 @@
     },
     "init": {
       "description": "Khởi tạo project mới với scaffold wizard",
-      "template": "Chạy: `node runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File .opencode/scripts/scaffold.ps1`"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs init` hoặc `powershell -ExecutionPolicy Bypass -File .opencode/scripts/scaffold.ps1`"
     },
     "status": {
       "description": "Xem trạng thái session, memory, pipeline",
-      "template": "Chạy: `node runtime/bin/vibe.mjs status`"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs status`"
     },
     "feedback": {
       "description": "Gửi feedback về session hiện tại",
-      "template": "Chạy: `node runtime/bin/vibe.mjs feedback` — nhập nội dung feedback"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs feedback` — nhập nội dung feedback"
     },
     "resume": {
       "description": "Tiếp tục session dang dở",
-      "template": "Chạy: `node runtime/bin/vibe.mjs resume` — kiểm tra pipeline state và tiếp tục"
+      "template": "Chạy: `node .opencode/runtime/bin/vibe.mjs resume` — kiểm tra pipeline state và tiếp tục"
     },
     "validate": {
       "description": "Kiểm tra engine contracts, pipeline, router integrity",
-      "template": "Chạy: `node runtime/bin/validate.mjs [contracts|pipeline|router|memory|all]`"
+      "template": "Chạy: `node .opencode/runtime/bin/validate.mjs [contracts|pipeline|router|memory|all]`"
     },
     "pipeline": {
       "description": "Quản lý pipeline: trạng thái, start, pass/fail phase, watch live",
-      "template": "Chạy: `node runtime/bin/pipeline.mjs [status|start|pass|fail|reset|watch] [phase]`"
+      "template": "Chạy: `node .opencode/runtime/bin/pipeline.mjs [status|start|pass|fail|reset|watch] [phase]`"
     },
     "diff": {
       "description": "Xem diff changes và rollback file",
-      "template": "Chạy: `node runtime/bin/diff.mjs [diff|rollback|log|show] [file|commit]`"
+      "template": "Chạy: `node .opencode/runtime/bin/diff.mjs [diff|rollback|log|show] [file|commit]`"
     },
     "secret": {
       "description": "Quản lý secrets: set/get/delete/list API keys, tokens",
-      "template": "Chạy: `node runtime/bin/secret.mjs [set|get|list|rm|env] [KEY|KEY=VALUE]`"
+      "template": "Chạy: `node .opencode/runtime/bin/secret.mjs [set|get|list|rm|env] [KEY|KEY=VALUE]`"
     },
     "detect": {
       "description": "Tự động phát hiện project type, framework, language",
-      "template": "Chạy: `node runtime/bin/detect.mjs` — đọc package.json, Cargo.toml, pyproject.toml"
+      "template": "Chạy: `node .opencode/runtime/bin/detect.mjs` — đọc package.json, Cargo.toml, pyproject.toml"
     },
     "context": {
       "description": "Xem và quản lý session context (recent prompts)",
-      "template": "Chạy: `node runtime/bin/context.mjs [show|add|clear|export] [prompt]`"
+      "template": "Chạy: `node .opencode/runtime/bin/context.mjs [show|add|clear|export] [prompt]`"
     },
     "enforce": {
       "description": "ENFORCEMENT GATE: tự động validate + pipeline + context + detect. BẮT BUỘC trước mỗi phase.",
-      "template": "Chạy: `node runtime/bin/enforce.mjs [run|pass|fail|phase] [phase_name]`\n\nIRON LAW:\n- `enforce run <phase>` — PRE-hooks: validate contracts, inject context, start pipeline, detect project\n- `enforce pass <phase>` — POST-hooks: pipeline pass, context update\n- `enforce fail <phase>` — POST-hooks: pipeline fail, context update\n- Nếu enforce run FAILED → KHÔNG proceed. Fix lỗi trước.\n- Skip enforce = violation."
+      "template": "Chạy: `node .opencode/runtime/bin/enforce.mjs [run|pass|fail|phase] [phase_name]`\n\nIRON LAW:\n- `enforce run <phase>` — PRE-hooks: validate contracts, inject context, start pipeline, detect project\n- `enforce pass <phase>` — POST-hooks: pipeline pass, context update\n- `enforce fail <phase>` — POST-hooks: pipeline fail, context update\n- Nếu enforce run FAILED → KHÔNG proceed. Fix lỗi trước.\n- Skip enforce = violation."
     }
   }
 }

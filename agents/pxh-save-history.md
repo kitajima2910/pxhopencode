@@ -13,16 +13,16 @@ Xem `_shared/context-budget.md`. Chỉ đọc template 1 lần, cache. Ghi 1 l�
 
 ## Event Contract Protocol (T4 entry point)
 
-Tiếp nhận `Event{version, type, phase, reflection, category}`. Dùng `node runtime/bin/persist.mjs` để ghi:
+Tiếp nhận `Event{version, type, phase, reflection, category}`. Dùng `node .opencode/runtime/bin/persist.mjs` để ghi:
 
 | Event type | Hành động |
 |------------|-----------|
-| `phase_start` / `phase_end` | `node runtime/bin/persist.mjs pipe start/pass <phase>` + STATUS.md |
-| `decision` | `node runtime/bin/persist.mjs append decisions '{"id":"...","decision":"..."}'` |
-| `bug` | `node runtime/bin/persist.mjs append bugs '{"id":"...","file":"...","cause":"..."}'` + STATUS.md |
-| `checkpoint` | `node runtime/bin/persist.mjs append snapshots '{"ts":"...","state":"..."}'` + STATUS.md |
-| `reflection` | `node runtime/bin/persist.mjs reflect <category> <key> "<val>"` |
-| `error` | `node runtime/bin/persist.mjs append bugs '{"type":"error","msg":"..."}'` + STATUS.md |
+| `phase_start` / `phase_end` | `node .opencode/runtime/bin/persist.mjs pipe start/pass <phase>` + STATUS.md |
+| `decision` | `node .opencode/runtime/bin/persist.mjs append decisions '{"id":"...","decision":"..."}'` |
+| `bug` | `node .opencode/runtime/bin/persist.mjs append bugs '{"id":"...","file":"...","cause":"..."}'` + STATUS.md |
+| `checkpoint` | `node .opencode/runtime/bin/persist.mjs append snapshots '{"ts":"...","state":"..."}'` + STATUS.md |
+| `reflection` | `node .opencode/runtime/bin/persist.mjs reflect <category> <key> "<val>"` |
+| `error` | `node .opencode/runtime/bin/persist.mjs append bugs '{"type":"error","msg":"..."}'` + STATUS.md |
 | `alert` | Ghi vào STATUS.md [Alerts] |
 | `task_result` | Ghi artifact STATUS.md |
 
@@ -36,10 +36,10 @@ Không STATUS.md → mất phase. Ghi ADR sau → mất context. Bug report skip
 STATUS.md không update, Event thiếu field, ghi vào `docs/` thay vì `.memory/`.
 
 ## MEMORY REFLECTION
-- `node runtime/bin/persist.mjs reflect stats total_memories "{n}"`
-- `node runtime/bin/persist.mjs append snapshots '{"ts":"...","state":"..."}'`
-- `node runtime/bin/persist.mjs append timeline '{"phase":"...","status":"..."}'`
-- `node runtime/bin/persist.mjs reflect index memory_count "{n}"`
+- `node .opencode/runtime/bin/persist.mjs reflect stats total_memories "{n}"`
+- `node .opencode/runtime/bin/persist.mjs append snapshots '{"ts":"...","state":"..."}'`
+- `node .opencode/runtime/bin/persist.mjs append timeline '{"phase":"...","status":"..."}'`
+- `node .opencode/runtime/bin/persist.mjs reflect index memory_count "{n}"`
 
 ## NGUYÊN TẮC
 `.memory/` single source of truth. Không ghi `docs/`. Chính xác, đủ, không spam.

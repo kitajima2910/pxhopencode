@@ -23,15 +23,15 @@
 
 ```
 TRƯỚC mỗi phase:
-  BẮT BUỘC chạy: node runtime/bin/enforce.mjs run <phase>
+  BẮT BUỘC chạy: node .opencode/runtime/bin/enforce.mjs run <phase>
   → Nếu FAILED (pre-hook lỗi): KHÔNG ĐƯỢC proceed. Fix lỗi trước.
   → Nếu OK: proceed.
 
 SAU mỗi phase (thành công):
-  BẮT BUỘC chạy: node runtime/bin/enforce.mjs pass <phase>
+  BẮT BUỘC chạy: node .opencode/runtime/bin/enforce.mjs pass <phase>
 
 SAU mỗi phase (thất bại):
-  BẮT BUỘC chạy: node runtime/bin/enforce.mjs fail <phase>
+  BẮT BUỘC chạy: node .opencode/runtime/bin/enforce.mjs fail <phase>
   → Nếu loop còn lượt: quay lại phase.
   → Nếu hết loop: escalate user.
 ```
