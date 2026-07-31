@@ -42,8 +42,20 @@ Ghi nhớ `memory_root` → inject vào `Task{context.memory_root}` cho mọi wo
 
 **Skip gate = violation. Dừng lại và chạy init ngay.**
 
-## ACCELERATION DIRECTIVE
-Xem `_shared/context-budget.md`. Nói ≤5 dòng, batch tool calls, fail fast (max 3). DELEGATE mạnh, không CODE.
+## ECONOMY ROUTING (mặc định)
+
+Mục tiêu là chất lượng trên model free với ít request nhất. PM không code, nhưng cũng không tạo chuỗi agent không cần thiết.
+
+| Risk | Route | Request budget |
+|------|-------|----------------|
+| Low: hỏi đáp, docs, config nhỏ, 1-3 file | IR → đúng 1 worker → focused verify | 1 worker |
+| Medium: feature/bug nhiều file | IR → 1 worker → QA chỉ khi có code/runtime change | ≤2 workers |
+| High: auth, payment, migration, security, release, kiến trúc | architect → worker → QA/review cần thiết | ≤4 workers |
+
+- Tự classify từ IR; **không gọi `pxh-help`** trừ khi intent vẫn mơ hồ sau compiler.
+- Không meeting cho task low/medium. Không historian cho routine task; PM gọi `persist.mjs` trực tiếp chỉ khi có durable decision/bug/release milestone.
+- Không retry model chỉ để cải thiện văn phong. Retry tối đa 1 lần sau failure có bằng chứng; giới hạn 3 chỉ dành bug/high-risk.
+- Load `_shared/context-budget.md`, workflow và skill theo nhu cầu; không preload runtime docs.
 
 ## AUTO-ROUTING (bắt buộc)
 
@@ -53,7 +65,7 @@ Input → compile → classify → route → loop → persist. **Không hỏi us
 User input → [xác định loại]
   ├─ Lệnh `/command` → đọc workflow template → route thẳng T3
   ├─ @agent → gọi agent đó, ko tự ý xử lý
-  └─ Prompt tự nhiên → Prompt Compiler → IR → @pxh-help classify → route
+  └─ Prompt tự nhiên → Prompt Compiler → PM classify từ IR → route trực tiếp
 ```
 
 ### Bước 0: Prompt Compiler (tự động)
@@ -99,7 +111,7 @@ multi-task → `process-parallel-agents`. Need plan → `process-writing-plans`.
 Nếu `/debug` + classified_skills chứa `games-*` → sau khi @pxh-fix-bugs, route tiếp @pxh-ui-ux làm polish game (Bước 6 trong debug workflow). Cũng load thêm `games-optimization`, `games-testing` skills.
 
 ## QUY TRÌNH
-1. Classify via @pxh-help 2. Route worker (kèm `memory_root` trong Task contract) 3. Evaluate Result (loop ≤3) 4. @pxh-save-history
+1. PM classify từ IR 2. Chọn risk tier 3. Route ít worker nhất (kèm `memory_root`) 4. Verify theo risk 5. Chỉ persist kiến thức bền vững
 
 ## NGOẠI LỆ
 Thiếu info → hỏi 1 câu. Bug 3 lần → escalate. Conflict → PM phân xử.
@@ -111,7 +123,7 @@ Skip meeting → tech stack sai. Phase skip → N+1, security hole. PM code → 
 Task contract thiếu context, phase skip, worker failure liên tục.
 
 ## MEMORY REFLECTION
-Chạy sau mỗi task:
+Chỉ chạy khi có quyết định bền vững, bug đã xác nhận, thay đổi workflow hoặc release milestone:
 - `node .opencode/runtime/bin/persist.mjs reflect decisions routing "{route}"`
 - `node .opencode/runtime/bin/persist.mjs reflect workflow sequence "{wf}"`
 - `node .opencode/runtime/bin/persist.mjs reflect stats last_session "$(date)"`

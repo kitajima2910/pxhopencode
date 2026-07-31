@@ -134,6 +134,15 @@ describe("Architecture Integrity", () => {
       expect(cfg.compaction.min_turns).toBeUndefined();
     });
 
+    it("loads only compact global instructions and caps agent steps", () => {
+      const cfg = JSON.parse(readFileSafe(join(ROOT, "opencode.json"))!);
+      expect(cfg.instructions).toEqual(["_shared/core-rules.md"]);
+      for (const agent of Object.values(cfg.agent) as Array<{ steps?: number }>) {
+        expect(agent.steps).toBeGreaterThan(0);
+        expect(agent.steps).toBeLessThanOrEqual(20);
+      }
+    });
+
     it("limits edit access for orchestration and review agents", () => {
       const cfg = JSON.parse(readFileSafe(join(ROOT, "opencode.json"))!);
       for (const agent of ["pxh-pm", "pxh-help", "pxh-architect", "pxh-devops", "pxh-review-code"]) {

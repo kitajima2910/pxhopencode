@@ -1,8 +1,9 @@
 # Context Budget — Tối ưu Token & Quota
 
 ## Nguyên tắc vàng
-- **1 token = $0.000015** (GPT-4). Mỗi dòng ≈ 3.9 token.
-- **Mục tiêu**: Giảm 40% token tiêu thụ mà không giảm chất lượng.
+- Token price phụ thuộc provider/model; không dùng một giá GPT cố định để ước lượng quota.
+- Tối ưu theo thứ tự: **model requests → input context → tool output → output text**.
+- Mục tiêu: một worker cho task low-risk, kiểm chứng theo rủi ro, không giảm quality gate quan trọng.
 
 ## Tiered Context Loading
 
@@ -22,22 +23,28 @@
 - Không báo cáo "đã đọc file X" — just do it
 - Không giải thích code — output kết quả là đủ
 
-### 2. Batch operations
+### 2. Request budget trước khi route
+- Low risk: 1 worker, không meeting/QA/reviewer/historian
+- Medium risk: tối đa 2 workers; QA chỉ khi code/runtime thay đổi
+- High risk/release/security: tối đa 4 workers, ghi rõ lý do cho mỗi agent bổ sung
+- Prompt compiler và CLI deterministic không tốn model request — ưu tiên chúng trước subagent
+
+### 3. Batch operations
 - Gom nhiều `read` / `glob` / `grep` trong 1 message
 - Gom nhiều `edit` trong 1 message
 - Không gọi tool 1 cái rồi chờ — làm song song
 
-### 3. Fail fast
+### 4. Fail fast
 - Nếu task impossible sau 3 attempts → báo user NGAY, không thử thêm
 - Nếu thiếu thông tin → hỏi 1 câu, không suy diễn
 - Nếu TARGET trống → dừng, hỏi user
 
-### 4. Cache awareness
+### 5. Cache awareness
 - Đã đọc file nào trong session này → không đọc lại
 - Đã biết project structure → không glob lại
 - Template đã dùng → không đọc lại lần 2
 
-### 5. Skill lazy loading
+### 6. Skill lazy loading
 - KHÔNG đọc SKILL.md cho đến khi xác định chính xác skill cần dùng
 - Dùng `_shared/skill-quickref.md` để chọn skill — 1 read thay vì 28
 - Chỉ đọc template khi sắp code feature đó

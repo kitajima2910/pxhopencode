@@ -1,5 +1,31 @@
 # 📊 pxhopencode — AI Company cho Vibe Coding
 
+## ✅ Free-model Economy Routing — 2026-08-01
+
+### What changed
+
+- Chuyển global instructions sang một core rules ngắn; runtime, memory, workflow, skill và template được lazy-load.
+- Thêm Economy Routing theo risk: task nhỏ dùng một worker; QA/review/meeting/history chỉ dùng khi có lý do.
+- Áp `steps` cap và temperature phù hợp cho cả 10 agent để chặn vòng lặp request và tăng tính ổn định trên model free.
+- Cập nhật hướng dẫn chọn model free/local mà không hardcode model ID biến động theo provider.
+
+### Files modified
+
+- `_shared/core-rules.md`, `_shared/context-budget.md`, `opencode.json`, `agents/pxh-pm.md`, `README.md`.
+- `.gitattributes`, `runtime/engine/__tests__/architecture.test.ts`, `start.bat`, `STATUS.md`.
+
+### Verification result
+
+- Official OpenCode schema: `steps`, `temperature`, `tool_output` và compaction config đều hợp lệ.
+- `npm.cmd test`: PASS — 56 runtime-engine + 61 prompt-compiler tests (117 total).
+- Embedded Windows E2E: PASS — `start.bat` CRLF, 13 memory JSON, merge `.gitignore`, xóa nested `.git`, launch OpenCode.
+
+### Remaining issues
+
+- Không thể đảm bảo mọi model free ngang model trả phí trên mọi benchmark; quality phụ thuộc model/provider và độ phức tạp task.
+- `small_model` không được hardcode vì không có model ID miễn phí chung cho mọi provider; OpenCode tự ưu tiên model rẻ hơn khi provider hỗ trợ.
+- OpenCode CLI trên máy kiểm thử có lỗi môi trường ngoài repo: `C:\Users\Admin\.config\opencode` đang tồn tại dưới dạng file nên CLI không tạo được config directory; E2E launcher đã được kiểm bằng stub.
+
 ## ✅ Architecture Hardening — 2026-07-31
 
 **Kết luận:** Đã harden đường chạy end-user `.opencode/`: config hợp schema, CLI hiểu embedded mode, session preparation ghi log/state/context trong một bước và memory persistence dùng đúng schema. Runtime vẫn cần agent tuân thủ `session.mjs prepare` trước khi route prompt tự nhiên; OpenCode không cung cấp hook pre-user-message ổn định để ép việc này ở mức platform.

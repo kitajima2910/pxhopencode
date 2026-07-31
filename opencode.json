@@ -2,10 +2,7 @@
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "pxh-pm",
   "instructions": [
-    "prompt-optimizer.md",
-    "runtime/README.md",
-    "runtime/memory/README.md",
-    "runtime/engine/README.md"
+    "_shared/core-rules.md"
   ],
 
   "compaction": {
@@ -25,20 +22,22 @@
   },
 
   "agent": {
-    "pxh-pm": { "description": "T2 Orchestrator", "mode": "primary", "permission": { "edit": "deny", "task": "allow" } },
-    "pxh-architect": { "description": "T3 Architect", "mode": "subagent", "permission": { "edit": "deny" } },
-    "pxh-qa": { "description": "T3 QA", "mode": "subagent" },
-    "pxh-devops": { "description": "T3 Build", "mode": "subagent", "permission": { "edit": "deny" } },
-    "pxh-help": { "description": "T1 Interface", "mode": "primary", "permission": { "edit": "deny", "bash": "deny" } },
-    "pxh-expert": { "description": "T3 Vibe Coder", "mode": "subagent", "permission": { "edit": "allow" } },
-    "pxh-fix-bugs": { "description": "T3 Bug Hunter", "mode": "subagent", "permission": { "edit": "allow" } },
+    "pxh-pm": { "description": "T2 Orchestrator", "mode": "primary", "steps": 12, "temperature": 0.1, "permission": { "edit": "deny", "task": "allow" } },
+    "pxh-architect": { "description": "T3 Architect", "mode": "subagent", "steps": 8, "temperature": 0.1, "permission": { "edit": "deny" } },
+    "pxh-qa": { "description": "T3 QA", "mode": "subagent", "steps": 8, "temperature": 0.1 },
+    "pxh-devops": { "description": "T3 Build", "mode": "subagent", "steps": 8, "temperature": 0.1, "permission": { "edit": "deny" } },
+    "pxh-help": { "description": "T1 Interface", "mode": "primary", "steps": 4, "temperature": 0.1, "permission": { "edit": "deny", "bash": "deny" } },
+    "pxh-expert": { "description": "T3 Vibe Coder", "mode": "subagent", "steps": 20, "temperature": 0.2, "permission": { "edit": "allow" } },
+    "pxh-fix-bugs": { "description": "T3 Bug Hunter", "mode": "subagent", "steps": 16, "temperature": 0.1, "permission": { "edit": "allow" } },
     "pxh-review-code": {
       "description": "T3 Code Reviewer",
       "mode": "subagent",
+      "steps": 8,
+      "temperature": 0.1,
       "permission": { "edit": "deny" }
     },
-    "pxh-save-history": { "description": "T4 Historian", "mode": "subagent", "permission": { "edit": "allow" } },
-    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent", "permission": { "edit": "allow" } }
+    "pxh-save-history": { "description": "T4 Historian", "mode": "subagent", "steps": 5, "temperature": 0.1, "permission": { "edit": "allow" } },
+    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent", "steps": 16, "temperature": 0.35, "permission": { "edit": "allow" } }
   },
 
   "command": {

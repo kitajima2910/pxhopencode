@@ -13,6 +13,13 @@
 - **Node.js** ≥ 18 (đã cài `node` + `npm` trong PATH)
 - **OpenCode CLI**: `npm install -g opencode-ai` (xem [opencode.ai](https://opencode.ai/docs))
 
+## Dùng model free, tiết kiệm quota
+
+1. Chạy `opencode models` hoặc `/models`, rồi chọn model free/local đang có ở provider của bạn. Repo không hardcode model ID vì danh sách free thay đổi theo provider.
+2. `pxhopencode` mặc định dùng Economy Routing: task nhỏ chỉ gọi một worker; QA/review/meeting chỉ bật theo rủi ro.
+3. Mỗi agent có giới hạn `steps` để tránh vòng lặp tool/model vô hạn; prompt compiler, memory và routing IR chạy local, không tiêu model request.
+4. Chất lượng đến từ context đúng, diff nhỏ và test theo rủi ro. Model free không được cam kết ngang tuyệt đối model trả phí trên mọi task; với task security/payment/migration/release, hệ thống tự dùng pipeline kiểm tra sâu hơn.
+
 ## Cài đặt (30 giây)
 
 ```bash
