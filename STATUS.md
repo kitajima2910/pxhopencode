@@ -7,9 +7,11 @@
 ### What changed
 
 - Sửa schema OpenCode, permissions agent, embedded path resolution, error exit code pipeline và root context path.
-- Thêm `runtime/bin/session.mjs`: compile prompt → ghi `__prompt-log__.md` → tạo pipeline state → cập nhật session context; block nếu memory/compiler chưa sẵn sàng.
+- Thêm `runtime/bin/session.mjs`: compile prompt → ghi `promptLog.txt` → tạo pipeline state → cập nhật session context; block nếu memory/compiler chưa sẵn sàng.
 - Sửa `persist.mjs` để append vào collection đúng (`decisions[]`, `bugs[]`, `snapshots[]`), đồng bộ counters/stats và repair dữ liệu legacy.
 - Sửa compiler OpenCode backend không làm mất TARGET; chặn short technical term thay đổi bên trong từ thông thường.
+- Chuẩn hoá template `RULE` của prompt optimizer theo checklist root-cause, scope, verification và STATUS reporting.
+- Đổi tên prompt log runtime thành `promptLog.txt`.
 
 ### Files modified
 
@@ -128,8 +130,8 @@
 | 2026-07-27 | v81.2 | **Prompt Compiler zero-dep — ship pre-compiled dist/** — Build `prompt-compiler` → `dist/` (136 files JS+`d.ts`). Fix `tsconfig.json` lib `["ES2022","DOM"]`. Fix `benchmark.ts` xoá `process` dependency → 0 runtime deps. `.gitignore`: `dist/`→`/dist/` (chỉ ignore root), thêm `prompt-compiler/node_modules/`. Clone → dùng ngay, không cần `npm install`. |
 | 2026-07-27 | v82 | **UI/UX Design System — kill "AI Studio" look** — Tạo `_shared/design-system/` với `design-tokens.css` (OKLCH colors, light/dark mode, spacing, shadow, animation), `game-tokens.css` (game HUD tokens), `design-tokens.ts` (typed tokens). Fix `docs-vibe/index.html` (mobile nav, light mode, CSS variables), `docs-vibe/galaga.html` (GAME_COLORS palette, glow effects, OKLCH), `games-core/templates/index.html` (gradient loading, OKLCH), `games-2d/color-palettes.ts` (Palette type, NEON+RETRO palettes), `games-preview/index.html` (FPS counter, OKLCH). Nâng cấp `webs-styling/templates/` (full OKLCH brand scale, glow shadow, animations), `webs-frontend/component-patterns.tsx` (Button 4 variants, Card, Modal, Toast, Skeleton). Cập nhật 7 game templates (main.ts, ui-billboard.ts, phaser-iso-config.ts, audio-pool.ts, placeholders.ts, animation-config.ts, game-engine.ts). — **Token saver:** Shared DS giúp mỗi game/web template tiết kiệm ~15-25 dòng color/cấu hình lặp lại. ~200 dòng saved khỏi prompt context khi sinh code mới. |
 | 2026-07-27 | v82.1 | **UI/UX Quality Gate enforced in agents** — Thêm UI/UX QUALITY GATE vào `pxh-expert.md` + `pxh-ui-ux.md`: cấm hardcode hex, bắt buộc dùng shared DS (OKLCH tokens, 5 game palettes, Tailwind config + components). Agent tự check output trước khi trả về. Mọi output vào project user đều qua gate này. |
-| 2026-07-27 | v82.2 | **Prompt Log final release** — `prompt-optimizer.md` Step 4 ghi final prompt vào `__prompt-log__.md` (overwrite, git-ignored). Agent bắt buộc ghi prompt cuối cùng (RULE+TARGET+IR) vào file này trước khi xử lý. Xoá `docs-vibe/galaga.html` + gỡ link nav. Final audit PASS — 0 lỗi. |
-| 2026-07-27 | v82.3 | **First-time setup hoàn chỉnh** — `init-memory.ps1` Step 2 nâng cấp: merge toàn bộ entries từ template `.gitignore` (`.opencode/`, `.github/`, `.vibe/`, `.memory/`, `__prompt-log__.md`) vào parent project. Phiên bản đồng bộ STATUS.md → package.json → README.md → docs-vibe/index.html. |
+| 2026-07-27 | v82.2 | **Prompt Log final release** — `prompt-optimizer.md` Step 4 ghi final prompt vào `promptLog.txt` (overwrite, git-ignored). Agent bắt buộc ghi prompt cuối cùng (RULE+TARGET+IR) vào file này trước khi xử lý. Xoá `docs-vibe/galaga.html` + gỡ link nav. Final audit PASS — 0 lỗi. |
+| 2026-07-27 | v82.3 | **First-time setup hoàn chỉnh** — `init-memory.ps1` Step 2 nâng cấp: merge toàn bộ entries từ template `.gitignore` (`.opencode/`, `.github/`, `.vibe/`, `.memory/`, `promptLog.txt`) vào parent project. Phiên bản đồng bộ STATUS.md → package.json → README.md → docs-vibe/index.html. |
 | 2026-07-27 | v82.4 | **start.bat + init-memory.ps1 overhaul** — thêm `start.bat` để chạy init từ cmd/double-click. Fix parser bug PSv5.1 (đổi `'\S'` → `"\S"`). Step 2: merge toàn bộ 15 entries từ template `.gitignore`. Embedded mode: tự detect parent project qua `Split-Path $PxhopencodeRoot`, đảm bảo `.memory/` luôn trong `.opencode/`, xoá `.opencode/.git/`, `.gitignore` ở project root. Tested: 4/4 checks PASS. |
 | 2026-07-28 | v82.5 | **Vibe Code Upgrade — zero-friction** (6 upgrades). Agent ultra-compression: 10 agents 953→507 dòng (-47%). Memory auto-seed: init script tự populate architecture/patterns/preferences, `memory_count > 0`. Vibe Profile: auto-detect linter, test framework, UI lib → ghi `preferences.json`. Prompt-compiler dist/ rebuilt (136 files), gitignore fixed (`dist/→/dist/`). CI/CD: `.github/workflows/test.yml`. Auto-build prompt-compiler khi init nếu dist/ missing. `.github/` removed from .gitignore. |
 | 2026-07-26 | v77 | **Token Optimization V4.0 — Ultra Compression** — Compress `game-genre-reference.md` 733→78d (-89%), `game-h5-3d-marble-racing.md` 494→72d (-85%), `3d-web-experience/SKILL.md` 252→100d (-60%), `game.workflow.md` 235→94d (-60%), `game-design-h5-2d.md` 183→63d (-66%), `game-design-h5-marble-racing.md` 147→63d (-57%), `game-design-h5-3d.md` 125→52d (-58%), `init.json` 136→30d (-78%), `debug.workflow.md` 131→60d (-54%), `ui-ux/SKILL.md` checklist trim (-39d). **Total savings: ~1.600+ dòng khỏi prompt context.** |
@@ -219,4 +221,4 @@
 | Memory engine | ✅ 13/13 files active, no dead paths, compiler-aligned |
 | UI/UX Design System | ✅ Shared DS `_shared/design-system/` (OKLCH tokens, light/dark, game HUD) |
 | UI/UX Quality Gate | ✅ Enforced in `pxh-expert.md` + `pxh-ui-ux.md` — no AI Studio look |
-| Prompt Log | ✅ `__prompt-log__.md` — overwrite mode, git-ignored |
+| Prompt Log | ✅ `promptLog.txt` — overwrite mode, git-ignored |

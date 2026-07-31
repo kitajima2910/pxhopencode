@@ -40,7 +40,7 @@ async function prepare() {
   const result = new Pipeline({ backend: "opencode" }).compile(input);
   const prompt = result.prompt.trim();
 
-  writeFileSync(join(workspace, "__prompt-log__.md"), prompt + "\n", "utf-8");
+  writeFileSync(join(workspace, "promptLog.txt"), prompt + "\n", "utf-8");
   const stateFile = join(workspace, ".pipeline-state.json");
   if (!existsSync(stateFile)) writeFileSync(stateFile, "[]\n", "utf-8");
 

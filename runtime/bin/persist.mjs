@@ -146,9 +146,9 @@ switch (CMD) {
   case "log": {
     const content = process.argv.slice(3).join(" ");
     if (!content) { console.error("Usage: persist.mjs log <content>"); process.exit(1); }
-    const logFile = join(WS_ROOT, "__prompt-log__.md");
+    const logFile = join(WS_ROOT, "promptLog.txt");
     writeFileSync(logFile, content + "\n");
-    console.log("[LOG] __prompt-log__.md written");
+    console.log("[LOG] promptLog.txt written");
     break;
   }
 
@@ -161,7 +161,7 @@ switch (CMD) {
   case "status": {
     console.log("\n  Memory root:", MEMORY_ROOT);
   console.log("  Pipeline:", existsSync(PIPEFILE) ? readJSON(PIPEFILE)?.length + " entries" : "none");
-  console.log("  Prompt log:", existsSync(join(WS_ROOT, "__prompt-log__.md")) ? "exists" : "none");
+  console.log("  Prompt log:", existsSync(join(WS_ROOT, "promptLog.txt")) ? "exists" : "none");
     break;
   }
 

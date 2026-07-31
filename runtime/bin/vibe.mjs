@@ -46,7 +46,7 @@ async function cmdInit() {
   if (type === "web") { pkg.devDependencies.vite = "^5.0.0"; pkg.scripts.dev = "vite"; }
   if (type === "ai") { pkg.scripts.start = "node index.js"; }
   writeFileSync(join(target, "package.json"), JSON.stringify(pkg, null, 2) + "\n");
-  writeFileSync(join(target, ".gitignore"), "node_modules/\n.env\ndist/\n.opencode/\n.github/\n.vibe/\n.memory/\n__prompt-log__.md\n");
+  writeFileSync(join(target, ".gitignore"), "node_modules/\n.env\ndist/\n.opencode/\n.github/\n.vibe/\n.memory/\npromptLog.txt\n");
 
   for (var _d = 0; _d < ["src", "public"].length; _d++) mkdirSync(join(target, ["src", "public"][_d]), { recursive: true });
   var html = '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">'

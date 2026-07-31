@@ -42,7 +42,7 @@ reason: "User muốn web app, có cả frontend lẫn API"
 ```
 
 ## QUY TRÌNH
-0. Ghi final prompt vào `__prompt-log__.md` (overwrite) — prompt đã qua prompt-optimizer wrap RULE+TARGET+IR
+0. Ghi final prompt vào `promptLog.txt` (overwrite) — prompt đã qua prompt-optimizer wrap RULE+TARGET+IR
 1. Đọc prompt → match keyword với bảng classifier
 2. Tra `_shared/skill-quickref.md` để chọn skill chính xác
 3. Trả về output format bên trên (1-2 dòng, ko văn dài)

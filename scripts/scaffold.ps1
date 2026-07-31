@@ -50,7 +50,7 @@ dist/
 .github/
 .vibe/
 .memory/
-__prompt-log__.md
+promptLog.txt
 "@ | Out-File -FilePath "$Target\.gitignore" -Encoding utf8
 
 $Html = @"

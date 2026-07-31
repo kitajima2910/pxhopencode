@@ -93,7 +93,7 @@ async function scaffold(type, name) {
   }
   writeFileSync(join(target, "package.json"), JSON.stringify(pkg, null, 2) + "\n");
 
-  const gitignore = ["node_modules/", ".env", "dist/", ".opencode/", ".github/", ".vibe/", ".memory/", "__prompt-log__.md"].join("\n") + "\n";
+  const gitignore = ["node_modules/", ".env", "dist/", ".opencode/", ".github/", ".vibe/", ".memory/", "promptLog.txt"].join("\n") + "\n";
   writeFileSync(join(target, ".gitignore"), gitignore);
 
   if (type === "web") {

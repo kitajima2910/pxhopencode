@@ -27,10 +27,12 @@ GATE: Memory Init
 **Bắt buộc dùng một transaction duy nhất trước khi route prompt tự nhiên:**
 
 ```
+
 node .opencode/runtime/bin/session.mjs prepare --stdin
+
 ```
 
-Lệnh này block nếu chưa init memory; nếu thành công nó compile prompt, ghi final prompt vào `__prompt-log__.md`, khởi tạo `.pipeline-state.json` và cập nhật context. Dùng JSON output làm IR Context cho Task contract.
+Lệnh này block nếu chưa init memory; nếu thành công nó compile prompt, ghi final prompt vào `promptLog.txt`, khởi tạo `.pipeline-state.json` và cập nhật context. Dùng JSON output làm IR Context cho Task contract.
 Pipeline:
 1. Load skill `prompt-compiler` → Pipeline API
 2. `new Pipeline({ backend: 'opencode' }).compile(input)`
@@ -52,14 +54,20 @@ Nếu prompt chưa bắt đầu bằng `RULE:`, wrap:
 ```
 RULE:
 
-- Read STATUS.md if it exists.
+- Read STATUS.md if it exists before starting.
 - Do not rewrite the project.
-- Only modify files within the TARGET.
-- Prefer the smallest possible changes.
-- Preserve all existing working code.
-- Verify the TARGET after making changes.
-- Update STATUS.md with the completed work.
-- Update version: đồng bộ STATUS.md → package.json → README.md → docs-vibe/index.html nếu có version bump.
+- Only modify files inside TARGET scope.
+- Prefer minimal changes.
+- Preserve existing working code and behavior.
+- Do not refactor unless required for the task.
+- Analyze root cause before making changes.
+- If requirements are unclear, ask before making changes.
+- Verify TARGET after modification.
+- Update STATUS.md with:
+  - What changed
+  - Files modified
+  - Verification result
+  - Remaining issues (if any)
 
 TARGET:
 [compiled + optimized prompt]
@@ -73,7 +81,7 @@ IR Context:
 
 Nếu prompt đã bắt đầu bằng `RULE:` → giữ nguyên (không wrap lại). Chỉ dùng final prompt này.
 
-## Step 4: Write final prompt to __prompt-log__.md
+## Step 4: Write final prompt to `promptLog.txt`
 
 Sau khi wrap xong, final prompt được `session.mjs prepare` ghi trong cùng một bước chuẩn bị.
 **Overwrite** — file luôn chứa đúng 1 prompt cuối cùng.

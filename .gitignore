@@ -12,5 +12,5 @@ target/
 .vibe/
 .memory/
 .pipeline-state.json
-__prompt-log__.md
+promptLog.txt
 .context.json

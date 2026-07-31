@@ -82,7 +82,7 @@ describe("embedded CLI runtime", () => {
       ".opencode/runtime/bin/session.mjs", "prepare", "Make the dashboard navigation easier to use on mobile",
     ], { cwd: root, encoding: "utf-8" });
     const prepared = JSON.parse(output);
-    const promptLog = readFileSync(join(root, "__prompt-log__.md"), "utf-8");
+    const promptLog = readFileSync(join(root, "promptLog.txt"), "utf-8");
     expect(prepared.ir.raw).toContain("dashboard navigation");
     expect(promptLog).toContain("RULE:");
     expect(promptLog).toContain("dashboard navigation");
