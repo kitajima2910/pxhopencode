@@ -4,11 +4,12 @@ import { ResultSchema } from "./contracts/result";
 import { ResponseSchema } from "./contracts/response";
 import { EventSchema } from "./contracts/event";
 import { StateSchema } from "./contracts/state";
+import type { ZodTypeAny } from "zod";
 import type { RequestContract, TaskContract, ResultContract, ResponseContract, EventContract, StateContract } from "./types";
 
 export type ContractType = "request" | "task" | "result" | "response" | "event" | "state";
 
-const validators: Record<ContractType, { parse: (d: unknown) => unknown }> = {
+const validators: Record<ContractType, ZodTypeAny> = {
   request: RequestSchema,
   task: TaskSchema,
   result: ResultSchema,

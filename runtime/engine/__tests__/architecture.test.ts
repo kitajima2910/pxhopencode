@@ -160,5 +160,13 @@ describe("Architecture Integrity", () => {
       expect(raw).toContain("Workflows");
       expect(raw).toContain("Skills");
     });
+
+    it("keeps release metadata synchronized", () => {
+      const pkg = JSON.parse(readFileSafe(join(ROOT, "package.json"))!);
+      expect(readFileSafe(join(ROOT, "README.md"))).toContain(`v${pkg.version}`);
+      expect(readFileSafe(join(ROOT, "docs-vibe", "index.html"))).toContain(`v${pkg.version}`);
+      expect(readFileSafe(join(ROOT, "LICENSE"))).toMatch(/^MIT License/);
+      expect(existsSync(join(ROOT, ".pipeline-state.json"))).toBe(false);
+    });
   });
 });

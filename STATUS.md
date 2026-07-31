@@ -1,5 +1,29 @@
 # 📊 pxhopencode — AI Company cho Vibe Coding
 
+## ✅ Release Candidate v82.6 — 2026-08-01
+
+### What changed
+
+- Sửa strict TypeScript build của runtime validator; engine và compiler đều có build gate.
+- CI tách ba gate: runtime engine, prompt compiler và release integrity.
+- Loại `.pipeline-state.json` khỏi source tracking; giữ runtime state trong `.gitignore`.
+- Đồng bộ version `v82.6`, 119 tests và MIT license trong release metadata/docs.
+
+### Files modified
+
+- `runtime/engine/src/validator.ts`, runtime regression tests, `.github/workflows/test.yml`, `package.json`, `_shared/scripts/release-check.mjs`.
+- `.pipeline-state.json` (removed), `.gitignore`, `README.md`, `docs-vibe/index.html`, `_shared/changelog.md`, `STATUS.md`.
+
+### Verification result
+
+- `npm.cmd run verify`: PASS — strict builds + 58 runtime-engine + 61 prompt-compiler tests (119 total).
+- `npm.cmd run release:check`: PASS — version/docs/license/compiler-dist/runtime-state integrity.
+- Embedded Windows E2E: PASS — v82.6, 13 memory JSON, `.gitignore` merge, nested `.git` removal and OpenCode launch.
+
+### Remaining issues
+
+- No remaining source blocker. Distribution target is GitHub (`git clone`); npm publishing remains intentionally disabled with `private: true`.
+
 ## ✅ Hybrid Prompt Transport — 2026-08-01
 
 ### What changed
@@ -87,14 +111,14 @@
 |--------|---------|
 | Giai đoạn | 10/10 TOÀN DIỆN ✅ |
 | Mô hình | AI Company — 4-Tầng Enterprise AI Runtime |
-| Phiên bản | v82.5 |
+| Phiên bản | v82.6 |
 | Agents | 10 (Tầng 1-4, đã ultra-compression -446 dòng) |
 | Workflows | 8 theo lĩnh vực |
 | Skills | 50 skills |
 | Contracts | 6 cấu trúc (Zod-validated) |
 | Policies | 3 (Thử lại, Phục hồi, Phản ánh) |
 | Runtime Engine | ✅ Zod contracts, pipeline executor, intent router, memory I/O |
-| Self-tests | ✅ 49/49 pass |
+| Self-tests | ✅ 119/119 pass |
 | CLI Tools | ✅ vibe.mjs, enforce.mjs, pipeline.mjs, diff.mjs + 6 tools |
 | CI/CD | ✅ GitHub Actions test workflow |
 | Dashboard | ✅ Web dashboard (OKLCH design tokens) |
@@ -206,7 +230,7 @@
 | **Intent Router** | `route()` + `classifyPrompt()` + `workflowToPhases()` | ✅ 14 tests |
 | **Memory I/O** | `readMemory()`, `writeMemory()`, `mergeMemory()` với BOM-safe | ✅ |
 | **Architecture self-tests** | 16 integration tests verify agents, workflows, contracts, skills, config | ✅ |
-| **Total tests** | 49 tests, 4 test files | ✅ 49/49 pass |
+| **Total tests** | 119 tests, 12 test files | ✅ 119/119 pass |
 
 ## ✅ Vibe CLI Tools (NEW)
 
@@ -250,9 +274,9 @@
 
 | Hạng mục | Trạng thái |
 |----------|-----------|
-| package.json (name, version, description) | ✅ v80.1.0 |
+| package.json (name, version, description) | ✅ v82.6 |
 | README (setup, usage, architecture) | ✅ Đầy đủ |
-| LICENSE | ✅ MIT/ Apache 2.0 |
+| LICENSE | ✅ MIT |
 | .gitignore | ✅ Đầy đủ |
 | opencode.json (agents, commands, skills) | ✅ 10 agents, 8 commands, 50 skills |
 | Agents (10 files) | ✅ Đầy đủ, role-defined |

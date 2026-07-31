@@ -1,6 +1,6 @@
 {
   "name": "pxhopencode",
-  "version": "82.5",
+  "version": "82.6",
   "private": true,
   "description": "AI Company cho Vibe Coding — 4-tier enterprise AI runtime",
   "type": "module",
@@ -11,6 +11,10 @@
     "test:compiler": "cd prompt-compiler && npm test",
     "test:watch": "cd runtime\\engine && npx vitest",
     "build:engine": "cd runtime\\engine && npx tsc",
+    "build:compiler": "cd prompt-compiler && npm run build",
+    "build": "npm run build:engine && npm run build:compiler",
+    "verify": "npm run build && npm test",
+    "release:check": "node _shared/scripts/release-check.mjs",
     "vibe": "node runtime/bin/vibe.mjs",
     "onboard": "node runtime/bin/onboard.mjs",
     "status": "node runtime/bin/status.mjs",

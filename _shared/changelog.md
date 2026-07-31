@@ -1,5 +1,8 @@
 # Changelog
 
+## v82.6 — Release hardening
+Strict runtime build fixed; CI now builds/tests runtime engine and prompt compiler and checks release integrity. Runtime state removed from Git tracking. Version, test counts, and MIT license metadata synchronized for GitHub release.
+
 ## v80.1 — Embedded mode path fix
 init-memory.ps1 now derives pxhopencode root from `$PSScriptRoot` instead of `$WorkspaceRoot`. Works correctly in both standalone mode and when cloned into `.opencode/`. README documents both path variants.
 
