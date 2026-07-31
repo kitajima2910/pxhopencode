@@ -11,7 +11,7 @@
 ## Yêu cầu
 
 - **Node.js** ≥ 18 (đã cài `node` + `npm` trong PATH)
-- **opencode CLI**: `npm install -g @opencode/cli` (xem [opencode.ai](https://opencode.ai))
+- **OpenCode CLI**: `npm install -g opencode-ai` (xem [opencode.ai](https://opencode.ai/docs))
 
 ## Cài đặt (30 giây)
 

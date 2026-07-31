@@ -62,8 +62,8 @@ Mọi prompt tự nhiên được compile TRƯỚC khi classify:
 
 ```yaml
 Pipeline:
-  1. Load skill `prompt-compiler` → Pipeline API
-  2. `new Pipeline({backend: 'opencode'}).compile(input)`
+  1. Chạy `node .opencode/runtime/bin/session.mjs prepare --stdin` với prompt user. Nếu BLOCKED: dừng và xử lý memory init/build compiler.
+  2. Dùng JSON `ir` + `prompt` từ lệnh trên; không tự compile/ghi log lần hai.
   3. Dùng IR để hỗ trợ classify:
      - ir.intents → workflow (fix_bug→/debug, generate_game→/game, ...)
      - ir.constraints → safety rules (preserve_behavior, minimal_changes)

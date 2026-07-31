@@ -22,9 +22,13 @@ const PHASES = phasesConfig.phases;
 const AGENTS = phasesConfig.agents;
 
 function readPipe() {
-  try { return JSON.parse(readFileSync(PIPEFILE, "utf-8")); } catch { return []; }
+  try {
+    const raw = readFileSync(PIPEFILE, "utf-8");
+    return JSON.parse(raw.charCodeAt(0) === 0xFEFF ? raw.slice(1) : raw);
+  } catch { return []; }
 }
 function writePipe(d) { writeFileSync(PIPEFILE, JSON.stringify(d, null, 2) + "\n"); }
+function fail(message) { console.log(err(message)); process.exit(1); }
 
 function cmdStatus() {
   const pipe = readPipe();
@@ -41,22 +45,27 @@ function cmdStatus() {
 }
 
 function cmdStartPhase(phase) {
-  if (!PHASES.includes(phase)) { console.log(err("Invalid phase: " + phase)); process.exit(1); }
+  if (!PHASES.includes(phase)) fail("Invalid phase: " + phase);
   const pipe = readPipe();
   const existing = pipe.find(s => s.phase === phase);
-  if (existing && existing.status === "pass") { console.log(err("Phase already done: " + phase)); return; }
-  if (!existing) pipe.push({ phase, agent: AGENTS[phase] || "?", status: null });
-  else { existing.status = null; existing.agent = AGENTS[phase]; }
+  if (existing && existing.status === "pass") fail("Phase already done: " + phase);
+  const active = pipe.find(s => !s.status && s.phase !== phase);
+  if (active) fail("Another phase is active: " + active.phase);
+  if (!existing) pipe.push({ phase, agent: AGENTS[phase] || "?", status: null, started_at: new Date().toISOString() });
+  else { existing.status = null; existing.agent = AGENTS[phase]; existing.started_at = new Date().toISOString(); delete existing.completed_at; }
   writePipe(pipe);
   console.log(ok("Started: ") + cyan(phase) + dim(" -> ") + (AGENTS[phase] || "?"));
 }
 
 function cmdCompletePhase(phase, status) {
-  if (!PHASES.includes(phase)) { console.log(err("Invalid phase")); process.exit(1); }
+  if (!PHASES.includes(phase)) fail("Invalid phase: " + phase);
+  if (status !== "pass" && status !== "fail") fail("Invalid status: " + status);
   const pipe = readPipe();
   const s = pipe.find(x => x.phase === phase);
-  if (!s) { console.log(err("Phase not started: " + phase)); return; }
+  if (!s) fail("Phase not started: " + phase);
+  if (s.status) fail("Phase already completed: " + phase);
   s.status = status;
+  s.completed_at = new Date().toISOString();
   writePipe(pipe);
   console.log(ok("Completed: ") + cyan(phase) + dim(" -> ") + status);
 }

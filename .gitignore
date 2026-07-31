@@ -13,3 +13,4 @@ target/
 .memory/
 .pipeline-state.json
 __prompt-log__.md
+.context.json

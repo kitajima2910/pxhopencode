@@ -16,6 +16,7 @@ export function resolveTechnicalTerms(
 
   for (const match of sorted) {
     const original = input.slice(match.start, match.end);
+    if (needsWordBoundary(original) && (isWordChar(input[match.start - 1]) || isWordChar(input[match.end]))) continue;
     if (original !== match.output) {
       const before = output;
       output = output.slice(0, match.start) + match.output + output.slice(match.end);
@@ -31,6 +32,14 @@ export function resolveTechnicalTerms(
     resolved,
     metric: { name: 'TechnicalResolver', ms, inputLength: input.length, outputLength: output.length },
   };
+}
+
+function isWordChar(char: string | undefined): boolean {
+  return !!char && /[\p{L}\p{N}_]/u.test(char);
+}
+
+function needsWordBoundary(term: string): boolean {
+  return /^[\p{L}\p{N}_]+$/u.test(term);
 }
 
 const FILE_EXT_MAP: Record<string, string> = {

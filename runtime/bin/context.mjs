@@ -1,8 +1,14 @@
 #!/usr/bin/env node
-import { readFileSync, existsSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { readFileSync, existsSync, writeFileSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
 
-const CTX_FILE = ".opencode/.context.json";
+function resolveOpenCodeRoot() {
+  const cwd = process.cwd();
+  if (existsSync(join(cwd, "runtime", "bin"))) return cwd;
+  return join(cwd, ".opencode");
+}
+
+const CTX_FILE = join(resolveOpenCodeRoot(), ".context.json");
 const MAX_ENTRIES = 10;
 
 function err(s) { return "\x1b[31m" + s + "\x1b[0m"; }
@@ -15,6 +21,7 @@ function readCtx() {
 }
 function writeCtx(d) {
   d.updated = new Date().toISOString();
+  mkdirSync(dirname(CTX_FILE), { recursive: true });
   writeFileSync(CTX_FILE, JSON.stringify(d, null, 2) + "\n");
 }
 

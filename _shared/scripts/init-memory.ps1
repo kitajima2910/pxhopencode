@@ -41,6 +41,14 @@ if (Test-Path $memoryDir) {
   $idx = Join-Path $memoryDir "index.json"
   if (Test-Path $idx) {
     Write-Output "[SKIP] .memory/ exists, skip init"
+    $persistScript = Join-Path $PxhopencodeRoot "runtime\bin\persist.mjs"
+    if (Test-Path $persistScript) {
+      & node $persistScript repair
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "[FAIL] Could not repair existing .memory/ schema"
+        exit $LASTEXITCODE
+      }
+    }
 # ── PROMPT COMPILER AUTO-BUILD ────────────────────────────────
 $compilerDist = Join-Path $PxhopencodeRoot "prompt-compiler" "dist" "index.js"
 if (-not (Test-Path $compilerDist)) {

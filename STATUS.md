@@ -1,36 +1,34 @@
 # 📊 pxhopencode — AI Company cho Vibe Coding
 
-## ⚠️ Architecture Audit — 2026-07-31
+## ✅ Architecture Hardening — 2026-07-31
 
-**Kết luận:** Chưa đạt mức production-ready/“hoàn hảo” cho end-user. Các unit/integration test hiện tại đều pass, nhưng chưa bao phủ đường cài đặt chính khi repository nằm trong `.opencode/` và chưa chứng minh các hard gate luôn được thực thi.
+**Kết luận:** Đã harden đường chạy end-user `.opencode/`: config hợp schema, CLI hiểu embedded mode, session preparation ghi log/state/context trong một bước và memory persistence dùng đúng schema. Runtime vẫn cần agent tuân thủ `session.mjs prepare` trước khi route prompt tự nhiên; OpenCode không cung cấp hook pre-user-message ổn định để ép việc này ở mức platform.
 
 ### What changed
 
-- Thực hiện audit read-only theo luồng end-user: OpenCode config → prompt compiler → `pxh-pm` routing → enforcement → pipeline/memory/prompt-log persistence.
-- Đối chiếu `opencode.json` với schema OpenCode hiện hành và tài liệu chính thức.
-- Không sửa runtime hoặc hành vi ứng dụng; chỉ ghi nhận kết quả audit trong file này.
+- Sửa schema OpenCode, permissions agent, embedded path resolution, error exit code pipeline và root context path.
+- Thêm `runtime/bin/session.mjs`: compile prompt → ghi `__prompt-log__.md` → tạo pipeline state → cập nhật session context; block nếu memory/compiler chưa sẵn sàng.
+- Sửa `persist.mjs` để append vào collection đúng (`decisions[]`, `bugs[]`, `snapshots[]`), đồng bộ counters/stats và repair dữ liệu legacy.
+- Sửa compiler OpenCode backend không làm mất TARGET; chặn short technical term thay đổi bên trong từ thông thường.
 
 ### Files modified
 
-- `STATUS.md` — thêm kết quả audit và các vấn đề còn lại.
+- `opencode.json`, `README.md`, `package.json`, `.gitignore`, `prompt-optimizer.md`, `agents/pxh-pm.md`.
+- `runtime/bin/{validate,pipeline,persist,context,session}.mjs`, `_shared/scripts/init-memory.ps1`.
+- Prompt compiler source + dist, cùng các runtime/compiler tests.
+- `STATUS.md` — cập nhật kết quả hardening.
 
 ### Verification result
 
-- `npm.cmd test`: PASS — 49/49 runtime-engine tests; architecture suite bị chạy lặp thêm một lần bởi `test:arch`.
-- `prompt-compiler\npm.cmd test`: PASS — 59/59 tests.
-- 50/50 `SKILL.md` có frontmatter `name` + `description`.
-- OpenCode config schema audit: FAIL — `skills.lazy`, `compaction.strategy`, `compaction.min_turns` không hợp lệ theo schema hiện hành.
-- Embedded-mode audit: FAIL — `runtime/bin/validate.mjs` vẫn đọc `_shared/...` và `runtime/...` từ workspace root thay vì `.opencode/...`, nên `enforce run` có thể bị chặn trong cách cài đặt được README khuyến nghị.
+- `npm.cmd test`: PASS — 55 runtime-engine tests + 61 prompt-compiler tests (116 total).
+- Embedded E2E: PASS — validate, typed memory persistence, invalid pipeline transition, session prepare (log/context/state).
+- Prompt compiler dist rebuilt; OpenCode prompt generator preserves concrete target and boundary regression is covered.
 
 ### Remaining issues
 
-- Các cam kết “always” (compile prompt, memory init/write, pipeline write, prompt-log write) chủ yếu là markdown instruction; chưa có OpenCode plugin/hook thực thi bắt buộc ở biên message/session.
-- `pipeline.mjs` không enforce thứ tự phase và một số trạng thái lỗi không trả exit code khác 0, làm `enforce.mjs` có thể coi lỗi là pass.
-- `persist.mjs append` ghi vào `entries[]`, không vào các collection schema như `bugs[]`, `decisions[]`, `snapshots[]`; counters/timestamps/index cũng không được đồng bộ.
-- Cấu hình agent không khai báo permission isolation; theo mặc định OpenCode hiện hành, agents có quyền tool rộng hơn mô tả kiến trúc.
-- README dùng package cài đặt cũ `@opencode/cli`; tài liệu OpenCode hiện hành dùng `opencode-ai`.
-- Chưa có E2E test tạo project thật với repo ở `.opencode/`, gửi prompt tự nhiên, rồi assert compiler/routing/agents + `.memory/` + `.pipeline-state.json` + `__prompt-log__.md`.
-- Workspace hiện tại có `.memory/index.json` với `memory_count: 0`, pipeline rỗng và prompt-log cũ; chưa chứng minh persistence chạy sau mọi prompt/task.
+- `session.mjs prepare` là hard runtime entry-point của pxh-pm, nhưng OpenCode chưa có stable pre-user-message hook để chặn tuyệt đối agent bypass ở platform layer.
+- Pipeline đảm bảo chỉ một phase active, reject transition không hợp lệ/đã hoàn tất; thứ tự chi tiết vẫn do workflow định nghĩa vì web/game/debug có chuỗi phase khác nhau.
+- Để migrate memory cũ, chạy `start.bat` hoặc `node .opencode/runtime/bin/persist.mjs repair` một lần.
 
 ## 🎯 Tổng quan
 

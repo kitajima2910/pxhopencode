@@ -5,9 +5,10 @@
   "description": "AI Company cho Vibe Coding — 4-tier enterprise AI runtime",
   "type": "module",
   "scripts": {
-    "test": "npm run test:engine && npm run test:arch",
+    "test": "npm run test:engine && npm run test:compiler",
     "test:engine": "cd runtime\\engine && npx vitest run",
     "test:arch": "cd runtime\\engine && npx vitest run __tests__/architecture.test.ts",
+    "test:compiler": "cd prompt-compiler && npm test",
     "test:watch": "cd runtime\\engine && npx vitest",
     "build:engine": "cd runtime\\engine && npx tsc",
     "vibe": "node runtime/bin/vibe.mjs",

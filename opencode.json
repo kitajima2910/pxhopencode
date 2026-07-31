@@ -10,9 +10,9 @@
 
   "compaction": {
     "auto": true,
-    "strategy": "summary",
-    "min_turns": 2,
-    "tail_turns": 3
+    "prune": true,
+    "tail_turns": 3,
+    "reserved": 10000
   },
 
   "tool_output": {
@@ -21,24 +21,24 @@
   },
 
   "skills": {
-    "paths": ["skills", ".opencode/skills", "pxhopencode/skills"],
-    "lazy": true
+    "paths": ["skills"]
   },
 
   "agent": {
-    "pxh-pm": { "description": "T2 Orchestrator", "mode": "primary" },
-    "pxh-architect": { "description": "T3 Architect", "mode": "subagent" },
+    "pxh-pm": { "description": "T2 Orchestrator", "mode": "primary", "permission": { "edit": "deny", "task": "allow" } },
+    "pxh-architect": { "description": "T3 Architect", "mode": "subagent", "permission": { "edit": "deny" } },
     "pxh-qa": { "description": "T3 QA", "mode": "subagent" },
-    "pxh-devops": { "description": "T3 Build", "mode": "subagent" },
-    "pxh-help": { "description": "T1 Interface", "mode": "primary" },
-    "pxh-expert": { "description": "T3 Vibe Coder", "mode": "subagent" },
-    "pxh-fix-bugs": { "description": "T3 Bug Hunter", "mode": "subagent" },
+    "pxh-devops": { "description": "T3 Build", "mode": "subagent", "permission": { "edit": "deny" } },
+    "pxh-help": { "description": "T1 Interface", "mode": "primary", "permission": { "edit": "deny", "bash": "deny" } },
+    "pxh-expert": { "description": "T3 Vibe Coder", "mode": "subagent", "permission": { "edit": "allow" } },
+    "pxh-fix-bugs": { "description": "T3 Bug Hunter", "mode": "subagent", "permission": { "edit": "allow" } },
     "pxh-review-code": {
       "description": "T3 Code Reviewer",
-      "mode": "subagent"
+      "mode": "subagent",
+      "permission": { "edit": "deny" }
     },
-    "pxh-save-history": { "description": "T4 Historian", "mode": "subagent" },
-    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent" }
+    "pxh-save-history": { "description": "T4 Historian", "mode": "subagent", "permission": { "edit": "allow" } },
+    "pxh-ui-ux": { "description": "T3 UI/UX Designer", "mode": "subagent", "permission": { "edit": "allow" } }
   },
 
   "command": {

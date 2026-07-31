@@ -125,6 +125,21 @@ describe("Architecture Integrity", () => {
       const cmds = Object.keys(cfg.command);
       expect(cmds.length).toBeGreaterThanOrEqual(10);
     });
+
+    it("uses only supported skill and compaction options", () => {
+      const cfg = JSON.parse(readFileSafe(join(ROOT, "opencode.json"))!);
+      expect(Object.keys(cfg.skills)).toEqual(["paths"]);
+      expect(cfg.compaction).toMatchObject({ auto: true, prune: true, tail_turns: 3 });
+      expect(cfg.compaction.strategy).toBeUndefined();
+      expect(cfg.compaction.min_turns).toBeUndefined();
+    });
+
+    it("limits edit access for orchestration and review agents", () => {
+      const cfg = JSON.parse(readFileSafe(join(ROOT, "opencode.json"))!);
+      for (const agent of ["pxh-pm", "pxh-help", "pxh-architect", "pxh-devops", "pxh-review-code"]) {
+        expect(cfg.agent[agent].permission.edit).toBe("deny");
+      }
+    });
   });
 
   describe("STATUS.md integrity", () => {

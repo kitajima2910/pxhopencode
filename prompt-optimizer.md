@@ -23,6 +23,14 @@ GATE: Memory Init
 ## Step 1: Prompt Compiler (deterministic, 0 token)
 
 ```
+
+**Bắt buộc dùng một transaction duy nhất trước khi route prompt tự nhiên:**
+
+```
+node .opencode/runtime/bin/session.mjs prepare --stdin
+```
+
+Lệnh này block nếu chưa init memory; nếu thành công nó compile prompt, ghi final prompt vào `__prompt-log__.md`, khởi tạo `.pipeline-state.json` và cập nhật context. Dùng JSON output làm IR Context cho Task contract.
 Pipeline:
 1. Load skill `prompt-compiler` → Pipeline API
 2. `new Pipeline({ backend: 'opencode' }).compile(input)`
@@ -67,7 +75,6 @@ Nếu prompt đã bắt đầu bằng `RULE:` → giữ nguyên (không wrap l�
 
 ## Step 4: Write final prompt to __prompt-log__.md
 
-Sau khi wrap xong, final prompt (RULE + TARGET + IR Context) được **T1 (pxh-help)** ghi:
-- `node .opencode/runtime/bin/persist.mjs log "<final prompt>"`
+Sau khi wrap xong, final prompt được `session.mjs prepare` ghi trong cùng một bước chuẩn bị.
 **Overwrite** — file luôn chứa đúng 1 prompt cuối cùng.
 File ở workspace root, git-ignored. Xem `agents/pxh-help.md` QUY TRÌNH bước 0.

@@ -111,6 +111,20 @@ describe('Full Pipeline Integration', () => {
     }
   });
 
+  it('should preserve a concrete target for the OpenCode backend when intent is unknown', () => {
+    const input = 'Make the dashboard navigation easier to use on mobile';
+    const result = new Pipeline({ backend: 'opencode' }).compile(input);
+    expect(result.prompt).toContain('RULE:');
+    expect(result.prompt).toContain('TARGET:');
+    expect(result.prompt.toLowerCase()).toContain('dashboard navigation');
+  });
+
+  it('should not normalize short technical terms inside ordinary words', () => {
+    const result = new Pipeline({ backend: 'opencode' }).compile('Make a dashboard with a clear navigation');
+    expect(result.ir.normalized).toContain('dashboard');
+    expect(result.ir.normalized).not.toContain('dashboARd');
+  });
+
   it('should handle very long input without crashing', () => {
     const longInput = Array(10).fill('Fix the bug in the login component with TypeScript. Preserve existing behavior. No breaking changes. Only modify the login handler.').join(' ');
     const pipeline = new Pipeline();

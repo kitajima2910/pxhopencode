@@ -8,6 +8,8 @@ export function resolveTechnicalTerms(input, _lexemes) {
     const sorted = matches.sort((a, b) => b.end - b.start - (a.end - a.start));
     for (const match of sorted) {
         const original = input.slice(match.start, match.end);
+        if (needsWordBoundary(original) && (isWordChar(input[match.start - 1]) || isWordChar(input[match.end])))
+            continue;
         if (original !== match.output) {
             const before = output;
             output = output.slice(0, match.start) + match.output + output.slice(match.end);
@@ -22,6 +24,12 @@ export function resolveTechnicalTerms(input, _lexemes) {
         resolved,
         metric: { name: 'TechnicalResolver', ms, inputLength: input.length, outputLength: output.length },
     };
+}
+function isWordChar(char) {
+    return !!char && /[\p{L}\p{N}_]/u.test(char);
+}
+function needsWordBoundary(term) {
+    return /^[\p{L}\p{N}_]+$/u.test(term);
 }
 const FILE_EXT_MAP = {
     '.ts': 'TypeScript', '.tsx': 'TypeScript React', '.js': 'JavaScript',

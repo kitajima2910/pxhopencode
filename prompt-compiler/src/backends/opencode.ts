@@ -5,26 +5,29 @@ export class OpenCodeGenerator extends BaseGenerator {
   name = 'opencode' as const;
 
   generate(ir: PromptIR): string {
-    const lines: string[] = [];
-
-    if (ir.constraints.includes('minimal_changes') || ir.safety.preserveBehavior) {
-      lines.push('RULE:');
-      lines.push('- Đọc STATUS.md nếu tồn tại.');
-      lines.push('- Không rewrite project.');
-      if (ir.safety.preserveBehavior) lines.push('- Giữ nguyên code đang hoạt động.');
-      if (ir.constraints.includes('minimal_changes')) lines.push('- Ưu tiên thay đổi tối thiểu.');
-      if (ir.constraints.includes('only_requested_files')) lines.push('- Chỉ tác động trong TARGET.');
-      lines.push('');
-    }
+    const lines: string[] = [
+      'RULE:',
+      '- Read STATUS.md if it exists.',
+      '- Do not rewrite the project.',
+      '- Only modify files within the TARGET.',
+      '- Prefer the smallest safe changes.',
+      '- Preserve existing working behavior.',
+      '- Verify the TARGET after making changes.',
+      '- Update STATUS.md with the completed work.',
+    ];
+    if (ir.safety.preserveBehavior) lines.push('- Giữ nguyên code đang hoạt động.');
+    if (ir.constraints.includes('minimal_changes')) lines.push('- Ưu tiên thay đổi tối thiểu.');
+    lines.push('', `TARGET:\n${ir.normalized || ir.raw}`);
 
     const intentStr = this.formatIntents(ir);
-    if (intentStr && intentStr !== 'unknown') {
-      lines.push(`TARGET:\n${intentStr}`);
-    }
-
+    const irContext: string[] = [];
+    if (intentStr && intentStr !== 'unknown') irContext.push(`- Intents: ${intentStr}`);
+    if (ir.target.frameworks.length > 0) irContext.push(`- Frameworks: ${ir.target.frameworks.join(', ')}`);
+    if (ir.target.languages.length > 0) irContext.push(`- Languages: ${ir.target.languages.join(', ')}`);
+    if (irContext.length > 0) lines.push('', 'IR Context:', ...irContext);
     const context = this.buildContext(ir);
     if (context.length > 0) {
-      lines.push('');
+      if (irContext.length === 0) lines.push('', 'IR Context:');
       for (const c of context) lines.push(c);
     }
 

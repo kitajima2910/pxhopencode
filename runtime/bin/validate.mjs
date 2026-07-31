@@ -8,11 +8,13 @@ function dim(s) { return "\x1b[2m" + s + "\x1b[0m"; }
 
 async function main() {
   const type = process.argv[2] || "all";
-  const target = (() => {
-    for (const p of [".opencode/runtime/engine", "runtime/engine"]) if (existsSync(p)) return p;
-    return null;
-  })();
+  const workspaceRoot = process.cwd();
+  const ocRoot = existsSync(join(workspaceRoot, "runtime", "engine"))
+    ? workspaceRoot
+    : join(workspaceRoot, ".opencode");
+  const target = join(ocRoot, "runtime", "engine");
   if (!target) { console.log(err("Engine not found")); process.exit(1); }
+  if (!existsSync(target)) { console.log(err("Engine not found: " + target)); process.exit(1); }
 
   const engine = join(target, "src");
   let passed = 0, failed = 0;
@@ -42,7 +44,7 @@ async function main() {
     const pp = join(engine, "pipeline.ts");
     if (existsSync(pp)) {
       const raw = readFileSync(pp, "utf-8");
-      const phasesConfig = JSON.parse(readFileSync(join("_shared", "phases.json"), "utf-8"));
+      const phasesConfig = JSON.parse(readFileSync(join(ocRoot, "_shared", "phases.json"), "utf-8"));
       const hasAllPhases = phasesConfig.phases.every(p => raw.includes(`"${p}"`));
       check("pipeline.ts all phases present", hasAllPhases);
       check("pipeline.ts class Pipeline", raw.includes("class Pipeline"));
@@ -71,7 +73,7 @@ async function main() {
 
   if (type === "all" || type === "phases") {
     console.log(dim("\n  -- Phases Config --"));
-    const pf = "_shared/phases.json";
+    const pf = join(ocRoot, "_shared", "phases.json");
     if (existsSync(pf)) {
       const cfg = JSON.parse(readFileSync(pf, "utf-8"));
       check("phases.json has 10 phases", cfg.phases && cfg.phases.length === 10);
@@ -81,7 +83,7 @@ async function main() {
 
   if (type === "all" || type === "contracts-readme") {
     console.log(dim("\n  -- Contracts Docs --"));
-    check("runtime/contracts/README.md exists", existsSync("runtime/contracts/README.md"));
+    check("runtime/contracts/README.md exists", existsSync(join(ocRoot, "runtime", "contracts", "README.md")));
   }
 
   console.log(dim("\n  -- Summary --"));
