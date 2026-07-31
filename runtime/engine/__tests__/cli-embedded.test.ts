@@ -79,14 +79,33 @@ describe("embedded CLI runtime", () => {
     writeFileSync(join(memory, "index.json"), JSON.stringify({ version: "1.0", memory_count: 0 }));
 
     const output = execFileSync(process.execPath, [
-      ".opencode/runtime/bin/session.mjs", "prepare", "Make the dashboard navigation easier to use on mobile",
+      ".opencode/runtime/bin/session.mjs", "prepare", "Fix the bug in the dashboard navigation with minimal changes",
     ], { cwd: root, encoding: "utf-8" });
     const prepared = JSON.parse(output);
     const promptLog = readFileSync(join(root, "promptLog.txt"), "utf-8");
-    expect(prepared.ir.raw).toContain("dashboard navigation");
+    expect(prepared.route.intents).toContain("fix_bug");
+    expect(prepared.route.constraints).toContain("minimal_changes");
+    expect(new Set(prepared.route.stack.map((value: string) => value.toLowerCase())).size).toBe(prepared.route.stack.length);
+    expect(prepared.ir).toBeUndefined();
+    expect(prepared.metrics).toBeUndefined();
     expect(promptLog).toContain("RULE:");
     expect(promptLog).toContain("dashboard navigation");
+    expect(promptLog.match(/Framework/g)).toBeNull();
     expect(existsSync(join(root, ".pipeline-state.json"))).toBe(true);
     expect(existsSync(join(ocRoot, ".context.json"))).toBe(true);
+  });
+
+  it("returns full compiler diagnostics only when requested", () => {
+    const { root, ocRoot } = embeddedFixture();
+    cpSync(join(ROOT, "prompt-compiler", "dist"), join(ocRoot, "prompt-compiler", "dist"), { recursive: true });
+    mkdirSync(join(ocRoot, ".memory"), { recursive: true });
+    writeFileSync(join(ocRoot, ".memory", "index.json"), JSON.stringify({ version: "1.0" }));
+
+    const output = execFileSync(process.execPath, [
+      ".opencode/runtime/bin/session.mjs", "prepare", "--full-ir", "Fix login bug with minimal changes",
+    ], { cwd: root, encoding: "utf-8" });
+    const prepared = JSON.parse(output);
+    expect(prepared.ir.raw).toContain("login bug");
+    expect(prepared.metrics.stages.length).toBeGreaterThan(0);
   });
 });

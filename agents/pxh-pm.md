@@ -75,17 +75,17 @@ Mọi prompt tự nhiên được compile TRƯỚC khi classify:
 ```yaml
 Pipeline:
   1. Chạy `node .opencode/runtime/bin/session.mjs prepare --stdin` với prompt user. Nếu BLOCKED: dừng và xử lý memory init/build compiler.
-  2. Dùng JSON `ir` + `prompt` từ lệnh trên; không tự compile/ghi log lần hai.
-  3. Dùng IR để hỗ trợ classify:
-     - ir.intents → workflow (fix_bug→/debug, generate_game→/game, ...)
-     - ir.constraints → safety rules (preserve_behavior, minimal_changes)
-     - ir.target.frameworks → skill routing (React→webs-frontend, Phaser→games-2d)
-  4. Inject IR context vào Task contract cho T3 worker
+  2. Dùng `prompt` Markdown cho worker và JSON `route` tối giản để classify; không tự compile/ghi log lần hai.
+  3. Dùng route để classify:
+     - route.intents → workflow (fix_bug→/debug, generate_game→/game, ...)
+     - route.constraints + route.safety → safety rules
+     - route.stack → skill routing (React→webs-frontend, Phaser→games-2d)
+  4. Inject `route` vào Task context; không truyền full IR. Chỉ dùng `--full-ir` khi debug compiler.
   5. Inject recent prompts từ context: `node .opencode/runtime/bin/context.mjs add "prompt"`
   6. Export context: `node .opencode/runtime/bin/context.mjs export` → inject vào Task{context.recent_prompts}
 ```
 
-Sau compile: `classified_workflow` từ IR intents, `classified_skills` từ target.
+Sau compile: `classified_workflow` từ route.intents, `classified_skills` từ route.stack.
 
 ## PROCESS SKILLS
 multi-task → `process-parallel-agents`. Need plan → `process-writing-plans`. Review → `process-code-review`. Finish → `process-finishing-branch`.

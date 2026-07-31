@@ -20,6 +20,8 @@
 3. Mỗi agent có giới hạn `steps` để tránh vòng lặp tool/model vô hạn; prompt compiler, memory và routing IR chạy local, không tiêu model request.
 4. Chất lượng đến từ context đúng, diff nhỏ và test theo rủi ro. Model free không được cam kết ngang tuyệt đối model trả phí trên mọi task; với task security/payment/migration/release, hệ thống tự dùng pipeline kiểm tra sâu hơn.
 
+Luồng prompt dùng hybrid format: người dùng viết tự nhiên → compiler local tạo Markdown ngắn cho worker + JSON `route` tối giản cho máy. Chạy `session.mjs prepare --full-ir ...` chỉ khi cần debug compiler.
+
 ## Cài đặt (30 giây)
 
 ```bash

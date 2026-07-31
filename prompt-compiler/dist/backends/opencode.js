@@ -4,41 +4,25 @@ export class OpenCodeGenerator extends BaseGenerator {
     generate(ir) {
         const lines = [
             'RULE:',
-            '- Read STATUS.md if it exists.',
-            '- Do not rewrite the project.',
-            '- Only modify files within the TARGET.',
-            '- Prefer the smallest safe changes.',
-            '- Preserve existing working behavior.',
-            '- Verify the TARGET after making changes.',
-            '- Update STATUS.md with the completed work.',
+            '- Make the smallest safe change within TARGET.',
+            '- Preserve working behavior and verify the result.',
+            '- Update STATUS.md after source changes.',
         ];
-        if (ir.safety.preserveBehavior)
-            lines.push('- Giữ nguyên code đang hoạt động.');
-        if (ir.constraints.includes('minimal_changes'))
-            lines.push('- Ưu tiên thay đổi tối thiểu.');
         lines.push('', `TARGET:\n${ir.normalized || ir.raw}`);
-        const intentStr = this.formatIntents(ir);
-        const irContext = [];
-        if (intentStr && intentStr !== 'unknown')
-            irContext.push(`- Intents: ${intentStr}`);
-        if (ir.target.frameworks.length > 0)
-            irContext.push(`- Frameworks: ${ir.target.frameworks.join(', ')}`);
-        if (ir.target.languages.length > 0)
-            irContext.push(`- Languages: ${ir.target.languages.join(', ')}`);
-        if (irContext.length > 0)
-            lines.push('', 'IR Context:', ...irContext);
-        const context = this.buildContext(ir);
-        if (context.length > 0) {
-            if (irContext.length === 0)
-                lines.push('', 'IR Context:');
-            for (const c of context)
-                lines.push(c);
-        }
-        if (ir.constraints.length > 0) {
-            lines.push('');
-            for (const c of ir.constraints)
-                lines.push(`- ${c.replace(/_/g, ' ')}`);
-        }
+        const context = [];
+        const intents = ir.intents.filter(intent => intent !== 'unknown');
+        const stack = [...ir.target.frameworks, ...ir.target.languages, ...ir.target.libraries, ...ir.target.platforms]
+            .filter((value, index, values) => values.findIndex(candidate => candidate.toLowerCase() === value.toLowerCase()) === index);
+        if (intents.length > 0)
+            context.push(`intent=${intents.join(',')}`);
+        if (stack.length > 0)
+            context.push(`stack=${stack.join(',')}`);
+        if (ir.constraints.length > 0)
+            context.push(`constraints=${ir.constraints.join(',')}`);
+        if (ir.priority !== 'medium')
+            context.push(`priority=${ir.priority}`);
+        if (context.length > 0)
+            lines.push('', `CONTEXT: ${context.join('; ')}`);
         return lines.join('\n').trim();
     }
 }

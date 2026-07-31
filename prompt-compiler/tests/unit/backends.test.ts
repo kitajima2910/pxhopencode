@@ -69,7 +69,10 @@ describe('Backend Generators', () => {
     const prompt = generatePrompt(sampleIR, 'opencode');
     expect(prompt).toContain('RULE:');
     expect(prompt).toContain('TARGET:');
-    expect(prompt).toContain('Giữ nguyên code đang hoạt động');
+    expect(prompt).toContain('CONTEXT:');
+    expect(prompt).toContain('constraints=preserve_behavior,minimal_changes');
+    const contextLine = prompt.split('\n').find(line => line.startsWith('CONTEXT:')) ?? '';
+    expect(contextLine.match(/TypeScript/g)).toHaveLength(1);
   });
 
   it('Codex generator should produce commented output', () => {

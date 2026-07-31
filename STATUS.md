@@ -1,5 +1,28 @@
 # 📊 pxhopencode — AI Company cho Vibe Coding
 
+## ✅ Hybrid Prompt Transport — 2026-08-01
+
+### What changed
+
+- Giữ natural-language input, sinh Markdown worker prompt ngắn và JSON `route` tối giản cho routing.
+- Xóa context/constraint lặp trong OpenCode backend; full IR và compiler metrics chỉ xuất khi dùng `--full-ir`.
+- PM truyền `route` vào Task context thay vì full IR để giảm token/tool output.
+
+### Files modified
+
+- `prompt-compiler/src/backends/opencode.ts` và compiler dist.
+- `runtime/bin/session.mjs`, `agents/pxh-pm.md`, `_shared/core-rules.md`, `README.md`.
+- Runtime/compiler regression tests và `STATUS.md`.
+
+### Verification result
+
+- Compiler dist rebuilt; `npm.cmd test`: PASS — 57 runtime-engine + 61 prompt-compiler tests (118 total).
+- Measured session output: compact default 446 bytes vs full diagnostics 1,925 bytes — giảm 76.8% trên prompt mẫu.
+
+### Remaining issues
+
+- JSON `route` là transport nội bộ; không thay thế Markdown cho mô tả UI/UX hoặc yêu cầu giàu ngữ cảnh.
+
 ## ✅ Free-model Economy Routing — 2026-08-01
 
 ### What changed

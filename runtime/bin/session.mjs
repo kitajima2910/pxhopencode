@@ -14,13 +14,36 @@ function readStdin() {
 }
 
 function usage() {
-  console.error("Usage: session.mjs prepare <prompt> | session.mjs prepare --stdin");
+  console.error("Usage: session.mjs prepare [--full-ir] <prompt> | session.mjs prepare [--full-ir] --stdin");
   process.exit(1);
 }
 
+function compactRoute(ir) {
+  const stack = [
+    ...ir.target.frameworks,
+    ...ir.target.languages,
+    ...ir.target.libraries,
+    ...ir.target.platforms,
+  ].filter((value, index, values) =>
+    values.findIndex(candidate => candidate.toLowerCase() === value.toLowerCase()) === index
+  );
+  const route = {
+    intents: ir.intents.filter(intent => intent !== "unknown"),
+    constraints: ir.constraints,
+    stack,
+    priority: ir.priority,
+  };
+  if (ir.files.length > 0) route.files = ir.files;
+  const safety = Object.fromEntries(Object.entries(ir.safety).filter(([, enabled]) => enabled));
+  if (Object.keys(safety).length > 0) route.safety = safety;
+  return route;
+}
+
 async function prepare() {
-  const fromStdin = process.argv[3] === "--stdin";
-  const input = (fromStdin ? readStdin() : process.argv.slice(3).join(" ")).trim();
+  const args = process.argv.slice(3);
+  const fullIr = args.includes("--full-ir");
+  const fromStdin = args.includes("--stdin");
+  const input = (fromStdin ? readStdin() : args.filter(arg => arg !== "--full-ir").join(" ")).trim();
   if (!input) usage();
 
   const workspace = process.cwd();
@@ -57,12 +80,16 @@ async function prepare() {
   mkdirSync(ocRoot, { recursive: true });
   writeFileSync(contextFile, JSON.stringify(context, null, 2) + "\n", "utf-8");
 
-  console.log(JSON.stringify({
+  const output = {
     prompt,
-    ir: result.ir,
-    metrics: result.metrics,
+    route: compactRoute(result.ir),
     memory_root: memoryRoot,
-  }, null, 2));
+  };
+  if (fullIr) {
+    output.ir = result.ir;
+    output.metrics = result.metrics;
+  }
+  console.log(JSON.stringify(output));
 }
 
 if (process.argv[2] === "prepare") prepare().catch(error => {
